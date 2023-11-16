@@ -4,8 +4,8 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/dev/Legends/src/cs/Legends.App/Content/Sensation.fnt</File>
-    <File>C:/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png</File>
+    <File>c:/dev/Legends/src/cs/Legends.App/Content/Sensation.fnt</File>
+    <File>c:/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />
