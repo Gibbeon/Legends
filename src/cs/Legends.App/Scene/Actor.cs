@@ -8,13 +8,13 @@ namespace Legends.App.Scene
 {
     public class Actor
     {
-        public DrawableEntity Entity { get; private set; }
+        public DrawableEntity2D Entity { get; private set; }
 
         public Spatial2D Spatial => Entity.Spatial;
 
         Actor(Game game)
         {
-            Entity = new DrawableEntity(game);
+            Entity = new DrawableEntity2D(game);
         }
     }
 

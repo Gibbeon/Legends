@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Screens;
-using MonoGame.Extended.Sprites;
 
 namespace Legends.App
 {
@@ -24,7 +23,7 @@ public class MainGame : Game
     {
         // TODO: Add your initialization logic here
 
-        base.Initialize();    
+        base.Initialize();   
 
         Components.Add(_screenManager);        
     }

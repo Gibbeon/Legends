@@ -1,25 +1,20 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
 namespace Legends.App.Graphics
 {
-    public interface ISpriteBatchDrawable2D
+    public interface ISpriteBatchDrawable2D : IDrawable
     {
-        void DrawBatched(SpriteBatch batch, Camera2D camera, GameTime gameTime);
-
+        void DrawBatched(SpriteBatch batch, GameTime gameTime);
     }
-
-    public class Camera2D
-    {
-
-    }
-
+    
     public struct TextureView2D
     {
         public Texture2D Texture;
 
-        public Rectangle Frame
+        public Rectangle Bounds
         {
             get 
             {
@@ -64,7 +59,7 @@ namespace Legends.App.Graphics
         }
     }
 
-    public class DrawableEntity : ISpriteBatchDrawable2D
+    public class DrawableEntity2D : ISpriteBatchDrawable2D
     {
         private Game _game;
 
@@ -72,26 +67,38 @@ namespace Legends.App.Graphics
 
         public Material2D Material { get; protected set; }
 
+        public int DrawOrder => throw new NotImplementedException();
+
+        public bool Visible => throw new NotImplementedException();
+
         public int Depth;
 
-        public DrawableEntity(Game game)
+        public event EventHandler<EventArgs> DrawOrderChanged;
+        public event EventHandler<EventArgs> VisibleChanged;
+
+        public DrawableEntity2D(Game game)
         {
             _game = game; 
             Material = new Material2D();
             Spatial = new Spatial2D(new Size2(128, 128)); 
         }
 
-        public void DrawBatched(SpriteBatch batch, Camera2D camera, GameTime gameTime)
+        public void DrawBatched(SpriteBatch batch, GameTime gameTime)
         {           
             batch.Draw(
                 Material.ColorMap.Texture,
-                Spatial.Frame,
-                Material.ColorMap.Frame,
+                Spatial.Bounds,
+                Material.ColorMap.Bounds,
                 Material.AmbientColor,
                 Spatial.Rotation,
                 Spatial.Origin,
                 Material.Effects,
                 Depth);
+        }
+
+        public void Draw(GameTime gameTime)
+        {
+            throw new NotImplementedException();
         }
     }
 }
