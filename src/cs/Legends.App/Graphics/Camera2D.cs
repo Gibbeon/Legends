@@ -10,9 +10,9 @@ namespace Legends.App.Graphics
         private readonly ViewportAdapter _viewportAdapter;
         private Spatial2D _spatial;
         public Spatial2D Spatial => _spatial;
-        public override Vector2 Position { get => _spatial.Position; set => _spatial.Position = value; }
+        public override Vector2 Position { get => _spatial.Position - Origin; set => _spatial.Position = value - Origin; }
         public override Vector2 Origin { get => _spatial.Origin; set => _spatial.Origin = value; }
-        public override Vector2 Center { get => _spatial.Center; }
+        public override Vector2 Center { get => _spatial.Position; }
         public override float Rotation { get => _spatial.Rotation; set => _spatial.Rotation = value; }
         public override float MinimumZoom { get; set; }
         public override float MaximumZoom { get; set; }
@@ -78,7 +78,7 @@ namespace Legends.App.Graphics
 
         public override void LookAt(Vector2 position)
         {
-            Position = position - Origin;//new Vector2((float)_viewportAdapter.VirtualWidth / 2f, (float)_viewportAdapter.VirtualHeight / 2f);
+            Position = position;//new Vector2((float)_viewportAdapter.VirtualWidth / 2f, (float)_viewportAdapter.VirtualHeight / 2f);
         }
 
         public Vector2 WorldToScreen(float x, float y)
@@ -161,6 +161,6 @@ namespace Legends.App.Graphics
 
         public Matrix View => GetViewMatrix();
         public Matrix Projection => GetProjectionMatrix(Matrix.Identity);
-        public Matrix Word => Spatial.GlobalWorldMatrix;
+        public Matrix World => Matrix.Identity;
     }
 }

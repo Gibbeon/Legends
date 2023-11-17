@@ -3,8 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Screens;
 
-namespace Legends.App
-{
+namespace Legends.App;
 
 public class MainGame : Game
 {
@@ -53,4 +52,4 @@ public class MainGame : Game
         base.Draw(gameTime);
     }
 }
-}
+

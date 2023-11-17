@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
@@ -10,7 +11,7 @@ namespace Legends.App.Graphics
         public Vector2 Scale        { get => _scale; set => SetScale(value); }
         public float Rotation       { get => _rotation; set => SetRotation(value); }        
         public Size2 OrigionalSize  { get; set; }
-        public Vector2 Center => Position + Origin;
+        //public Vector2 Center => Position + Origin;
         public Matrix LocalWorldMatrix
         {
             get => GetLocalMatrix();
@@ -37,7 +38,6 @@ namespace Legends.App.Graphics
         {
             get { return new Size2(OrigionalSize.Width * Scale.X, OrigionalSize.Height * Scale.Y); }
         }
-
         public Vector2 OriginNormalized
         {
             get
@@ -50,31 +50,19 @@ namespace Legends.App.Graphics
             }
         }
 
-
-        public Rectangle Bounds
-        {
-            get 
-            {
-                return new Rectangle((Position - Origin).ToPoint(), (Point)Size);
-            }
-        }
-
         public Spatial2D()
         {
             Scale = Vector2.One;
             _localMatrix = Matrix.Identity;
         }
-
         public Spatial2D(Size2 size) : this()
         {            
             OrigionalSize = size;
         }
-
         public void Move(float x, float y)
         {
             Move(new Vector2(x, y));
         }     
-
         public void Move(Vector2 direction)
         {
             Position += Vector2.Transform(direction, Matrix.CreateRotationZ(0f - Rotation));
@@ -83,35 +71,29 @@ namespace Legends.App.Graphics
         {
             Rotation += deltaRadians;
         }
-
         public virtual void SetPosition(Vector2 position)
         {
             _position = position;
             NeedToUpdate();
         }
-
         public void SetScale(float scale)
         {
             SetScale(new Vector2(scale, scale));
         }
-
         public virtual void SetScale(Vector2 scale)
         {
             _scale = scale;
             NeedToUpdate();
         }
-
         public virtual void SetRotation(float deltaRadians)
         {
             _rotation = deltaRadians;
             NeedToUpdate();
         }
-
         public virtual void Update(GameTime gameTime)
         {
             UpdateSpatial();
         }
-
         internal virtual void UpdateSpatial()
         {
             UpdateRelative(null); // nothing to do, there is no parent matrix
@@ -136,7 +118,6 @@ namespace Legends.App.Graphics
                 _globalMatrix = parent != null ?
                     Matrix.Multiply(parent.GlobalWorldMatrix, _localMatrix) :
                     _localMatrix;
-
             }
         }
 
@@ -179,6 +160,30 @@ namespace Legends.App.Graphics
         {
             UpdateSpatial();
             return _localMatrix;
+        }
+
+        public bool Contains(Point2 point)
+        {
+            // rotate around rectangle center by -rectAngle
+            if(_rotation * _rotation > float.Epsilon)
+            {
+                var sin = MathF.Sin(-_rotation);
+                var cos = MathF.Cos(-_rotation);
+
+                // set origin to rect center
+                point -= Position;
+                // rotate
+                point  = new Point2(point.X * cos - point.Y * sin, point.X * sin + point.Y * cos);
+                // put origin back
+                point += Position;
+            }
+
+            var rect = new RectangleF((Position - ((Vector2)OrigionalSize - Origin) * Scale), (Vector2)OrigionalSize * Scale);
+
+            return  point.X     >= rect.Left
+                    && point.X  <= rect.Right 
+                    && point.Y  >= rect.Top 
+                    && point.Y  <= rect.Bottom;
         }
     }
 }    
