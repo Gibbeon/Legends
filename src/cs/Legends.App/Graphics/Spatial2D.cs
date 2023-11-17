@@ -11,7 +11,7 @@ namespace Legends.App.Graphics
         public Vector2 Scale        { get => _scale; set => SetScale(value); }
         public float Rotation       { get => _rotation; set => SetRotation(value); }        
         public Size2 OrigionalSize  { get; set; }
-        //public Vector2 Center => Position + Origin;
+
         public Matrix LocalWorldMatrix
         {
             get => GetLocalMatrix();
