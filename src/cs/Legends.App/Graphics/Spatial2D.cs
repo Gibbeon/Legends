@@ -55,7 +55,7 @@ namespace Legends.App.Graphics
         {
             get 
             {
-                return new Rectangle(Position.ToPoint(), (Point)Size);
+                return new Rectangle((Position - Origin).ToPoint(), (Point)Size);
             }
         }
 

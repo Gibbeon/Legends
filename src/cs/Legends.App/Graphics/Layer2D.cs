@@ -97,7 +97,7 @@ namespace Legends.App.Graphics
             SamplerState = SamplerState.PointClamp;
             Effect = new BasicEffect(canvas.Game.GraphicsDevice) { 
                 TextureEnabled = true,
-                VertexColorEnabled = false
+                VertexColorEnabled = true
             };
         }
 
@@ -126,7 +126,7 @@ namespace Legends.App.Graphics
                 SamplerState, 
                 DepthStencilState, 
                 RasterizerState, 
-                Effect              
+                Effect           
             );
 
             foreach (var drawable in _spritesDrawIndex)

@@ -94,7 +94,9 @@ namespace Legends.App.Input
             _keyboardListener.KeyTyped += (sender, args)    => ProcessEvent(EventType.KeyTyped, args);
 
             _mouseListener = new MouseListener();
+            
             _mouseListener.MouseClicked += (sender, args)   => ProcessEvent(EventType.MouseClicked, args);
+            _mouseListener.MouseDoubleClicked += (sender, args)   => ProcessEvent(EventType.MouseClicked, args);
         }
 
         public void Update(GameTime gameTime)
@@ -131,7 +133,6 @@ namespace Legends.App.Input
                 if(command.Eval(type, args))
                 {
                     _results.Add(new Result() { Trigger = command, Type = type, Args = args });
-                    Console.WriteLine(command.Command);
                 }
             }
 

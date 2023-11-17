@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace Legends.App.Graphics
 {
@@ -87,7 +88,7 @@ namespace Legends.App.Graphics
         {           
             batch.Draw(
                 Material.ColorMap.Texture,
-                Spatial.Bounds,
+                new Rectangle(Spatial.Position.ToPoint(), (Point)Spatial.Size),
                 Material.ColorMap.Bounds,
                 Material.AmbientColor,
                 Spatial.Rotation,

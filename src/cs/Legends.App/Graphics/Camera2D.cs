@@ -78,7 +78,7 @@ namespace Legends.App.Graphics
 
         public override void LookAt(Vector2 position)
         {
-            Position = position - new Vector2((float)_viewportAdapter.VirtualWidth / 2f, (float)_viewportAdapter.VirtualHeight / 2f);
+            Position = position - Origin;//new Vector2((float)_viewportAdapter.VirtualWidth / 2f, (float)_viewportAdapter.VirtualHeight / 2f);
         }
 
         public Vector2 WorldToScreen(float x, float y)
@@ -160,7 +160,7 @@ namespace Legends.App.Graphics
         }
 
         public Matrix View => GetViewMatrix();
-        public Matrix Projection => GetProjectionMatrix(GetViewMatrix());
+        public Matrix Projection => GetProjectionMatrix(Matrix.Identity);
         public Matrix Word => Spatial.GlobalWorldMatrix;
     }
 }
