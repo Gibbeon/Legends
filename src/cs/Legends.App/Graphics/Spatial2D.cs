@@ -65,7 +65,7 @@ namespace Legends.App.Graphics
         }     
         public void Move(Vector2 direction)
         {
-            Position += Vector2.Transform(direction, Matrix.CreateRotationZ(0f - Rotation));
+            Position += direction;//Vector2.Transform(direction, Matrix.CreateRotationZ(0f - Rotation));
         }
         public void Rotate(float deltaRadians)
         {
