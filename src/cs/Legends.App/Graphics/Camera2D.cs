@@ -44,6 +44,9 @@ namespace Legends.App.Graphics
             {
                 OriginNormalized = new Vector2(.5f, .5f)
             };
+            MinimumZoom = .1f;            
+            MaximumZoom = 100;
+            LookAt(Vector2.Zero);
         }
 
         public override void Move(Vector2 direction)

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using MonoGame.Extended.Collections;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Input.InputListeners;
 
@@ -12,8 +14,38 @@ namespace Legends.App.Input
 {
     public class Trigger
     {
-        public string Command { get; set; }
-        public Func<EventType, EventArgs, bool> Eval { get; set; }
+        public InputManager Manager { get; private set;}
+        public string Command { get; private set; }
+        private Func<EventType, EventArgs, bool> _evaluate;
+
+        public bool Eval(EventType type, EventArgs args)
+        {
+            return _evaluate(type, args) && _modifiers.All((fn) => { return fn(type, args); });
+        }
+
+        public Trigger WithModifierAny(params Keys[] modifiers)
+        {                
+            _modifiers.Add((type, args) => modifiers.Any(n => Manager.KeyboardListener.KeyboardState.IsKeyDown(n)));
+
+            return this;   
+        }
+
+        public Trigger WithModifierAll(params Keys[] modifiers)
+        {                
+            _modifiers.Add((type, args) => modifiers.All(n => Manager.KeyboardListener.KeyboardState.IsKeyDown(n)));
+
+            return this;   
+        }
+
+        public Trigger(InputManager manager, string command, Func<EventType, EventArgs, bool> evaluator)
+        {
+            Manager = manager;
+            Command = command;
+            _evaluate = evaluator;
+            _modifiers = new List<Func<EventType, EventArgs, bool>>();
+        }
+
+        IList<Func<EventType, EventArgs, bool>> _modifiers;
     }
 
     public class Result
@@ -25,6 +57,10 @@ namespace Legends.App.Input
         public EventType Type { get; set; }
 
         public EventArgs Args { get; set; }
+
+        public MouseEventArgs MouseEventArgs            { get => Args as MouseEventArgs; }
+        public TouchEventArgs TouchEventArgs            { get => Args as TouchEventArgs; }
+        public KeyboardEventArgs KeyboardEventArgs      { get => Args as KeyboardEventArgs; }
 
         public Point2 GetPosition()
         {
@@ -41,6 +77,16 @@ namespace Legends.App.Input
             return Point2.NaN;
         }
 
+        public float GetScrollValue()
+        {
+            return (Args as MouseEventArgs).ScrollWheelValue / 1000.0f;
+        }
+
+        public float GetScrollDelta()
+        {
+            return (Args as MouseEventArgs).ScrollWheelDelta / 1000.0f;
+        }
+
         public char? GetCharacter()
         {
             if(Args is KeyboardEventArgs)
@@ -50,7 +96,6 @@ namespace Legends.App.Input
 
             return null; 
         }
-
     }
 
     public enum EventType
@@ -59,14 +104,15 @@ namespace Legends.App.Input
         KeyPressed,
         KeyReleased,
         KeyTyped,
-        MouseClicked
+        MouseClicked,
+        MouseMove,
+        MouseScroll
 
     }
 
     public class InputManager
     {
         private Legends.App.Input.KeyboardListener    _keyboardListener;
-        //GamePadListener     _gamePadListener = new GamePadListener();
         private MouseListener       _mouseListener;
 
         private IList<Trigger> _triggers;
@@ -76,7 +122,6 @@ namespace Legends.App.Input
 
         public KeyboardListener KeyboardListener => _keyboardListener;
         public MouseListener    MouseListener => _mouseListener;
-
 
         public InputManager() : this( new KeyboardListenerSettings())
         {
@@ -95,8 +140,11 @@ namespace Legends.App.Input
 
             _mouseListener = new MouseListener();
             
-            _mouseListener.MouseClicked += (sender, args)   => ProcessEvent(EventType.MouseClicked, args);
-            _mouseListener.MouseDoubleClicked += (sender, args)   => ProcessEvent(EventType.MouseClicked, args);
+            _mouseListener.MouseClicked += (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
+            _mouseListener.MouseDoubleClicked += (sender, args) => ProcessEvent(EventType.MouseClicked, args);
+
+            _mouseListener.MouseWheelMoved+= (sender, args)     => ProcessEvent(EventType.MouseScroll, args);
+            _mouseListener.MouseMoved += (sender, args)         => ProcessEvent(EventType.MouseMove, args);
         }
 
         public void Update(GameTime gameTime)
@@ -106,24 +154,26 @@ namespace Legends.App.Input
             _mouseListener.Update(gameTime);
         }
 
-        public void Register(string command, Func<EventType, EventArgs, bool> test)
+        public Trigger Register(string command, Func<EventType, EventArgs, bool> test)
         {
-            _triggers.Add(new Trigger() {Command = command, Eval = test});
+            var result = new Trigger(this, command, test);
+            _triggers.Add(result);
+            return result;
         }
 
-        public void Register(string command, EventType eventType)
+        public Trigger Register(string command, EventType eventType)
         {
-            Register(command, (type, args) => type == eventType);
+            return Register(command, (type, args) => type == eventType);
         }
 
-        public void Register(string command, Keys key, EventType eventType = EventType.KeyPressed)
+        public Trigger Register(string command, Keys key, EventType eventType = EventType.KeyPressed)
         {
-            Register(command, (type, args) => type == eventType && (args as KeyboardEventArgs).Key == key);
+            return Register(command, (type, args) => type == eventType && (args as KeyboardEventArgs).Key == key);
         }
 
-        public void Register(string command, MouseButton button, EventType eventType = EventType.MouseClicked)
+        public Trigger Register(string command, MouseButton button, EventType eventType = EventType.MouseClicked)
         {
-            Register(command, (type, args) => type == eventType && (args as MouseEventArgs).Button == button);
+            return Register(command, (type, args) => type == eventType && (args as MouseEventArgs).Button == button);
         }
 
         protected void ProcessEvent(EventType type, EventArgs args)

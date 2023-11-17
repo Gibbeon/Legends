@@ -27,10 +27,7 @@ namespace Legends.App.Screens
             _canvas  = new Canvas2D(game);
 
             _entity = new DrawableEntity2D(game);
-            _entity.Spatial.Position = new Vector2(256, 256);
             _entity.Spatial.OriginNormalized = new Vector2(.5f, .5f); 
-
-            //_entity.Spatial.Scale = new Vector2(.5f, .5f);
 
             _canvas.Add().Add(_entity);
 
@@ -41,13 +38,22 @@ namespace Legends.App.Screens
 
             _input.Register("EXIT",     Keys.Escape);
             _input.Register("LOOK_AT",  MouseButton.Right);  
+            _input.Register("ZOOM",     EventType.MouseScroll); 
+
+            
+            //_input.Register("ROTATE", (type, args) => { return type == EventType.MouseClicked && (args as MouseEventArgs).Button == MouseButton.Left && _input.KeyboardListener.KeyboardState.IsKeyDown(Keys.LeftAlt); });   
+
+            _input.Register("ROTATE",   MouseButton.Left).WithModifierAny(Keys.LeftAlt, Keys.RightAlt);
             
             _input.Register("MOVE_LEFT",    Keys.Left);             
             _input.Register("MOVE_RIGHT",   Keys.Right);      
             _input.Register("MOVE_UP",      Keys.Up);             
-            _input.Register("MOVE_DOWN",    Keys.Down); 
+            _input.Register("MOVE_DOWN",    Keys.Down);
 
             _entity.Spatial.Rotate(MathF.PI/4);
+            _entity.Spatial.Scale = new Vector2(.5f, .5f);
+
+            _canvas.Camera.Spatial.SetScale(2.0f);            
         }
 
         public override void Draw(GameTime gameTime)
@@ -79,6 +85,10 @@ namespace Legends.App.Screens
                     case "MOVE_RIGHT":  _entity.Spatial.Move( 1, 0); break;
                     case "MOVE_UP":     _entity.Spatial.Move( 0,-1); break;
                     case "MOVE_DOWN":   _entity.Spatial.Move( 0, 1); break;
+                    
+                    case "ZOOM":        _canvas.Camera.ZoomIn(result.GetScrollDelta()); break;
+                    
+                    case "ROTATE":      _canvas.Camera.Rotate(MathF.PI/8); break;
                 }
             }    
 

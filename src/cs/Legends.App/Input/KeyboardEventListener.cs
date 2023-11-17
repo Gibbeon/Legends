@@ -16,6 +16,8 @@ public class KeyboardListener : InputListener
 
     private KeyboardState   _previousState;
 
+    public KeyboardState KeyboardState => _previousState;
+
     public bool RepeatPress { get; }
 
     public int InitialDelay { get; }
