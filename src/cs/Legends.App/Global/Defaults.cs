@@ -8,13 +8,15 @@ using MonoGame.Extended.Sprites;
 
 namespace Legends.App.Global
 {
-    public static class Fonts
+    public static class Defaults
     {
-        public static BitmapFont Menu;
+        public static Texture2D Texture;
 
         public static void LoadContent(ContentManager manager)
         {
-            Menu = manager.Load<BitmapFont>("Sensation");
+            Texture = new Texture2D(manager.GetGraphicsDevice(), 128, 128);
+            Texture.SetData<int>(Enumerable.Repeat(Color.Green.ToArgb(), Texture.Width * Texture.Height).ToArray());
         }
+        
     }
 }
