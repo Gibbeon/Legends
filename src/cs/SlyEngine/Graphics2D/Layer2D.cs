@@ -4,8 +4,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SlyEngine.Graphics.Collections;
 
-namespace SlyEngine.Graphics
-{
+namespace SlyEngine.Graphics;
+
+/*
     public class Layer2D : Spatial2D, IDrawable, IUpdateable
     {
         public event EventHandler<EventArgs> DrawOrderChanged;
@@ -215,4 +216,4 @@ namespace SlyEngine.Graphics
             }
         }
     }
-}
+*/

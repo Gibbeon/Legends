@@ -1,11 +1,92 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+using Autofac.Features.ResolveAnything;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
+using SlyEngine.Graphics2D;
 
-namespace SlyEngine.Graphics
+namespace SlyEngine.Graphics;
+
+public struct BoundedValue<TType>
+    where TType : IComparable<TType>
 {
-    public class Camera2D : Camera<Vector2>, IMovable, IRotatable
+    public TType Minimum { get; set; }
+    public TType Maximum { get; set; }
+
+    private bool _enabled;
+
+    public BoundedValue(TType minimum, TType maximum)
+    {
+        Minimum = minimum;
+        Maximum = maximum;
+        _enabled = true;
+    }
+
+    public TType Bound(TType newValue, TType oldValue)
+    {
+        if(_enabled && newValue.CompareTo(Minimum) <= 0) return Minimum;
+        if(_enabled && newValue.CompareTo(Maximum) >= 0) return Maximum;
+        
+        return newValue;
+    }
+}
+
+public class Camera : SpatialNode
+{
+    public class CameraDesc : SpatialNodeDesc
+    {
+        public float MinimumZoom = float.Epsilon;
+        public float MaximumZoom = float.MaxValue;
+    }
+
+    protected BoundedValue<float> _zoomBounds;
+    protected Matrix _projection;
+    public BoundedValue<float> ZoomBounds => _zoomBounds;
+    public Matrix View => LocalMatrix;
+    public Matrix Projection => _projection;
+    public Matrix World => Matrix.Identity;
+
+    public Camera(GraphicsDevice graphicsDevice, CameraDesc data = default(CameraDesc))
+        : this(new DefaultViewportAdapter(graphicsDevice), data ?? new CameraDesc())
+    {
+    }
+
+    public Camera(ViewportAdapter viewportAdapter, CameraDesc data = default(CameraDesc)) : base(data)
+    {
+        data = data ?? new CameraDesc();
+
+        _zoomBounds = new BoundedValue<float>(data.MinimumZoom, data.MinimumZoom);
+        Size = new Vector2(viewportAdapter.VirtualWidth, viewportAdapter.VirtualHeight);
+        OriginNormalized = new Vector2(.5f, .5f);
+
+        LookAt(Vector2.Zero);
+    }
+
+    public override void SetSize(Size2 size)
+    {
+        base.SetSize(size);
+
+        _projection = Matrix.CreateOrthographicOffCenter(0f, Size.Width, Size.Height, 0f, -1f, 0f);
+    }
+
+    public override void SetScale(Vector2 scale)
+    {
+        // apply bounds
+        base.SetScale(new Vector2(
+            _zoomBounds.Bound(scale.X, Scale.X),
+            _zoomBounds.Bound(scale.Y, Scale.Y)
+        ));
+    }
+
+    public void LookAt(Vector2 vector)
+    {
+        Position = vector - Origin;
+    }
+}
+
+    /*public class Camera2D : Camera<Vector2>, IMovable, IRotatable
     {
         private readonly ViewportAdapter _viewportAdapter;
         private Spatial2D _spatial;
@@ -166,4 +247,4 @@ namespace SlyEngine.Graphics
         public Matrix Projection => GetProjectionMatrix(Matrix.Identity);
         public Matrix World => Matrix.Identity;
     }
-}
+}*/

@@ -3,7 +3,7 @@ using System.Dynamic;
 using SlyEngine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-
+/*
 namespace Legends.App.Scene
 {
     public class Actor
@@ -121,3 +121,4 @@ namespace Legends.App.Scene
         }
     }
 }
+*/

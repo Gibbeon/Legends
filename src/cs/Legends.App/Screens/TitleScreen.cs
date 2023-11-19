@@ -5,6 +5,8 @@ using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Input;
 using SlyEngine.Input;
+using MonoGame.Extended;
+using SlyEngine.Graphics;
 
 namespace Legends.App.Screens
 {
@@ -12,16 +14,17 @@ namespace Legends.App.Screens
     {
         private Game _game;
         private SpriteBatch _spriteBatch;
-
         private InputManager _input;
 
-        private string _string;
+        private Camera _camera;
 
         public TitleScreen(Game game)
         {
             _game = game;
             _spriteBatch = new SpriteBatch(_game.GraphicsDevice);
             _input = new InputManager();
+
+            _camera = new Camera(_game.GraphicsDevice);
 
             _input.Register("EXIT",     Keys.Escape);
             _input.Register("EXIT",     MouseButton.Right);
@@ -35,7 +38,11 @@ namespace Legends.App.Screens
             _game.GraphicsDevice.Clear(Color.Black);
             
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(Global.Fonts.Menu, "Press ESC to exit or ENTER to move forward", Vector2.Zero, Color.White);
+
+            _spriteBatch.DrawRectangle(_camera.BoundingRectangle, Color.Red);
+
+
+            //_spriteBatch.DrawString(Global.Fonts.Menu, "Press ESC to exit or ENTER to move forward", Vector2.Zero, Color.White);
             _spriteBatch.End(); 
         }
 
@@ -55,7 +62,7 @@ namespace Legends.App.Screens
 
         protected void Start()
         {
-            ScreenManager.LoadScreen(new MapScreen(_game), new MonoGame.Extended.Screens.Transitions.FadeTransition(_game.GraphicsDevice, Color.Black));
+            //ScreenManager.LoadScreen(new MapScreen(_game), new MonoGame.Extended.Screens.Transitions.FadeTransition(_game.GraphicsDevice, Color.Black));
         }
     }
 }

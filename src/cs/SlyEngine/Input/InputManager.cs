@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Input.InputListeners;
+using Microsoft.VisualBasic;
 
 namespace SlyEngine.Input;
 public class InputManager
@@ -66,12 +67,12 @@ public class InputManager
 
     public Trigger Register(string command, Keys key, EventType eventType = EventType.KeyPressed)
     {
-        return Register(command, (type, args) => type == eventType && (args as KeyboardEventArgs).Key == key);
+        return Register(command, (type, args) => type == eventType && (args as KeyboardEventArgs)?.Key == key);
     }
 
     public Trigger Register(string command, MouseButton button, EventType eventType = EventType.MouseClicked)
     {
-        return Register(command, (type, args) => type == eventType && (args as MouseEventArgs).Button == button);
+        return Register(command, (type, args) => type == eventType && (args as MouseEventArgs)?.Button == button);
     }
 
     protected void ProcessEvent(EventType type, EventArgs args)
@@ -80,7 +81,7 @@ public class InputManager
         {
             if(command.Eval(type, args))
             {
-                _results.Add(new Result() { Trigger = command, Type = type, Args = args });
+                _results.Add(new Result(command, type, args));
             }
         }
 
@@ -100,8 +101,12 @@ public class InputManager
     {
         foreach(var entry in _results.Where(n => n.Trigger.Command == command))
         {
-            point = entry.GetPosition();
-            return true;
+            var result = entry.GetPosition();
+            if(result.HasValue)
+            {
+                point = result.Value;
+                return true;
+            }
         }
         point = Point2.NaN;
 

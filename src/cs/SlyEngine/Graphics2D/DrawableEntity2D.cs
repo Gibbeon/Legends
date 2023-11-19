@@ -4,8 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
 
-namespace SlyEngine.Graphics
-{
+namespace SlyEngine.Graphics;
+
+    /*
     public interface ISpriteBatchDrawable2D : IDrawable
     {
         void DrawBatched(SpriteBatch batch, GameTime gameTime);
@@ -93,4 +94,4 @@ namespace SlyEngine.Graphics
             throw new NotImplementedException();
         }
     }
-}
+*/

@@ -10,7 +10,6 @@ namespace Legends.App;
 public class MainGame : Game
 {
     private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
     private ScreenManager _screenManager;
     
     public MainGame()
@@ -32,8 +31,6 @@ public class MainGame : Game
 
     protected override void LoadContent()
     {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
-
         _screenManager.LoadScreen(new Screens.TitleScreen(this));
 
         Global.Fonts.LoadContent(this.Content);

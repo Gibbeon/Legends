@@ -12,12 +12,12 @@ namespace Legends.App.Global
 {
     public static class Defaults
     {
-        public static Texture2D Texture { get; set; }
+        public static Texture2D? Texture { get; set; }
 
         public static void LoadContent(ContentManager manager)
         {
-            Texture = manager.Load<Texture2D>("npc1");
-            /*
+            //Texture = manager.Load<Texture2D>("npc1");
+            
             Texture = new Texture2D(manager.GetGraphicsDevice(), 64, 64);
             uint[] data = new uint[Texture.Width * Texture.Height];
             Color[] rainbow = GetGradients(Color.White, Color.Black, Texture.Height).ToArray();
@@ -32,7 +32,7 @@ namespace Legends.App.Global
             }
             
             Texture.SetData<uint>(data);
-            */
+            
         }
 
         public static IEnumerable<Color> GetGradients(Color start, Color end, int steps)

@@ -24,11 +24,11 @@ public class KeyboardListener : InputListener
 
     public int RepeatDelay { get; }
 
-    public event EventHandler<KeyboardEventArgs> KeyTyped;
+    public event EventHandler<KeyboardEventArgs>? KeyTyped;
 
-    public event EventHandler<KeyboardEventArgs> KeyPressed;
+    public event EventHandler<KeyboardEventArgs>? KeyPressed;
 
-    public event EventHandler<KeyboardEventArgs> KeyReleased;
+    public event EventHandler<KeyboardEventArgs>? KeyReleased;
 
     public KeyboardListener()
         : this(new KeyboardListenerSettings())

@@ -3,8 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SlyEngine.Graphics.Collections;
 
-namespace SlyEngine.Graphics
-{
+namespace SlyEngine.Graphics;
+    /*
     public class Canvas2D
     {
         public Game Game { get; private set; }
@@ -62,4 +62,4 @@ namespace SlyEngine.Graphics
             _drawableListIndex.RemoveAt(index);
         }
     }
-}
+    */

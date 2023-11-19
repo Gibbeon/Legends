@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Legends.App.Screens;
-
+/*
     public interface IValueAnimator : IUpdate
     {
         public float ElapsedTime        { get; }     
@@ -242,6 +242,7 @@ namespace Legends.App.Screens;
 
             }, MathHelper.Lerp);
             */
+            /*
 
             Keyframe<Rectangle>[] list = {
                 new Keyframe<Rectangle>() { Duration = 0.5f, Value = new Rectangle(new Point(26 * 0, 0), (Point)_entity.Spatial.Size ) },
@@ -311,3 +312,5 @@ namespace Legends.App.Screens;
             _canvas.Update(gameTime);   
         }
     }
+
+    */
