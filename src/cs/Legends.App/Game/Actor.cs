@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Dynamic;
-using Legends.App.Graphics;
+using SlyEngine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 

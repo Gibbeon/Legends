@@ -1,3 +1,4 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"c:/dev/Legends/src/cs/Legends.App/Content/npc1.png","c:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/npc1.xnb","TextureProcessor","Texture2DContent",49241,359509,0.0741554
-"c:/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png","c:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Sensation_0.xnb","TextureProcessor","Texture2DContent",11318,131157,0.0020691
+"C:/dev/Legends/src/cs/Legends.App/Content/npc1.png","C:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/npc1.xnb","TextureProcessor","Texture2DContent",49241,359509,0.1090298
+"C:/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png","C:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Sensation_0.xnb","TextureProcessor","Texture2DContent",11318,131157,0.0022244
+"C:/dev/Legends/src/cs/Legends.App/Content/Sensation.fnt","C:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Sensation.xnb","BitmapFontProcessor","BitmapFontProcessorResult",36212,10059,0.016711

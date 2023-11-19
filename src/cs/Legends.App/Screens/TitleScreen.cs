@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Input;
-using Legends.App.Input;
+using SlyEngine.Input;
 
 namespace Legends.App.Screens
 {

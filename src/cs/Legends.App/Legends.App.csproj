@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Legends.Content.Pipeline\Legends.Content.Pipeline.csproj" />
+    <ProjectReference Include="..\SlyEngine\SlyEngine.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
