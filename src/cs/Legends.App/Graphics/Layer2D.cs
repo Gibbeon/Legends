@@ -114,9 +114,11 @@ namespace Legends.App.Graphics
 
             IEffectMatrices? effect = (Effect as IEffectMatrices);
 
-            effect.View = camera.View;
-            effect.Projection = camera.Projection;
-            effect.World =  Matrix.Identity;
+            effect.View         = camera.View;
+            //effect.View         = Matrix.Identity; //camera.View;
+            effect.Projection   = camera.Projection;
+            //effect.Projection   = Matrix.Identity; //camera.View;
+            effect.World        = Matrix.Identity;
             
             var spriteBatch = new SpriteBatch(Canvas.Game.GraphicsDevice);
 

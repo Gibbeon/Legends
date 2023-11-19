@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Legends.App", "./src/cs/Legends.App/Legends.App.csproj", "{DE5B3EF9-2A20-4CF3-994C-B86D57D7705F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7550}") = "Legends.Content.Pipeline", "./src/cs/Legends.Content.Pipeline/Legends.Content.Pipeline.csproj", "{DE5B3EF9-2A20-4CF3-994C-B86D57D7706F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DE5B3EF9-2A20-4CF3-994C-B86D57D7705F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE5B3EF9-2A20-4CF3-994C-B86D57D7705F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE5B3EF9-2A20-4CF3-994C-B86D57D7705F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE5B3EF9-2A20-4CF3-994C-B86D57D7706F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE5B3EF9-2A20-4CF3-994C-B86D57D7706F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE5B3EF9-2A20-4CF3-994C-B86D57D7706F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE5B3EF9-2A20-4CF3-994C-B86D57D7706F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -23,3 +29,5 @@ Global
 		SolutionGuid = {DED6EF51-4527-401B-B8CD-8372B105A7E5}
 	EndGlobalSection
 EndGlobal
+
+

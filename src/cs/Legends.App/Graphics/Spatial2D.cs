@@ -10,17 +10,17 @@ namespace Legends.App.Graphics
         public Vector2 Position     { get => _position; set => SetPosition(value); }
         public Vector2 Scale        { get => _scale; set => SetScale(value); }
         public float Rotation       { get => _rotation; set => SetRotation(value); }        
-        public Size2 OrigionalSize  { get; set; }
+        public Size2 Size  { get; set; }
 
         public Matrix LocalWorldMatrix
         {
             get => GetLocalMatrix();
-            private set => _globalMatrix = value;
+            private set => _localMatrix = value;
         }
         public Matrix GlobalWorldMatrix
         {
             get => GetGlobalMatrix();
-            private set => _localMatrix = value;
+            private set => _globalMatrix = value;
         }
 
         protected float _rotation;        
@@ -34,10 +34,7 @@ namespace Legends.App.Graphics
             get;
             protected set;
         }
-        public Size2 Size
-        {
-            get { return new Size2(OrigionalSize.Width * Scale.X, OrigionalSize.Height * Scale.Y); }
-        }
+
         public Vector2 OriginNormalized
         {
             get
@@ -57,7 +54,7 @@ namespace Legends.App.Graphics
         }
         public Spatial2D(Size2 size) : this()
         {            
-            OrigionalSize = size;
+            Size = size;
         }
         public void Move(float x, float y)
         {
@@ -178,7 +175,7 @@ namespace Legends.App.Graphics
                 point += Position;
             }
 
-            var rect = new RectangleF((Position - ((Vector2)OrigionalSize - Origin) * Scale), (Vector2)OrigionalSize * Scale);
+            var rect = new RectangleF((Position - ((Vector2)Origin) * Scale), (Vector2)Size * Scale);
 
             return  point.X     >= rect.Left
                     && point.X  <= rect.Right 

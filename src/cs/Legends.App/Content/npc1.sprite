@@ -1,0 +1,6 @@
+{
+    Name: "Npc1",
+    Spatial: {
+        Position: "1, 1"
+    }
+}

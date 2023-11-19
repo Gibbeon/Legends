@@ -11,13 +11,26 @@
 #-------------------------------- References --------------------------------#
 
 /reference:/dev/.nuget/packages/monogame.extended.content.pipeline/3.8.0/tools/MonoGame.Extended.Content.Pipeline.dll
+/reference:./../bin/Debug/net6.0/Legends.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Sensation.fnt
-/importer:BitmapFontImporter
-/processor:BitmapFontProcessor
-/build:Sensation.fnt
+#begin npc1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:npc1.png
+
+#begin npc1.sprite
+#/importer:SpriteDataImporter
+#/processor:SpriteDataProcessor
+#/build:npc1.sprite
 
 #begin Sensation_0.png
 /importer:TextureImporter
@@ -30,4 +43,9 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sensation_0.png
+
+#begin Sensation.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:Sensation.fnt
 

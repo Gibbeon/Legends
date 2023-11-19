@@ -113,7 +113,7 @@ namespace Legends.App.Graphics
 
         private Matrix GetVirtualViewMatrix(Vector2 parallaxFactor)
         {
-            return Spatial.GlobalWorldMatrix; // remove position, adjust origion, rotate aroung origin, add origion, add position == 0
+            return Spatial.LocalWorldMatrix; // remove position, adjust origion, rotate aroung origin, add origion, add position == 0
         }
 
         private Matrix GetVirtualViewMatrix()

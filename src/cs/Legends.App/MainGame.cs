@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Legends.Content.Pipline;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Screens;
@@ -36,6 +38,9 @@ public class MainGame : Game
 
         Global.Fonts.LoadContent(this.Content);
         Global.Defaults.LoadContent(this.Content);
+
+        //var value = Content.Load<SpriteData>("npc1");
+        //Console.WriteLine(value.Spatial.Position);
     }
 
     protected override void Update(GameTime gameTime)

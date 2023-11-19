@@ -15,41 +15,18 @@ namespace Legends.App.Graphics
     {
         public Texture2D Texture;
 
-        public Rectangle Bounds
-        {
-            get 
-            {
-                return new Rectangle(Offset.ToPoint(), (Point)FrameSize);
-            }
-        }
-
-        public int FrameCount
-        {
-            get; private set;
-        }
-
-        public Vector2 Offset
-        {
-            get; private set;
-        }
-
-        public Size2 FrameSize
-        {
-            get; private set;
-        }
+        public Rectangle Bounds;
 
         public TextureView2D(Texture2D texture)
         {
             Texture = texture;
-            FrameSize = new Size2(texture.Width, texture.Height);
-            FrameCount = 0;
-            Offset = Vector2.Zero;
+            Bounds = new Rectangle(0, 0, texture.Width, texture.Height);
         }
     }
 
     public class Material2D
     {
-        public TextureView2D ColorMap { get; set; }
+        public TextureView2D ColorMap;
         public SpriteEffects Effects { get; set; }
         public Color AmbientColor { get; set; }
 
@@ -81,15 +58,25 @@ namespace Legends.App.Graphics
         {
             _game = game; 
             Material = new Material2D();
-            Spatial = new Spatial2D(new Size2(128, 128)); 
+            Spatial = new Spatial2D(); 
         }
 
         public void DrawBatched(SpriteBatch batch, GameTime gameTime)
-        {           
+        { 
+            //BUG: When Source(texture) Size is Different than Destination Size, The Origin translates things oddly
+           // var ratioX = Material.ColorMap.Bounds.Width     / Spatial.Size.Width;
+            //var ratioY = Material.ColorMap.Bounds.Height    / Spatial.Size.Height;
+
+            //Vector2 posAdj = new Vector2(Spatial.Origin.X / ratioX, Spatial.Origin.Y / ratioY);
+            //new Rectangle((Spatial.Position + posAdj - Spatial.Origin).ToPoint(), (Point)Spatial.Size) <-- this undoes it but then doesn't work with rotation axis
+               
+            // so instead I bounded the texture map to the size. I don't love this
+
             batch.Draw(
                 Material.ColorMap.Texture,
-                new Rectangle(Spatial.Position.ToPoint(), (Point)Spatial.Size),
-                Material.ColorMap.Bounds,
+                new Rectangle((Spatial.Position).ToPoint(), (Point)Spatial.Size),
+                new Rectangle(Material.ColorMap.Bounds.Location, 
+                    new Point((int)MathF.Min(Material.ColorMap.Bounds.Size.X, Spatial.Size.Width),(int)MathF.Min(Material.ColorMap.Bounds.Size.Y, Spatial.Size.Height))),
                 Material.AmbientColor,
                 Spatial.Rotation,
                 Spatial.Origin,
