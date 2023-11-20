@@ -23,6 +23,11 @@ public class SpatialNode : Spatial
 
     }
 
+    public SpatialNode(SpatialNode parent) : this(new SpatialNodeDesc())
+    {
+        parent.Attach(this);
+    }
+
     public SpatialNode(SpatialNodeDesc data) : base(data)
     {
         _children = new List<Spatial>();

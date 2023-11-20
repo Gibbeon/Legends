@@ -5,67 +5,64 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using MonoGame.Extended;
 using MonoGame.Extended.Screens;
-using System.Collections;
+using SlyEngine.Graphics2D;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.Xna.Framework.Audio;
+using System.Linq;
 
 namespace Legends.App;
 
 
-public abstract class Ref
-{
-    private int _ref;
-    public void AddRef() { _ref++; }
-    public void RemoveRef() { _ref--; }
-    public abstract Type GetRefType();
-}
-
-public class Ref<TType> : Ref
-{
-    private TType _value;
-
-    public static implicit operator TType(Ref<TType> value)
-    {
-        return value._value;
-    }
-
-    public Ref(TType value)
-    {
-        _value = value;
-    }
-
-    public override Type GetRefType()
-    {
-    return typeof(TType);
-    }
-}
-
-
-public class DynamicContentManager : ContentManager
-{
-    IList<Ref> _references;
-
-    public DynamicContentManager(IServiceProvider serviceProvider): base(serviceProvider)
-    {
-        _references = new List<Ref>();
-    }
-
-    public Ref<TType> LoadRef<TType>(string name)
-    { 
-        var item = new Ref<TType>(base.Load<TType>(name));
-        _references.Add(item);
-        return item;
-    }
-}
 
 public class MainGame : Game
 {
+    /*
+    void Do()
+    {
+        var _sprite = new Sprite();
+
+        _sprite.Animator.Play(1, "sparkle_shower").Loop();
+
+        if(true) // input left
+        {
+            _sprite.Move(new Vector2(-1, 0));
+            _sprite.Animator.Play(0, "walk_left").Loop();
+        }
+
+        if(true) // input running left
+        {
+            _sprite.Move(new Vector2(-2,0));
+            _sprite.Animator.Play(0, "run_left").AtSpeed(2).Loop();
+        }
+
+        if(true) // else is idling
+        {
+            _sprite.Animator.Play(0, "idle_left").Loop();
+        }
+    }
+    */
+
+    void OnMessage(object sender, EventArgs args)
+    {
+        switch(sender.ToString())
+        {
+            case "footstep":
+                //AudioEmitter play sound footstep
+                //PartialEmitter make footprint (check orientation)
+                break;
+            case "sparkle_shower":
+                //ParticleEmitter play a particle shower
+                break;
+        }
+        
+    }
     private GraphicsDeviceManager _graphics;
     private ScreenManager _screenManager;
     
     public MainGame()
     {
         _graphics = new GraphicsDeviceManager(this);
-        Content = new DynamicContentManager(this.Services);
         _screenManager = new ScreenManager();
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
@@ -84,7 +81,7 @@ public class MainGame : Game
     {
         _screenManager.LoadScreen(new Screens.TitleScreen(this));
 
-        Global.Fonts.LoadContent(this.Content as DynamicContentManager);
+        Global.Fonts.LoadContent(this.Content);
         Global.Defaults.LoadContent(this.Content);
 
         //var value = Content.Load<SpriteData>("npc1");

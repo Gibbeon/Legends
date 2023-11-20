@@ -67,11 +67,11 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     {
         Move(new Vector2(x, y));
     }     
-    public void Move(Vector2 direction)
+    public virtual void Move(Vector2 direction)
     {
         Position += direction;//Vector2.Transform(direction, Matrix.CreateRotationZ(0f - Rotation));
     }
-    public void Rotate(float deltaRadians)
+    public virtual void Rotate(float deltaRadians)
     {
         Rotation += deltaRadians;
     }
