@@ -13,11 +13,11 @@ namespace Legends.App.Screens
 {
     public class TitleScreen : Screen
     {
-        private Game _game;
+        private Microsoft.Xna.Framework.Game _game;
         private SpriteBatch _spriteBatch;
         private InputManager _input;
 
-        public TitleScreen(Game game)
+        public TitleScreen(Microsoft.Xna.Framework.Game game)
         {
             _game = game;
             _spriteBatch = new SpriteBatch(_game.GraphicsDevice);

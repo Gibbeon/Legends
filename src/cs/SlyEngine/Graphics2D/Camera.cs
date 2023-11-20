@@ -1,11 +1,8 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using Autofac.Features.ResolveAnything;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
-using SlyEngine.Graphics2D;
 
 namespace SlyEngine.Graphics2D;
 
@@ -15,7 +12,7 @@ public struct BoundedValue<TType>
     public TType Minimum { get; set; }
     public TType Maximum { get; set; }
 
-    private bool _enabled;
+    private readonly bool _enabled;
 
     public BoundedValue(TType minimum, TType maximum)
     {
@@ -24,7 +21,7 @@ public struct BoundedValue<TType>
         _enabled = true;
     }
 
-    public TType Bound(TType newValue, TType oldValue)
+    public readonly TType GetValue(TType newValue)
     {
         if(_enabled && newValue.CompareTo(Minimum) <= 0) return Minimum;
         if(_enabled && newValue.CompareTo(Maximum) >= 0) return Maximum;
@@ -49,12 +46,12 @@ public class Camera : SpatialNode
     public Matrix Projection => _projection;
     public Matrix World => _world;
 
-    public Camera(GraphicsDevice graphicsDevice, CameraDesc data = default(CameraDesc))
+    public Camera(GraphicsDevice graphicsDevice, CameraDesc? data = default)
         : this(new DefaultViewportAdapter(graphicsDevice), data ?? new CameraDesc())
     {
     }
 
-    public Camera(ViewportAdapter viewportAdapter, CameraDesc data = default(CameraDesc)) : base(data)
+    public Camera(ViewportAdapter viewportAdapter, CameraDesc data) : base(data)
     {
         data = data ?? new CameraDesc();
 
@@ -77,8 +74,8 @@ public class Camera : SpatialNode
     {
         // apply bounds
         base.SetScale(new Vector2(
-            _zoomBounds.Bound(scale.X, Scale.X),
-            _zoomBounds.Bound(scale.Y, Scale.Y)
+            _zoomBounds.GetValue(scale.X),
+            _zoomBounds.GetValue(scale.Y)
         ));
 
         var adjustedSize = (Size2)(this.Size / (Scale));

@@ -13,9 +13,7 @@ using System.Linq;
 
 namespace Legends.App;
 
-
-
-public class MainGame : Game
+public class MainGame : Microsoft.Xna.Framework.Game
 {
     /*
     void Do()

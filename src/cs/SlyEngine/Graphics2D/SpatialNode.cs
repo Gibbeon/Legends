@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended;
 
 namespace SlyEngine.Graphics2D;
 public class SpatialNode : Spatial
@@ -11,11 +10,11 @@ public class SpatialNode : Spatial
 
     }
 
-    private List<Spatial> _children;
+    private readonly IList<Spatial> _children;
 
     public IReadOnlyList<Spatial> Children
     {
-        get => _children.AsReadOnly();
+        get => _children.ToList().AsReadOnly();
     }
 
     public SpatialNode() : this(new SpatialNodeDesc())
@@ -23,9 +22,9 @@ public class SpatialNode : Spatial
 
     }
 
-    public SpatialNode(SpatialNode parent) : this(new SpatialNodeDesc())
+    public SpatialNode(SpatialNode? parent) : this(new SpatialNodeDesc())
     {
-        parent.Attach(this);
+        parent?.Attach(this);
     }
 
     public SpatialNode(SpatialNodeDesc data) : base(data)
@@ -45,6 +44,7 @@ public class SpatialNode : Spatial
             }
         }   
     }
+
     public override void SetScale(Vector2 scale)
     {
         base.SetScale(scale);
@@ -57,6 +57,7 @@ public class SpatialNode : Spatial
             }
         }   
     }
+
     public override void SetRotation(float radians)
     {
         base.SetRotation(radians);
