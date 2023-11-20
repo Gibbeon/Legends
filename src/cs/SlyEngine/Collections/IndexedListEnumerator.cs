@@ -2,28 +2,25 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace SlyEngine.Graphics.Collections;
+namespace SlyEngine.Collections;
 
-public struct IndexedEnumerator<TType> : IEnumerator<TType>
+public struct IndexedListEnumerator<TType> : IEnumerator<TType>
 {
-    private IList<TType> _items;
-    private IList<int> _index;
-
+    private IndexedList<TType> _list;
     // Enumerators are positioned before the first element
     // until the first MoveNext() call.
     private int _current;
 
-    internal IndexedEnumerator(IList<TType> list, IList<int> index)
+    public IndexedListEnumerator(IndexedList<TType> list)
     {
-        _items = list;
-        _index = index;
+        _list = list;
         _current = -1;
     }
 
     public bool MoveNext()
     {
         _current++;
-        return (_current < _index.Count);
+        return (_current < _list.Count);
     }
 
     public void Reset()
@@ -48,7 +45,7 @@ public struct IndexedEnumerator<TType> : IEnumerator<TType>
     {
         get
         {
-            return _items[_index[_current]];
+            return _list[_current];
         }
     }
 }

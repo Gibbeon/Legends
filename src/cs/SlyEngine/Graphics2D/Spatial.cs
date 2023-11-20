@@ -15,26 +15,31 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         public Size2 Size;
     }
 
-    protected float     _rotation;        
-    protected Vector2   _position;        
-    protected Vector2   _scale;
-    protected Size2     _size;
-    protected Matrix    _localMatrix;
-    protected Vector2   _originNormalized;
-    public Vector2 Position     { get => _position; set => SetPosition(value); }
-    public Vector2 Scale        { get => _scale; set => SetScale(value); }
-    public float   Rotation     { get => _rotation; set => SetRotation(value); }   
-    public Size2   Size         { get => _size * _scale; set => SetSize(value); }
-    public Vector2 Origin       { get => _originNormalized * Size; set => _originNormalized = Size != Size2.Empty ? value / Size : Vector2.Zero; }
-    public Vector2 Center       { get => _position + Origin; }
-    public Vector2 OriginNormalized { get => _originNormalized; set => _originNormalized = value; }
-    public RectangleF BoundingRectangle  { get => new RectangleF(Position, Size); }
+    private float     _rotation;        
+    private Vector2   _position;        
+    private Vector2   _scale;
 
-    public Matrix LocalMatrix
-    {
-        get => GetLocalMatrix();
-        private set => _localMatrix = value;
-    }
+    private float     _offsetRotation;        
+    private Vector2   _offsetPosition;        
+    private Vector2   _offsetScale;
+
+    private Size2     _size;
+    private Matrix    _localMatrix;
+    private Vector2   _originNormalized;
+
+    internal float     OffsetRotation   { get => _offsetRotation; set => _offsetRotation = value;}     
+    internal Vector2   OffsetPosition   { get => _offsetPosition; set => _offsetPosition = value;}             
+    internal Vector2   OffsetScale      { get => _offsetScale; set => _offsetScale = value; }     
+
+    public Vector2 Position             { get => OffsetPosition + _position; set => SetPosition(value); }
+    public Vector2 Scale                { get => OffsetScale * _scale; set => SetScale(value); }
+    public float   Rotation             { get => OffsetRotation + _rotation; set => SetRotation(value); }   
+    public Size2   Size                 { get => _size * Scale; set => SetSize(value); }
+    public Vector2 Origin               { get => _originNormalized * Size; set => _originNormalized = Size != Size2.Empty ? value / Size : Vector2.Zero; }
+    public Vector2 Center               { get => Position + (Vector2)Size / 2; }
+    public Vector2 OriginNormalized     { get => _originNormalized; set => _originNormalized = value; }
+    public RectangleF BoundingRectangle { get => GetBoundingRectangle(); }
+    public Matrix LocalMatrix           => GetLocalMatrix();
 
     public bool HasChanged
     {
@@ -48,13 +53,15 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     }
     public Spatial(SpatialDesc data)
     {            
+        _offsetScale = Vector2.One;
+
         Position = data.Position;
         Rotation = data.Rotation;
         Scale    = data.Scale;
         Origin   = data.Origin;
         Size     = data.Size;
 
-        UpdateLocalMatrix();
+        UpdateMatrix();
     }
     public void Move(float x, float y)
     {
@@ -75,7 +82,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 
     public void Zoom(Vector2 zoom)
     {
-        Scale += zoom;
+        Scale *= zoom;
     }
 
     public virtual void SetPosition(Vector2 position)
@@ -98,21 +105,26 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         NeedToUpdate();
     }
 
+    public virtual void SetSize(float width, float height)
+    {
+        SetSize(new Size2(width, height));
+    }
+
     public virtual void SetSize(Size2 size)
     {
         var origin = OriginNormalized;
         _size = size;
         OriginNormalized = origin;
     }
-    internal virtual void UpdateLocalMatrix()
+    internal virtual void UpdateMatrix()
     {
         if (HasChanged)
         {
-            _localMatrix =Matrix.CreateTranslation(new Vector3(-Position, 0f))
-                * Matrix.CreateTranslation(new Vector3(-(Origin / Scale), 0f))
-                * Matrix.CreateRotationZ(Rotation)
-                * Matrix.CreateScale(new Vector3(Scale, 1f))
-                * Matrix.CreateTranslation(new Vector3((Origin / Scale), 0f));
+            _localMatrix = Matrix2.CreateTranslation(-Position)
+                * Matrix2.CreateTranslation(-(Origin / Scale))
+                * Matrix2.CreateRotationZ(Rotation)
+                * Matrix2.CreateScale(Scale)
+                * Matrix2.CreateTranslation((Origin / Scale));
 
             HasChanged = false;
         }
@@ -131,14 +143,14 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 
     public Vector2 TransformWorldToLocal(Vector2 point)
     {
-        Matrix inverse = Matrix.Invert(_localMatrix);
+        Matrix inverse = Matrix.Invert(LocalMatrix);
         Vector2.Transform(ref point, ref inverse, out point);
         return point;
     }
 
     public void TransformWorldToLocal(ref Vector2 worldPoint, out Vector2 localPoint)
     {
-        Matrix inverse = Matrix.Invert(_localMatrix);
+        Matrix inverse = Matrix.Invert(LocalMatrix);
         Vector2.Transform(ref worldPoint, ref inverse, out localPoint);
     }
 
@@ -149,8 +161,13 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 
     protected virtual Matrix GetLocalMatrix()
     {
-        UpdateLocalMatrix();
+        UpdateMatrix();
         return _localMatrix;
+    }
+
+    public virtual RectangleF GetBoundingRectangle()
+    {
+        return new RectangleF(Position - Origin, Size);
     }
 
     public bool Contains(Point2 point)

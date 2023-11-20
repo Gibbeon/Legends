@@ -30,42 +30,60 @@ public class SpatialNode : Spatial
 
     public override void SetPosition(Vector2 position)
     {
-        _children?.Select(n => n.Position += (position - Position));
-
         base.SetPosition(position);
+
+        if(_children != null)
+        {
+            foreach(var item in _children)
+            {
+                item.OffsetPosition = position;
+            }
+        }   
     }
     public override void SetScale(Vector2 scale)
     {
-        _children?.Select(n => n.Scale += (scale - Scale));
-
         base.SetScale(scale);
+
+        if(_children != null)
+        {
+            foreach(var item in _children)
+            {
+                item.OffsetScale = scale;
+            }
+        }   
     }
     public override void SetRotation(float radians)
     {
-        _children?.Select(n => n.Rotation += (radians - Rotation));
-
         base.SetRotation(radians);
+
+        if(_children != null)
+        {
+            foreach(var item in _children)
+            {
+                item.OffsetRotation = radians;
+            }
+        }   
     }
 
-    public void Add(Spatial node, bool relative = false)
+    public void Attach(Spatial node, bool relative = false)
     {
         if(relative)
         {
-            node.Position   += this.Position;
-            node.Rotation   += this.Rotation;
-            node.Scale      += this.Scale;
+            node.OffsetPosition   = this.Position;
+            node.OffsetRotation   = this.Rotation;
+            node.OffsetScale      = this.Scale;
         }
 
         _children.Add(node);
     }
 
-    public void Remove(Spatial node, bool relative = false)
+    public void Detach(Spatial node, bool relative = false)
     {
         if(relative)
         {
-            node.Position   -= this.Position;
-            node.Rotation   -= this.Rotation;
-            node.Scale      -= this.Scale;
+            node.OffsetPosition   = this.Position;
+            node.OffsetRotation   = this.Rotation;
+            node.OffsetScale      = this.Scale;
         }
 
         _children.Remove(node);

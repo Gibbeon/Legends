@@ -10,11 +10,11 @@ namespace Legends.App.Global
 {
     public static class Fonts
     {
-        public static BitmapFont? Menu;
+        public static Ref<BitmapFont>? Menu;
 
-        public static void LoadContent(ContentManager manager)
+        public static void LoadContent(DynamicContentManager manager)
         {
-            //Menu = manager.Load<BitmapFont>("Sensation");
+            Menu = manager.LoadRef<BitmapFont>("Sensation");
         }
     }
 }

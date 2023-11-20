@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.BitmapFonts;
-using SlyEngine.Graphics;
 using SlyEngine.Input;
 using MonoGame.Extended.Input.InputListeners;
 using Microsoft.Xna.Framework.Graphics;

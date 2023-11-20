@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace SlyEngine.Graphics.Collections;
+
+/*
 public class DrawableOrderComparer : IComparer<IDrawable>
 {
     public static DrawableOrderComparer Default = new DrawableOrderComparer();
@@ -15,4 +17,5 @@ public class DrawableOrderComparer : IComparer<IDrawable>
 
         return a.DrawOrder.CompareTo(b.DrawOrder);
     }
-}    
+}  
+*/  

@@ -7,7 +7,7 @@ using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
 using SlyEngine.Graphics2D;
 
-namespace SlyEngine.Graphics;
+namespace SlyEngine.Graphics2D;
 
 public struct BoundedValue<TType>
     where TType : IComparable<TType>
@@ -43,10 +43,11 @@ public class Camera : SpatialNode
 
     protected BoundedValue<float> _zoomBounds;
     protected Matrix _projection;
+    protected Matrix _world;
     public BoundedValue<float> ZoomBounds => _zoomBounds;
     public Matrix View => LocalMatrix;
     public Matrix Projection => _projection;
-    public Matrix World => Matrix.Identity;
+    public Matrix World => _world;
 
     public Camera(GraphicsDevice graphicsDevice, CameraDesc data = default(CameraDesc))
         : this(new DefaultViewportAdapter(graphicsDevice), data ?? new CameraDesc())
@@ -57,7 +58,7 @@ public class Camera : SpatialNode
     {
         data = data ?? new CameraDesc();
 
-        _zoomBounds = new BoundedValue<float>(data.MinimumZoom, data.MinimumZoom);
+        _zoomBounds = new BoundedValue<float>(data.MinimumZoom, data.MaximumZoom);
         Size = new Vector2(viewportAdapter.VirtualWidth, viewportAdapter.VirtualHeight);
         OriginNormalized = new Vector2(.5f, .5f);
 
@@ -67,7 +68,8 @@ public class Camera : SpatialNode
     public override void SetSize(Size2 size)
     {
         base.SetSize(size);
-
+        
+        _world      = Matrix.CreateTranslation(Size.Width / 2, Size.Height / 2, 0.0f);
         _projection = Matrix.CreateOrthographicOffCenter(0f, Size.Width, Size.Height, 0f, -1f, 0f);
     }
 
@@ -78,11 +80,21 @@ public class Camera : SpatialNode
             _zoomBounds.Bound(scale.X, Scale.X),
             _zoomBounds.Bound(scale.Y, Scale.Y)
         ));
+
+        var adjustedSize = (Size2)(this.Size / (Scale));
+
+        _world = Matrix.CreateTranslation(adjustedSize.Width / 2, adjustedSize.Height / 2, 0.0f);
+        _projection = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
     }
 
     public void LookAt(Vector2 vector)
     {
-        Position = vector - Origin;
+        Position = vector;
+    }
+
+    public override RectangleF GetBoundingRectangle()
+    {
+        return new RectangleF(Position -(Origin / (Scale * Scale)), Size / (Scale * Scale));
     }
 }
 

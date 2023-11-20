@@ -2,17 +2,20 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace SlyEngine.Graphics.Collections;
-public abstract class BaseListIndex<TType> : IList<TType>, IReadOnlyList<TType>
+namespace SlyEngine.Collections;
+public class IndexedList<TType> : IList<TType>, IReadOnlyList<TType>
 {
-    protected List<TType> _list;
-    protected List<int> _index;
-    protected IComparer<int>? _comparer;
+    protected List<TType>      _list;
+    protected List<int>        _index;
+    
     public TType this[int index]
     {
         get => GetValue(index);
         set => SetValue(index, value);
     }
+
+    public IReadOnlyList<TType> Items { get => _list.AsReadOnly(); }
+    public IReadOnlyList<int>   Index { get => _index.AsReadOnly(); }
 
     public int Count
     {
@@ -24,9 +27,20 @@ public abstract class BaseListIndex<TType> : IList<TType>, IReadOnlyList<TType>
         get => (_index as ICollection<int>).IsReadOnly;
     }
 
-    public abstract void SetValue(int index, TType value);
-    protected abstract void AddOnChangeEvent(TType item);
-    protected abstract void RemoveOnChangeEvent(TType item);
+    public IndexedList() : this(new List<TType>())
+    {
+
+    }
+    
+    public IndexedList(IList<TType> list)
+    {
+        _list = list.ToList();
+        _index = new List<int>();
+
+        if(list.Count > 0) {
+            _index.AddRange(Enumerable.Range(0, list.Count));
+        }
+    }
 
     public virtual void Add(TType item)
     {
@@ -37,27 +51,34 @@ public abstract class BaseListIndex<TType> : IList<TType>, IReadOnlyList<TType>
             index = _list.Count;
             _list.Add(item);
         }
-                        
-        AddOnChangeEvent(item);
 
         _index.Add(index);
-        OrderHasChanged = true;
     }
 
     public virtual void RemoveAt(int itemIndex)
     {
-        if (itemIndex < 0) return;
-        
-        RemoveIndexOnlyAt(itemIndex);
-                    
-        RemoveOnChangeEvent(_list[itemIndex]);    
-        _list.RemoveAt(itemIndex);
+        if(itemIndex < 0) return;
+        _index.RemoveAt(itemIndex); //creates orphins
     }
 
     public TType GetValue(int index)
     {
         return _list[_index[index]];
     }
+
+    public void SetValue(int index, TType item)
+    {
+        var itemIndex = _list.IndexOf(item);
+        
+        if (itemIndex < 0)
+        {
+            itemIndex = _list.Count;
+            _list.Add(item);
+        }
+
+        _index[index] = itemIndex;
+    }
+
     public int IndexOf(TType item)
     {
         return _list.IndexOf(item);
@@ -68,13 +89,9 @@ public abstract class BaseListIndex<TType> : IList<TType>, IReadOnlyList<TType>
         Add(item);
     }
 
-    public bool OrderHasChanged
-    {
-        get;
-        protected set;
-    }
     public void Clear()
     {
+        _list.Clear();
         _index.Clear();
     }
     public bool Contains(TType item)
@@ -121,15 +138,6 @@ public abstract class BaseListIndex<TType> : IList<TType>, IReadOnlyList<TType>
         return count;
     }
 
-    public bool RemoveIndexOnlyAt(int itemIndex)
-    {
-        if (itemIndex < 0) return false;
-        
-        _index.RemoveAll((int value)=> { return value == itemIndex; });
-        ShiftLeft(itemIndex);
-        return true;
-    }
-
     public void ShiftLeft(int index, int count = 1) {
         for(var i = 0; i < _index.Count; i++) {
             if(_index[i] > index) {
@@ -147,8 +155,7 @@ public abstract class BaseListIndex<TType> : IList<TType>, IReadOnlyList<TType>
 
     public IEnumerator<TType> GetEnumerator()
     {
-        Update();
-        return new IndexedEnumerator<TType>(_list, _index);
+        return new IndexedListEnumerator<TType>(this);
     }
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
     {
@@ -156,35 +163,11 @@ public abstract class BaseListIndex<TType> : IList<TType>, IReadOnlyList<TType>
     }
     public void CopyTo(TType[] array, int arrayIndex)
     {
-        // should this be ordered copy? probably
-        //_list.CopyTo(array, arrayIndex);
-
         foreach (var item in this)
         {
             array[arrayIndex] = item;
             arrayIndex++;
         }
     }
-    protected void OnOrderHasChanged(object? sender = null, EventArgs? args = null)
-    {
-        OrderHasChanged = true;
-    }
-    public BaseListIndex(List<TType> list)
-    {
-        _list = list;
-        _index = new List<int>();
 
-        if(list.Count > 0) {
-            _index.AddRange(Enumerable.Range(0, list.Count));
-            OrderHasChanged = true;
-        }
-    }
-    public void Update()
-    {
-        if (OrderHasChanged)
-        {
-            _index.Sort(_comparer);
-            OrderHasChanged = false;
-        }
-    }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace SlyEngine.Graphics.Collections;
+
+/*
 public class DrawableListIndex<TType> : BaseListIndex<TType>
     where TType : IDrawable
 {
@@ -65,3 +67,4 @@ public class DrawableListIndex<TType> : BaseListIndex<TType>
         }
     }
 }
+*/

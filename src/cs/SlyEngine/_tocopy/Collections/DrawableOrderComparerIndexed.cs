@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace SlyEngine.Graphics.Collections;
+
+/*
 public class DrawableOrderComparerIndexed<TType> : IComparer<int>
 where TType : IDrawable
 {
@@ -17,3 +19,4 @@ where TType : IDrawable
         return _array[a].DrawOrder.CompareTo(_array[b].DrawOrder);
     }
 }
+*/
