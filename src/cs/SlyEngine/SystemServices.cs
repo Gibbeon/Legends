@@ -6,6 +6,8 @@ using MonoGame.Extended.Sprites;
 using System;
 using System.Net.Http.Headers;
 using System.Xml.Linq;
+using MonoGame.Extended;
+using MonoGame.Framework.Utilities;
 
 namespace SlyEngine;
 
@@ -139,14 +141,25 @@ public class SpriteRenderService
 }
 
 
-public class SystemServices : Microsoft.Xna.Framework.GameServiceContainer
+public class SystemServices: IUpdate
 {
     private Game _game;
-    public GraphicsDevice GraphicsDevice => GetService<IGraphicsDeviceService>().GraphicsDevice;
+
+    public GraphicsDevice GraphicsDevice => _game.Services.GetService<IGraphicsDeviceService>().GraphicsDevice;
+
     public SystemServices(Game game)
     {
         _game = game;
-        AddService<IGraphicsDeviceService>(new GraphicsDeviceManager(game));
-        AddService<SpriteRenderService>(new SpriteRenderService(this));
+        _game.Services.AddService<SpriteRenderService>(new SpriteRenderService(this));
+    }
+
+    public void Update(GameTime gameTime)
+    {
+        
+    }
+
+    public void Draw(GameTime gameTime)
+    {
+        _game.Services.GetService<SpriteRenderService>().Draw(gameTime);
     }
 }

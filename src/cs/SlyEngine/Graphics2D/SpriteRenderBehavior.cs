@@ -1,32 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using MonoGame.Extended;
+﻿using Microsoft.Xna.Framework;
 using SlyEngine.Graphics2D;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.TextureAtlases;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace SlyEngine;
+namespace SlyEngine.Graphics2D;
 
-public interface IBehavior : IUpdate
-{
-    GameObject Parent { get; }
-}
-
-public abstract class GenericBehavior : IBehavior
-{
-    public GameObject Parent { get; private set; }
-
-    public GenericBehavior(GameObject parent)
-    {
-        Parent = parent;
-    }
-    public abstract void Update(GameTime gameTime);
-}
-
-public class SpriteRenderBehavior : GenericBehavior, ISpriteBatchDrawable
+public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 {
     public TextureRegion2D? TextureRegion { get; set; }
 
@@ -46,6 +26,7 @@ public class SpriteRenderBehavior : GenericBehavior, ISpriteBatchDrawable
 
     public override void Update(GameTime gameTime)
     {
+        
     }
     
     public SpriteRenderBehavior(GameObject parent) : base(parent)

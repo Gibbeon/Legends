@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using SlyEngine;
+using SlyEngine.Animation;
 using SlyEngine.Graphics2D;
 using SlyEngine.Resolvers;
 
@@ -9,7 +10,6 @@ public class Actor : GameObject
 {
     public Vector2 Facing;
     public float Speed;
-    
     ValueResolver<string, Actor> _resolver;
 
     public Actor(SystemServices services) : base(services)
@@ -21,12 +21,15 @@ public class Actor : GameObject
         _resolver.Add("walk", (actor) => { return actor.Facing == DirectionConstants.Right; }, "walk_right");
         _resolver.Add("walk", (actor) => { return actor.Facing == DirectionConstants.Up; }, "walk_up");
         _resolver.Add("walk", (actor) => { return actor.Facing == DirectionConstants.Down; }, "walk_left");
+
+        AttachBehavior(new SpriteRenderBehavior(this));
+        AttachBehavior(new AnimationBehavior(this));
     }
 
     public override void Move(Vector2 direction)
     {
         Facing = DirectionConstants.GetNearestFacing(direction);
-        //Body.Animation.Play(0, _resolver.Resolve("walk", this)).AtSpeed(Speed);
+        GetBehavior<AnimationBehavior>().Play(0, _resolver.Resolve("walk", this)).AtSpeed(Speed);
 
         base.Move(Facing * Speed);
     }

@@ -5,9 +5,10 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 
 namespace SlyEngine.Graphics2D;
-public class GameObject : Spatial, IDisposable
+public class GameObject : Spatial, IDisposable, IUpdate
 {   
     public class GameObjectDesc : SpatialDesc
     {
@@ -59,10 +60,10 @@ public class GameObject : Spatial, IDisposable
         _tags = new List<string>();
     }
 
-    public TType? GetBehavior<TType>()
+    public TType GetBehavior<TType>()
         where TType: class
     {
-        return _behaviors.SingleOrDefault(n => n.GetType() == typeof(TType)) as TType;
+        return _behaviors.OfType<TType>().Single();
     } 
 
     public override void SetPosition(Vector2 position)
@@ -123,6 +124,17 @@ public class GameObject : Spatial, IDisposable
         Parent = null;
     }
 
+    public void AttachBehavior(IBehavior behavior)
+    {
+        _behaviors.Add(behavior);
+    }
+
+    public void DetachBehavior<TType>()
+        where TType : IBehavior
+    {
+        _behaviors.Remove(_behaviors.OfType<TType>().Single());
+    }
+
     public void AttachChild(GameObject node, bool relative = false)
     {
         if(!_children.Contains(node))
@@ -157,5 +169,18 @@ public class GameObject : Spatial, IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
+    }
+
+    public void Update(GameTime gameTime)
+    {
+        foreach(var behavior in Behaviors)
+        {
+            behavior.Update(gameTime);
+        }
+        
+        foreach(var child in Children)
+        {
+            child.Update(gameTime);
+        }
     }
 }  
