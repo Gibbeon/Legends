@@ -30,9 +30,9 @@ public struct BoundedValue<TType>
     }
 }
 
-public class Camera : SpatialNode
+public class Camera : GameObject
 {
-    public class CameraDesc : SpatialNodeDesc
+    public class CameraDesc : GameObjectDesc
     {
         public float MinimumZoom = float.Epsilon;
         public float MaximumZoom = float.MaxValue;
@@ -46,12 +46,12 @@ public class Camera : SpatialNode
     public Matrix Projection => _projection;
     public Matrix World => _world;
 
-    public Camera(GraphicsDevice graphicsDevice, CameraDesc? data = default)
-        : this(new DefaultViewportAdapter(graphicsDevice), data ?? new CameraDesc())
+    public Camera(SystemServices services, CameraDesc? data = default)
+        : this(services, new DefaultViewportAdapter(services.GraphicsDevice), data ?? new CameraDesc())
     {
     }
 
-    public Camera(ViewportAdapter viewportAdapter, CameraDesc data) : base(data)
+    public Camera(SystemServices services, ViewportAdapter viewportAdapter, CameraDesc data) : base(services, data)
     {
         data = data ?? new CameraDesc();
 
