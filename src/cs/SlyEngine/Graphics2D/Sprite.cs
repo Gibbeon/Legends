@@ -3,14 +3,41 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using SlyEngine.Animation;
 
-namespace SlyEngine.Graphics2D;
+namespace SlyEngine;
 
-public class Sprite : SpatialNode
+public interface IBehavior : IUpdate, IDraw
 {
-    public AnimationController Animation;
-    //public ParticleEmitter Particles;
+    GameObject Parent { get; }
+
+    public void Attach(GameObject gameObject);
+    void Detatch();
+    IBehavior Clone();
+}
+
+
+public SpriteRenderBehavior : IBehavior
+{
+    Texture2D _texture;
+
+    public void Update(GameTime gameTime)
+    {
+
+    }
+
+    public void Draw(GameTime gameTime)
+    {
+        SpriteBatch _spriteBatch(GraphicsDevice);
+        _spriteBatch.Begin();
+        _spriteBatch.DrawRectangle(Parent.Bounds, Colors.Red);
+        _spriteBatch.End();
+    }
+}
+
+
+public class GameObject : SpatialNode
+{
+    IList<IBehavior> _behaviors;
 
     public Sprite() : this(null)
     {
@@ -18,6 +45,6 @@ public class Sprite : SpatialNode
     }
     public Sprite(SpatialNode? parent) : base(parent)
     {
-        Animation = new AnimationController();
+
     }
 }
