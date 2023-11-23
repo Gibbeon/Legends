@@ -20,6 +20,7 @@ public class Actor : GameObject
 
         Size = new MonoGame.Extended.Size2(24, 26);
         _resolver = new ValueResolver<string, Actor>();
+        
         _resolver.Add("walk", (actor) => { return actor.Facing == DirectionConstants.Left; }, "walk_left");
         _resolver.Add("walk", (actor) => { return actor.Facing == DirectionConstants.Right; }, "walk_right");
         _resolver.Add("walk", (actor) => { return actor.Facing == DirectionConstants.Up; }, "walk_up");

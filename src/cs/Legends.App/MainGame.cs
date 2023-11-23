@@ -9,14 +9,14 @@ public class MainGame : Microsoft.Xna.Framework.Game
 {
     private SystemServices _services;
     private GraphicsDeviceService _graphicsDeviceManager;
-    private SpriteRenderService _spriteRenderService;
+    private RenderService _spriteRenderService;
     private ScreenManager _screenManager;
     
     public MainGame()
     {
         _services = new SystemServices(this);
         _graphicsDeviceManager  = new GraphicsDeviceService(_services);        
-        _spriteRenderService    = new SpriteRenderService(_services);
+        _spriteRenderService    = new RenderService(_services);
 
         _screenManager = new ScreenManager();
         Content.RootDirectory = "Content";
@@ -49,6 +49,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
     protected override void Draw(GameTime gameTime)
     {
         _screenManager.Draw(gameTime);
+        _spriteRenderService.Draw(gameTime);
 
         base.Draw(gameTime);
     }

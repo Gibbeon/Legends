@@ -4,6 +4,7 @@ using MonoGame.Extended.Sprites;
 using MonoGame.Extended.TextureAtlases;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using System.Net.Http;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -25,13 +26,15 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public string Text {get; set; }
 
-    public BitmapFont SourceData {get; set; }
+    public BitmapFont SourceData => Font;
+
+    public BitmapFont Font { get; set; }
 
     public Rectangle SourceBounds => new Rectangle(Position.ToPoint(), (Point)SourceData.MeasureString(Text));
 
     public override void Update(GameTime gameTime)
     {
-        Parent.Services.GetService<SpriteRenderService>().Current.Layers[0].Drawables.Add(this);        
+        Parent.Services.GetService<IRenderService>().DrawBatched(this);        
     }
     
     public TextRenderBehavior(GameObject parent) : base(parent)

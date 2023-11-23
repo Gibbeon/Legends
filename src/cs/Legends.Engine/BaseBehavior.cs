@@ -19,4 +19,9 @@ public abstract class BaseBehavior : IBehavior
         Parent = parent;
     }
     public abstract void Update(GameTime gameTime);
+    
+    public virtual void Dispose()
+    {
+
+    }
 }

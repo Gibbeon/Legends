@@ -20,6 +20,8 @@ namespace Legends.App.Screens;
 
  public class MapScreen : Screen
 {
+
+    private Legends.Engine.Graphics2D.Camera _camera;
     private Legends.App.Actor _entity;
 
     private SystemServices _services;
@@ -29,13 +31,16 @@ namespace Legends.App.Screens;
     public MapScreen(SystemServices services)
     {
         _services = services;
+        _camera = new Camera(services); 
+        services.GetService<IRenderService>().Camera = _camera;     
         _entity = new Actor(_services)
         {
             Size = new Size2(26, 36),
             OriginNormalized = new Vector2(.5f, .5f)
         };
 
-        _entity.GetBehavior<SpriteRenderBehavior>().TextureRegion = new MonoGame.Extended.TextureAtlases.TextureRegion2D(_services.Content.Load<Texture2D>("npc1"));
+        _entity.GetBehavior<SpriteRenderBehavior>().TextureRegion = 
+        new MonoGame.Extended.TextureAtlases.TextureRegion2D(_services.Content.Load<Texture2D>("npc1"), new Rectangle(Point.Zero, (Point)_entity.Size));
 
         _input = new InputManager(new KeyboardListenerSettings()
         {

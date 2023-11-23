@@ -30,8 +30,6 @@ public class SystemServices
     public SystemServices(Game game)
     {
         _game = game;
-        
-        //_game.Services.AddService<SpriteRenderService>(new SpriteRenderService(this));
     }
 
     public TType GetService<TType>()

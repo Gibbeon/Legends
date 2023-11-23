@@ -9,6 +9,11 @@ using MonoGame.Extended.Shapes;
 using MonoGame.Extended.TextureAtlases;
 
 using System;
+using System.Security;
+using System.ComponentModel;
+using Legends.Engine.Graphics2D;
+using MonoGame.Extended.Graphics.Effects;
+using Autofac.Core;
 
 namespace Legends.Engine;
 
@@ -55,16 +60,17 @@ public interface ISpriteFontBatchDrawable : IBatchDrawable<SpriteFont>
 
 public interface ISpriteBatchDrawable : IBatchDrawable<Texture2D>
 {
-
+    Rectangle DestinationBounds { get; }
 }
 
 public interface IRenderService
 {
-
+    public Camera? Camera { get; set; }
+    void DrawBatched(IBatchDrawable drawable);
 }
 
 
-public class SpriteRenderService : IRenderService
+public class RenderService : IRenderService
 {
     public class Frame
     {
@@ -75,6 +81,14 @@ public class SpriteRenderService : IRenderService
         public Frame(int layers)
         {
             _layers = new List<Layer>(Enumerable.Repeat(new Layer(), layers));
+        }
+
+        public void Reset()
+        {
+            foreach(var layer in _layers)
+            {
+                layer.Reset();
+            }
         }
     }
 
@@ -128,29 +142,62 @@ public class SpriteRenderService : IRenderService
             _drawables = new List<IBatchDrawable>();
             DrawableComparer = new PositionDrawableComparer();
         }
+
+        public void Reset()
+        {
+            _drawables.Clear();
+        } 
     }
+
+    public Color? ClearColor;
+
+    public Texture2D DefaultTexture { get; private set; }
 
     public int LayerCount { get; set; }
 
     public SystemServices Services { get; private set; }
 
+    public Legends.Engine.Graphics2D.Camera? Camera { get; set; }
+
     public Frame Current { get; private set; }
 
     public RenderState DefaultRenderState { get; set; }
 
-    public SpriteRenderService(SystemServices services, int layerCount = 1)
+    public Effect DefaultEffect { get; set; }
+
+    private SpriteBatch _spriteBatch;
+
+    public RenderService(SystemServices services, int layerCount = 1)
     {
         Services = services;
         services.Services.AddService<IRenderService>(this);
         LayerCount = layerCount;
         Current = new Frame(LayerCount);
         DefaultRenderState = new RenderState();
+        ClearColor = Color.Black;
+    }
+
+    public void DrawBatched(IBatchDrawable drawable)
+    {
+        Current.Layers[0].Drawables.Add(drawable);
     }
 
     public void Draw(GameTime gameTime)
     {
-        Services.GraphicsDevice.Clear(Color.Black);
-        SpriteBatch spriteBatch = new SpriteBatch(Services.GraphicsDevice);
+        if(DefaultTexture == null || _spriteBatch == null) // initialize
+        {
+            DefaultTexture = new Texture2D(Services.GraphicsDevice, 1, 1);
+            DefaultTexture.SetData<Color>(new Color[] { Color.Green });
+            _spriteBatch = new SpriteBatch(Services.GraphicsDevice);
+            DefaultEffect = new BasicEffect(Services.GraphicsDevice);
+        }
+
+        if(ClearColor != null)
+        {
+            Services.GraphicsDevice.Clear(ClearColor.Value);
+        }
+
+        
         RenderState state = DefaultRenderState;
         bool batchStarted = false;
         foreach(var layer in Current.Layers)
@@ -161,39 +208,86 @@ public class SpriteRenderService : IRenderService
                 {
                     if(batchStarted)
                     {
-                        spriteBatch.End();
+                        _spriteBatch.End();
                     }
 
-                    spriteBatch.Begin(
+                    var mtx = state.Matrix;
+                    var effect = state.Effect ?? DefaultEffect;
+
+                    if(Camera != null)
+                    {
+                        if(effect is IEffectMatrices)
+                        {
+                            IEffectMatrices? mtxEffect = (effect as IEffectMatrices);
+
+                            mtxEffect.View         = Camera.View;
+                            mtxEffect.Projection   = Camera.Projection;
+                            mtxEffect.World        = state.Matrix ?? Matrix.Identity;
+                        } else {
+                            mtx = (state.Matrix ?? Matrix.Identity) * Camera.View * Camera.Projection;
+                        }
+                    }
+
+                    _spriteBatch.Begin(
                         state.SpriteSortMode,
                         state.BlendState,
                         state.SamplerState,
                         state.DepthStencilState,
                         state.RasterizerState,
-                        state.Effect, // Effect
-                        state.Matrix // TransforMatrix
+                        effect, // Effect
+                        mtx // TransforMatrix
                     );
 
                     batchStarted = true;
                 }
 
-                spriteBatch.Draw(
-                    (drawable as ISpriteBatchDrawable).SourceData,
-                    drawable.Position,
-                    drawable.SourceBounds,
-                    drawable.Color,
-                    drawable.Rotation,
-                    drawable.Origin,
-                    drawable.Scale,
-                    drawable.Effect,
-                    0);
+                if(drawable is ISpriteBatchDrawable)
+                {
+                    _spriteBatch.Draw(
+                        (drawable as ISpriteBatchDrawable).SourceData ?? DefaultTexture,
+                        (drawable as ISpriteBatchDrawable).DestinationBounds,
+                        drawable.SourceBounds,
+                        drawable.Color,
+                        drawable.Rotation,
+                        drawable.Origin,
+                        drawable.Effect,
+                        0);
 
+                } 
+                else if (drawable is IBitmapFontBatchDrawable)
+                {
+                    var fontDrawable = drawable as IBitmapFontBatchDrawable;
+
+                    if(fontDrawable.Rotation > 0 || fontDrawable.Scale != Vector2.One)
+                    {
+                        _spriteBatch.DrawString(
+                            fontDrawable.SourceData,
+                            fontDrawable.Text,
+                            drawable.Position,
+                            drawable.Color,
+                            drawable.Rotation,
+                            drawable.Origin,
+                            drawable.Scale,
+                            drawable.Effect,
+                            0,
+                            null);
+                    } else 
+                    {
+                        _spriteBatch.DrawString(
+                            fontDrawable.SourceData,
+                            fontDrawable.Text,
+                            drawable.Position,
+                            drawable.Color);
+                    }
+                }
             }
         }
 
         if(batchStarted)
         {
-            spriteBatch.End();
+            _spriteBatch.End();
         }
+
+        Current.Reset();
     }
 }

@@ -6,6 +6,7 @@ using MonoGame.Extended.Screens;
 using MonoGame.Extended.Input;
 using Legends.Engine.Input;
 using Legends.Engine;
+using Legends.Engine.Graphics2D;
 
 namespace Legends.App.Screens
 {
@@ -14,6 +15,8 @@ namespace Legends.App.Screens
         private SystemServices _services;
         private SpriteBatch _spriteBatch;
         private InputManager _input;
+
+        private GameObject _text;
 
         public TitleScreen(SystemServices services)
         {
@@ -26,17 +29,19 @@ namespace Legends.App.Screens
 
             _input.Register("START",    Keys.Enter);
             _input.Register("START",    MouseButton.Left);
+
+            _text = new GameObject(_services);
+            _text.AttachBehavior(new TextRenderBehavior(_text)
+            {
+                Font = services.Content.Load<BitmapFont>("Sensation"),
+                Text = "Press ESC to Exit or ENTER to Start",
+                Color = Color.White
+            }); 
         }
 
         public override void Draw(GameTime gameTime)
         {
-            _services.GraphicsDevice.Clear(Color.Black);
-
-            //_spriteBatch.Begin();
-
-            //_spriteBatch.DrawString(Global.Fonts.Menu, string.Format("Press {0} to Exit. Press {1} to Start", _input.GetText("EXIT"), _input.GetText("START")), Vector2.Zero, Color.White);
-
-            //_spriteBatch.End();            
+                       
         }
 
         public override void Update(GameTime gameTime)
@@ -50,11 +55,14 @@ namespace Legends.App.Screens
                     case "EXIT": _services.Exit(); break;
                     case "START": Start(); break;
                 }
-            }            
+            }
+
+            _text.Update(gameTime);
         }
 
         protected void Start()
         {
+            _text.Dispose();
             ScreenManager.LoadScreen(new MapScreen(_services), new MonoGame.Extended.Screens.Transitions.FadeTransition(_services.GraphicsDevice, Color.Black));
         }
     }

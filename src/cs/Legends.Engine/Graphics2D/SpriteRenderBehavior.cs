@@ -3,6 +3,7 @@ using Legends.Engine.Graphics2D;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.TextureAtlases;
 using Microsoft.Xna.Framework.Graphics;
+using System.Security;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -28,9 +29,12 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 
     public Rectangle SourceBounds => TextureRegion.Bounds;
 
+    public Rectangle DestinationBounds => (Rectangle)Parent.BoundingRectangle; 
+
     public override void Update(GameTime gameTime)
     {
-        Parent.Services.GetService<SpriteRenderService>().Current.Layers[0].Drawables.Add(this);        
+        var services = Parent.Services.GetService<IRenderService>();
+        services.DrawBatched(this); 
     }
     
     public SpriteRenderBehavior(GameObject parent) : base(parent)

@@ -168,6 +168,16 @@ public class GameObject : Spatial, IDisposable, IUpdate
 
     public void Dispose()
     {
+        foreach(var behavior in Behaviors)
+        {
+            behavior.Dispose();
+        }
+        
+        foreach(var child in Children)
+        {
+            child.Dispose();
+        }
+
         GC.SuppressFinalize(this);
     }
 
