@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace Legends.Game;
+namespace Legends.App;
 
 public static class DirectionConstants
 {
