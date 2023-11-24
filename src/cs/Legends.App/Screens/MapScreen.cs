@@ -21,7 +21,6 @@ namespace Legends.App.Screens;
 
     private SystemServices _services;
     
-
     public MapScreen(SystemServices services)
     {
         _services = services;

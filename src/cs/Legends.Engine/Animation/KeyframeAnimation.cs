@@ -38,14 +38,15 @@ public class KeyframeAnimation<TType> : IAnimation
     public bool IsComplete  => CurrentIndex >= _frames.Count;
     public Keyframe<TType>? Current => IsComplete ? null : Frames[CurrentIndex];
 
-    public KeyframeAnimation(KeyframeAnimationData data) : this (data.Name, data.Frames)
+    public KeyframeAnimation(KeyframeAnimationData data) : this (data.Name, LoopType.Reverse, data.Frames)
     {
 
     }
-    public KeyframeAnimation(string name, IList<Keyframe<TType>> frames)
+    public KeyframeAnimation(string name, LoopType type, IList<Keyframe<TType>> frames)
     {
         Name = name;
         Direction = 1;
+        LoopType = type;
         _frames = (frames ?? new List<Keyframe<TType>>()).ToList();
     }
     public void Update(GameTime gameTime)
@@ -60,7 +61,6 @@ public class KeyframeAnimation<TType> : IAnimation
                 _lastElapsedTime -= Current.Duration;
                 ElapsedTime -= Current.Duration;
                 ProcessMessages();
-
                 MoveNext();
             }
         }
@@ -100,7 +100,7 @@ public class KeyframeAnimation<TType> : IAnimation
             switch(LoopType)
             {
                 case LoopType.None: 
-                    newFrameIndex = _frames.Count; // is complete
+                    newFrameIndex = _frames.Count - 1; // is complete
                     break;
                 case LoopType.Reverse: 
                     Direction = -Direction;
@@ -120,6 +120,7 @@ public class KeyframeAnimation<TType> : IAnimation
 
     public IAnimation Clone()
     {
-        return new KeyframeAnimation<TType>(Name, _frames);
+        SetCurrentFrameIndex(0);
+        return this;//new KeyframeAnimation<TType>(Name, _frames);
     }
 }

@@ -14,8 +14,8 @@ public static class DirectionConstants
     {
         if(MathF.Abs(value.Y) >= MathF.Abs(value.X))
         {
-            return value.Y > 0 ? Up : Down;
+            return value.Y < 0 ? Up : Down;
         }
-        return value.X > 0 ? Left : Right;
+        return value.X < 0 ? Left : Right;
     }
 }

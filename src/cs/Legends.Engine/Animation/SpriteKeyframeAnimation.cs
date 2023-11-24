@@ -9,11 +9,11 @@ namespace Legends.Engine.Animation;
 
 public class SpriteKeyframeAnimation : KeyframeAnimation<Rectangle>
 {
-    public SpriteKeyframeAnimation(KeyframeAnimationData data) : this (data.Name, data.Frames)
+    public SpriteKeyframeAnimation(KeyframeAnimationData data) : this (data.Name, LoopType.Reverse, data.Frames)
     {
 
     }
-    public SpriteKeyframeAnimation(string name, IList<Keyframe<Rectangle>> frames) : base(name, frames)
+    public SpriteKeyframeAnimation(string name, LoopType type, IList<Keyframe<Rectangle>> frames) : base(name, type, frames)
     {
 
     }
