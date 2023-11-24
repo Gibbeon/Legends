@@ -15,7 +15,6 @@ namespace Legends.App.Screens
         private SystemServices _services;
         private SpriteBatch _spriteBatch;
         private InputManager _input;
-
         private GameObject _text;
 
         public TitleScreen(SystemServices services)

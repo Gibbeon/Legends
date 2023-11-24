@@ -18,9 +18,9 @@ public class Camera : GameObject
     protected Matrix _projection;
     protected Matrix _world;
     public BoundedValue<float> ZoomBounds => _zoomBounds;
-    public Matrix View => LocalMatrix;
+    public Matrix View => _world;
     public Matrix Projection => _projection;
-    public Matrix World => _world;
+    public Matrix World => LocalMatrix;
 
     public Camera(SystemServices services, CameraDesc? data = default)
         : this(services, new DefaultViewportAdapter(services.GraphicsDevice), data ?? new CameraDesc())

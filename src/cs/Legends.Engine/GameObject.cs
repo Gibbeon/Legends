@@ -28,6 +28,8 @@ public class GameObject : Spatial, IDisposable, IUpdate
 
     public GameObject? Parent { get; private set; }
 
+    public bool Enabled { get; set; }
+
     public IReadOnlyList<GameObject> Children
     {
         get => _children.ToList().AsReadOnly();
@@ -55,6 +57,7 @@ public class GameObject : Spatial, IDisposable, IUpdate
     {
         Services = systems;
         Name = data.Name;
+        Enabled = true;
         _children = new List<GameObject>();
         _behaviors = new List<IBehavior>();
         _tags = new List<string>();
@@ -168,6 +171,8 @@ public class GameObject : Spatial, IDisposable, IUpdate
 
     public void Dispose()
     {
+        Enabled = false;
+
         foreach(var behavior in Behaviors)
         {
             behavior.Dispose();
@@ -177,12 +182,12 @@ public class GameObject : Spatial, IDisposable, IUpdate
         {
             child.Dispose();
         }
-
-        GC.SuppressFinalize(this);
     }
 
     public virtual void Update(GameTime gameTime)
     {
+        if(!Enabled) return;
+        
         foreach(var behavior in Behaviors)
         {
             behavior.Update(gameTime);

@@ -189,14 +189,25 @@ public class RenderService : IRenderService
             DefaultTexture = new Texture2D(Services.GraphicsDevice, 1, 1);
             DefaultTexture.SetData<Color>(new Color[] { Color.Green });
             _spriteBatch = new SpriteBatch(Services.GraphicsDevice);
-            DefaultEffect = new BasicEffect(Services.GraphicsDevice);
-        }
+            DefaultEffect = new BasicEffect (Services.GraphicsDevice)
+            {
+                VertexColorEnabled = true,
+                TextureEnabled = true
+            };
+
+            IEffectMatrices? mtxEffect = (DefaultEffect as IEffectMatrices);
+
+            Matrix _projection; 
+            Matrix.CreateOrthographicOffCenter(0f, Services.GraphicsDevice.Viewport.Width, Services.GraphicsDevice.Viewport.Height, 0f, 0f, -1f, out _projection);
+            mtxEffect.View         = Matrix.Identity;
+            mtxEffect.Projection   = _projection;//Camera.Projection;
+            mtxEffect.World        = Matrix.Identity;
+        }       
 
         if(ClearColor != null)
         {
             Services.GraphicsDevice.Clear(ClearColor.Value);
         }
-
         
         RenderState state = DefaultRenderState;
         bool batchStarted = false;
@@ -224,7 +235,7 @@ public class RenderService : IRenderService
                             mtxEffect.Projection   = Camera.Projection;
                             mtxEffect.World        = state.Matrix ?? Matrix.Identity;
                         } else {
-                            mtx = (state.Matrix ?? Matrix.Identity) * Camera.View * Camera.Projection;
+                           mtx = Matrix.Multiply(Camera.View, Camera.Projection);
                         }
                     }
 
@@ -234,7 +245,7 @@ public class RenderService : IRenderService
                         state.SamplerState,
                         state.DepthStencilState,
                         state.RasterizerState,
-                        effect, // Effect
+                        DefaultEffect,//effect, // Effect
                         mtx // TransforMatrix
                     );
 
@@ -249,7 +260,7 @@ public class RenderService : IRenderService
                         drawable.SourceBounds,
                         drawable.Color,
                         drawable.Rotation,
-                        drawable.Origin,
+                        Vector2.Zero,//drawable.Origin,
                         drawable.Effect,
                         0);
 
@@ -290,4 +301,5 @@ public class RenderService : IRenderService
 
         Current.Reset();
     }
+    
 }
