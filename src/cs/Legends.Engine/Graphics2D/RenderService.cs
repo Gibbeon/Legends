@@ -2,72 +2,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
-using MonoGame.Extended.Sprites;
-using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
-using MonoGame.Extended.Shapes;
-using MonoGame.Extended.TextureAtlases;
-
 using System;
-using System.Security;
-using System.ComponentModel;
 using Legends.Engine.Graphics2D;
-using MonoGame.Extended.Graphics.Effects;
-using Autofac.Core;
-
 namespace Legends.Engine;
-
-public interface IBatchDrawable
-{
-    bool IsVisible { get; }
-
-    Rectangle SourceBounds { get; }
-
-    Vector2 Position { get; }
-
-    float Rotation { get; }
-
-    Vector2 Scale { get; }
-
-    Color Color { get; }
-
-    Vector2 Origin { get; }
-
-    SpriteEffects Effect { get; }
-}
-
-public interface IBatchDrawable<TType> : IBatchDrawable
-{
-    TType SourceData { get; }
-}
-
-public interface IPolygonBatchDrawable : IBatchDrawable<Polygon>
-{
-
-}
-
-public interface IBitmapFontBatchDrawable : IBatchDrawable<BitmapFont>
-{
-    public string Text { get; }
-
-}
-
-public interface ISpriteFontBatchDrawable : IBatchDrawable<SpriteFont>
-{
-    public string Text { get; }
-
-}
-
-public interface ISpriteBatchDrawable : IBatchDrawable<Texture2D>
-{
-    Rectangle DestinationBounds { get; }
-}
-
-public interface IRenderService
-{
-    public Camera? Camera { get; set; }
-    void DrawBatched(IBatchDrawable drawable);
-}
 
 
 public class RenderService : IRenderService
@@ -182,9 +120,9 @@ public class RenderService : IRenderService
         Current.Layers[0].Drawables.Add(drawable);
     }
 
-    public void Draw(GameTime gameTime)
+    public void Initialize()
     {
-        if(DefaultTexture == null || _spriteBatch == null) // initialize
+        if(DefaultTexture == null || _spriteBatch == null || DefaultEffect == null) // initialize
         {
             DefaultTexture = new Texture2D(Services.GraphicsDevice, 1, 1);
             DefaultTexture.SetData<Color>(new Color[] { Color.Green });
@@ -202,8 +140,11 @@ public class RenderService : IRenderService
             mtxEffect.View         = Matrix.Identity;
             mtxEffect.Projection   = _projection;//Camera.Projection;
             mtxEffect.World        = Matrix.Identity;
-        }       
+        }  
+    }
 
+    public void Draw(GameTime gameTime)
+    {
         if(ClearColor != null)
         {
             Services.GraphicsDevice.Clear(ClearColor.Value);

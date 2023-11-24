@@ -7,27 +7,27 @@ using MonoGame.Extended.Input;
 using Legends.Engine.Input;
 using Legends.Engine;
 using Legends.Engine.Graphics2D;
+using Autofac.Core;
 
 namespace Legends.App.Screens
 {
     public class TitleScreen : Screen
     {
         private SystemServices _services;
-        private SpriteBatch _spriteBatch;
-        private InputManager _input;
         private GameObject _text;
 
         public TitleScreen(SystemServices services)
         {
             _services = services;
-            //_spriteBatch = new SpriteBatch(_services.GraphicsDevice);
-            _input = new InputManager();
+            var input = new InputManager(_services);
 
-            _input.Register("EXIT",     Keys.Escape);
-            _input.Register("EXIT",     MouseButton.Right);
+            input.Register("EXIT",     Keys.Escape);
+            input.Register("EXIT",     MouseButton.Right);
 
-            _input.Register("START",    Keys.Enter);
-            _input.Register("START",    MouseButton.Left);
+            input.Register("START",    Keys.Enter);
+            input.Register("START",    MouseButton.Left);
+
+            _services.GetService<IInputHandlerService>().Push(input);
 
             _text = new GameObject(_services);
             _text.AttachBehavior(new TextRenderBehavior(_text)
@@ -45,11 +45,9 @@ namespace Legends.App.Screens
 
         public override void Update(GameTime gameTime)
         {
-            _input.Update(gameTime);
-
-            foreach(var result in _input.Results)
+            foreach(var action in _services.GetService<IInputHandlerService>().Current.EventActions)
             {
-                switch(result.Command)
+                switch(action.Name)
                 {
                     case "EXIT": _services.Exit(); break;
                     case "START": Start(); break;
@@ -61,6 +59,7 @@ namespace Legends.App.Screens
 
         protected void Start()
         {
+            _services.GetService<IInputHandlerService>().Pop();
             _text.Dispose();
             ScreenManager.LoadScreen(new MapScreen(_services), new MonoGame.Extended.Screens.Transitions.FadeTransition(_services.GraphicsDevice, Color.Black));
         }

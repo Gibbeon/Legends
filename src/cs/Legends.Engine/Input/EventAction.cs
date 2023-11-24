@@ -4,11 +4,11 @@ using MonoGame.Extended.Input.InputListeners;
 
 namespace Legends.Engine.Input;    
 
-public class Result
+public class EventAction
 {
-    public string Command => Trigger.Command;
+    public string Name => EventListener.Name;
 
-    public Trigger Trigger { get; private set; }
+    public EventListener EventListener { get; private set; }
 
     public EventType Type { get; private set; }
 
@@ -18,9 +18,9 @@ public class Result
     public TouchEventArgs? TouchEventArgs            { get => Args as TouchEventArgs; }
     public KeyboardEventArgs? KeyboardEventArgs      { get => Args as KeyboardEventArgs; }
 
-    public Result(Trigger trigger, EventType type, EventArgs args)
+    public EventAction(EventListener listener, EventType type, EventArgs args)
     {
-        Trigger = trigger;
+        EventListener = listener;
         Type = type;
         Args = args;
     }

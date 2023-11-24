@@ -6,13 +6,8 @@ using Legends.Engine.Input;
 using MonoGame.Extended.Input.InputListeners;
 using MonoGame.Extended;
 using Legends.Engine;
-using MonoGame.Extended.Sprites;
 using Legends.Engine.Graphics2D;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.TextureAtlases;
-using MonoGame.Extended.BitmapFonts;
-using MonoGame.Extended.Tiled;
-using MonoGame.Extended.Shapes;
 
 namespace Legends.App.Screens;
 
@@ -26,7 +21,6 @@ namespace Legends.App.Screens;
 
     private SystemServices _services;
     
-    private InputManager _input;
 
     public MapScreen(SystemServices services)
     {
@@ -42,22 +36,24 @@ namespace Legends.App.Screens;
         _entity.GetBehavior<SpriteRenderBehavior>().TextureRegion = 
         new MonoGame.Extended.TextureAtlases.TextureRegion2D(_services.Content.Load<Texture2D>("npc1"), new Rectangle(Point.Zero, (Point)_entity.Size));
 
-        _input = new InputManager(new KeyboardListenerSettings()
+         var input = new InputManager(services, new KeyboardListenerSettings()
         {
             InitialDelayMilliseconds = 0
         });
 
-        _input.Register("EXIT",     Keys.Escape);
-        _input.Register("LOOK_AT",  MouseButton.Right);  
-        _input.Register("ZOOM",     EventType.MouseScroll); 
+        input.Register("EXIT",     Keys.Escape);
+        input.Register("LOOK_AT",  MouseButton.Right);  
+        input.Register("ZOOM",     EventType.MouseScroll); 
 
-        _input.Register("SELECT",   MouseButton.Left);
-        _input.Register("ROTATE",   MouseButton.Left).WithModifierAny(Keys.LeftAlt, Keys.RightAlt);
+        input.Register("SELECT",   MouseButton.Left);
+        input.Register("ROTATE",   MouseButton.Left).WithModifierAny(Keys.LeftAlt, Keys.RightAlt);
         
-        _input.Register("MOVE_LEFT",    Keys.Left);             
-        _input.Register("MOVE_RIGHT",   Keys.Right);      
-        _input.Register("MOVE_UP",      Keys.Up);             
-        _input.Register("MOVE_DOWN",    Keys.Down);
+        input.Register("MOVE_LEFT",    Keys.Left);             
+        input.Register("MOVE_RIGHT",   Keys.Right);      
+        input.Register("MOVE_UP",      Keys.Up);             
+        input.Register("MOVE_DOWN",    Keys.Down);
+
+        _services.GetService<IInputHandlerService>().Push(input);
 
         //_entity.Spatial.Rotate(MathF.PI/4);
         //_entity.Spatial.Scale = new Vector2(.5f, .5f);
@@ -111,11 +107,9 @@ namespace Legends.App.Screens;
 
     public override void Update(GameTime gameTime)
     {                
-        _input.Update(gameTime);
-
-        foreach(var result in _input.Results)
+        foreach(var command in _services.GetService<IInputHandlerService>().Current.EventActions)
         {
-            switch(result.Command)
+            switch(command.Name)
             {
                 case "EXIT":        _services.Exit(); break;
 
@@ -124,9 +118,9 @@ namespace Legends.App.Screens;
                 case "MOVE_UP":     _entity.Move( 0,-1); break;
                 case "MOVE_DOWN":   _entity.Move( 0, 1); break;
                 
-                //case "ZOOM":        _canvas.Camera.ZoomIn(result.GetScrollDelta()); break;  
+                //case "ZOOM":        _canvas.Camera.ZoomIn(Command.GetScrollDelta()); break;  
                 //case "ROTATE":      _canvas.Camera.Rotate(MathF.PI/8); break;
-                //case "LOOK_AT":     _canvas.Camera.LookAt(_canvas.Camera.ScreenToWorld((Vector2)result.GetPosition())); break;
+                //case "LOOK_AT":     _canvas.Camera.LookAt(_canvas.Camera.ScreenToWorld((Vector2)Command.GetPosition())); break;
                 
                 /*
                     case "SELECT":                   

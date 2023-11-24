@@ -8,43 +8,72 @@ using MonoGame.Extended.Input;
 using MonoGame.Extended.Input.InputListeners;
 
 namespace Legends.Engine.Input;
+
+
 public class InputManager
 {
-    private Legends.Engine.Input.KeyboardListener    _keyboardListener;
-    private MouseListener       _mouseListener;
-    private IList<Trigger> _triggers;
-    private IList<Result> _results;
-    public IList<Result> Results => _results;
-    public KeyboardListener KeyboardListener => _keyboardListener;
-    public MouseListener    MouseListener => _mouseListener;
-    public InputManager() : this(new KeyboardListenerSettings())
+    private KeyboardListener        _keyboardListener;
+    private MouseListener           _mouseListener;
+    private IList<EventListener>    _eventListeners;
+    private IList<EventAction>      _eventActions;
+    private KeyboardListenerSettings _keyboardListenerSettings;
+    private MouseListenerSettings   _mouseListenerSettings;
+    public IList<EventAction>       EventActions => _eventActions;
+    public KeyboardListener         KeyboardListener => _keyboardListener;
+    public MouseListener            MouseListener => _mouseListener;
+
+    public SystemServices Services { get; private set; }
+
+    public InputManager(SystemServices services, KeyboardListenerSettings keyboardListenerSettings) : this(services, keyboardListenerSettings, new MouseListenerSettings())
     {
 
     }
 
-    public InputManager(KeyboardListenerSettings keyboardListenerSettings)
+    public InputManager(SystemServices services) : this(services, new KeyboardListenerSettings(), new MouseListenerSettings())
     {
-        _triggers = new List<Trigger>();
-        _results = new List<Result>();
 
-        _keyboardListener = new KeyboardListener(keyboardListenerSettings);
-        _keyboardListener.KeyPressed += (sender, args)  => ProcessEvent(EventType.KeyPressed, args);
-        _keyboardListener.KeyReleased += (sender, args) => ProcessEvent(EventType.KeyReleased, args);
-        _keyboardListener.KeyTyped += (sender, args)    => ProcessEvent(EventType.KeyTyped, args);
+    }
 
-        _mouseListener = new MouseListener();
+    public InputManager(SystemServices services, KeyboardListenerSettings keyboardListenerSettings, MouseListenerSettings mouseListenerSettings)
+    {
+        Services = services;
+        _eventListeners = new List<EventListener>();
+        _eventActions = new List<EventAction>();
+        _keyboardListenerSettings = keyboardListenerSettings;
+        _mouseListenerSettings = mouseListenerSettings;
         
+        _keyboardListener = new KeyboardListener(_keyboardListenerSettings);
+        _mouseListener = new MouseListener(_mouseListenerSettings);        
+    }
+
+    public void Activate()
+    {
+        _keyboardListener.KeyPressed += (sender, args)      => ProcessEvent(EventType.KeyPressed, args);
+        _keyboardListener.KeyReleased += (sender, args)     => ProcessEvent(EventType.KeyReleased, args);
+        _keyboardListener.KeyTyped += (sender, args)        => ProcessEvent(EventType.KeyTyped, args);
+
         _mouseListener.MouseClicked += (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
         _mouseListener.MouseDoubleClicked += (sender, args) => ProcessEvent(EventType.MouseClicked, args);
-
         _mouseListener.MouseWheelMoved+= (sender, args)     => ProcessEvent(EventType.MouseScroll, args);
         _mouseListener.MouseMoved += (sender, args)         => ProcessEvent(EventType.MouseMove, args);
     }
 
-    public string GetText(string command)
+    public void Deactivate()
+    {
+        _keyboardListener.KeyPressed -= (sender, args)      => ProcessEvent(EventType.KeyPressed, args);
+        _keyboardListener.KeyReleased -= (sender, args)     => ProcessEvent(EventType.KeyReleased, args);
+        _keyboardListener.KeyTyped -= (sender, args)        => ProcessEvent(EventType.KeyTyped, args);
+
+        _mouseListener.MouseClicked -= (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
+        _mouseListener.MouseDoubleClicked -= (sender, args) => ProcessEvent(EventType.MouseClicked, args);
+        _mouseListener.MouseWheelMoved -= (sender, args)    => ProcessEvent(EventType.MouseScroll, args);
+        _mouseListener.MouseMoved -= (sender, args)         => ProcessEvent(EventType.MouseMove, args);
+    }
+
+    public string GetTextForTrigger(string actionName)
     {
         string result = "";
-        foreach(var cmd in _triggers.Where(n => n.Command == command))
+        foreach(var cmd in _eventListeners.Where(n => n.Name == actionName))
         {
             result += (!string.IsNullOrEmpty(result) ? " OR " : "") + cmd.Label;
         }
@@ -52,7 +81,7 @@ public class InputManager
         return result;
     }
 
-    public string? GetText(EventType type, Keys key) 
+    public string? GetInputText(EventType type, Keys key) 
     {
         switch(type)
         {
@@ -64,7 +93,7 @@ public class InputManager
         return "";
     }
 
-    public string? GetText(EventType type, MouseButton button) 
+    public string? GetInputText(EventType type, MouseButton button) 
     {
         switch(type)
         {
@@ -78,68 +107,63 @@ public class InputManager
 
     public void Update(GameTime gameTime)
     {
-        _results.Clear();
+        _eventActions.Clear();
+
         _keyboardListener.Update(gameTime);
         _mouseListener.Update(gameTime);
     }
 
-    public Trigger Register(string command, string? label, Func<EventType, EventArgs, bool> test)
+    public EventListener Register(string action, string? label, Func<EventType, EventArgs, bool> test)
     {
-        var result = new Trigger(this, command, label, test);
-        _triggers.Add(result);
-        return result;
+        _eventListeners.Add(new EventListener(this, action, label, test));
+        return _eventListeners[_eventListeners.Count - 1];
     }
 
-    public Trigger Register(string command, EventType eventType)
+    public EventListener Register(string action, EventType eventType)
     {
-        return Register(command, "", (type, args) => type == eventType);
+        return Register(action, "", (type, args) => type == eventType);
     }
 
-    public Trigger Register(string command, Keys key, EventType eventType = EventType.KeyPressed)
+    public EventListener Register(string action, Keys key, EventType eventType = EventType.KeyPressed)
     {
-        return Register(command, GetText(eventType, key), (type, args) => type == eventType && (args as KeyboardEventArgs)?.Key == key);
+        return Register(action, GetInputText(eventType, key), (type, args) => type == eventType && (args as KeyboardEventArgs)?.Key == key);
     }
 
-    public Trigger Register(string command, MouseButton button, EventType eventType = EventType.MouseClicked)
+    public EventListener Register(string action, MouseButton button, EventType eventType = EventType.MouseClicked)
     {
-        return Register(command, GetText(eventType, button), (type, args) => type == eventType && (args as MouseEventArgs)?.Button == button);
+        return Register(action, GetInputText(eventType, button), (type, args) => type == eventType && (args as MouseEventArgs)?.Button == button);
     }
 
     protected void ProcessEvent(EventType type, EventArgs args)
     {
-        foreach(var command in _triggers)
+        foreach(var listener in _eventListeners)
         {
-            if(command.Eval(type, args))
+            if(listener.Eval(type, args))
             {
-                _results.Add(new Result(command, type, args));
+                _eventActions.Add(new EventAction(listener, type, args));
             }
         }
 
     }
     
-    public bool HasTriggered(string command)
+    public bool HasEventFired(string actionName)
     {
-        foreach(var entry in _results.Where(n => n.Trigger.Command == command))
-        {
-            return true;                
-        }
-
-        return false;
+        return _eventActions.Where(n => n.EventListener.Name == actionName).Any();
     }
 
-    public bool HasTriggered(string command, out Point2 point)
+    public bool HasEventFired(string actionName, out Point2 point)
     {
-        foreach(var entry in _results.Where(n => n.Trigger.Command == command))
+        foreach(var entry in _eventActions.Where(n => n.EventListener.Name == actionName))
         {
-            var result = entry.GetPosition();
-            if(result.HasValue)
+            var eventPos = entry.GetPosition();
+            if(eventPos.HasValue)
             {
-                point = result.Value;
+                point = eventPos.Value;
                 return true;
             }
         }
-        point = Point2.NaN;
 
+        point = Point2.NaN;
         return false;
     }
 
