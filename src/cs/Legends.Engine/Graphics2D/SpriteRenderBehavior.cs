@@ -27,7 +27,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 
     public Texture2D SourceData => TextureRegion.Texture;
 
-    public Rectangle SourceBounds => TextureRegion.Bounds;
+    public Rectangle SourceBounds{ get => TextureRegion.Bounds; set => SetTextureRegionBounnds(value); }
 
     public Rectangle DestinationBounds => (Rectangle)Parent.BoundingRectangle; 
 
@@ -40,5 +40,10 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     public SpriteRenderBehavior(GameObject parent) : base(parent)
     {
         Color = Color.White;
+    }
+
+    public void SetTextureRegionBounnds(Rectangle rect)
+    {
+        TextureRegion = new TextureRegion2D(TextureRegion.Texture, rect);
     }
 }

@@ -37,7 +37,9 @@ namespace Legends.App.Screens;
 
          var input = new InputManager(services, new KeyboardListenerSettings()
         {
-            InitialDelayMilliseconds = 0
+            InitialDelayMilliseconds = 0,
+            RepeatDelayMilliseconds = 0,
+            RepeatPress = true
         });
 
         input.Register("EXIT",     Keys.Escape);

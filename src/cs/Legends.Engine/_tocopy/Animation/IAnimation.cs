@@ -8,7 +8,6 @@ public interface IAnimation: IUpdate
 {
     string Name { get; }
     LoopType LoopType { get; set; }
-
-    public void Initialize();
+    IAnimation Clone();
     event EventHandler<AnimationMessageCallbackEventArgs> MessageCallback;
 }

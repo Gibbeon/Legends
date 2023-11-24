@@ -9,34 +9,30 @@ namespace Legends.Engine.Animation;
 
 public class AnimationBehavior : BaseBehavior
 {
-    private List<AnimationChannel> _channels;
-    public EventHandler<AnimationMessageCallbackEventArgs>? MessageCallback;
     public IList<IAnimation> Animations { get; private set; }
-    public IReadOnlyList<AnimationChannel> AnimationChannels  => _channels.AsReadOnly();
+    public IAnimation? Current { get; set; }
+    public float Speed { get; set; }
+    public bool Enabled { get; set; }
 
-    public AnimationBehavior(GameObject parent, int channels = 1) : base(parent)
+    public EventHandler<AnimationMessageCallbackEventArgs>? MessageCallback;
+    
+    public AnimationBehavior(GameObject parent) : base(parent)
     {
         Animations = new List<IAnimation>();
-
-        _channels = new List<AnimationChannel>();
-        _channels.AddRange(Enumerable.Repeat(new AnimationChannel(), channels));
+        Speed = 1;
     }
-    public AnimationChannel Play(int channel, string name) 
+    public void Play(string name) 
     {
-        if(_channels.Count < channel)
+        if(Current == null || Current.Name != name)
         {
-            _channels.AddRange(Enumerable.Repeat(new AnimationChannel(), channel - _channels.Count + 1));
+            Current = Animations.Single(n => n.Name == name);
+            Current?.Initialize();
         }
-
-        return AnimationChannels[channel].Play(Animations.Single(n => n.Name == name), MessageCallback);
     }
 
     public override void Update(GameTime gameTime)
     {
-        foreach(var channel in _channels)
-        {
-            channel.Update(gameTime);
-        }
+        Current?.Update(new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime.Multiply(Speed)));
     }
 }
 

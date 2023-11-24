@@ -13,8 +13,6 @@ public class KeyframeAnimation<TType> : IAnimation
     {
         public IList<Keyframe<TType>> Frames = new List<Keyframe<TType>>();
         public string Name = string.Empty;
-
-        public LoopType LoopType = LoopType.None;
     }
 
     public class KeyframeEventArgs: EventArgs
@@ -24,13 +22,15 @@ public class KeyframeAnimation<TType> : IAnimation
     }
 
     public event EventHandler<AnimationMessageCallbackEventArgs>? MessageCallback;
+
     public event EventHandler<KeyframeEventArgs>? FrameChanged;
     public string Name { get; private set; }
-    protected List<Keyframe<TType>> _frames;
-    protected int _currentIndex;
+
+    private List<Keyframe<TType>> _frames;
+    private int _currentIndex;
     public IReadOnlyList<Keyframe<TType>> Frames => _frames.AsReadOnly();
     public int CurrentIndex => _currentIndex;
-    protected float _lastElapsedTime;
+    private float _lastElapsedTime;
     public float ElapsedTime  { get; private set; }
     public float Duration => _frames.Sum(n => n.Duration);
     public int Direction { get; private set; }
@@ -49,14 +49,6 @@ public class KeyframeAnimation<TType> : IAnimation
         LoopType = type;
         _frames = (frames ?? new List<Keyframe<TType>>()).ToList();
     }
-
-    public void Initialize()
-    {
-        ElapsedTime = 0;
-        Direction = 1;
-        SetCurrentFrameIndex(0);
-    }
-
     public void Update(GameTime gameTime)
     {
         if(Current != null)
@@ -91,7 +83,7 @@ public class KeyframeAnimation<TType> : IAnimation
         }
     }
 
-    public virtual void SetCurrentFrameIndex(int index)
+    public void SetCurrentFrameIndex(int index)
     {
         var oldIndex = _currentIndex;
         _currentIndex = index;
@@ -99,7 +91,7 @@ public class KeyframeAnimation<TType> : IAnimation
         ProcessMessages();
     }
 
-    protected virtual void MoveNext()
+    protected void MoveNext()
     {
         var newFrameIndex = CurrentIndex + Direction;
 
@@ -112,7 +104,7 @@ public class KeyframeAnimation<TType> : IAnimation
                     break;
                 case LoopType.Reverse: 
                     Direction = -Direction;
-                    newFrameIndex = Math.Min(_frames.Count - 1, newFrameIndex < 0 ? 1 : _frames.Count - 2);
+                    newFrameIndex = newFrameIndex < 0 ? 1 : _frames.Count - 2;
                     break;
                 case LoopType.Loop: 
                     newFrameIndex = 0;
@@ -124,5 +116,11 @@ public class KeyframeAnimation<TType> : IAnimation
         {
             SetCurrentFrameIndex(newFrameIndex);
         }
+    }
+
+    public IAnimation Clone()
+    {
+        SetCurrentFrameIndex(0);
+        return this;//new KeyframeAnimation<TType>(Name, _frames);
     }
 }
