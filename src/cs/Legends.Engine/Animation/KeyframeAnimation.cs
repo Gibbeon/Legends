@@ -13,7 +13,6 @@ public class KeyframeAnimation<TType> : IAnimation
     {
         public IList<Keyframe<TType>> Frames = new List<Keyframe<TType>>();
         public string Name = string.Empty;
-
         public LoopType LoopType = LoopType.None;
     }
 
@@ -112,13 +111,16 @@ public class KeyframeAnimation<TType> : IAnimation
                     break;
                 case LoopType.Reverse: 
                     Direction = -Direction;
-                    newFrameIndex = Math.Min(_frames.Count - 1, newFrameIndex < 0 ? 1 : _frames.Count - 2);
+                    newFrameIndex = newFrameIndex <= 0 ? 1 : _frames.Count - 2;
                     break;
                 case LoopType.Loop: 
                     newFrameIndex = 0;
                 break;
             }
         }
+
+        newFrameIndex = Math.Max(0, newFrameIndex);
+        newFrameIndex = Math.Min(_frames.Count - 1, newFrameIndex);
 
         if(newFrameIndex != CurrentIndex)
         {

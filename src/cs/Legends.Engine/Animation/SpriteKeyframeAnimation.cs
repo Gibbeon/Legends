@@ -24,7 +24,6 @@ public class SpriteKeyframeAnimation : KeyframeAnimation<Rectangle>
     {
         if(_currentIndex != index)
         {
-            Console.WriteLine("Setting Index {0}", index);
             base.SetCurrentFrameIndex(index);
         }
         _sprite.SourceBounds = _frames[index].Value;
