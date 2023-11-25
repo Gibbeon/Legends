@@ -5,57 +5,147 @@ using Legends.Engine.Graphics2D;
 using Legends.Engine.Resolvers;
 using System;
 using MonoGame.Extended;
+using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using MonoGame.Extended.Graphics;
+using System.Linq;
+using MonoGame.Extended.Graphics.Effects;
+using MonoGame.Extended.Tiled;
 
 namespace Legends.App;
 
-public class RandomMovementBehavior : BaseBehavior
+public class TileSet
 {
-    private float _waitTime;
-    private Vector2 _targetPosition;
+    public Size TileSize;
+    public Texture2D Texture;
+    public RectangleF GetUV(int tileIndex)
+    {        
+        var x = tileIndex / (Texture.Height / TileSize.Height);
+        var y = tileIndex % (Texture.Width / TileSize.Width);
 
-    private Random _random;
-    public RandomMovementBehavior(GameObject parent) : base(parent)
+        return new RectangleF(
+            (float)x / (float)Texture.Width,
+            (float)y / (float)Texture.Height,
+            (float)(x + TileSize.Width) / (float)Texture.Width,
+            (float)(y + TileSize.Height) / (float)Texture.Height);
+    }
+}
+
+public class Map : GameObject
+{
+    public struct TileData
     {
-        _random = new Random();
-        _waitTime = 1 + _random.NextSingle(4);
+        public int TileIndex;
+    }
+    public Size TileSize;
+    public Size TileCount;
+    public TileSet TileSet;
+    public TileData[,] Tiles;
+    public Map(SystemServices services) : base(services)
+    {
+        TileSize = new Size(32, 32);
+        TileCount = new Size(256, 256);
+        TileSet = new TileSet()
+        {
+            Texture = Services.Content.Load<Texture2D>("npc1"),
+            TileSize = new Size(32, 32)
+        };
+
+        Tiles = new TileData[TileCount.Width, TileCount.Height];
+        _vertices = BuildVerticies().ToArray();
+        _indicies = BuildIndicies().ToArray();
+
+        _vertexBuffer = new DynamicVertexBuffer(Services.GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, _vertices.Length, BufferUsage.WriteOnly);
+        _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
+
+        _indexBuffer = new DynamicIndexBuffer(Services.GraphicsDevice, IndexElementSize.SixteenBits, _indicies.Length, BufferUsage.WriteOnly);
+        _indexBuffer.SetData(_indicies);
+
+        _currentEffect = new BasicEffect(Services.GraphicsDevice) {
+            TextureEnabled = true,
+            VertexColorEnabled = true
+        };
+        (_currentEffect as IEffectMatrices).Projection = Matrix.CreateOrthographicOffCenter(0f, Services.GraphicsDevice.Viewport.Width, Services.GraphicsDevice.Viewport.Height, 0f, 0f, -1f);
+        (_currentEffect as IEffectMatrices).View = Matrix.Identity;
+        (_currentEffect as IEffectMatrices).World = Matrix.Identity;
+        if (_currentEffect is BasicEffect textureEffect)
+        {
+            textureEffect.Texture = TileSet.Texture;
+        }
     }
 
-    public override void Update(GameTime gameTime)
+    private VertexPositionColorTexture[] _vertices;
+    private short[] _indicies;
+    private DynamicVertexBuffer _vertexBuffer;
+    private DynamicIndexBuffer _indexBuffer;
+
+    private Effect _currentEffect;
+
+    public void Draw(GameTime gameTime)
     {
-        if(_waitTime > 0)
+        Services.GraphicsDevice.SetVertexBuffer(_vertexBuffer);
+        Services.GraphicsDevice.Indices = _indexBuffer;
+        Services.GraphicsDevice.BlendState = BlendState.AlphaBlend;
+        Services.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+        Services.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+        Services.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+        
+        foreach (EffectPass pass in _currentEffect.CurrentTechnique.Passes)
         {
-            _waitTime -= gameTime.GetElapsedSeconds();
+            pass.Apply();
+            Services.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _vertices.Length / 2);
         }
+    }
 
-        if(_waitTime <= 0)
-        {
-            if(_targetPosition != Parent.Position)
+    public IEnumerable<short> BuildIndicies()
+    {
+        for(int y = 0; y < TileCount.Height; y++)
+            for(int x = 0; x < TileCount.Width; x++)
             {
-                var move = (_targetPosition - Parent.Position);
-                if(MathF.Abs(move.X) + Math.Abs(move.Y) > 1)
-                {
-                    move.Normalize();                    
-                    Parent.Move(move);
-                } else {
-                    Parent.Position = _targetPosition;
-                }                
+                yield return (short)((y * TileCount.Height + x) * 6 + 0);
+                yield return (short)((y * TileCount.Height + x) * 6 + 1);
+                yield return (short)((y * TileCount.Height + x) * 6 + 2);
+                yield return (short)((y * TileCount.Height + x) * 6 + 1);
+                yield return (short)((y * TileCount.Height + x) * 6 + 3);
+                yield return (short)((y * TileCount.Height + x) * 6 + 2);
             }
+    }
 
-            if(Parent.Position == _targetPosition)
+    public IEnumerable<VertexPositionColorTexture> BuildVerticies()
+    {
+        for(int y = 0; y < TileCount.Height; y++)
+        {
+            for(int x = 0; x < TileCount.Width; x++)
             {
-                _waitTime = 1 + _random.NextSingle(4);
-                if(_random.Next() % 2 == 1)
-                {
-                    _targetPosition = new Vector2(_random.Next(-320, 320), Parent.Position.Y);
-                } 
-                else
-                {
-                    _targetPosition = new Vector2(Parent.Position.X, _random.Next(-200, 200));
-                }
+                var uvCoords = TileSet.GetUV(Tiles[x, y].TileIndex);
+                yield return new VertexPositionColorTexture(
+                    new Vector3(x * TileSize.Width, y * TileSize.Height, 0),
+                    Color.White,
+                    uvCoords.TopLeft
+                );
+
+                yield return new VertexPositionColorTexture(
+                    new Vector3(x * TileSize.Width + TileSize.Width, y * TileSize.Height, 0),
+                    Color.White,
+                    uvCoords.TopRight
+                );
+
+                yield return new VertexPositionColorTexture(
+                    new Vector3(x * TileSize.Width, y * TileSize.Height + TileSize.Height, 0),
+                    Color.White,
+                    uvCoords.BottomLeft
+                );
+
+                yield return new VertexPositionColorTexture(
+                    new Vector3(x * TileSize.Width + TileSize.Width, y * TileSize.Height + TileSize.Height, 0),
+                    Color.White,
+                    uvCoords.BottomRight
+                );
             }
         }
     }
 }
+
 public class Actor : GameObject
 {
     public Vector2 Facing;

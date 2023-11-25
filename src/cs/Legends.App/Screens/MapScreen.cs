@@ -20,6 +20,8 @@ namespace Legends.App.Screens;
     private Legends.Engine.Graphics2D.Camera _camera;
     private Legends.App.Actor _entity;
 
+    private Legends.App.Map _map;
+
     private List<Legends.App.Actor> _entities;
 
     private SystemServices _services;
@@ -45,6 +47,7 @@ namespace Legends.App.Screens;
 
         services.GetService<IRenderService>().Camera = _camera;     
         _entity = NewEntity();
+        _map = new Map(_services);
 
          var input = new InputManager(services, new KeyboardListenerSettings()
         {
@@ -118,6 +121,9 @@ namespace Legends.App.Screens;
         //batch.DrawString(Global.Fonts.Menu, string.Format(" Mouse Abs: {0:N0}, {1:N0} World: {2:N0}, {3:N0}", Mouse.GetState().Position.X,Mouse.GetState().Position.Y, _canvas.Camera.ScreenToWorld(Mouse.GetState().Position.ToVector2()).X,_canvas.Camera.ScreenToWorld(Mouse.GetState().Position.ToVector2()).Y), new Vector2(0, 18), Color.White);
         //batch.DrawString(Global.Fonts.Menu, string.Format("Entity Loc: {0:N2}, {1:N2}", _entity.Spatial.Position.X, _entity.Spatial.Position.Y), new Vector2(0, 36+18), Color.White);
         //batch.End(); 
+
+        
+        _map.Draw(gameTime);
     }
 
     public override void Update(GameTime gameTime)
@@ -153,6 +159,7 @@ namespace Legends.App.Screens;
             }
         }  
         
+        _map.Update(gameTime);
         _entity.Update(gameTime);  
 
         foreach(var entity in _entities)

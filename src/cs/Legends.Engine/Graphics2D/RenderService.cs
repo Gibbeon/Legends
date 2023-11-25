@@ -147,7 +147,7 @@ public class RenderService : IRenderService
     {
         if(ClearColor != null)
         {
-            Services.GraphicsDevice.Clear(ClearColor.Value);
+            //Services.GraphicsDevice.Clear(ClearColor.Value);
         }
         
         RenderState state = DefaultRenderState;
