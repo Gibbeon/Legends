@@ -51,10 +51,27 @@ public class Map : GameObject
         
         TileCount = new Size(312 / TileSize.Width, 288 / TileSize.Height);
 
+        TileCount *= 2;
+
         Tiles = new TileData[TileCount.Width, TileCount.Height];
+
+        var x_count = (TileSet.Texture.Width / TileSize.Width);        
+        var y_count = (TileSet.Texture.Height / TileSize.Height);
+        
+        for(var y = 0; y < TileCount.Height; y++)
+        {
+            for(var x = 0; x < TileCount.Width; x++)
+            {
+                Tiles[x, y].TileIndex = x % x_count + (y % y_count) * x_count;
+            }
+        }
+
+        Size = new Size2(TileCount.Width * TileSize.Width, TileCount.Height * TileSize.Height);
+        OriginNormalized = new Vector2(.5f, .5f);
+
         _vertices = BuildVerticies().ToArray();
         _indicies = BuildIndicies().ToArray();
-
+        
         _vertexBuffer = new DynamicVertexBuffer(Services.GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, _vertices.Length, BufferUsage.WriteOnly);
         _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
 
@@ -67,7 +84,7 @@ public class Map : GameObject
         };
         (_currentEffect as IEffectMatrices).Projection = Matrix.CreateOrthographicOffCenter(0f, Services.GraphicsDevice.Viewport.Width, Services.GraphicsDevice.Viewport.Height, 0f, 0f, -1f);
         (_currentEffect as IEffectMatrices).View = Matrix.Identity;
-        (_currentEffect as IEffectMatrices).World = Matrix.Identity;
+        
         if (_currentEffect is BasicEffect textureEffect)
         {
             textureEffect.Texture = TileSet.Texture;
@@ -83,6 +100,8 @@ public class Map : GameObject
 
     public void Draw(GameTime gameTime)
     {
+        (_currentEffect as IEffectMatrices).World = this.LocalMatrix;
+        
         Services.GraphicsDevice.SetVertexBuffer(_vertexBuffer);
         Services.GraphicsDevice.Indices = _indexBuffer;
         Services.GraphicsDevice.BlendState = BlendState.AlphaBlend;
@@ -100,6 +119,7 @@ public class Map : GameObject
     public IEnumerable<uint> BuildIndicies()
     {
         for(int y = 0; y < TileCount.Height; y++)
+        {
             for(int x = 0; x < TileCount.Width; x++)
             {
                 yield return (uint)((y * TileCount.Width + x) * 4 + 0);
@@ -108,23 +128,18 @@ public class Map : GameObject
                 yield return (uint)((y * TileCount.Width + x) * 4 + 1);
                 yield return (uint)((y * TileCount.Width + x) * 4 + 3);
                 yield return (uint)((y * TileCount.Width + x) * 4 + 2);
+
             }
+        }
     }
 
     public IEnumerable<VertexPositionColorTexture> BuildVerticies()
     {
-
-        var x_count = (TileSet.Texture.Width / TileSize.Width);        
-        var y_count = (TileSet.Texture.Height / TileSize.Height);
-        
-        var maxTiles = x_count * y_count;
-        
         for(int y = 0; y < TileCount.Height; y++)
         {
             for(int x = 0; x < TileCount.Width; x++)
             {
-                //var uvCoords = TileSet.GetUV(Tiles[x, y].TileIndex);
-                var uvCoords = TileSet.GetUV(((y * TileCount.Width) + x) % maxTiles);
+                var uvCoords = TileSet.GetUV(Tiles[x, y].TileIndex);
                 yield return new VertexPositionColorTexture(
                     new Vector3(x * TileSize.Width, y * TileSize.Height, 0),
                     Color.White,
