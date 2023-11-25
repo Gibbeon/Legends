@@ -8,6 +8,7 @@ using MonoGame.Extended;
 using Legends.Engine;
 using Legends.Engine.Graphics2D;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace Legends.App.Screens;
 
@@ -19,21 +20,31 @@ namespace Legends.App.Screens;
     private Legends.Engine.Graphics2D.Camera _camera;
     private Legends.App.Actor _entity;
 
+    private List<Legends.App.Actor> _entities;
+
     private SystemServices _services;
-    
-    public MapScreen(SystemServices services)
+
+    public Actor NewEntity()
     {
-        _services = services;
-        _camera = new Camera(services); 
-        services.GetService<IRenderService>().Camera = _camera;     
-        _entity = new Actor(_services)
+        var result = new Actor(_services)
         {
             Size = new Size2(26, 36),
             OriginNormalized = new Vector2(.5f, .5f)
         };
 
-        _entity.GetBehavior<SpriteRenderBehavior>().TextureRegion = 
-        new MonoGame.Extended.TextureAtlases.TextureRegion2D(_services.Content.Load<Texture2D>("npc1"), new Rectangle(Point.Zero, (Point)_entity.Size));
+        result.GetBehavior<SpriteRenderBehavior>().TextureRegion = new MonoGame.Extended.TextureAtlases.TextureRegion2D(_services.Content.Load<Texture2D>("npc1"), new Rectangle(Point.Zero, (Point)result.Size));
+
+        return result;
+    }
+    
+    public MapScreen(SystemServices services)
+    {
+        _services = services;
+        _camera = new Camera(services); 
+        _entities= new List<Legends.App.Actor>();
+
+        services.GetService<IRenderService>().Camera = _camera;     
+        _entity = NewEntity();
 
          var input = new InputManager(services, new KeyboardListenerSettings()
         {
@@ -45,6 +56,9 @@ namespace Legends.App.Screens;
         input.Register("EXIT",     Keys.Escape);
         input.Register("LOOK_AT",  MouseButton.Right);  
         input.Register("ZOOM",     EventType.MouseScroll); 
+
+        
+        input.Register("ADD",     Keys.Add); 
 
         input.Register("SELECT",   MouseButton.Left);
         input.Register("ROTATE",   MouseButton.Left).WithModifierAny(Keys.LeftAlt, Keys.RightAlt);
@@ -118,6 +132,7 @@ namespace Legends.App.Screens;
                 case "MOVE_RIGHT":  _entity.Move( 1, 0); break;
                 case "MOVE_UP":     _entity.Move( 0,-1); break;
                 case "MOVE_DOWN":   _entity.Move( 0, 1); break;
+                case "ADD":         _entities.Add(NewEntity()); break;
                 
                 //case "ZOOM":        _canvas.Camera.ZoomIn(Command.GetScrollDelta()); break;  
                 //case "ROTATE":      _canvas.Camera.Rotate(MathF.PI/8); break;
@@ -139,5 +154,10 @@ namespace Legends.App.Screens;
         }  
         
         _entity.Update(gameTime);  
+
+        foreach(var entity in _entities)
+        {
+            entity.Update(gameTime);
+        }
     }
 }
