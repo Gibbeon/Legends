@@ -3,10 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using MonoGame.Extended.BitmapFonts;
-using Legends.Engine.Graphics2D;
-using Autofac.Core.Lifetime;
-using MonoGame.Extended.Tiled;
-using System;
 namespace Legends.Engine;
 
 public class RenderService : IRenderService
@@ -39,7 +35,7 @@ public class RenderService : IRenderService
             };
         }         
 
-        _layers.Add(new Layer(this));
+        _layers.Add(new Layer(this) { ClearColor = Color.Black });
     }
 
     public void Draw(GameTime gameTime)
@@ -101,6 +97,8 @@ public class Layer : ILayer
             Projection = projection,
             World = Matrix.Identity
         };
+
+        IsVisible = true;
     }
 
     public void BeginDraw()
@@ -119,6 +117,8 @@ public class Layer : ILayer
 
     public void DrawImmediate(GameTime gameTime)
     {
+        if(!IsVisible) return;
+
         var batchStarted = false;
 
         foreach(var drawable in OrderedVisibleDrawables)
@@ -141,6 +141,7 @@ public class Layer : ILayer
                     if(batchStarted)
                     {
                         _spriteBatch.End();
+                        batchStarted = false;
                     }
 
                     _renderState.CopyFrom(batchDrawable.RenderState ?? _renderService.DefaultRenderState);
@@ -208,6 +209,7 @@ public class Layer : ILayer
             if(batchStarted)
             {
                 _spriteBatch.End();
+                batchStarted = false;
             }
         }
     }

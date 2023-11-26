@@ -17,7 +17,7 @@ public class Actor : SceneObject
     public float Speed;
     ValueResolver<string, Actor> _resolver;
 
-    public Actor(SystemServices services) : base(services)
+    public Actor(SystemServices services, Scene parent) : base(services, parent)
     {
         Speed = 1.0f;
         Facing = DirectionConstants.Down;

@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Legends.App;
 
-public class Map : SceneObject
+public class Map : SceneObject, ISelfDrawable
 {
     public struct TileData
     {
@@ -21,7 +21,7 @@ public class Map : SceneObject
     public Size TileCount;
     public TileSet TileSet;
     public TileData[,] Tiles;
-    public Map(SystemServices services) : base(services)
+    public Map(SystemServices services, Scene parent) : base(services, parent)
     {
         TileSize = new Size(8, 8);
         TileSet = new TileSet()
@@ -76,10 +76,16 @@ public class Map : SceneObject
     private uint[] _indicies;
     private DynamicVertexBuffer _vertexBuffer;
     private DynamicIndexBuffer _indexBuffer;
-
     private Effect _currentEffect;
 
-    public void Draw(GameTime gameTime)
+    public override void Draw(GameTime gameTime)
+    {
+        base.Draw(gameTime);
+
+        Services.GetService<IRenderService>().DrawBatched(this);
+    }
+
+    public void DrawImmediate(GameTime gameTime)
     {
         (_currentEffect as IEffectMatrices).World = this.LocalMatrix;
         
