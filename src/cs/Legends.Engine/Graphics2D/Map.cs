@@ -26,7 +26,7 @@ public class Map : SceneObject, ISelfDrawable
         TileSize = new Size(8, 8);
         TileSet = new TileSet()
         {
-            Texture = Services.Content.Load<Texture2D>("npc1"),
+            Texture = Services.Content.Load<Texture2D>("ville_0"),
             TileSize = new Size(8, 8)
         };
         
