@@ -14,7 +14,9 @@ namespace Legends.App.Screens
     public class TitleScreen : Screen
     {
         private SystemServices _services;
-        private GameObject _text;
+
+        private Scene _scene;
+        private SceneObject _text;
 
         public TitleScreen(SystemServices services)
         {
@@ -28,8 +30,9 @@ namespace Legends.App.Screens
             input.Register("START",    MouseButton.Left);
 
             _services.GetService<IInputHandlerService>().Push(input);
-
-            _text = new GameObject(_services);
+            
+            _scene = new Scene(_services);
+            _text = new SceneObject(_services, _scene);
             _text.AttachBehavior(new TextRenderBehavior(_text)
             {
                 Font = services.Content.Load<BitmapFont>("Sensation"),
@@ -39,8 +42,8 @@ namespace Legends.App.Screens
         }
 
         public override void Draw(GameTime gameTime)
-        {
-                       
+        { 
+            _scene.Draw(gameTime);       
         }
 
         public override void Update(GameTime gameTime)
@@ -54,7 +57,7 @@ namespace Legends.App.Screens
                 }
             }
 
-            _text.Update(gameTime);
+            _scene.Update(gameTime);
         }
 
         protected void Start()

@@ -6,9 +6,9 @@ using MonoGame.Extended.ViewportAdapters;
 
 namespace Legends.Engine.Graphics2D;
 
-public class Camera : GameObject
+public class Camera : SceneObject
 {
-    public class CameraDesc : GameObjectDesc
+    public class CameraDesc : SceneObjectDesc
     {
         public float MinimumZoom = float.Epsilon;
         public float MaximumZoom = float.MaxValue;

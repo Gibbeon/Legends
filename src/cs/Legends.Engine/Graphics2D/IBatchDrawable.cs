@@ -12,6 +12,8 @@ public interface IBatchDrawable
     Color Color { get; }
     Vector2 Origin { get; }
     SpriteEffects Effect { get; }
+
+    RenderState? RenderState { get; }
 }
 
 public interface IBatchDrawable<TType> : IBatchDrawable

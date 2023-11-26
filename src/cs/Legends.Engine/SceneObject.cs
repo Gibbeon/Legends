@@ -1,19 +1,45 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D;
-public class GameObject : Spatial, IDisposable, IUpdate
+
+public class Scene : SceneObject
+{
+    public Legends.Engine.Graphics2D.Camera? Camera { get; set; }
+
+    public Scene(SystemServices services) : this (services, null)
+    {
+        Camera = new Camera(services);
+    }
+
+    public Scene(SystemServices services, SceneObject? parent) : base(services, parent)
+    {
+
+    }
+
+    public override void Draw(GameTime gameTime)
+    {
+        Services.GetService<IRenderService>().SetCamera(Camera);
+        base.Draw(gameTime);
+    }
+
+    public override void Update(GameTime gameTime)
+    {
+        base.Update(gameTime);
+    }
+}
+
+public class SceneObject : Spatial, IDisposable, IUpdate
 {   
-    public class GameObjectDesc : SpatialDesc
+    public class SceneObjectDesc : SpatialDesc
     {
         public string Name;
     }
+
+    public SceneObject? ParentScene => (Parent is Scene) ? Parent : Parent?.ParentScene;
 
     public SystemServices Services { get; private set; }
 
@@ -24,13 +50,14 @@ public class GameObject : Spatial, IDisposable, IUpdate
 
     private readonly IList<IBehavior> _behaviors;
 
-    private readonly IList<GameObject> _children;
+    private readonly IList<SceneObject> _children;
 
-    public GameObject? Parent { get; private set; }
+    public SceneObject? Parent { get; private set; }
 
     public bool Enabled { get; set; }
+    public bool IsVisible { get; set; }
 
-    public IReadOnlyList<GameObject> Children
+    public IReadOnlyList<SceneObject> Children
     {
         get => _children.ToList().AsReadOnly();
     }
@@ -40,12 +67,12 @@ public class GameObject : Spatial, IDisposable, IUpdate
         get => _behaviors.ToList().AsReadOnly();
     }
 
-    public GameObject(SystemServices systems) : this(systems, new GameObjectDesc())
+    public SceneObject(SystemServices systems) : this(systems, new SceneObjectDesc())
     {
 
     }
 
-    public GameObject(SystemServices systems, GameObject? parent) : this(systems, new GameObjectDesc())
+    public SceneObject(SystemServices systems, SceneObject? parent) : this(systems, new SceneObjectDesc())
     {
         if(parent != null)
         {
@@ -53,12 +80,14 @@ public class GameObject : Spatial, IDisposable, IUpdate
         }
     }
 
-    public GameObject(SystemServices systems, GameObjectDesc data) : base(data)
+    public SceneObject(SystemServices systems, SceneObjectDesc data) : base(data)
     {
         Services = systems;
         Name = data.Name;
         Enabled = true;
-        _children = new List<GameObject>();
+        IsVisible = true;
+        
+        _children = new List<SceneObject>();
         _behaviors = new List<IBehavior>();
         _tags = new List<string>();
     }
@@ -108,7 +137,7 @@ public class GameObject : Spatial, IDisposable, IUpdate
         }   
     }
 
-    internal void AttachTo(GameObject parent)
+    internal void AttachTo(SceneObject parent)
     {
         if(Parent != parent)
         {
@@ -138,7 +167,7 @@ public class GameObject : Spatial, IDisposable, IUpdate
         _behaviors.Remove(_behaviors.OfType<TType>().Single());
     }
 
-    public void AttachChild(GameObject node, bool relative = false)
+    public void AttachChild(SceneObject node, bool relative = false)
     {
         if(!_children.Contains(node))
         {
@@ -154,7 +183,7 @@ public class GameObject : Spatial, IDisposable, IUpdate
         }
     }
 
-    public void DetachChild(GameObject node, bool relative = false)
+    public void DetachChild(SceneObject node, bool relative = false)
     {
         if(_children.Remove(node))
         {
@@ -181,6 +210,21 @@ public class GameObject : Spatial, IDisposable, IUpdate
         foreach(var child in Children)
         {
             child.Dispose();
+        }
+    }
+
+    public virtual void Draw(GameTime gameTime)
+    {
+        if(!IsVisible) return;
+
+        foreach(var behavior in Behaviors)
+        {
+            behavior.Draw(gameTime);
+        }
+        
+        foreach(var child in Children)
+        {
+            child.Draw(gameTime);
         }
     }
 

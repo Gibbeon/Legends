@@ -20,6 +20,6 @@ namespace Legends.Engine;
 
 public interface IRenderService
 {
-    public Camera? Camera { get; set; }
+    void SetCamera(Camera camera);
     void DrawBatched(IBatchDrawable drawable);
 }

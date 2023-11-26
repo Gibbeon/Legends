@@ -15,7 +15,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 
     public SpriteEffects Effect  { get; set; }
 
-    public bool IsVisible { get; set; }
+    public bool IsVisible => Parent.IsVisible;
 
     public Vector2 Position => Parent.Position;
 
@@ -27,17 +27,26 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 
     public Texture2D SourceData => TextureRegion.Texture;
 
+    public RenderState? RenderState { get; set; }
+
     public Rectangle SourceBounds{ get => TextureRegion.Bounds; set => SetTextureRegionBounnds(value); }
 
     public Rectangle DestinationBounds => (Rectangle)Parent.BoundingRectangle; 
 
+    public override void Draw(GameTime gameTime)
+    {
+        if(IsVisible)
+        {
+            Parent.Services.GetService<IRenderService>().DrawBatched(this);
+        }
+    }
+
     public override void Update(GameTime gameTime)
     {
-        var services = Parent.Services.GetService<IRenderService>();
-        services.DrawBatched(this); 
+        //base.Update(gameTime);
     }
-    
-    public SpriteRenderBehavior(GameObject parent) : base(parent)
+
+    public SpriteRenderBehavior(SceneObject parent) : base(parent)
     {
         Color = Color.White;
     }

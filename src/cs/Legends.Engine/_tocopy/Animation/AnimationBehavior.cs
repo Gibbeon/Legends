@@ -14,7 +14,7 @@ public class AnimationBehavior : BaseBehavior
     public IList<IAnimation> Animations { get; private set; }
     public IReadOnlyList<AnimationChannel> AnimationChannels  => _channels.AsReadOnly();
 
-    public AnimationBehavior(GameObject parent, int channels = 1) : base(parent)
+    public AnimationBehavior(SceneObject parent, int channels = 1) : base(parent)
     {
         Animations = new List<IAnimation>();
 

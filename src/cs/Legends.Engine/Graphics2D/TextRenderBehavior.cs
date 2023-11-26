@@ -14,7 +14,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public SpriteEffects Effect  { get; set; }
 
-    public bool IsVisible { get; set; }
+    public bool IsVisible => Parent.IsVisible;
 
     public Vector2 Position => Parent.Position;
 
@@ -25,6 +25,8 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
     public Vector2 Origin => Parent.Origin;
 
     public string Text {get; set; }
+    
+    public RenderState? RenderState { get; set; }
 
     public BitmapFont SourceData => Font;
 
@@ -32,12 +34,21 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public Rectangle SourceBounds => new Rectangle(Position.ToPoint(), (Point)SourceData.MeasureString(Text));
 
+    public override void Draw(GameTime gameTime)
+    {   
+        base.Draw(gameTime);
+        if(IsVisible)
+        {
+            Parent.Services.GetService<IRenderService>().DrawBatched(this);  
+        }      
+    }
+
     public override void Update(GameTime gameTime)
     {
-        Parent.Services.GetService<IRenderService>().DrawBatched(this);        
+        //base.Update(gameTime);
     }
-    
-    public TextRenderBehavior(GameObject parent) : base(parent)
+
+    public TextRenderBehavior(SceneObject parent) : base(parent)
     {
         Color = Color.White;
     }

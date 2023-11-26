@@ -3,10 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using MonoGame.Extended.BitmapFonts;
-using System;
 using Legends.Engine.Graphics2D;
 namespace Legends.Engine;
-
 
 public class RenderService : IRenderService
 {
@@ -37,33 +35,7 @@ public class RenderService : IRenderService
             return x.Position.Y.CompareTo(y.Position.Y);
         }
     }
-
-    public class RenderState : IComparable<RenderState>
-    {
-        public SpriteSortMode SpriteSortMode { get; set; }
-        public BlendState? BlendState { get; set; }
-        public SamplerState? SamplerState { get; set; }
-        public DepthStencilState? DepthStencilState { get; set; }
-        public RasterizerState? RasterizerState { get; set; }
-        public Effect? Effect { get; set; }
-        public Matrix? Matrix { get; set; }
-
-        public int CompareTo(RenderState? other)
-        {
-            if(other != null)
-            {
-                if(this.SpriteSortMode != other.SpriteSortMode) return -1;
-                if(this.BlendState != other.BlendState) return -1;
-                if(this.SamplerState != other.SamplerState) return -1;
-                if(this.DepthStencilState != other.DepthStencilState) return -1;
-                if(this.RasterizerState != other.RasterizerState) return -1;
-                if(this.Effect != other.Effect) return -1;
-                if(this.Matrix != other.Matrix) return -1;
-            }
-
-            return -1;    
-        }
-    }
+   
 
     public class Layer
     {
@@ -95,15 +67,17 @@ public class RenderService : IRenderService
 
     public SystemServices Services { get; private set; }
 
-    public Legends.Engine.Graphics2D.Camera? Camera { get; set; }
-
     public Frame Current { get; private set; }
 
     public RenderState DefaultRenderState { get; set; }
 
     public Effect DefaultEffect { get; set; }
 
+    public Matrix DefaultProejctionMatrix { get; set; }
+
     private SpriteBatch _spriteBatch;
+
+    private RenderState _renderState;
 
     public RenderService(SystemServices services, int layerCount = 1)
     {
@@ -112,6 +86,7 @@ public class RenderService : IRenderService
         LayerCount = layerCount;
         Current = new Frame(LayerCount);
         DefaultRenderState = new RenderState();
+        _renderState = new RenderState();
         ClearColor = Color.Black;
     }
 
@@ -123,71 +98,68 @@ public class RenderService : IRenderService
     public void Initialize()
     {
         if(DefaultTexture == null || _spriteBatch == null || DefaultEffect == null) // initialize
-        {
+        {            
+            _spriteBatch = new SpriteBatch(Services.GraphicsDevice);
+
             DefaultTexture = new Texture2D(Services.GraphicsDevice, 1, 1);
             DefaultTexture.SetData<Color>(new Color[] { Color.Green });
-            _spriteBatch = new SpriteBatch(Services.GraphicsDevice);
+
             DefaultEffect = new BasicEffect (Services.GraphicsDevice)
             {
                 VertexColorEnabled = true,
                 TextureEnabled = true
             };
 
-            IEffectMatrices? mtxEffect = (DefaultEffect as IEffectMatrices);
+            Matrix projection; 
+            Matrix.CreateOrthographicOffCenter(0f, Services.GraphicsDevice.Viewport.Width, Services.GraphicsDevice.Viewport.Height, 0f, 0f, -1f, out projection);
 
-            Matrix _projection; 
-            Matrix.CreateOrthographicOffCenter(0f, Services.GraphicsDevice.Viewport.Width, Services.GraphicsDevice.Viewport.Height, 0f, 0f, -1f, out _projection);
-            mtxEffect.View         = Matrix.Identity;
-            mtxEffect.Projection   = _projection;//Camera.Projection;
-            mtxEffect.World        = Matrix.Identity;
+            DefaultRenderState.Projection = projection;//Camera.Projection;
+            
         }  
     }
 
-    public void Draw(GameTime gameTime)
+    public void SetCamera(Camera camera)
     {
+        DefaultRenderState.View = camera.View;
+        DefaultRenderState.Projection = camera.Projection;        
+    }
+
+    public void Draw(GameTime gameTime)
+    {        
+        DefaultRenderState.CopyTo(_renderState);
+
         if(ClearColor != null)
         {
             //Services.GraphicsDevice.Clear(ClearColor.Value);
         }
-        
-        RenderState state = DefaultRenderState;
+
         bool batchStarted = false;
+
         foreach(var layer in Current.Layers)
         {
             foreach(var drawable in layer.OrderedDrawables)
             {
-                if(!batchStarted)// || drawable.RequiredState != state)
+                if(!batchStarted|| ((drawable.RenderState ?? DefaultRenderState) != _renderState))
                 {
                     if(batchStarted)
                     {
                         _spriteBatch.End();
                     }
 
-                    var mtx = state.Matrix;
-                    var effect = state.Effect ?? DefaultEffect;
-
-                    if(Camera != null)
+                    if((_renderState.Effect ?? DefaultEffect) is IEffectMatrices mtxEffect)
                     {
-                        if(effect is IEffectMatrices)
-                        {
-                            IEffectMatrices? mtxEffect = (effect as IEffectMatrices);
-
-                            mtxEffect.View         = Camera.View;
-                            mtxEffect.Projection   = Camera.Projection;
-                            mtxEffect.World        = state.Matrix ?? Matrix.Identity;
-                        } else {
-                           mtx = Matrix.Multiply(Camera.View, Camera.Projection);
-                        }
-                    }
+                        mtxEffect.View         = _renderState.View.GetValueOrDefault(Matrix.Identity);
+                        mtxEffect.Projection   = _renderState.Projection.GetValueOrDefault(Matrix.Identity);
+                    } 
 
                     _spriteBatch.Begin(
-                        state.SpriteSortMode,
-                        state.BlendState,
-                        state.SamplerState,
-                        state.DepthStencilState,
-                        state.RasterizerState,
-                        DefaultEffect,//effect, // Effect
-                        mtx // TransforMatrix
+                        _renderState.SpriteSortMode,
+                        _renderState.BlendState,
+                        _renderState.SamplerState,
+                        _renderState.DepthStencilState,
+                        _renderState.RasterizerState,
+                        _renderState.Effect ?? DefaultEffect,
+                        _renderState.World
                     );
 
                     batchStarted = true;

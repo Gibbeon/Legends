@@ -45,7 +45,6 @@ namespace Legends.App.Screens;
         _camera = new Camera(services); 
         _entities= new List<Legends.App.Actor>();
 
-        services.GetService<IRenderService>().Camera = _camera;     
         _entity = NewEntity();
         _map = new Map(_services);
 
@@ -124,6 +123,14 @@ namespace Legends.App.Screens;
 
         
         _map.Draw(gameTime);
+
+        _map.Draw(gameTime);
+        _entity.Draw(gameTime);  
+
+        foreach(var entity in _entities)
+        {
+            entity.Draw(gameTime);
+        }
     }
 
     public override void Update(GameTime gameTime)

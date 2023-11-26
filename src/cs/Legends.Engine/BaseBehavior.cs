@@ -12,13 +12,17 @@ namespace Legends.Engine;
 
 public abstract class BaseBehavior : IBehavior
 {
-    public GameObject Parent { get; private set; }
+    public SceneObject Parent { get; private set; }
 
-    public BaseBehavior(GameObject parent)
+    public BaseBehavior(SceneObject parent)
     {
         Parent = parent;
     }
     public abstract void Update(GameTime gameTime);
+    public virtual void Draw(GameTime gameTime)
+    {
+
+    }
     
     public virtual void Dispose()
     {
