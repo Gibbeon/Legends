@@ -87,7 +87,12 @@ public class Map : SceneObject, ISelfDrawable
 
     public void DrawImmediate(GameTime gameTime)
     {
-        (_currentEffect as IEffectMatrices).World = this.LocalMatrix;
+        (_currentEffect as IEffectMatrices).View = this.ParentScene.Camera.View;
+        (_currentEffect as IEffectMatrices).Projection = this.ParentScene.Camera.Projection;
+        (_currentEffect as IEffectMatrices).World = 
+            Matrix.Multiply(
+                Matrix.CreateTranslation(-Origin.X, -Origin.Y, 0) * LocalMatrix, 
+                this.ParentScene.Camera.World);
         
         Services.GraphicsDevice.SetVertexBuffer(_vertexBuffer);
         Services.GraphicsDevice.Indices = _indexBuffer;

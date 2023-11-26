@@ -1,10 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Legends.Engine.Graphics2D;
-using MonoGame.Extended.Sprites;
-using MonoGame.Extended.TextureAtlases;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
-using System.Net.Http;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -38,6 +34,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
     public override void Draw(GameTime gameTime)
     {   
         base.Draw(gameTime);
+
         if(IsVisible)
         {
             Parent.Services.GetService<IRenderService>().DrawBatched(this);  

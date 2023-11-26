@@ -151,6 +151,7 @@ public class Layer : ILayer
                     {
                         mtxEffect.View         = _viewState.View;
                         mtxEffect.Projection   = _viewState.Projection;
+                        mtxEffect.World        = _viewState.World;
                     } 
 
                     _spriteBatch.Begin(
@@ -160,7 +161,7 @@ public class Layer : ILayer
                         _renderState.DepthStencilState,
                         _renderState.RasterizerState,
                         _renderState.Effect,
-                        _viewState.World
+                        null
                     );
 
                     batchStarted = true;

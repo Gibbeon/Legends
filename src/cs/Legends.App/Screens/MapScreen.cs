@@ -8,13 +8,10 @@ using MonoGame.Extended;
 using Legends.Engine;
 using Legends.Engine.Graphics2D;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace Legends.App.Screens;
 
-
-
- public class MapScreen : Screen
+public class MapScreen : Screen
 {
     private Legends.App.Actor _entity;
     private Scene _scene;
@@ -79,10 +76,10 @@ namespace Legends.App.Screens;
             {
                 case "EXIT":        _services.Exit(); break;
 
-                case "MOVE_LEFT":   _entity.Move(-1, 0); break;
-                case "MOVE_RIGHT":  _entity.Move( 1, 0); break;
-                case "MOVE_UP":     _entity.Move( 0,-1); break;
-                case "MOVE_DOWN":   _entity.Move( 0, 1); break;
+                case "MOVE_LEFT":   _scene.Camera.Move(-1, 0); break;
+                case "MOVE_RIGHT":  _scene.Camera.Move( 1, 0); break;
+                case "MOVE_UP":     _scene.Camera.Move( 0,-1); break;
+                case "MOVE_DOWN":   _scene.Camera.Move( 0, 1); break;
                 case "ADD":         _scene.AttachChild(NewEntity()); break;
                 
                 //case "ZOOM":        _canvas.Camera.ZoomIn(Command.GetScrollDelta()); break;  
