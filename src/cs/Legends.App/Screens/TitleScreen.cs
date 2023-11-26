@@ -32,6 +32,7 @@ namespace Legends.App.Screens
             _services.GetService<IInputHandlerService>().Push(input);
             
             _scene = new Scene(_services);
+
             _text = new SceneObject(_services, _scene);
             _text.AttachBehavior(new TextRenderBehavior(_text)
             {

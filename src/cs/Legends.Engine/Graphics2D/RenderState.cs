@@ -1,9 +1,8 @@
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 namespace Legends.Engine;
 
- public class RenderState : IComparable<RenderState>
+public class RenderState : IComparable<RenderState>
 {
     public SpriteSortMode SpriteSortMode { get; set; }
     public BlendState? BlendState { get; set; }
@@ -11,9 +10,6 @@ namespace Legends.Engine;
     public DepthStencilState? DepthStencilState { get; set; }
     public RasterizerState? RasterizerState { get; set; }
     public Effect? Effect { get; set; }
-    public Matrix? World { get; set; }
-    public Matrix? View { get; set; }
-    public Matrix? Projection { get; set; }
 
     public int CompareTo(RenderState? other)
     {
@@ -25,24 +21,19 @@ namespace Legends.Engine;
             if(this.DepthStencilState != other.DepthStencilState) return -1;
             if(this.RasterizerState != other.RasterizerState) return -1;
             if(this.Effect != other.Effect) return -1;
-            if(this.World != other.World) return -1;
-            if(this.View != other.View) return -1;
-            if(this.Projection != other.Projection) return -1;
+            return 0;
         }
 
         return -1;    
     }
 
-    public void CopyTo(RenderState state)
+    public void CopyFrom(RenderState other)
     {
-        state.SpriteSortMode = this.SpriteSortMode;
-        state.BlendState = this.BlendState;
-        state.SamplerState = this.SamplerState;
-        state.DepthStencilState = this.DepthStencilState;
-        state.RasterizerState = this.RasterizerState;
-        state.Effect = this.Effect;
-        state.World = this.World;
-        state.View = this.View;
-        state.Projection = this.Projection;
+        this.SpriteSortMode = other.SpriteSortMode;
+        this.BlendState = other.BlendState;
+        this.SamplerState = other.SamplerState;
+        this.DepthStencilState = other.DepthStencilState;
+        this.RasterizerState = other.RasterizerState;
+        this.Effect = other.Effect;
     }
 }

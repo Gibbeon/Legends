@@ -20,6 +20,9 @@ namespace Legends.Engine;
 
 public interface IRenderService
 {
-    void SetCamera(Camera camera);
-    void DrawBatched(IBatchDrawable drawable);
+    GraphicsDevice  GraphicsDevice { get; }
+    RenderState     DefaultRenderState { get; }
+    Texture2D       DefaultTexture { get; }
+    void Initialize();
+    void DrawBatched(IDrawable drawable);
 }

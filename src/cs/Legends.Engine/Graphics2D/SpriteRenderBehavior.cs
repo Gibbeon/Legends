@@ -28,6 +28,8 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     public Texture2D SourceData => TextureRegion.Texture;
 
     public RenderState? RenderState { get; set; }
+    
+    public IViewState? ViewState => Parent.ParentScene?.Camera;
 
     public Rectangle SourceBounds{ get => TextureRegion.Bounds; set => SetTextureRegionBounnds(value); }
 

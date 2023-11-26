@@ -2,9 +2,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 namespace Legends.Engine;
 
-public interface IBatchDrawable
+public interface IBatchDrawable : IDrawable
 {
-    bool IsVisible { get; }
     Rectangle SourceBounds { get; }
     Vector2 Position { get; }
     float Rotation { get; }
@@ -12,8 +11,8 @@ public interface IBatchDrawable
     Color Color { get; }
     Vector2 Origin { get; }
     SpriteEffects Effect { get; }
-
     RenderState? RenderState { get; }
+    IViewState? ViewState { get; }
 }
 
 public interface IBatchDrawable<TType> : IBatchDrawable

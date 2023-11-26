@@ -4,152 +4,152 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoGame.Extended.BitmapFonts;
 using Legends.Engine.Graphics2D;
+using Autofac.Core.Lifetime;
+using MonoGame.Extended.Tiled;
+using System;
 namespace Legends.Engine;
 
 public class RenderService : IRenderService
-{
-    public class Frame
-    {
-        private List<Layer> _layers;
+{ 
+    public SystemServices   Services { get; private set; }
+    public RenderState      DefaultRenderState { get; set; }
+    public Texture2D        DefaultTexture { get; private set; }
+    public GraphicsDevice   GraphicsDevice => Services.GraphicsDevice;
+    private List<ILayer>    _layers;
 
-        public IReadOnlyList<Layer> Layers => _layers.AsReadOnly();
-
-        public Frame(int layers)
-        {
-            _layers = new List<Layer>(Enumerable.Repeat(new Layer(), layers));
-        }
-
-        public void Reset()
-        {
-            foreach(var layer in _layers)
-            {
-                layer.Reset();
-            }
-        }
-    }
-
-    public class PositionDrawableComparer : IComparer<IBatchDrawable>
-    {
-        public int Compare(IBatchDrawable? x, IBatchDrawable? y)
-        {
-            return x.Position.Y.CompareTo(y.Position.Y);
-        }
-    }
-   
-
-    public class Layer
-    {
-        private IList<IBatchDrawable> _drawables;
-
-        public IList<IBatchDrawable> Drawables => _drawables;
-
-        public IOrderedEnumerable<IBatchDrawable> OrderedDrawables => _drawables.Where(n=> n.IsVisible || true).OrderBy(n => DrawableComparer);
-
-        public IComparer<IBatchDrawable> DrawableComparer { get; set; }
-
-        public Layer()
-        {
-            _drawables = new List<IBatchDrawable>();
-            DrawableComparer = new PositionDrawableComparer();
-        }
-
-        public void Reset()
-        {
-            _drawables.Clear();
-        } 
-    }
-
-    public Color? ClearColor;
-
-    public Texture2D DefaultTexture { get; private set; }
-
-    public int LayerCount { get; set; }
-
-    public SystemServices Services { get; private set; }
-
-    public Frame Current { get; private set; }
-
-    public RenderState DefaultRenderState { get; set; }
-
-    public Effect DefaultEffect { get; set; }
-
-    public Matrix DefaultProejctionMatrix { get; set; }
-
-    private SpriteBatch _spriteBatch;
-
-    private RenderState _renderState;
-
-    public RenderService(SystemServices services, int layerCount = 1)
+    public RenderService(SystemServices services)
     {
         Services = services;
         services.Services.AddService<IRenderService>(this);
-        LayerCount = layerCount;
-        Current = new Frame(LayerCount);
         DefaultRenderState = new RenderState();
-        _renderState = new RenderState();
-        ClearColor = Color.Black;
-    }
-
-    public void DrawBatched(IBatchDrawable drawable)
-    {
-        Current.Layers[0].Drawables.Add(drawable);
+        _layers = new List<ILayer>();
     }
 
     public void Initialize()
     {
-        if(DefaultTexture == null || _spriteBatch == null || DefaultEffect == null) // initialize
+        if(DefaultTexture == null || DefaultRenderState.Effect == null)
         {            
-            _spriteBatch = new SpriteBatch(Services.GraphicsDevice);
-
             DefaultTexture = new Texture2D(Services.GraphicsDevice, 1, 1);
             DefaultTexture.SetData<Color>(new Color[] { Color.Green });
 
-            DefaultEffect = new BasicEffect (Services.GraphicsDevice)
+            DefaultRenderState.Effect = new BasicEffect (Services.GraphicsDevice)
             {
                 VertexColorEnabled = true,
                 TextureEnabled = true
             };
+        }         
 
-            Matrix projection; 
-            Matrix.CreateOrthographicOffCenter(0f, Services.GraphicsDevice.Viewport.Width, Services.GraphicsDevice.Viewport.Height, 0f, 0f, -1f, out projection);
-
-            DefaultRenderState.Projection = projection;//Camera.Projection;
-            
-        }  
-    }
-
-    public void SetCamera(Camera camera)
-    {
-        DefaultRenderState.View = camera.View;
-        DefaultRenderState.Projection = camera.Projection;        
+        _layers.Add(new Layer(this));
     }
 
     public void Draw(GameTime gameTime)
+    {       
+        _layers[0].BeginDraw();
+        _layers[0].DrawImmediate(gameTime);
+        _layers[0].EndDraw();
+    }    
+
+
+    public void DrawBatched(IDrawable drawable)
+    {
+        _layers[0].Drawables.Add(drawable);
+    }
+}
+
+public interface IDrawable
+{
+    bool IsVisible { get; }
+}
+public interface ISelfDrawable : IDrawable
+{
+    void DrawImmediate(GameTime gameTime);
+}
+public interface ILayer
+{    
+    public Color? ClearColor    { get; set; }
+    public IList<IDrawable> Drawables { get; }
+    void BeginDraw();
+    void DrawImmediate(GameTime gameTime);
+    void EndDraw();
+}
+public class Layer : ILayer
+{
+    protected IList<IDrawable>              _drawables;
+    protected IRenderService                _renderService;    
+    protected RenderState                   _renderState;
+    protected ViewState                     _viewState;
+    protected SpriteBatch                   _spriteBatch;
+    public IList<IDrawable>                 Drawables => _drawables;
+    public IOrderedEnumerable<IDrawable>    OrderedVisibleDrawables => _drawables.Where(n=> n.IsVisible || true).OrderBy(n => (DrawableComparer ?? Comparer<IDrawable>.Default));
+    public IComparer<IDrawable>?            DrawableComparer { get; set; }
+    public Color? ClearColor                { get; set; }
+    public bool IsVisible                   { get; set; }
+
+    public Layer(IRenderService renderService)
     {        
-        DefaultRenderState.CopyTo(_renderState);
+        _renderService = renderService;
+        _renderState = new RenderState();
+        _drawables = new List<IDrawable>();
+        _spriteBatch = new SpriteBatch(_renderService.GraphicsDevice);
 
-        if(ClearColor != null)
+        Matrix projection; 
+        Matrix.CreateOrthographicOffCenter(0f, _renderService.GraphicsDevice.Viewport.Width, _renderService.GraphicsDevice.Viewport.Height, 0f, 0f, -1f, out projection);
+
+        _viewState = new ViewState()
         {
-            //Services.GraphicsDevice.Clear(ClearColor.Value);
+            View = Matrix.Identity,
+            Projection = projection,
+            World = Matrix.Identity
+        };
+    }
+
+    public void BeginDraw()
+    {
+        if(IsVisible && ClearColor.HasValue)
+        {
+            _renderService.GraphicsDevice.Clear(ClearColor.Value);
         }
+    }
 
-        bool batchStarted = false;
+    public void EndDraw()
+    {
+        // swap buffers
+        _drawables.Clear();
+    }
 
-        foreach(var layer in Current.Layers)
+    public void DrawImmediate(GameTime gameTime)
+    {
+        var batchStarted = false;
+
+        foreach(var drawable in OrderedVisibleDrawables)
         {
-            foreach(var drawable in layer.OrderedDrawables)
+            if(drawable is ISelfDrawable selfDrawable)
             {
-                if(!batchStarted|| ((drawable.RenderState ?? DefaultRenderState) != _renderState))
+                if(batchStarted)
+                {
+                    _spriteBatch.End();
+                    batchStarted = false;
+                }
+                selfDrawable.DrawImmediate(gameTime);
+            } 
+            else if(drawable is IBatchDrawable batchDrawable)
+            {
+                if(!batchStarted || 
+                    ((batchDrawable.RenderState ?? _renderService.DefaultRenderState) != _renderState) ||
+                    _viewState != batchDrawable.ViewState)
                 {
                     if(batchStarted)
                     {
                         _spriteBatch.End();
                     }
 
-                    if((_renderState.Effect ?? DefaultEffect) is IEffectMatrices mtxEffect)
+                    _renderState.CopyFrom(batchDrawable.RenderState ?? _renderService.DefaultRenderState);
+                    _viewState.CopyFrom(batchDrawable.ViewState);
+
+                    if((_renderState.Effect) is IEffectMatrices mtxEffect)
                     {
-                        mtxEffect.View         = _renderState.View.GetValueOrDefault(Matrix.Identity);
-                        mtxEffect.Projection   = _renderState.Projection.GetValueOrDefault(Matrix.Identity);
+                        mtxEffect.View         = _viewState.View;
+                        mtxEffect.Projection   = _viewState.Projection;
                     } 
 
                     _spriteBatch.Begin(
@@ -158,61 +158,66 @@ public class RenderService : IRenderService
                         _renderState.SamplerState,
                         _renderState.DepthStencilState,
                         _renderState.RasterizerState,
-                        _renderState.Effect ?? DefaultEffect,
-                        _renderState.World
+                        _renderState.Effect,
+                        _viewState.World
                     );
 
                     batchStarted = true;
                 }
 
-                if(drawable is ISpriteBatchDrawable)
+                if(drawable is ISpriteBatchDrawable spriteBatchDrawable)
                 {
                     _spriteBatch.Draw(
-                        (drawable as ISpriteBatchDrawable).SourceData ?? DefaultTexture,
-                        (drawable as ISpriteBatchDrawable).DestinationBounds,
-                        drawable.SourceBounds,
-                        drawable.Color,
-                        drawable.Rotation,
+                        spriteBatchDrawable.SourceData ?? _renderService.DefaultTexture,
+                        spriteBatchDrawable.DestinationBounds,
+                        spriteBatchDrawable.SourceBounds,
+                        spriteBatchDrawable.Color,
+                        spriteBatchDrawable.Rotation,
                         Vector2.Zero,//drawable.Origin,
-                        drawable.Effect,
+                        spriteBatchDrawable.Effect,
                         0);
 
                 } 
-                else if (drawable is IBitmapFontBatchDrawable)
+                else if (drawable is IBitmapFontBatchDrawable fontDrawable)
                 {
-                    var fontDrawable = drawable as IBitmapFontBatchDrawable;
-
                     if(fontDrawable.Rotation > 0 || fontDrawable.Scale != Vector2.One)
                     {
                         _spriteBatch.DrawString(
                             fontDrawable.SourceData,
                             fontDrawable.Text,
-                            drawable.Position,
-                            drawable.Color,
-                            drawable.Rotation,
-                            drawable.Origin,
-                            drawable.Scale,
-                            drawable.Effect,
+                            fontDrawable.Position,
+                            fontDrawable.Color,
+                            fontDrawable.Rotation,
+                            fontDrawable.Origin,
+                            fontDrawable.Scale,
+                            fontDrawable.Effect,
                             0,
                             null);
-                    } else 
+                    } 
+                    else 
                     {
                         _spriteBatch.DrawString(
                             fontDrawable.SourceData,
                             fontDrawable.Text,
-                            drawable.Position,
-                            drawable.Color);
+                            fontDrawable.Position,
+                            fontDrawable.Color);
                     }
                 }
             }
-        }
 
-        if(batchStarted)
-        {
-            _spriteBatch.End();
+            if(batchStarted)
+            {
+                _spriteBatch.End();
+            }
         }
-
-        Current.Reset();
     }
-    
 }
+
+public class YPositionDrawableComparer : IComparer<IBatchDrawable>
+{
+    public int Compare(IBatchDrawable? x, IBatchDrawable? y)
+    {
+        return x.Position.Y.CompareTo(y.Position.Y);
+    }
+}   
+

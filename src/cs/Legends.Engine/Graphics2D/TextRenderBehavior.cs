@@ -27,6 +27,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
     public string Text {get; set; }
     
     public RenderState? RenderState { get; set; }
+    public IViewState? ViewState => Parent.ParentScene?.Camera;
 
     public BitmapFont SourceData => Font;
 

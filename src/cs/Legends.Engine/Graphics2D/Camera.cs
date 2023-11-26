@@ -6,7 +6,7 @@ using MonoGame.Extended.ViewportAdapters;
 
 namespace Legends.Engine.Graphics2D;
 
-public class Camera : SceneObject
+public class Camera : SceneObject, IViewState
 {
     public class CameraDesc : SceneObjectDesc
     {
@@ -21,6 +21,7 @@ public class Camera : SceneObject
     public Matrix View => _world;
     public Matrix Projection => _projection;
     public Matrix World => LocalMatrix;
+    public IViewState ViewState => new ViewState() { View = View, Projection = Projection, World = World };
 
     public Camera(SystemServices services, CameraDesc? data = default)
         : this(services, new DefaultViewportAdapter(services.GraphicsDevice), data ?? new CameraDesc())

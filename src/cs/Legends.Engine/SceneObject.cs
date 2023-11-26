@@ -21,8 +21,7 @@ public class Scene : SceneObject
     }
 
     public override void Draw(GameTime gameTime)
-    {
-        Services.GetService<IRenderService>().SetCamera(Camera);
+    {        
         base.Draw(gameTime);
     }
 
@@ -39,7 +38,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         public string Name;
     }
 
-    public SceneObject? ParentScene => (Parent is Scene) ? Parent : Parent?.ParentScene;
+    public Scene? ParentScene => (Parent is Scene) ? (Scene)Parent : Parent?.ParentScene;
 
     public SystemServices Services { get; private set; }
 
