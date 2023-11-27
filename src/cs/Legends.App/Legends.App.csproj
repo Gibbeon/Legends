@@ -23,7 +23,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Legends.Content.Pipeline\Legends.Content.Pipeline.csproj" />
     <ProjectReference Include="..\Legends.Engine\Legends.Engine.csproj" />
   </ItemGroup>
   <ItemGroup>

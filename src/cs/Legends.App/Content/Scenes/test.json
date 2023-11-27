@@ -1,0 +1,13 @@
+{
+    "name": "Test Scene",
+    "tags": [ "sample" ],
+    "children": [
+        {
+            "name": "Map"
+        },
+        {
+            "name": "Actor",
+            "typeOf": "Legends.App.Actor"
+        }
+    ]
+}

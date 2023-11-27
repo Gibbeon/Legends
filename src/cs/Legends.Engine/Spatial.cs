@@ -1,17 +1,24 @@
 using System;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
-namespace Legends.Engine.Graphics2D;
+namespace Legends.Engine;
+
+public class ActivatorDesc
+{
+    public string? TypeOf;
+}
 
 public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 {
-    public class SpatialDesc
-    {
-        public float Rotation;        
+    public class SpatialDesc : ActivatorDesc
+    {   
         public Vector2 Position;      
         public Vector2 Scale = Vector2.One;
         public Vector2 Origin;
+        public float Rotation;     
         public Size2 Size;
     }
 

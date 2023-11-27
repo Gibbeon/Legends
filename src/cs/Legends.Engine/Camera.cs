@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
 
-namespace Legends.Engine.Graphics2D;
+namespace Legends.Engine;
 
 public class Camera : SceneObject, IViewState
 {

@@ -8,6 +8,7 @@ using MonoGame.Extended;
 using Legends.Engine;
 using Legends.Engine.Graphics2D;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Legends.App.Screens;
 
@@ -33,7 +34,11 @@ public class MapScreen : Screen
     public MapScreen(SystemServices services)
     {
         _services = services;
+        
+        var desc = services.Content.Load<Scene.SceneDesc>("Scenes/test");
         _scene = new Scene(services); 
+
+        var type = Type.GetType("Legends.App.Actor");
 
         _scene.AttachChild(new Map(_services, _scene));
         _entity = NewEntity();

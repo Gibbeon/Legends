@@ -11,7 +11,7 @@
 #-------------------------------- References --------------------------------#
 
 /reference:/dev/.nuget/packages/monogame.extended.content.pipeline/3.8.0/tools/MonoGame.Extended.Content.Pipeline.dll
-/reference:./../bin/Debug/net6.0/Legends.Content.Pipeline.dll
+/reference:./../../Legends.Content.Pipeline/bin/Debug/net6.0/Legends.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -55,4 +55,9 @@
 /importer:BitmapFontImporter
 /processor:BitmapFontProcessor
 /build:Sensation.fnt
+
+#begin Scenes\test.json
+/importer:SceneImporter
+/processor:SceneProcessor
+/build:Scenes\test.json
 

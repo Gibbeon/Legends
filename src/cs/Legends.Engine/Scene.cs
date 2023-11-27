@@ -4,11 +4,21 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
-namespace Legends.Engine.Graphics2D;
+namespace Legends.Engine;
 
 public class Scene : SceneObject
 {
-    public Legends.Engine.Graphics2D.Camera? Camera { get; set; }
+    public class SceneDesc : SceneObjectDesc
+    {
+        public Camera.CameraDesc Camera;
+
+        public SceneDesc()
+        {
+            Camera = new Camera.CameraDesc();
+        }
+    }
+
+    public Camera? Camera { get; set; }
 
     public Scene(SystemServices services) : this (services, null)
     {

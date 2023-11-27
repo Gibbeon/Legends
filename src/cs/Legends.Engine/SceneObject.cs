@@ -4,13 +4,26 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
-namespace Legends.Engine.Graphics2D;
+namespace Legends.Engine;
 
 public class SceneObject : Spatial, IDisposable, IUpdate
 {   
     public class SceneObjectDesc : SpatialDesc
     {
         public string Name;
+        public bool Enabled = true;
+        public bool IsVisible = true;
+        public IList<string> Tags;        
+        public IList<SceneObjectDesc> Children;
+        public IList<IBehavior.BehaviorDesc> Behaviors;
+
+        public SceneObjectDesc()
+        {
+            Name = "";
+            Tags = new List<string>();
+            Children = new List<SceneObject.SceneObjectDesc>();
+            Behaviors = new List<IBehavior.BehaviorDesc>();
+        }
     }
 
     public Scene? ParentScene => (Parent is Scene) ? (Scene)Parent : Parent?.ParentScene;
@@ -175,6 +188,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     public void Dispose()
     {
         Enabled = false;
+        IsVisible = false;
 
         foreach(var behavior in Behaviors)
         {

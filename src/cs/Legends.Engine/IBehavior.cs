@@ -7,6 +7,11 @@ namespace Legends.Engine;
 
 public interface IBehavior : IUpdate, IDisposable
 {
+    public class BehaviorDesc
+    {
+
+    }
+    
     SceneObject Parent { get; }
 
     void Draw(GameTime gameTime);
