@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Legends.Engine;
-using Legends.Engine.Animation;
-using Legends.Engine.Graphics2D;
-using Legends.Engine.Resolvers;
 using System;
 using MonoGame.Extended;
+using MonoGame.Extended.Content;
+using System.Reflection;
 
 namespace Legends.App;
 
@@ -12,7 +12,6 @@ public class RandomMovementBehavior : BaseBehavior
 {
     private float _waitTime;
     private Vector2 _targetPosition;
-
     private Random _random;
     public RandomMovementBehavior(SceneObject parent) : base(parent)
     {

@@ -3,11 +3,6 @@ using Legends.Engine;
 using Legends.Engine.Animation;
 using Legends.Engine.Graphics2D;
 using Legends.Engine.Resolvers;
-using System;
-using MonoGame.Extended;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Legends.App;
 
