@@ -18,6 +18,8 @@ public class MapScreen : Screen
     private Scene _scene;
     private SystemServices _services;
 
+    private InputManager _input;
+
     public Actor NewEntity()
     {
         var result = new Actor(_services, _scene)
@@ -35,21 +37,22 @@ public class MapScreen : Screen
     {
         _services = services;
         
-        var desc = services.Content.Load<Scene.SceneDesc>("Scenes/test");
-        _scene = new Scene(services); 
-
-        var type = Type.GetType("Legends.App.Actor");
-
-        _scene.AttachChild(new Map(_services, _scene));
-        _entity = NewEntity();
-
-         var input = new InputManager(services, new KeyboardListenerSettings()
+        _input = new InputManager(services, new KeyboardListenerSettings()
         {
             InitialDelayMilliseconds = 0,
             RepeatDelayMilliseconds = 0,
             RepeatPress = true
         });
 
+        _scene = new Scene(services); 
+        _scene.Camera.AttachBehavior(new CameraControlsBehavior(_scene.Camera));
+
+        _scene.AttachChild(new Map(_services, _scene));
+        _entity = NewEntity();
+
+        
+
+        /*
         input.Register("EXIT",     Keys.Escape);
         input.Register("LOOK_AT",  MouseButton.Right);  
         input.Register("ZOOM",     EventType.MouseScroll); 
@@ -66,6 +69,7 @@ public class MapScreen : Screen
         input.Register("MOVE_DOWN",    Keys.Down);
 
         _services.GetService<IInputHandlerService>().Push(input);
+        */
     }
 
     public override void Draw(GameTime gameTime)
@@ -75,36 +79,15 @@ public class MapScreen : Screen
 
     public override void Update(GameTime gameTime)
     {                
-        foreach(var command in _services.GetService<IInputHandlerService>().Current.EventActions)
+        /*foreach(var command in _services.GetService<IInputHandlerService>().Current.EventActions)
         {
             switch(command.Name)
             {
                 case "EXIT":        _services.Exit(); break;
-
-                case "MOVE_LEFT":   _scene.Camera.Move(-1, 0); break;
-                case "MOVE_RIGHT":  _scene.Camera.Move( 1, 0); break;
-                case "MOVE_UP":     _scene.Camera.Move( 0,-1); break;
-                case "MOVE_DOWN":   _scene.Camera.Move( 0, 1); break;
                 case "ADD":         _scene.AttachChild(NewEntity()); break;
-                
-                //case "ZOOM":        _canvas.Camera.ZoomIn(Command.GetScrollDelta()); break;  
-                //case "ROTATE":      _canvas.Camera.Rotate(MathF.PI/8); break;
-                //case "LOOK_AT":     _canvas.Camera.LookAt(_canvas.Camera.ScreenToWorld((Vector2)Command.GetPosition())); break;
-                
-                /*
-                    case "SELECT":                   
-                    if(_entity.Spatial.Contains(_canvas.Camera.ScreenToWorld(Mouse.GetState().Position.ToVector2())))
-                    {
-                        _entity.Material.AmbientColor = Color.DarkGray;          
-                    }
-                    else
-                    {
-                        _entity.Material.AmbientColor = Color.White;
-                    }
-                    break;
-                */                 
+             
             }
-        }  
+        } */
         
         _scene.Update(gameTime);
     }

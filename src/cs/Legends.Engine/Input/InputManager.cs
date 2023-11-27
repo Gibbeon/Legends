@@ -2,48 +2,42 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using MonoGame.Extended.Input;
 using MonoGame.Extended.Input.InputListeners;
+using System.Dynamic;
 
 namespace Legends.Engine.Input;
 
-
 public class InputManager
 {
-    private KeyboardListener        _keyboardListener;
-    private MouseListener           _mouseListener;
-    private IList<EventListener>    _eventListeners;
-    private IList<EventAction>      _eventActions;
-    private KeyboardListenerSettings _keyboardListenerSettings;
-    private MouseListenerSettings   _mouseListenerSettings;
-    public IList<EventAction>       EventActions => _eventActions;
-    public KeyboardListener         KeyboardListener => _keyboardListener;
-    public MouseListener            MouseListener => _mouseListener;
-
+    private readonly KeyboardListener         _keyboardListener;
+    private readonly MouseListener            _mouseListener;
+    private readonly KeyboardListenerSettings _keyboardListenerSettings;
+    private readonly MouseListenerSettings    _mouseListenerSettings;
+    public KeyboardListener KeyboardListener => _keyboardListener;
+    public MouseListener MouseListener => _mouseListener;
+    public IInputHandlerService InputHandlerService => Services.GetService<IInputHandlerService>();
     public SystemServices Services { get; private set; }
-
+    public IList<InputCommandSet> CommandSets { get; private set; }
+    public bool Enabled { get; set; }
     public InputManager(SystemServices services, KeyboardListenerSettings keyboardListenerSettings) : this(services, keyboardListenerSettings, new MouseListenerSettings())
     {
 
     }
-
     public InputManager(SystemServices services) : this(services, new KeyboardListenerSettings(), new MouseListenerSettings())
     {
-
+        
     }
-
     public InputManager(SystemServices services, KeyboardListenerSettings keyboardListenerSettings, MouseListenerSettings mouseListenerSettings)
     {
         Services = services;
-        _eventListeners = new List<EventListener>();
-        _eventActions = new List<EventAction>();
+        CommandSets = new List<InputCommandSet>();
         _keyboardListenerSettings = keyboardListenerSettings;
         _mouseListenerSettings = mouseListenerSettings;
         
         _keyboardListener = new KeyboardListener(_keyboardListenerSettings);
-        _mouseListener = new MouseListener(_mouseListenerSettings);        
+        _mouseListener = new MouseListener(_mouseListenerSettings); 
+
+        services.GetService<IInputHandlerService>().Push(this);
     }
 
     public void Activate()
@@ -52,24 +46,61 @@ public class InputManager
         _keyboardListener.KeyReleased += (sender, args)     => ProcessEvent(EventType.KeyReleased, args);
         _keyboardListener.KeyTyped += (sender, args)        => ProcessEvent(EventType.KeyTyped, args);
 
-        _mouseListener.MouseClicked += (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
-        _mouseListener.MouseDoubleClicked += (sender, args) => ProcessEvent(EventType.MouseClicked, args);
-        _mouseListener.MouseWheelMoved+= (sender, args)     => ProcessEvent(EventType.MouseScroll, args);
-        _mouseListener.MouseMoved += (sender, args)         => ProcessEvent(EventType.MouseMove, args);
+        //_mouseListener.MouseClicked += (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
+        //_mouseListener.MouseDoubleClicked += (sender, args) => ProcessEvent(EventType.MouseClicked, args);
+        //_mouseListener.MouseWheelMoved+= (sender, args)     => ProcessEvent(EventType.MouseScroll, args);
+        //_mouseListener.MouseMoved += (sender, args)         => ProcessEvent(EventType.MouseMove, args);
+
+        Enabled = true;
     }
 
     public void Deactivate()
     {
+        foreach(var set in CommandSets)
+            foreach(var item in set.EventActions)
+                item.Handled = true;
+
+        Enabled = false;
+
         _keyboardListener.KeyPressed -= (sender, args)      => ProcessEvent(EventType.KeyPressed, args);
         _keyboardListener.KeyReleased -= (sender, args)     => ProcessEvent(EventType.KeyReleased, args);
         _keyboardListener.KeyTyped -= (sender, args)        => ProcessEvent(EventType.KeyTyped, args);
 
-        _mouseListener.MouseClicked -= (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
-        _mouseListener.MouseDoubleClicked -= (sender, args) => ProcessEvent(EventType.MouseClicked, args);
-        _mouseListener.MouseWheelMoved -= (sender, args)    => ProcessEvent(EventType.MouseScroll, args);
-        _mouseListener.MouseMoved -= (sender, args)         => ProcessEvent(EventType.MouseMove, args);
+        //_mouseListener.MouseClicked -= (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
+        //_mouseListener.MouseDoubleClicked -= (sender, args) => ProcessEvent(EventType.MouseClicked, args);
+        //_mouseListener.MouseWheelMoved -= (sender, args)    => ProcessEvent(EventType.MouseScroll, args);
+        //_mouseListener.MouseMoved -= (sender, args)         => ProcessEvent(EventType.MouseMove, args);
     }
 
+    public void Update(GameTime gameTime)
+    {
+        foreach(var set in CommandSets) set.Clear();
+
+        if(Enabled)
+        {
+            _keyboardListener.Update(gameTime);
+            _mouseListener.Update(gameTime);
+        }
+    }
+
+    protected void ProcessEvent(EventType type, EventArgs args)
+    {
+        foreach(var listener in CommandSets.Where(n => n.Enabled).SelectMany(n => n.EventListeners))
+        {
+            if(listener.Eval(type, args))
+            {
+                listener.CommandSet.AddAction(new EventAction(listener, type, args));
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        Services.GetService<IInputHandlerService>().Remove(this);
+    }
+}
+
+/*
     public string GetTextForTrigger(string actionName)
     {
         string result = "";
@@ -105,46 +136,10 @@ public class InputManager
         return "";
     }
 
-    public void Update(GameTime gameTime)
-    {
-        _eventActions.Clear();
 
-        _keyboardListener.Update(gameTime);
-        _mouseListener.Update(gameTime);
-    }
 
-    public EventListener Register(string action, string? label, Func<EventType, EventArgs, bool> test)
-    {
-        _eventListeners.Add(new EventListener(this, action, label, test));
-        return _eventListeners[_eventListeners.Count - 1];
-    }
 
-    public EventListener Register(string action, EventType eventType)
-    {
-        return Register(action, "", (type, args) => type == eventType);
-    }
 
-    public EventListener Register(string action, Keys key, EventType eventType = EventType.KeyPressed)
-    {
-        return Register(action, GetInputText(eventType, key), (type, args) => type == eventType && (args as KeyboardEventArgs)?.Key == key);
-    }
-
-    public EventListener Register(string action, MouseButton button, EventType eventType = EventType.MouseClicked)
-    {
-        return Register(action, GetInputText(eventType, button), (type, args) => type == eventType && (args as MouseEventArgs)?.Button == button);
-    }
-
-    protected void ProcessEvent(EventType type, EventArgs args)
-    {
-        foreach(var listener in _eventListeners)
-        {
-            if(listener.Eval(type, args))
-            {
-                _eventActions.Add(new EventAction(listener, type, args));
-            }
-        }
-
-    }
     
     public bool HasEventFired(string actionName)
     {
@@ -544,3 +539,4 @@ public class InputManager
         return null;
     }
 }
+*/

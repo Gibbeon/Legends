@@ -23,12 +23,12 @@ public class Camera : SceneObject, IViewState
     public Matrix World => LocalMatrix;
     public IViewState ViewState => new ViewState() { View = View, Projection = Projection, World = World };
 
-    public Camera(SystemServices services, CameraDesc? data = default)
-        : this(services, new DefaultViewportAdapter(services.GraphicsDevice), data ?? new CameraDesc())
+    public Camera(SystemServices services, Scene scene, CameraDesc? data = default)
+        : this(services, scene, new DefaultViewportAdapter(services.GraphicsDevice), data ?? new CameraDesc())
     {
     }
 
-    public Camera(SystemServices services, ViewportAdapter viewportAdapter, CameraDesc data) : base(services, data)
+    public Camera(SystemServices services, Scene scene, ViewportAdapter viewportAdapter, CameraDesc data) : base(services, scene, data)
     {
         data = data ?? new CameraDesc();
 

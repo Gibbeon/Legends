@@ -8,13 +8,13 @@ namespace Legends.Engine.Input;
 
 public class KeyboardListener : InputListener
 {
-    private Array _keysValues = Enum.GetValues(typeof(Keys));
+    private readonly Array _keysValues = Enum.GetValues(typeof(Keys));
 
-    private bool[]           _isInitial;
+    private readonly bool[]     _isInitial;
 
-    private TimeSpan[]       _lastPressTime;
+    private readonly TimeSpan[] _lastPressTime;
 
-    private KeyboardState   _previousState;
+    private KeyboardState       _previousState;
 
     public KeyboardState KeyboardState => _previousState;
 
@@ -33,6 +33,16 @@ public class KeyboardListener : InputListener
     public KeyboardListener()
         : this(new KeyboardListenerSettings())
     {
+    }
+
+    public bool IsPressed(params Keys[] keys)
+    {
+        return keys.All(n => KeyboardState.IsKeyDown(n));
+    }
+
+     public bool AnyPressed(params Keys[] keys)
+    {
+        return keys.Any(n => KeyboardState.IsKeyDown(n));
     }
 
     public KeyboardListener(KeyboardListenerSettings settings)
@@ -102,7 +112,7 @@ public class KeyboardListener : InputListener
 
             if (_previousState.IsKeyDown(item) && ((_isInitial[(int)item] && totalMilliseconds > (double)InitialDelay) || (!_isInitial[(int)item] && totalMilliseconds > (double)RepeatDelay)))
             {
-                KeyboardEventArgs keyboardEventArgs = new KeyboardEventArgs(item, currentState);
+                KeyboardEventArgs keyboardEventArgs = new(item, currentState);
                 this.KeyPressed?.Invoke(this, keyboardEventArgs);
                 if (keyboardEventArgs.Character.HasValue)
                 {

@@ -7,29 +7,27 @@ using MonoGame.Extended.Input;
 using Legends.Engine.Input;
 using Legends.Engine;
 using Legends.Engine.Graphics2D;
-using Autofac.Core;
 
 namespace Legends.App.Screens
 {
     public class TitleScreen : Screen
     {
         private SystemServices _services;
-
         private Scene _scene;
         private SceneObject _text;
-
+        private InputCommandSet _commands;
+        private InputManager _input;
         public TitleScreen(SystemServices services)
         {
             _services = services;
-            var input = new InputManager(_services);
+            _input = new InputManager(_services);
 
-            input.Register("EXIT",     Keys.Escape);
-            input.Register("EXIT",     MouseButton.Right);
+            _commands = new InputCommandSet(_services);
+            _commands.Add("EXIT", EventType.KeyTyped, Keys.Escape);
+            _commands.Add("EXIT", EventType.MouseClicked, MouseButton.Right);
 
-            input.Register("START",    Keys.Enter);
-            input.Register("START",    MouseButton.Left);
-
-            _services.GetService<IInputHandlerService>().Push(input);
+            _commands.Add("START", EventType.KeyTyped, Keys.Enter);
+            _commands.Add("START", EventType.MouseClicked, MouseButton.Left);
             
             _scene = new Scene(_services);
 
@@ -49,7 +47,7 @@ namespace Legends.App.Screens
 
         public override void Update(GameTime gameTime)
         {
-            foreach(var action in _services.GetService<IInputHandlerService>().Current.EventActions)
+            foreach(var action in _commands.EventActions)
             {
                 switch(action.Name)
                 {
@@ -63,9 +61,16 @@ namespace Legends.App.Screens
 
         protected void Start()
         {
-            _services.GetService<IInputHandlerService>().Pop();
-            _text.Dispose();
+            _input.Enabled = false;
             ScreenManager.LoadScreen(new MapScreen(_services), new MonoGame.Extended.Screens.Transitions.FadeTransition(_services.GraphicsDevice, Color.Black));
+        }
+
+        public override void Dispose()
+        {
+            _scene.Dispose();
+            _input.Dispose();
+
+            base.Dispose();
         }
     }
 }

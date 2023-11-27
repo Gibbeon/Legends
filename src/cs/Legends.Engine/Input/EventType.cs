@@ -8,5 +8,6 @@ public enum EventType
     KeyTyped,
     MouseClicked,
     MouseMove,
+    MousePressed,
     MouseScroll
 }

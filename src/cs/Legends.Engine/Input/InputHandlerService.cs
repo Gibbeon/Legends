@@ -13,15 +13,15 @@ public class InputHandlerService : IUpdate, IInputHandlerService
 {
     public SystemServices Services { get; private set; }
 
-    public InputManager? Current => _managers.Count == 0 ? null : _managers.Peek();
+    public InputManager? Current => _managers.Count == 0 ? null : _managers[_managers.Count - 1];
 
-    private Stack<InputManager> _managers;
+    private IList<InputManager> _managers;
 
     public InputHandlerService(SystemServices services)
     {
         Services = services;
         services.Services.AddService<IInputHandlerService>(this);
-        _managers = new Stack<InputManager>();
+        _managers = new List<InputManager>();
     }
 
     public void Update(GameTime gameTime)
@@ -31,12 +31,15 @@ public class InputHandlerService : IUpdate, IInputHandlerService
 
     public void Push(InputManager manager)
     {
-        _managers.Push(manager);
+        Current?.Deactivate();
+        _managers.Add(manager);
         manager.Activate();
     }
 
-    public void Pop()
+    public void Remove(InputManager manager)
     {
-        _managers.Pop().Deactivate();
+        manager.Deactivate();
+        _managers.Remove(manager);
+        Current?.Activate();
     }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>C:/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png</SourceFile>
-  <SourceTime>2023-11-14T21:04:55.9847834-06:00</SourceTime>
-  <DestFile>C:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Sensation_0.xnb</DestFile>
-  <DestTime>2023-11-26T19:23:04.5410616-06:00</DestTime>
+  <SourceFile>/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png</SourceFile>
+  <SourceTime>2023-11-17T08:12:21.2645116-06:00</SourceTime>
+  <DestFile>/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Sensation_0.xnb</DestFile>
+  <DestTime>2023-11-27T10:25:18.4011152-06:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2022-07-26T06:44:56-05:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

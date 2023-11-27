@@ -13,5 +13,5 @@ public interface IInputHandlerService
 {
     InputManager? Current { get; }
     void Push(InputManager manager);
-    void Pop();
+    void Remove(InputManager manager);
 }

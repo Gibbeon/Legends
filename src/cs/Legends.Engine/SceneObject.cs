@@ -54,20 +54,17 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         get => _behaviors.ToList().AsReadOnly();
     }
 
-    public SceneObject(SystemServices systems) : this(systems, new SceneObjectDesc())
+    public SceneObject(SystemServices systems) : this(systems, null, new SceneObjectDesc())
     {
 
     }
 
-    public SceneObject(SystemServices systems, SceneObject? parent) : this(systems, new SceneObjectDesc())
+    public SceneObject(SystemServices systems, SceneObject? parent) : this(systems, parent, new SceneObjectDesc())
     {
-        if(parent != null)
-        {
-            this.AttachTo(parent);
-        }
+
     }
 
-    public SceneObject(SystemServices systems, SceneObjectDesc data) : base(data)
+    public SceneObject(SystemServices systems, SceneObject? parent, SceneObjectDesc data) : base(data)
     {
         Services = systems;
         Name = data.Name;
@@ -77,6 +74,11 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         _children = new List<SceneObject>();
         _behaviors = new List<IBehavior>();
         _tags = new List<string>();
+
+        if(parent != null)
+        {
+            this.AttachTo(parent);
+        }
     }
 
     public TType GetBehavior<TType>()

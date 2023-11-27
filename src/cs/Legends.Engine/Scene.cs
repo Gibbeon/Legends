@@ -22,7 +22,7 @@ public class Scene : SceneObject
 
     public Scene(SystemServices services) : this (services, null)
     {
-        Camera = new Camera(services);
+        Camera = new Camera(services, this);
     }
 
     public Scene(SystemServices services, SceneObject? parent) : base(services, parent)
@@ -33,10 +33,12 @@ public class Scene : SceneObject
     public override void Draw(GameTime gameTime)
     {        
         base.Draw(gameTime);
+        Camera?.Draw(gameTime);
     }
 
     public override void Update(GameTime gameTime)
     {
         base.Update(gameTime);
+        Camera?.Update(gameTime);
     }
 }

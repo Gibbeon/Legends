@@ -4,11 +4,11 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/dev/Legends/src/cs/Legends.App/Content/npc1.png</File>
-    <File>C:/dev/Legends/src/cs/Legends.App/Content/ville_0.png</File>
-    <File>C:/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png</File>
-    <File>C:/dev/Legends/src/cs/Legends.App/Content/Sensation.fnt</File>
-    <File>C:/dev/Legends/src/cs/Legends.App/Content/Scenes/test.json</File>
+    <File>/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/npc1.png</File>
+    <File>/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/ville_0.png</File>
+    <File>/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png</File>
+    <File>/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Sensation.fnt</File>
+    <File>/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Scenes/test.json</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />

@@ -7,12 +7,10 @@ namespace Legends.Engine.Input;
 public class EventAction
 {
     public string Name => EventListener.Name;
-
     public EventListener EventListener { get; private set; }
-
     public EventType Type { get; private set; }
-
     public EventArgs Args { get; private set; }
+    public bool Handled { get; set; }
 
     public MouseEventArgs? MouseEventArgs            { get => Args as MouseEventArgs; }
     public TouchEventArgs? TouchEventArgs            { get => Args as TouchEventArgs; }

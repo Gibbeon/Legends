@@ -1,6 +1,5 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"C:/dev/Legends/src/cs/Legends.App/Content/npc1.png","C:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/npc1.xnb","TextureProcessor","Texture2DContent",49241,359509,0.074888
-"C:/dev/Legends/src/cs/Legends.App/Content/Scenes/test.json","C:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Scenes/test.xnb","SceneProcessor","SceneDesc",229,1350,0.1361678
-"C:/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png","C:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Sensation_0.xnb","TextureProcessor","Texture2DContent",11318,131157,0.0116814
-"C:/dev/Legends/src/cs/Legends.App/Content/Sensation.fnt","C:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Sensation.xnb","BitmapFontProcessor","BitmapFontProcessorResult",36212,10059,0.01727
-"C:/dev/Legends/src/cs/Legends.App/Content/ville_0.png","C:/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/ville_0.xnb","TextureProcessor","Texture2DContent",106377,4178005,0.0524314
+"/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Scenes/test.json","/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Scenes/test.xnb","SceneProcessor","SceneDesc",217,1350,0.290796
+"/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png","/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Sensation_0.xnb","TextureProcessor","Texture2DContent",11318,131157,0.019623
+"/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Sensation.fnt","/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/Sensation.xnb","BitmapFontProcessor","BitmapFontProcessorResult",35751,10059,0.214571
+"/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/ville_0.png","/Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/bin/DesktopGL/Content/ville_0.xnb","TextureProcessor","Texture2DContent",106377,4178005,0.283113
