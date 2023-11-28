@@ -16,7 +16,7 @@ public class AnimationBehavior : BaseBehavior
 
     public EventHandler<AnimationMessageCallbackEventArgs>? MessageCallback;
     
-    public AnimationBehavior(SystemServices services, SceneObject parent) : base(services, parent)
+    public AnimationBehavior(SystemServices? services, SceneObject? parent) : base(services, parent)
     {
         Animations = new List<IAnimation>();
         Speed = 1;
@@ -33,6 +33,11 @@ public class AnimationBehavior : BaseBehavior
     public override void Update(GameTime gameTime)
     {
         Current?.Update(new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime.Multiply(Speed)));
+    }
+
+    public override void Dispose()
+    {
+        
     }
 }
 

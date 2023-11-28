@@ -54,4 +54,9 @@ public class RandomMovementBehavior : BaseBehavior
             }
         }
     }
+
+    public override void Dispose()
+    {
+        
+    }
 }

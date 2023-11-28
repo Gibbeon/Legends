@@ -1,33 +1,31 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended;
 
 namespace Legends.Engine;
 
 public class Scene : SceneObject
 {
-    public class SceneDesc : SceneObjectDesc
-    {
-        public Camera.CameraDesc Camera;
+    public Camera Camera { get; set; }
 
-        public SceneDesc()
-        {
-            Camera = new Camera.CameraDesc();
-        }
+    public Scene(): this(null)
+    {
+
     }
 
-    public Camera? Camera { get; set; }
-
-    public Scene(SystemServices services) : this (services, null)
+    public Scene(SystemServices? services) : this (services, string.Empty, null)
     {
-        //Camera = new Camera(services, this);
+
     }
 
-    public Scene(SystemServices services, SceneObject? parent) : base(services, parent)
+    public Scene(SystemServices? services, string name, SceneObject? parent) : base(services, name, parent)
     {
+        SetCamera(new Camera(services, string.Empty, this));
+    }
 
+    public void SetCamera(Camera camera)
+    {
+        Camera?.Dispose();
+        Camera = camera;
+        AttachChild(camera);
     }
 
     public override void Draw(GameTime gameTime)

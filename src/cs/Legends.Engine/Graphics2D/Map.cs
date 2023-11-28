@@ -21,7 +21,7 @@ public class Map : SceneObject, ISelfDrawable
     public Size TileCount;
     public TileSet TileSet;
     public TileData[,] Tiles;
-    public Map(SystemServices services, Scene parent) : base(services, parent)
+    public Map(SystemServices services, string name, Scene parent) : base(services, name, parent)
     {
         TileSize = new Size(8, 8);
         TileSet = new TileSet()
@@ -87,12 +87,12 @@ public class Map : SceneObject, ISelfDrawable
 
     public void DrawImmediate(GameTime gameTime)
     {
-        (_currentEffect as IEffectMatrices).View        = this.ParentScene.Camera.View;
-        (_currentEffect as IEffectMatrices).Projection  = this.ParentScene.Camera.Projection;
+        (_currentEffect as IEffectMatrices).View        = this.GetParentScene().Camera.View;
+        (_currentEffect as IEffectMatrices).Projection  = this.GetParentScene().Camera.Projection;
         (_currentEffect as IEffectMatrices).World = 
             Matrix.Multiply(
                 Matrix.CreateTranslation(-Origin.X, -Origin.Y, 0) * LocalMatrix, 
-                this.ParentScene.Camera.World);
+                this.GetParentScene().Camera.World);
         
         Services.GraphicsDevice.SetVertexBuffer(_vertexBuffer);
         Services.GraphicsDevice.Indices = _indexBuffer;
@@ -157,5 +157,10 @@ public class Map : SceneObject, ISelfDrawable
                 );
             }
         }
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
     }
 }

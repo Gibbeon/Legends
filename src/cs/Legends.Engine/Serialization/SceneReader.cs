@@ -1,13 +1,9 @@
 using Microsoft.Xna.Framework.Content;
-using Legends.Engine;
 using Legends.Engine.Graphics2D;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
 
 namespace Legends.Engine.Serialization;
 
+/*
 public class SpatialReader : ContentTypeReader<Spatial.SpatialDesc>
 {
     protected override Spatial.SpatialDesc Read(ContentReader input, Spatial.SpatialDesc existingInstance)
@@ -95,3 +91,4 @@ public class TextRenderBehaviorReader : ContentTypeReader<TextRenderBehavior.Tex
         return result;
     }
 }
+*/

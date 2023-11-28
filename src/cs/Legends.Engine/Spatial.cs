@@ -1,87 +1,65 @@
 using System;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
 namespace Legends.Engine;
 
-public class ActivatorDesc
-{
-    public string? TypeOf;
-}
-
 public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 {
-    public class SpatialDesc : ActivatorDesc
-    {   
-        public Vector2 Position;      
-        public Vector2 Scale = Vector2.One;
-        public Vector2 Origin;
-        public float Rotation;     
-        public Size2 Size;
-    }
-
     private float     _rotation;        
     private Vector2   _position;        
     private Vector2   _scale;
-
     private float     _offsetRotation;        
     private Vector2   _offsetPosition;        
     private Vector2   _offsetScale;
-
     private Size2     _size;
     private Matrix    _localMatrix;
     private Vector2   _originNormalized;
 
-    internal float     OffsetRotation   { get => _offsetRotation; set => _offsetRotation = value;}     
-    internal Vector2   OffsetPosition   { get => _offsetPosition; set => _offsetPosition = value;}             
-    internal Vector2   OffsetScale      { get => _offsetScale; set => _offsetScale = value; }     
-
     public Vector2 Position             { get => OffsetPosition + _position; set => SetPosition(value); }
-    public Vector2 Scale                { get => OffsetScale * _scale; set => SetScale(value); }
+    public Vector2 Scale                { get => OffsetScale    * (_scale + Vector2.One) ; set => SetScale(value); }
     public float   Rotation             { get => OffsetRotation + _rotation; set => SetRotation(value); }   
     public Size2   Size                 { get => _size * Scale; set => SetSize(value); }
     public Vector2 Origin               { get => _originNormalized * Size; set => _originNormalized = Size != Size2.Empty ? value / Size : Vector2.Zero; }
+
+    [JsonIgnore]
+    internal float OffsetRotation       { get => _offsetRotation; set => _offsetRotation = value;}     
+    [JsonIgnore]
+    internal Vector2 OffsetPosition     { get => _offsetPosition; set => _offsetPosition = value;}             
+    [JsonIgnore]
+    internal Vector2 OffsetScale        { get => _offsetScale; set => _offsetScale = value; }     
+    [JsonIgnore]
     public Vector2 Center               { get => Position + (Vector2)Size / 2; }
+    [JsonIgnore]
     public Vector2 OriginNormalized     { get => _originNormalized; set => _originNormalized = value; }
-    public RectangleF BoundingRectangle { get => GetBoundingRectangle(); }
+    [JsonIgnore]
+    public RectangleF BoundingRectangle => GetBoundingRectangle();
+    [JsonIgnore]
     public Matrix LocalMatrix           => GetLocalMatrix();
-
-    public bool HasChanged
-    {
-        get;
-        protected set;
-    }
-
-    public Spatial() : this(new SpatialDesc())
-    {
-        
-    }
-    public Spatial(SpatialDesc data)
-    {            
+    [JsonIgnore]
+    public bool HasChanged              { get; protected set; }
+    
+    public Spatial()
+    {     
         _offsetScale = Vector2.One;
-
-        Position = data.Position;
-        Rotation = data.Rotation;
-        Scale    = data.Scale;
-        Origin   = data.Origin;
-        Size     = data.Size;
-
         UpdateMatrix();
     }
     public void Move(float x, float y)
     {
         Move(new Vector2(x, y));
-    }     
+    }  
+
     public virtual void Move(Vector2 direction)
     {
         Position += direction;//Vector2.Transform(direction, Matrix.CreateRotationZ(0f - Rotation));
     }
+
     public virtual void Rotate(float deltaRadians)
     {
         Rotation += deltaRadians;
     }
+
     public void Zoom(float value)
     {
         Zoom(new Vector2(value, value));
@@ -95,21 +73,24 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public virtual void SetPosition(Vector2 position)
     {
         _position = position;
-        NeedToUpdate();
+        HasChanged = true;
     }
+
     public void SetScale(float scale)
     {
         SetScale(new Vector2(scale, scale));
     }
+
     public virtual void SetScale(Vector2 scale)
     {
-        _scale = scale;
-        NeedToUpdate();
+        _scale = (scale - Vector2.One);
+        HasChanged = true;
     }
+
     public virtual void SetRotation(float radians)
     {
         _rotation = radians;
-        NeedToUpdate();
+        HasChanged = true;
     }
 
     public virtual void SetSize(float width, float height)
@@ -123,6 +104,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         _size = size;
         OriginNormalized = origin;
     }
+
     internal virtual void UpdateMatrix()
     {
         if (HasChanged)
@@ -161,11 +143,6 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         Vector2.Transform(ref worldPoint, ref inverse, out localPoint);
     }
 
-    public void NeedToUpdate()
-    {
-        HasChanged = true;
-    }
-
     protected virtual Matrix GetLocalMatrix()
     {
         UpdateMatrix();
@@ -180,7 +157,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public bool Contains(Point2 point)
     {
         // rotate around rectangle center by -rectAngle
-        if(_rotation * _rotation > float.Epsilon)
+        if(Rotation * Rotation > float.Epsilon)
         {
             var sin = MathF.Sin(-_rotation);
             var cos = MathF.Cos(-_rotation);

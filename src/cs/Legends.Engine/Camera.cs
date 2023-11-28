@@ -1,42 +1,55 @@
-using System;
+using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.ViewportAdapters;
 
 namespace Legends.Engine;
 
 public class Camera : SceneObject, IViewState
 {
-    public class CameraDesc : SceneObjectDesc
-    {
-    }
-
     protected BoundedValue<float> _zoomBounds;
     protected Matrix _projection;
     protected Matrix _world;
+    
+    [JsonIgnore]
     public BoundedValue<float> ZoomBounds => _zoomBounds;
+    
+    [JsonIgnore]
     public Matrix View => _world;
+    
+    [JsonIgnore]
     public Matrix Projection => _projection;
+    
+    [JsonIgnore]
     public Matrix World => LocalMatrix;
+    
+    [JsonIgnore]
     public IViewState ViewState => new ViewState() { View = View, Projection = Projection, World = World };
 
-    public Camera(SystemServices services, Scene scene)
-        : this(services, scene, new DefaultViewportAdapter(services.GraphicsDevice))
+    public Camera() : this(null, string.Empty, null)
     {
+
     }
 
-    public Camera(SystemServices services, Scene scene, ViewportAdapter viewportAdapter) : base(services, scene)
+    public Camera(SystemServices? services, string name, Scene? scene) : base(services, name, scene)
     {
         _zoomBounds = new BoundedValue<float>(float.Epsilon, float.MaxValue);
-        Size = new Vector2(viewportAdapter.VirtualWidth, viewportAdapter.VirtualHeight);
         OriginNormalized = new Vector2(.5f, .5f);
-        LookAt(Vector2.Zero);
+        SetSize(0, 0);
     }
 
     public override void SetSize(Size2 size)
     {
-        if(size == Size2.Empty) return;
+        if(size == Size2.Empty)
+        {
+            if(Services != null)
+            {
+                size = new Vector2(Services.GraphicsDevice.Viewport.Width, Services.GraphicsDevice.Viewport.Height);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         base.SetSize(size);
         

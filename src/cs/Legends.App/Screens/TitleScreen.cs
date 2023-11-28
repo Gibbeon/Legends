@@ -66,15 +66,15 @@ public class ContentManager2
                         Type destItemTypeActual = destItemType;
                         Type sourceItemTypeActual = sourceItemType;
         
-                        if(item is ActivatorDesc activatorDesc)
-                        {
-                            if(!string.IsNullOrEmpty(activatorDesc.TypeOf))
-                            {
-                                Console.WriteLine("Overriding type to: {0}", Type.GetType(typeof(TextRenderBehavior).AssemblyQualifiedName));
-                                destItemTypeActual = Type.GetType(typeof(TextRenderBehavior).AssemblyQualifiedName);//Type.GetType(activatorDesc.TypeOf);
-                                sourceItemTypeActual = destItemTypeActual.DeclaringType;
-                            }
-                        }
+                        //if(item is ActivatorDesc activatorDesc)
+                        //{
+                        //    if(!string.IsNullOrEmpty(activatorDesc.TypeOf))
+                        //    {
+                        //        Console.WriteLine("Overriding type to: {0}", Type.GetType(typeof(TextRenderBehavior).AssemblyQualifiedName));
+                        //        destItemTypeActual = Type.GetType(typeof(TextRenderBehavior).AssemblyQualifiedName);//Type.GetType(activatorDesc.TypeOf);
+                        //        sourceItemTypeActual = destItemTypeActual.DeclaringType;
+                        //    }
+                        //}
 
                         var itemObject = Activator.CreateInstance(destItemTypeActual, Services, destination);
                         SetValues(item.GetType(), item, destItemTypeActual, itemObject);

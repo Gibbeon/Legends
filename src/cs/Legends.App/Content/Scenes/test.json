@@ -7,7 +7,6 @@
             "behaviors": [
                 {
                     "$type":    "Legends.Engine.Graphics2D.TextRenderBehavior+TextRenderBehaviorDesc, Legends.Engine",
-                    "typeOf":   "Legends.Engine.Graphics2D.TextRenderBehavior",
                     "font":     "Sensation",
                     "text":     "Press ESC to Exit or ENTER to start",
                     "color":    "255, 255, 255, 255"

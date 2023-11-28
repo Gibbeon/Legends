@@ -1,18 +1,14 @@
-﻿using MonoGame.Extended;
-using Legends.Engine.Graphics2D;
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
+using MonoGame.Extended;
 
 namespace Legends.Engine;
 
 public interface IBehavior : IUpdate, IDisposable
-{
-    public class BehaviorDesc : ActivatorDesc
-    {
-
-    }
-    
-    SceneObject Parent { get; }
+{    
+    [JsonIgnore]
+    SceneObject? Parent { get; }
 
     void Draw(GameTime gameTime);
 }

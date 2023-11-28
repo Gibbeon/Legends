@@ -12,7 +12,7 @@ public class Actor : SceneObject
     public float Speed;
     ValueResolver<string, Actor> _resolver;
 
-    public Actor(SystemServices services, Scene parent) : base(services, parent)
+    public Actor(SystemServices services, Scene parent) : base(services, string.Empty, parent)
     {
         Speed = 1.0f;
         Facing = DirectionConstants.Down;
@@ -31,7 +31,7 @@ public class Actor : SceneObject
         _resolver.Add("idle", (actor) => { return actor.Facing == DirectionConstants.Down; }, "idle_down");
 
         AttachBehavior(new SpriteRenderBehavior(services, this));
-        AttachBehavior(new AnimationBehavior(services, this));
+        //AttachBehavior(new AnimationBehavior(services, this));
         AttachBehavior(new RandomMovementBehavior(services, this));
 
         foreach(var data in Data.AnimationData)
@@ -58,5 +58,10 @@ public class Actor : SceneObject
             GetBehavior<AnimationBehavior>().Play(_resolver.Resolve("idle", this));
         } 
         IsMoving = false;
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
     }
 }

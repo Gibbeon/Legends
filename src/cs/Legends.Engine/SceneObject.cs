@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
@@ -8,69 +10,58 @@ namespace Legends.Engine;
 
 public class SceneObject : Spatial, IDisposable, IUpdate
 {   
-    public class SceneObjectDesc : SpatialDesc
-    {
-        public string Name;
-        public bool Enabled = true;
-        public bool IsVisible = true;
-        public IList<string> Tags;        
-        public IList<SceneObjectDesc> Children;
-        public IList<IBehavior.BehaviorDesc> Behaviors;
+    private static int _globalObjId;
+    private IList<string> _tags;    
+    private IList<IBehavior> _behaviors;
+    private IList<SceneObject> _children;
 
-        public SceneObjectDesc()
-        {
-            Name        = "";
-            Tags        = new List<string>();
-            Children    = new List<SceneObject.SceneObjectDesc>();
-            Behaviors   = new List<IBehavior.BehaviorDesc>();
-        }
-    }
-
-    public Scene? ParentScene => (Parent is Scene) ? (Scene)Parent : Parent?.ParentScene;
-
-    public SystemServices Services { get; private set; }
-
-    public string Name { get; set; }
-
-    private IList<string> _tags;
-    public  IList<string> Tags { get => _tags; protected set => _tags = value; }
-    private IList<IBehavior>       _behaviors;
-    private IList<SceneObject>     _children;
+    [JsonIgnore]
+    public SystemServices? Services { get; private set; }
+    
+    [JsonIgnore]
     public SceneObject? Parent { get; private set; }
+    
+    public string Name { get; set; }
+    
+    public  IList<string> Tags { get => _tags; protected set => _tags = value; }
+    
+    [DefaultValue(true)]
     public bool Enabled { get; set; }
+    
+    [DefaultValue(true)]
+    
     public bool IsVisible { get; set; }
+    
     public IReadOnlyList<SceneObject> Children
     {
         get => _children.ToList().AsReadOnly();
         protected set => _children = (IList<SceneObject>)value;
     }
-
+    
     public IReadOnlyList<IBehavior> Behaviors
     {
         get => _behaviors.ToList().AsReadOnly();
         protected set => _behaviors = (IList<IBehavior>)value;
     }
 
-    public SceneObject(SystemServices systems) : this(systems, null, new SceneObjectDesc())
+    public SceneObject(): this(null, string.Empty, null)
     {
 
     }
 
-    public SceneObject(SystemServices systems, SceneObject? parent) : this(systems, parent, new SceneObjectDesc())
+    public SceneObject(SystemServices? systems, string name) : this(systems, name, null)
     {
 
     }
 
-    public SceneObject(SystemServices systems, SceneObject? parent, SceneObjectDesc data) : base(data)
+    public SceneObject(SystemServices? systems, string name, SceneObject? parent) : base()
     {
-        Services = systems;
-        Name = data.Name;
-        Enabled = true;
-        IsVisible = true;
+        Services    = systems;
+        Name        = string.IsNullOrEmpty(name) ? string.Format("{0}#{1}", typeof(SceneObject).Name, _globalObjId++) : name;
         
-        _children = new List<SceneObject>();
-        _behaviors = new List<IBehavior>();
-        _tags = new List<string>();
+        _children   = new List<SceneObject>();
+        _behaviors  = new List<IBehavior>();
+        _tags       = new List<string>();
 
         if(parent != null)
         {
@@ -184,19 +175,23 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         }
     }
 
-    public void Dispose()
+    public Scene? GetParentScene() 
     {
-        Enabled = false;
-        IsVisible = false;
+        return (Parent is Scene) ? (Scene)Parent : Parent?.GetParentScene();
+    } 
 
+    public virtual void Update(GameTime gameTime)
+    {
+        if(!Enabled) return;
+        
         foreach(var behavior in Behaviors)
         {
-            behavior.Dispose();
+            behavior.Update(gameTime);
         }
         
         foreach(var child in Children)
         {
-            child.Dispose();
+            child.Update(gameTime);
         }
     }
 
@@ -215,18 +210,19 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         }
     }
 
-    public virtual void Update(GameTime gameTime)
+    public virtual void Dispose()
     {
-        if(!Enabled) return;
-        
+        Enabled = false;
+        IsVisible = false;
+
         foreach(var behavior in Behaviors)
         {
-            behavior.Update(gameTime);
+            behavior.Dispose();
         }
         
         foreach(var child in Children)
         {
-            child.Update(gameTime);
+            child.Dispose();
         }
     }
 }  

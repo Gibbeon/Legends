@@ -7,27 +7,27 @@ using Legends.Engine.Graphics2D;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.TextureAtlases;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 
 namespace Legends.Engine;
 
 public abstract class BaseBehavior : IBehavior
 {
-    public SceneObject Parent { get; private set; }
-    public SystemServices Services { get; private set; }
+    [JsonIgnore]
+    public SystemServices? Services { get; private set; }
+    
+    [JsonIgnore]
+    public SceneObject? Parent { get; private set; }
 
-    public BaseBehavior(SystemServices services, SceneObject parent)
+    public BaseBehavior(SystemServices? services, SceneObject? parent)
     {
         Services = services;
         Parent = parent;
     }
+
     public abstract void Update(GameTime gameTime);
-    public virtual void Draw(GameTime gameTime)
-    {
-
-    }
     
-    public virtual void Dispose()
-    {
-
-    }
+    public virtual void Draw(GameTime gameTime) {}
+    
+    public abstract void Dispose();
 }
