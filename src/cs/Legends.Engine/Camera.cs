@@ -10,8 +10,6 @@ public class Camera : SceneObject, IViewState
 {
     public class CameraDesc : SceneObjectDesc
     {
-        public float MinimumZoom = float.Epsilon;
-        public float MaximumZoom = float.MaxValue;
     }
 
     protected BoundedValue<float> _zoomBounds;
@@ -23,16 +21,14 @@ public class Camera : SceneObject, IViewState
     public Matrix World => LocalMatrix;
     public IViewState ViewState => new ViewState() { View = View, Projection = Projection, World = World };
 
-    public Camera(SystemServices services, Scene scene, CameraDesc? data = default)
-        : this(services, scene, new DefaultViewportAdapter(services.GraphicsDevice), data ?? new CameraDesc())
+    public Camera(SystemServices services, Scene scene)
+        : this(services, scene, new DefaultViewportAdapter(services.GraphicsDevice))
     {
     }
 
-    public Camera(SystemServices services, Scene scene, ViewportAdapter viewportAdapter, CameraDesc data) : base(services, scene, data)
+    public Camera(SystemServices services, Scene scene, ViewportAdapter viewportAdapter) : base(services, scene)
     {
-        data = data ?? new CameraDesc();
-
-        _zoomBounds = new BoundedValue<float>(data.MinimumZoom, data.MaximumZoom);
+        _zoomBounds = new BoundedValue<float>(float.Epsilon, float.MaxValue);
         Size = new Vector2(viewportAdapter.VirtualWidth, viewportAdapter.VirtualHeight);
         OriginNormalized = new Vector2(.5f, .5f);
 

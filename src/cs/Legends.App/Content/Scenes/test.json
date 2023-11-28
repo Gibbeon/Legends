@@ -3,11 +3,15 @@
     "tags": [ "sample" ],
     "children": [
         {
-            "name": "Map"
-        },
-        {
-            "name": "Actor",
-            "typeOf": "Legends.App.Actor"
+            "name": "Text",
+            "behaviors": [
+                {
+                    "typeOf":   "Legends.Engine.Graphics2D.TextRenderBehavior",
+                    "font":     "Sensation",
+                    "text":     "Press ESC to Exit or ENTER to start",
+                    "color":    "White"
+                }
+            ]
         }
     ]
 }

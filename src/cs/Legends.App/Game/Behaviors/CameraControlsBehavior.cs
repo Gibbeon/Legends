@@ -11,7 +11,7 @@ public class CameraControlsBehavior : BaseBehavior
 {
     public float ScrollSpeed;
     private InputCommandSet _commands;
-    public CameraControlsBehavior(SceneObject parent) : base(parent)
+    public CameraControlsBehavior(SystemServices services, SceneObject parent) : base(services, parent)
     {
         ScrollSpeed = 1;
 

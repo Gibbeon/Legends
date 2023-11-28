@@ -19,10 +19,10 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
         public SceneObjectDesc()
         {
-            Name = "";
-            Tags = new List<string>();
-            Children = new List<SceneObject.SceneObjectDesc>();
-            Behaviors = new List<IBehavior.BehaviorDesc>();
+            Name        = "";
+            Tags        = new List<string>();
+            Children    = new List<SceneObject.SceneObjectDesc>();
+            Behaviors   = new List<IBehavior.BehaviorDesc>();
         }
     }
 
@@ -33,25 +33,22 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     public string Name { get; set; }
 
     private IList<string> _tags;
-    public IList<string> Tags => _tags;
-
-    private readonly IList<IBehavior> _behaviors;
-
-    private readonly IList<SceneObject> _children;
-
+    public  IList<string> Tags { get => _tags; protected set => _tags = value; }
+    private IList<IBehavior>       _behaviors;
+    private IList<SceneObject>     _children;
     public SceneObject? Parent { get; private set; }
-
     public bool Enabled { get; set; }
     public bool IsVisible { get; set; }
-
     public IReadOnlyList<SceneObject> Children
     {
         get => _children.ToList().AsReadOnly();
+        protected set => _children = (IList<SceneObject>)value;
     }
 
     public IReadOnlyList<IBehavior> Behaviors
     {
         get => _behaviors.ToList().AsReadOnly();
+        protected set => _behaviors = (IList<IBehavior>)value;
     }
 
     public SceneObject(SystemServices systems) : this(systems, null, new SceneObjectDesc())

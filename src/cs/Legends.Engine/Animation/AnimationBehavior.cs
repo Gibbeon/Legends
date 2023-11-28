@@ -16,7 +16,7 @@ public class AnimationBehavior : BaseBehavior
 
     public EventHandler<AnimationMessageCallbackEventArgs>? MessageCallback;
     
-    public AnimationBehavior(SceneObject parent) : base(parent)
+    public AnimationBehavior(SystemServices services, SceneObject parent) : base(services, parent)
     {
         Animations = new List<IAnimation>();
         Speed = 1;

@@ -48,7 +48,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
         //base.Update(gameTime);
     }
 
-    public SpriteRenderBehavior(SceneObject parent) : base(parent)
+    public SpriteRenderBehavior(SystemServices services, SceneObject parent) : base(services, parent)
     {
         Color = Color.White;
     }

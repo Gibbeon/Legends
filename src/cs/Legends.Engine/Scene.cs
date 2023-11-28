@@ -22,7 +22,7 @@ public class Scene : SceneObject
 
     public Scene(SystemServices services) : this (services, null)
     {
-        Camera = new Camera(services, this);
+        //Camera = new Camera(services, this);
     }
 
     public Scene(SystemServices services, SceneObject? parent) : base(services, parent)

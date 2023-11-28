@@ -11,6 +11,8 @@ using System.Net.Security;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Legends.App.Screens
 {
@@ -24,6 +26,70 @@ public class ContentManager2
         Services = services;
     }
 
+    public void SetValues(Type sourceType, object source, Type destinationType, object destination)
+    {
+        var mapping = Enumerable.Join(
+            sourceType.GetFields(),
+            destinationType.GetProperties(),
+            n => n.Name,
+            n => n.Name,
+            (n, m) => Tuple.Create(n, m));
+
+
+        foreach(var property in mapping)
+        {
+            var value = property.Item1.GetValue(source);
+
+            if(value != null)
+            {
+                if(property.Item1.FieldType == property.Item2.PropertyType)
+                {
+                    Console.WriteLine("Setting {0} to {1}", property.Item1.Name, value);
+                    property.Item2.SetValue(destination, value);
+                }
+                else if(property.Item1.FieldType.GetInterface(typeof(IEnumerable).Name) != null)
+                {                       
+                    Console.WriteLine("Setting {0} to {1}", property.Item1.Name, value);
+
+                    
+
+                    Type sourceItemType     = property.Item1.FieldType.GenericTypeArguments[0];
+                    Type destItemType       = sourceItemType.DeclaringType;
+                    var  destList           = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(destItemType));
+
+                    foreach(var item in (value as IList))
+                    {
+                        Type destItemTypeActual = destItemType;
+        
+                        if(item is ActivatorDesc activatorDesc)
+                        {
+                            if(!string.IsNullOrEmpty(activatorDesc.TypeOf))
+                            {
+                                destItemTypeActual = Type.GetType(typeof(TextRenderBehavior).AssemblyQualifiedName);//Type.GetType(activatorDesc.TypeOf);
+                            }
+                        }
+
+                        var itemObject = Activator.CreateInstance(destItemTypeActual, Services, destination);
+                        SetValues(sourceItemType, item, destItemTypeActual, itemObject);
+                        destList.Add(itemObject);
+                    }
+                    property.Item2.SetValue(destination, destList);
+                }
+                else
+                {                    
+                    //var camera = new Camera(Services, result as Scene);
+                    var propertyObject = Activator.CreateInstance(property.Item1.FieldType.DeclaringType, Services, destination);
+                    
+                    //LoadProperties(CameraDesc, camera);
+                    SetValues(property.Item1.FieldType, value, propertyObject.GetType(), propertyObject);    
+
+                    // Scene.Camnera = value
+                    property.Item2.SetValue(destination, propertyObject);              
+                }
+            }
+        }
+    }
+
     public TType Load<TType>(string assetName, TType result)
     {
         var innerClass = typeof(TType).GetNestedTypes()[0];
@@ -31,24 +97,7 @@ public class ContentManager2
         var loadContentMethod = loadMethod.MakeGenericMethod(innerClass);
         var source = loadContentMethod.Invoke(Services.Content, new object[] { assetName });
 
-        var mapping = Enumerable.Join(
-            innerClass.GetFields(),
-            typeof(TType).GetProperties(),
-            n => n.Name,
-            n => n.Name,
-            (n, m) => Tuple.Create(n, m));
-
-        foreach(var property in mapping)
-        {
-            if(property.Item1.FieldType == property.Item2.PropertyType)
-            {
-                property.Item2.SetValue(result, property.Item1.GetValue(source));
-            }
-            else 
-            {
-                Console.WriteLine("I don't know how to load this property.");
-            }
-        }
+        SetValues(source.GetType(), source, typeof(TType), result);
 
         return result;
     }
@@ -59,7 +108,7 @@ public class ContentManager2
     {
         private SystemServices _services;
         private Scene _scene;
-        private SceneObject _text;
+        //private SceneObject _text;
         private InputCommandSet _commands;
         private InputManager _input;
         public TitleScreen(SystemServices services)
@@ -77,8 +126,8 @@ public class ContentManager2
             _commands.Add("START", EventType.KeyTyped, Keys.Enter);
             _commands.Add("START", EventType.MouseClicked, MouseButton.Left);
             
-            _scene = new Scene(_services);
 
+            /*
             _text = new SceneObject(_services, _scene);
             _text.AttachBehavior(new TextRenderBehavior(_text)
             {
@@ -86,6 +135,7 @@ public class ContentManager2
                 Text = "Press ESC to Exit or ENTER to Start",
                 Color = Color.White
             }); 
+            */
 
             _commands.Enabled = false;
         }

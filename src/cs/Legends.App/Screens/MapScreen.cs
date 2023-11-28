@@ -45,7 +45,7 @@ public class MapScreen : Screen
         });
 
         _scene = new Scene(services); 
-        _scene.Camera.AttachBehavior(new CameraControlsBehavior(_scene.Camera));
+        _scene.Camera.AttachBehavior(new CameraControlsBehavior(_services, _scene.Camera));
 
         _scene.AttachChild(new Map(_services, _scene));
         _entity = NewEntity();

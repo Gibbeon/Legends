@@ -7,7 +7,7 @@ namespace Legends.Engine;
 
 public interface IBehavior : IUpdate, IDisposable
 {
-    public class BehaviorDesc
+    public class BehaviorDesc : ActivatorDesc
     {
 
     }
