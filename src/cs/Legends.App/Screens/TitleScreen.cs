@@ -47,6 +47,10 @@ public class ContentManager2
                     Console.WriteLine("Setting {0} to {1}", property.Item1.Name, value);
                     property.Item2.SetValue(destination, value);
                 }
+                else if (property.Item1.FieldType == typeof(string))
+                {
+                    property.Item2.SetValue(destination, Services.Content.Load<BitmapFont>(value.ToString()));
+                }
                 else if(property.Item1.FieldType.GetInterface(typeof(IEnumerable).Name) != null)
                 {                       
                     Console.WriteLine("Setting {0} to {1}", property.Item1.Name, value);
@@ -60,23 +64,28 @@ public class ContentManager2
                     foreach(var item in (value as IList))
                     {
                         Type destItemTypeActual = destItemType;
+                        Type sourceItemTypeActual = sourceItemType;
         
                         if(item is ActivatorDesc activatorDesc)
                         {
                             if(!string.IsNullOrEmpty(activatorDesc.TypeOf))
                             {
+                                Console.WriteLine("Overriding type to: {0}", Type.GetType(typeof(TextRenderBehavior).AssemblyQualifiedName));
                                 destItemTypeActual = Type.GetType(typeof(TextRenderBehavior).AssemblyQualifiedName);//Type.GetType(activatorDesc.TypeOf);
+                                sourceItemTypeActual = destItemTypeActual.DeclaringType;
                             }
                         }
 
                         var itemObject = Activator.CreateInstance(destItemTypeActual, Services, destination);
-                        SetValues(sourceItemType, item, destItemTypeActual, itemObject);
+                        SetValues(item.GetType(), item, destItemTypeActual, itemObject);
                         destList.Add(itemObject);
                     }
                     property.Item2.SetValue(destination, destList);
                 }
                 else
-                {                    
+                {        
+                    Console.WriteLine("Setting {0} to {1}", property.Item1.Name, value);
+                             
                     //var camera = new Camera(Services, result as Scene);
                     var propertyObject = Activator.CreateInstance(property.Item1.FieldType.DeclaringType, Services, destination);
                     

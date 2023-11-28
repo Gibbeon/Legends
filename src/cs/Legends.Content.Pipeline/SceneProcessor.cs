@@ -7,7 +7,9 @@ using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using Legends.Engine;
 using Legends.Engine.Serialization;
 using System;
+using Legends.Engine.Graphics2D;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Legends.Content.Pipline;
 
@@ -20,9 +22,15 @@ public class SceneImporter : ContentImporter<Scene.SceneDesc>
         context.Logger.LogMessage("Importing file: {0}", filename);
         try
         {
-            var result = JsonConvert.DeserializeObject<Scene.SceneDesc>(File.ReadAllText(filename));
+            var settings = new Newtonsoft.Json.JsonSerializerSettings
+            {
+                TypeNameAssemblyFormatHandling = Newtonsoft.Json.TypeNameAssemblyFormatHandling.Simple,
+                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects,
+            };
 
-            context.Logger.LogMessage(JsonConvert.ToString(JsonConvert.SerializeObject(result)).Replace("{", "{{").Replace("}", "}}"));
+            var result = JsonConvert.DeserializeObject<Scene.SceneDesc>(File.ReadAllText(filename), settings);
+
+            context.Logger.LogMessage(JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)).Replace("{", "{{").Replace("}", "}}"));
 
             return result;
         } 
@@ -162,6 +170,29 @@ public class CameraWriter : ContentTypeWriter<Camera.CameraDesc>
         return typeof(CameraWriter).AssemblyQualifiedName;
     }
 }
+
+public class TextBehaviorWriter : ContentTypeWriter<TextRenderBehavior.TextRenderBehaviorDesc>
+{
+    protected override void Write(ContentWriter output, TextRenderBehavior.TextRenderBehaviorDesc value)
+    {  
+        output.WriteRawObject<ActivatorDesc>(value);
+
+        output.Write(value.Text);
+        output.Write(value.Color);
+        output.Write(value.Font);
+    }
+
+    public override string GetRuntimeType(TargetPlatform targetPlatform)
+    {
+        return typeof(TextRenderBehavior.TextRenderBehaviorDesc).AssemblyQualifiedName;
+    }
+
+    public override string GetRuntimeReader(TargetPlatform targetPlatform)
+    {
+        return typeof(TextBehaviorWriter).AssemblyQualifiedName;
+    }
+}
+
 
 
 

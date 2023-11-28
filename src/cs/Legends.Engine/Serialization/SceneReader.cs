@@ -3,6 +3,8 @@ using Legends.Engine;
 using Legends.Engine.Graphics2D;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.BitmapFonts;
 
 namespace Legends.Engine.Serialization;
 
@@ -75,6 +77,20 @@ public class CameraReader : ContentTypeReader<Camera.CameraDesc>
     {
         var result = existingInstance ?? new Camera.CameraDesc();        
         input.ReadRawObject<SceneObject.SceneObjectDesc>(result);       
+
+        return result;
+    }
+}
+
+public class TextRenderBehaviorReader : ContentTypeReader<TextRenderBehavior.TextRenderBehaviorDesc>
+{
+    protected override TextRenderBehavior.TextRenderBehaviorDesc Read(ContentReader input, TextRenderBehavior.TextRenderBehaviorDesc existingInstance)
+    {
+        var result = existingInstance ?? new TextRenderBehavior.TextRenderBehaviorDesc();        
+        input.ReadRawObject<ActivatorDesc>(result); 
+        result.Text     = input.ReadString();
+        result.Color    = input.ReadColor();
+        result.Font     = input.ReadString();      
 
         return result;
     }

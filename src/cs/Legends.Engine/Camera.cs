@@ -31,12 +31,13 @@ public class Camera : SceneObject, IViewState
         _zoomBounds = new BoundedValue<float>(float.Epsilon, float.MaxValue);
         Size = new Vector2(viewportAdapter.VirtualWidth, viewportAdapter.VirtualHeight);
         OriginNormalized = new Vector2(.5f, .5f);
-
         LookAt(Vector2.Zero);
     }
 
     public override void SetSize(Size2 size)
     {
+        if(size == Size2.Empty) return;
+
         base.SetSize(size);
         
         _world      = Matrix.CreateTranslation(Size.Width / 2, Size.Height / 2, 0.0f);
