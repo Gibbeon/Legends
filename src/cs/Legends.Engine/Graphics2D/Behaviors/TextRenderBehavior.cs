@@ -3,8 +3,36 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System;
+using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Engine.Graphics2D;
+
+public class Asset
+{
+    public string Name { get; }
+
+    public Asset(string name)
+    {
+        Name = name;
+    }
+}
+public class Asset<TType> : Asset
+{
+    TType? _local;
+    public TType? Get() => _local;
+    public void Set(TType? local) => _local = local;
+
+    public void Load(ContentManager manager)
+    {
+        _local = manager.Load<TType>(Name);
+    }
+
+    public Asset(string name) : base(name)
+    {
+    }
+
+    public static implicit operator TType?(Asset<TType> Asset) => Asset.Get();
+}
 
 public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 {
@@ -14,7 +42,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public string Text {get; set; }
 
-    public BitmapFont? Font { get; set; }
+    public Asset<BitmapFont>? Font { get; set; }
 
     public RenderState? RenderState { get; set; }
     
@@ -41,10 +69,29 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     [JsonIgnore]
     public BitmapFont? SourceData => Font;
+
+    public TextRenderBehavior() : this(null, null)
+    {
+
+    }
+
     public TextRenderBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
     {
         Color   = Color.White;
         Text    = string.Empty;
+    }
+
+    public override void Initialize()
+    {
+        var cm = Services?.GetContentManager();
+        if(cm != null)
+        {
+            Font?.Load(cm);
+        }
+        else
+        {
+            throw new Exception("Cannot load content without a Content Manager");
+        }
     }
 
     public override void Update(GameTime gameTime)

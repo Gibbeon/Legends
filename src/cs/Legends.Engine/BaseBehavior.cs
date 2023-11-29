@@ -18,6 +18,8 @@ public abstract class BaseBehavior : IBehavior
         Parent = parent;
     }
 
+    public virtual void Initialize() {}
+    
     public abstract void Update(GameTime gameTime);
     
     public virtual void Draw(GameTime gameTime) {}

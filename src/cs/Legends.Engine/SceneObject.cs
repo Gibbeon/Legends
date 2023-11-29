@@ -31,15 +31,15 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     [DefaultValue(true)]
     public bool IsVisible { get; set; }
     
-    public IReadOnlyList<SceneObject> Children
+    public IList<SceneObject> Children
     {
-        get => _children.ToList().AsReadOnly();
+        get => _children;
         protected set => _children = (IList<SceneObject>)value;
     }
     
-    public IReadOnlyList<IBehavior> Behaviors
+    public IList<IBehavior> Behaviors
     {
-        get => _behaviors.ToList().AsReadOnly();
+        get => _behaviors;
         protected set => _behaviors = (IList<IBehavior>)value;
     }
 

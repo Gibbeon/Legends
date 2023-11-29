@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Runtime.CompilerServices;
 using MonoGame.Extended;
+using Legends.Engine.Graphics2D;
 
 namespace Legends.Content.Pipline;
 
@@ -32,7 +33,10 @@ public static class ContentTypeWriterExtensions
         {
             InitFile = true;
             if(File.Exists("pipeline.log"))
+            {
+                Console.WriteLine("Deleting File");
                 File.Delete("pipeline.log");
+            }
         }
         if(OutputToConsole)
         {
@@ -46,16 +50,21 @@ public static class ContentTypeWriterExtensions
 
         if(OutputToFile)
         {
-            using(var sw = new StreamWriter(File.OpenWrite("pipeline.log")))
+            var sw = new StreamWriter(File.OpenWrite("pipeline.log"));
+            try
             {
-                if(Indent * IndentSpaces > 0)
                 {
-                    sw.Write(new string(Enumerable.Repeat(' ', Indent * IndentSpaces).ToArray()));
+                    if(Indent * IndentSpaces > 0)
+                    {
+                        sw.Write(new string(Enumerable.Repeat(' ', Indent * IndentSpaces).ToArray()));
+                    }
+
+                    sw.Write(string.Format("{0}: ", typeof(TType).Name));
+                    sw.WriteLine(string.Format(message, args));
                 }
-
-                sw.Write("{0}: ", typeof(TType).Name);
-                sw.WriteLine(message, args);
-
+            }
+            finally
+            {                    
                 sw.Flush();
                 sw.Close();
             }
@@ -94,6 +103,11 @@ public static class ContentTypeWriterExtensions
     {
         output.Write(size2.Width);
         output.Write(size2.Height);
+    }
+
+    public static void Write(this ContentWriter output, Asset asset)
+    {
+        output.Write(asset.Name);
     }
 
     static IEnumerable<MethodInfo> GetExtensionMethods(Type extendedType, Assembly? assembly = default)
@@ -145,6 +159,7 @@ public static class ContentTypeWriterExtensions
                     Log<TType>("!!Ignoring Field: {0}", field.Name);
                     continue;
                 }
+
                 Log<TType>("Writing Field: {0}", field.Name);
 
                 var writeMethod = _contentWriterWriteMethods.SingleOrDefault(
@@ -152,8 +167,12 @@ public static class ContentTypeWriterExtensions
                         || n.IsStatic && n.GetParameters().Any(m => m.ParameterType.IsAssignableTo(field.FieldType)));
                 if(writeMethod != null)
                 {
-                    Log<TType>("..Writing Ordinal Value: {0}", field.GetValue(value)?.ToString());
+                    Log<TType>("..Ordinal: {0}", field.GetValue(value)?.ToString());
                     writeMethod.Invoke(output, new object?[] { field.GetValue(value) });
+                }
+                else if(field.FieldType.IsEnum)
+                {
+                    Log<TType>("..Enum: {0}", field.GetValue(value)?.ToString());
                 }
                 else if(field.FieldType.IsArray || field.FieldType.GetInterface(typeof(IEnumerable).Name) != null)
                 {
@@ -201,8 +220,8 @@ public static class ContentTypeWriterExtensions
                 Log<TType>("Writing Property: {0}", property.Name);
 
                 var writeMethod = _contentWriterWriteMethods.SingleOrDefault(
-                    n => !n.IsStatic && n.GetParameters().All(m => m.ParameterType.IsAssignableTo(property.PropertyType))
-                        || n.IsStatic && n.GetParameters().Any(m => m.ParameterType.IsAssignableTo(property.PropertyType)));
+                    n => !n.IsStatic && n.GetParameters().All(m => m.ParameterType.IsAssignableFrom(property.PropertyType))
+                        || n.IsStatic && n.GetParameters().Any(m => m.ParameterType.IsAssignableFrom(property.PropertyType)));
                         
                 if(writeMethod != null)
                 {
@@ -215,6 +234,10 @@ public static class ContentTypeWriterExtensions
                     {
                         writeMethod.Invoke(null, new object?[] { output, property.GetValue(value)});
                     }
+                }
+                else if(property.PropertyType.IsEnum)
+                {
+                    Log<TType>("..Enum: {0}", property.GetValue(value)?.ToString());
                 }
                 else if(property.PropertyType.IsArray || property.PropertyType.GetInterface(typeof(IEnumerable).Name) != null)
                 {   
@@ -232,8 +255,8 @@ public static class ContentTypeWriterExtensions
                         foreach(var item in list)
                         {
                             writeMethod = _contentWriterWriteMethods.SingleOrDefault(
-                                                n => !n.IsStatic && n.GetParameters().All(m => m.ParameterType.IsAssignableTo(item.GetType()))
-                                                    || n.IsStatic && n.GetParameters().Any(m => m.ParameterType.IsAssignableTo(item.GetType())));
+                                                n => !n.IsStatic && n.GetParameters().All(m => m.ParameterType.IsAssignableFrom(item.GetType()))
+                                                    || n.IsStatic && n.GetParameters().Any(m => m.ParameterType.IsAssignableFrom(item.GetType())));
 
                             if(writeMethod != null)
                             {

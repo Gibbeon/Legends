@@ -1,6 +1,5 @@
 {
     "name": "Test Scene",
-    "tags": [ "sample" ],
     "children": [
         {
             "name": "Text",
