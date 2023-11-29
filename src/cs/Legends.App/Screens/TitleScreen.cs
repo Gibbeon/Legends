@@ -6,18 +6,15 @@ using MonoGame.Extended.Screens;
 using MonoGame.Extended.Input;
 using Legends.Engine.Input;
 using Legends.Engine;
-using Legends.Engine.Graphics2D;
-using System.Net.Security;
 using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Legends.App.Screens
 {
 
-public class ContentManager2
+    public class ContentManager2
 {
     IServiceProvider Services { get; set; }
 

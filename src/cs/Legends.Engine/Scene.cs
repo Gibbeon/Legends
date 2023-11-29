@@ -5,7 +5,7 @@ namespace Legends.Engine;
 
 public class Scene : SceneObject
 {
-    public Camera Camera { get; set; }
+    public Camera? Camera { get; set; }
 
     protected Scene() : this(null)
     {

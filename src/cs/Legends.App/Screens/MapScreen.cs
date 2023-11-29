@@ -1,6 +1,4 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
 using Legends.Engine.Input;
 using MonoGame.Extended.Input.InputListeners;
@@ -45,7 +43,7 @@ public class MapScreen : Screen
         });
 
         _scene = new Scene(services); 
-        _scene.Camera.AttachBehavior(new CameraControlsBehavior(_services, _scene.Camera));
+        _scene.Camera?.AttachBehavior(new CameraControlsBehavior(_services, _scene.Camera));
 
         //_scene.AttachChild(new Map(_services, _scene));
         _entity = NewEntity();

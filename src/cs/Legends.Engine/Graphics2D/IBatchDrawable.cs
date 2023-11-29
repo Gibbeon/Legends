@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
+
 namespace Legends.Engine;
 
 public interface IBatchDrawable : IDrawable
@@ -17,5 +19,5 @@ public interface IBatchDrawable : IDrawable
 
 public interface IBatchDrawable<TType> : IBatchDrawable
 {
-    TType SourceData { get; }
+    TType? SourceData { get; }
 }

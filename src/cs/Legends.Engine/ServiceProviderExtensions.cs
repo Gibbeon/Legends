@@ -3,7 +3,6 @@ using System.ComponentModel.Design;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using MonoGame.Extended;
 
 namespace Legends.Engine;
 
@@ -21,6 +20,7 @@ public class GameManagementService : IGameManagementService
     public GameManagementService(Game game)
     {
         Game = game;
+        Game.Services.Add<IGameManagementService>(this);
     }
 }
 
@@ -45,9 +45,13 @@ public static class ServiceProviderExtensions
     public static void Add<TType>(this IServiceProvider serviceProvider, TType value)
         where TType: class
     {
-        if(serviceProvider is IServiceContainer serviceContainer)
+        if(serviceProvider is GameServiceContainer serviceContainer)
         {
             serviceContainer.AddService(typeof(TType), value);
+        } 
+        else
+        {
+            throw new InvalidOperationException(string.Format("Could not register service of type: {0}", typeof(TType).Name));
         }
     }
 

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Input.InputListeners;
-using System.Dynamic;
 
 namespace Legends.Engine.Input;
 

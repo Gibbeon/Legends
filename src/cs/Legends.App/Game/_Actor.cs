@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Dynamic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 /*
 namespace Legends.App.Scene
 {

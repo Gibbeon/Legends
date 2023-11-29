@@ -1,7 +1,4 @@
 using Microsoft.Xna.Framework.Content;
-using Legends.Engine.Graphics2D;
-using System.Xml.XPath;
-using MonoGame.Extended.Content;
 
 namespace Legends.Engine.Serialization;
 

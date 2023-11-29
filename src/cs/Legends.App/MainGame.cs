@@ -1,21 +1,23 @@
 ﻿using Legends.Engine;
 using Legends.Engine.Input;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Screens;
 
 namespace Legends.App;
 
 public class MainGame : Microsoft.Xna.Framework.Game
 {
-    private GraphicsDeviceManager _graphicsDeviceManager;
-    private RenderService _spriteRenderService;
+    private GraphicsDeviceManager   _graphicsDeviceManager;
+    private RenderService           _spriteRenderService;
+
+    private GameManagementService   _gameManagementService;
 
     private InputHandlerService _inputService;
     private ScreenManager _screenManager;
     
     public MainGame()
     {
+        _gameManagementService  = new GameManagementService(this);
         _graphicsDeviceManager  = new GraphicsDeviceManager(this);        
         _spriteRenderService    = new RenderService(Services);
         _inputService           = new InputHandlerService(Services);

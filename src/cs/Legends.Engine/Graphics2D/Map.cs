@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Legends.Engine;
-using Legends.Engine.Animation;
-using Legends.Engine.Graphics2D;
-using Legends.Engine.Resolvers;
 using System;
 using MonoGame.Extended;
 using Microsoft.Xna.Framework.Graphics;

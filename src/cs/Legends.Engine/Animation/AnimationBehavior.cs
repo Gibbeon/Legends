@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Legends.Engine.Graphics2D;
 using Microsoft.Xna.Framework;
-using Microsoft.VisualBasic;
 
 namespace Legends.Engine.Animation;
 

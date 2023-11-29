@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Input;
 using Legends.Engine;
 using Legends.Engine.Input;
-using MonoGame.Extended.Input;
 using System;
 
 namespace Legends.App;
@@ -41,10 +40,10 @@ public class CameraControlsBehavior : BaseBehavior
         {
             switch(command.Name)
             {
-                case "MOVE_LEFT":   Parent.GetParentScene().Camera.Move(-ScrollSpeed, 0); break;
-                case "MOVE_RIGHT":  Parent.GetParentScene().Camera.Move( ScrollSpeed, 0); break;
-                case "MOVE_UP":     Parent.GetParentScene().Camera.Move( 0,-ScrollSpeed); break;
-                case "MOVE_DOWN":   Parent.GetParentScene().Camera.Move( 0, ScrollSpeed); break;
+                case "MOVE_LEFT":   Parent?.GetParentScene()?.Camera?.Move(-ScrollSpeed, 0); break;
+                case "MOVE_RIGHT":  Parent?.GetParentScene()?.Camera?.Move( ScrollSpeed, 0); break;
+                case "MOVE_UP":     Parent?.GetParentScene()?.Camera?.Move( 0,-ScrollSpeed); break;
+                case "MOVE_DOWN":   Parent?.GetParentScene()?.Camera?.Move( 0, ScrollSpeed); break;
                 default:
                     Console.WriteLine("Unknown Command: {0}", command.Name); break;             
             }

@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
@@ -15,36 +14,37 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public string Text {get; set; }
 
-    public BitmapFont Font { get; set; }
+    public BitmapFont? Font { get; set; }
 
     public RenderState? RenderState { get; set; }
     
     [JsonIgnore]
-    public bool IsVisible => Parent.IsVisible;
+    public bool IsVisible   => Parent != null && Parent.IsVisible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent.Position;
+    public Vector2 Position => Parent != null ? Parent.Position : Vector2.Zero;
 
     [JsonIgnore]
-    public float Rotation => Parent.Rotation;
+    public float Rotation   => Parent != null ? Parent.Rotation : 0.0f;
     
     [JsonIgnore]
-    public Vector2 Scale => Parent.Scale;
+    public Vector2 Scale    => Parent != null ? Parent.Scale : Vector2.One;
     
     [JsonIgnore]
-    public Vector2 Origin => Parent.Origin;
+    public Vector2 Origin   => Parent != null ? Parent.Origin : Vector2.Zero;
     
     [JsonIgnore]
-    public IViewState? ViewState => Parent.GetParentScene()?.Camera;
+    public IViewState? ViewState => Parent?.GetParentScene()?.Camera;
     
     [JsonIgnore]
-    public Rectangle SourceBounds => new Rectangle(Position.ToPoint(), (Point)SourceData.MeasureString(Text));
+    public Rectangle SourceBounds => new(Position.ToPoint(), SourceData == null ? Point.Zero : (Point)SourceData.MeasureString(Text));
 
     [JsonIgnore]
-    public BitmapFont SourceData => Font;
+    public BitmapFont? SourceData => Font;
     public TextRenderBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
     {
-        Color = Color.White;
+        Color   = Color.White;
+        Text    = string.Empty;
     }
 
     public override void Update(GameTime gameTime)
@@ -64,6 +64,6 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public override void Dispose()
     {
-        
+        GC.SuppressFinalize(this);
     }
 }

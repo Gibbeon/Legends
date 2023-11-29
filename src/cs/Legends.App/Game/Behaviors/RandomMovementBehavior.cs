@@ -1,10 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Legends.Engine;
 using System;
 using MonoGame.Extended;
-using MonoGame.Extended.Content;
-using System.Reflection;
 
 namespace Legends.App;
 
@@ -28,7 +25,7 @@ public class RandomMovementBehavior : BaseBehavior
 
         if(_waitTime <= 0)
         {
-            if(_targetPosition != Parent.Position)
+            if(Parent != null && _targetPosition != Parent.Position)
             {
                 var move = (_targetPosition - Parent.Position);
                 if(MathF.Abs(move.X) + Math.Abs(move.Y) > 1)
@@ -40,7 +37,7 @@ public class RandomMovementBehavior : BaseBehavior
                 }                
             }
 
-            if(Parent.Position == _targetPosition)
+            if(Parent != null && Parent.Position == _targetPosition)
             {
                 _waitTime = 1 + _random.NextSingle(4);
                 if(_random.Next() % 2 == 1)

@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Legends.Engine.Graphics2D;
-using MonoGame.Extended.Sprites;
 using MonoGame.Extended.TextureAtlases;
 using Microsoft.Xna.Framework.Graphics;
-using System.Security;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System;
@@ -22,31 +19,31 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     public SpriteEffects Effect  { get; set; }
 
     [JsonIgnore]
-    public bool IsVisible => Parent.IsVisible;
+    public Texture2D? SourceData => TextureRegion?.Texture;
 
     [JsonIgnore]
-    public Vector2 Position => Parent.Position;
+    public bool IsVisible   => Parent != null && Parent.IsVisible;
 
     [JsonIgnore]
-    public float Rotation => Parent.Rotation;
+    public Vector2 Position => Parent != null ? Parent.Position : Vector2.Zero;
 
     [JsonIgnore]
-    public Vector2 Scale => Parent.Scale;
-
-    [JsonIgnore]
-    public Vector2 Origin => Parent.Origin;
-
-    [JsonIgnore]
-    public Texture2D SourceData => TextureRegion.Texture;
+    public float Rotation   => Parent != null ? Parent.Rotation : 0.0f;
     
     [JsonIgnore]
-    public IViewState? ViewState => Parent?.GetParentScene().Camera;
+    public Vector2 Scale    => Parent != null ? Parent.Scale : Vector2.One;
+    
+    [JsonIgnore]
+    public Vector2 Origin   => Parent != null ? Parent.Origin : Vector2.Zero;
+    
+    [JsonIgnore]
+    public IViewState? ViewState => Parent?.GetParentScene()?.Camera;
 
     [JsonIgnore]
-    public Rectangle SourceBounds{ get => TextureRegion.Bounds; set => SetTextureRegionBounnds(value); }
+    public Rectangle SourceBounds{ get => TextureRegion == null ? Rectangle.Empty : TextureRegion.Bounds; set => SetTextureRegionBounnds(value); }
 
     [JsonIgnore]
-    public Rectangle DestinationBounds => (Rectangle)Parent?.BoundingRectangle; 
+    public Rectangle DestinationBounds => Parent == null ? Rectangle.Empty : (Rectangle)Parent.BoundingRectangle; 
 
     public SpriteRenderBehavior(): this (null, null)
     {
@@ -78,6 +75,6 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 
     public override void Dispose()
     {
-        
+        GC.SuppressFinalize(this);
     }
 }
