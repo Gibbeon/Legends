@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Legends.App", ".\src\cs\Legends.App\Legends.App.csproj", "{DE5B3EF9-2A20-4CF3-994C-B86D57D7705F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7550}") = "Legends.Content.Pipeline", ".\src\cs\Legends.Content.Pipeline\Legends.Content.Pipeline.csproj", "{DE5B3EF9-2A20-4CF3-994C-B86D57D7706F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Legends.App", ".\src\cs\Legends.App\Legends.App.csproj", "{DE5B3EF9-2A20-4CF3-994C-B86D57D7705F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Legends.Engine", "src\cs\Legends.Engine\Legends.Engine.csproj", "{C6E4FDE9-242E-466E-B7B5-02B93B2EAEDE}"
 EndProject

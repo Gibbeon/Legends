@@ -26,7 +26,6 @@ public class Scene : SceneObject
     {
         Camera?.Dispose();
         Camera = camera;
-        AttachChild(camera);
     }
 
     public override void Draw(GameTime gameTime)

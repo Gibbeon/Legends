@@ -16,6 +16,7 @@ public class SceneImporter : ContentImporter<Scene>
         {
             var settings = new Newtonsoft.Json.JsonSerializerSettings
             {
+                Formatting = Formatting.Indented,
                 //TypeNameAssemblyFormatHandling = Newtonsoft.Json.TypeNameAssemblyFormatHandling.Simple,
                 TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto
             };
@@ -24,7 +25,7 @@ public class SceneImporter : ContentImporter<Scene>
 
             context.Logger.LogMessage(JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)).Replace("{", "{{").Replace("}", "}}"));
 
-            return result;
+            return result ?? new Scene(null);
         } 
         catch(Exception err)
         {

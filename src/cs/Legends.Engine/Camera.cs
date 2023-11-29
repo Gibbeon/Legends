@@ -31,6 +31,7 @@ public class Camera : SceneObject, IViewState
         _zoomBounds = new BoundedValue<float>(float.Epsilon, float.MaxValue);
         OriginNormalized = new Vector2(.5f, .5f);
         SetSize(0, 0);
+        Detach();
     }
 
     public override void SetSize(Size2 size)
