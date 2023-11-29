@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Legends.Engine;
 using Legends.Engine.Animation;
 using Legends.Engine.Graphics2D;
@@ -12,7 +13,7 @@ public class Actor : SceneObject
     public float Speed;
     ValueResolver<string, Actor> _resolver;
 
-    public Actor(SystemServices services, Scene parent) : base(services, string.Empty, parent)
+    public Actor(IServiceProvider services, Scene parent) : base(services, parent)
     {
         Speed = 1.0f;
         Facing = DirectionConstants.Down;

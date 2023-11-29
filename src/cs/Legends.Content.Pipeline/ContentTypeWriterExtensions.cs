@@ -8,7 +8,6 @@ namespace Legends.Content.Pipline;
 public static class ContentTypeWriterExtensions
 {
     private static MethodInfo? _writeRawObjectMethod;
-
     private static MethodInfo? _writeObjectMethod;
     private static MethodInfo[]? _contentWriterWriteMethods;
 

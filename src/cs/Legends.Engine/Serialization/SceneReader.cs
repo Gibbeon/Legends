@@ -1,7 +1,17 @@
 using Microsoft.Xna.Framework.Content;
 using Legends.Engine.Graphics2D;
+using System.Xml.XPath;
+using MonoGame.Extended.Content;
 
 namespace Legends.Engine.Serialization;
+
+public class GenericReader<TType> : ContentTypeReader<TType>
+{
+    protected override TType Read(ContentReader input, TType existingInstance)
+    {
+        return existingInstance;
+    }
+}
 
 /*
 public class SpatialReader : ContentTypeReader<Spatial.SpatialDesc>

@@ -11,11 +11,11 @@ public class CameraControlsBehavior : BaseBehavior
 {
     public float ScrollSpeed;
     private InputCommandSet _commands;
-    public CameraControlsBehavior(SystemServices services, SceneObject parent) : base(services, parent)
+    public CameraControlsBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         ScrollSpeed = 1;
 
-        _commands = new InputCommandSet(Parent.Services);
+        _commands = new InputCommandSet(services);
         
         //_commands.Add("LOOK_AT",      EventType.MouseClicked,  MouseButton.Right);  
         //_commands.Add("ZOOM",         EventType.MouseScroll,   MouseButton.Middle); 

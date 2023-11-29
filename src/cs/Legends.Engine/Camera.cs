@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using System;
 
 namespace Legends.Engine;
 
@@ -25,12 +26,7 @@ public class Camera : SceneObject, IViewState
     [JsonIgnore]
     public IViewState ViewState => new ViewState() { View = View, Projection = Projection, World = World };
 
-    public Camera() : this(null, string.Empty, null)
-    {
-
-    }
-
-    public Camera(SystemServices? services, string name, Scene? scene) : base(services, name, scene)
+    public Camera(IServiceProvider? services, Scene? scene) : base(services, scene)
     {
         _zoomBounds = new BoundedValue<float>(float.Epsilon, float.MaxValue);
         OriginNormalized = new Vector2(.5f, .5f);
@@ -43,7 +39,7 @@ public class Camera : SceneObject, IViewState
         {
             if(Services != null)
             {
-                size = new Vector2(Services.GraphicsDevice.Viewport.Width, Services.GraphicsDevice.Viewport.Height);
+                size = new Vector2(Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height);
             }
             else
             {

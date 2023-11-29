@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Security;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -51,7 +52,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     {
 
     }
-    public SpriteRenderBehavior(SystemServices? services, SceneObject? parent) : base(services, parent)
+    public SpriteRenderBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
     {
         Color = Color.White;
     }
@@ -60,7 +61,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     {
         if(IsVisible)
         {
-            Parent?.Services?.GetService<IRenderService>().DrawBatched(this);
+            Parent?.Services?.Get<IRenderService>().DrawBatched(this);
         }
     }
 

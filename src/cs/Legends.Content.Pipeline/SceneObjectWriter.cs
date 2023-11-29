@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using Legends.Engine;
 using Legends.Engine.Graphics2D;
+using Legends.Engine.Serialization;
 
 namespace Legends.Content.Pipline;
 
@@ -20,7 +21,7 @@ public class SceneWriter : ContentTypeWriter<Scene>
 
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {
-        return GetType().AssemblyQualifiedName;
+        return typeof(GenericReader<>).MakeGenericType(GetType().BaseType.GenericTypeArguments[0]).AssemblyQualifiedName;
     }
 }
 
@@ -39,7 +40,7 @@ public class SceneObjectWriter : ContentTypeWriter<SceneObject>
 
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {
-        return GetType().AssemblyQualifiedName;
+        return typeof(GenericReader<>).MakeGenericType(GetType().BaseType.GenericTypeArguments[0]).AssemblyQualifiedName;
     }
 }
 
@@ -58,7 +59,7 @@ public class SpatialWriter : ContentTypeWriter<Spatial>
 
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {
-        return GetType().AssemblyQualifiedName;
+        return typeof(GenericReader<>).MakeGenericType(GetType().BaseType.GenericTypeArguments[0]).AssemblyQualifiedName;
     }
 }
 
@@ -77,7 +78,7 @@ public class CameraWriter : ContentTypeWriter<Camera>
 
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {
-        return GetType().AssemblyQualifiedName;
+        return typeof(GenericReader<>).MakeGenericType(GetType().BaseType.GenericTypeArguments[0]).AssemblyQualifiedName;
     }
 }
 
@@ -96,7 +97,7 @@ public class TextRenderBehaviorWriter : ContentTypeWriter<TextRenderBehavior>
 
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {
-        return GetType().AssemblyQualifiedName;
+        return typeof(GenericReader<>).MakeGenericType(GetType().BaseType.GenericTypeArguments[0]).AssemblyQualifiedName;
     }
 }
 

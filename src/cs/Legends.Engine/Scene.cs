@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 
 namespace Legends.Engine;
@@ -6,22 +7,22 @@ public class Scene : SceneObject
 {
     public Camera Camera { get; set; }
 
-    public Scene(): this(null)
+    protected Scene() : this(null)
     {
 
     }
 
-    public Scene(SystemServices? services) : this (services, string.Empty, null)
+    public Scene(IServiceProvider? services) : this (services, null)
     {
 
     }
 
-    public Scene(SystemServices? services, string name, SceneObject? parent) : base(services, name, parent)
+    public Scene(IServiceProvider? services, SceneObject? parent) : base(services, parent)
     {
-        SetCamera(new Camera(services, string.Empty, this));
+        SetCamera(new Camera(services, this));
     }
 
-    public void SetCamera(Camera camera)
+    public virtual void SetCamera(Camera camera)
     {
         Camera?.Dispose();
         Camera = camera;
@@ -38,5 +39,11 @@ public class Scene : SceneObject
     {
         base.Update(gameTime);
         Camera?.Update(gameTime);
+    }
+
+    public override void Dispose()
+    {
+        Camera?.Dispose();
+        base.Dispose();
     }
 }

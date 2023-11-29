@@ -16,20 +16,19 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     private IList<SceneObject> _children;
 
     [JsonIgnore]
-    public SystemServices? Services { get; private set; }
+    public IServiceProvider? Services { get; private set; }
     
     [JsonIgnore]
     public SceneObject? Parent { get; private set; }
     
     public string Name { get; set; }
     
-    public  IList<string> Tags { get => _tags; protected set => _tags = value; }
+    public IList<string> Tags { get => _tags; protected set => _tags = value; }
     
     [DefaultValue(true)]
     public bool Enabled { get; set; }
     
     [DefaultValue(true)]
-    
     public bool IsVisible { get; set; }
     
     public IReadOnlyList<SceneObject> Children
@@ -44,20 +43,10 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         protected set => _behaviors = (IList<IBehavior>)value;
     }
 
-    public SceneObject(): this(null, string.Empty, null)
-    {
-
-    }
-
-    public SceneObject(SystemServices? systems, string name) : this(systems, name, null)
-    {
-
-    }
-
-    public SceneObject(SystemServices? systems, string name, SceneObject? parent) : base()
+    public SceneObject(IServiceProvider? systems, SceneObject? parent = default) : base()
     {
         Services    = systems;
-        Name        = string.IsNullOrEmpty(name) ? string.Format("{0}#{1}", typeof(SceneObject).Name, _globalObjId++) : name;
+        Name        = string.Format("{0}#{1}", typeof(SceneObject).Name, _globalObjId++);
         
         _children   = new List<SceneObject>();
         _behaviors  = new List<IBehavior>();

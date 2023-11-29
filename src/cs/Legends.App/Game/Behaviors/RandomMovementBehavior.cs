@@ -13,7 +13,7 @@ public class RandomMovementBehavior : BaseBehavior
     private float _waitTime;
     private Vector2 _targetPosition;
     private Random _random;
-    public RandomMovementBehavior(SystemServices services, SceneObject parent) : base(services, parent)
+    public RandomMovementBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         _random = new Random();
         _waitTime = 1 + _random.NextSingle(4);

@@ -15,18 +15,18 @@ public class InputCommandSet
 {
     private readonly IList<EventListener>   _eventListeners;
     private IList<EventAction>              _eventActions;
-    private readonly SystemServices         _services;
+    private readonly IServiceProvider?         _services;
     public IEnumerable<EventAction> EventActions => _eventActions.Where(n => !n.Handled);
     public IList<EventListener> EventListeners => _eventListeners;
     public bool Enabled { get; set; }
 
-    public InputCommandSet(SystemServices service)
+    public InputCommandSet(IServiceProvider? service)
     {
         _services = service;
         _eventActions = new List<EventAction>();
         _eventListeners = new List<EventListener>();
 
-        _services.GetService<IInputHandlerService>().Current.CommandSets.Add(this);
+        _services.Get<IInputHandlerService>().Current.CommandSets.Add(this);
 
         Enabled = true;
     }
@@ -57,7 +57,7 @@ public class InputCommandSet
         Add(action, 
             (type, args) => type == eventType
                             && (args as MouseEventArgs)?.Button == button
-                            && _services.GetService<IInputHandlerService>().Current.KeyboardListener.IsPressed(modifers));
+                            && _services.Get<IInputHandlerService>().Current.KeyboardListener.IsPressed(modifers));
     }
 
     public void Add(string action, EventType eventType, Keys key, params Keys[] modifers)
@@ -65,14 +65,14 @@ public class InputCommandSet
         Add(action, 
             (type, args) => type == eventType
                             && (args as KeyboardEventArgs)?.Key == key
-                            && _services.GetService<IInputHandlerService>().Current.KeyboardListener.IsPressed(modifers));    
+                            && _services.Get<IInputHandlerService>().Current.KeyboardListener.IsPressed(modifers));    
     }
 
     public void Dispose()
     {
         _eventActions.Clear();
         _eventListeners.Clear();
-        _services.GetService<IInputHandlerService>().Current.CommandSets.Remove(this);
+        _services.Get<IInputHandlerService>().Current.CommandSets.Remove(this);
     }
 
 }

@@ -21,12 +21,12 @@ public class Map : SceneObject, ISelfDrawable
     public Size TileCount;
     public TileSet TileSet;
     public TileData[,] Tiles;
-    public Map(SystemServices services, string name, Scene parent) : base(services, name, parent)
+    public Map(IServiceProvider services, Scene parent) : base(services, parent)
     {
         TileSize = new Size(8, 8);
         TileSet = new TileSet()
         {
-            Texture = Services.Content.Load<Texture2D>("ville_0"),
+            Texture = Services.GetContentManager().Load<Texture2D>("ville_0"),
             TileSize = new Size(8, 8)
         };
         
@@ -53,17 +53,17 @@ public class Map : SceneObject, ISelfDrawable
         _vertices = BuildVerticies().ToArray();
         _indicies = BuildIndicies().ToArray();
         
-        _vertexBuffer = new DynamicVertexBuffer(Services.GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, _vertices.Length, BufferUsage.WriteOnly);
+        _vertexBuffer = new DynamicVertexBuffer(Services.GetGraphicsDevice(), VertexPositionColorTexture.VertexDeclaration, _vertices.Length, BufferUsage.WriteOnly);
         _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
 
-        _indexBuffer = new DynamicIndexBuffer(Services.GraphicsDevice, IndexElementSize.ThirtyTwoBits, _indicies.Length, BufferUsage.WriteOnly);
+        _indexBuffer = new DynamicIndexBuffer(Services.GetGraphicsDevice(), IndexElementSize.ThirtyTwoBits, _indicies.Length, BufferUsage.WriteOnly);
         _indexBuffer.SetData(_indicies);
 
-        _currentEffect = new BasicEffect(Services.GraphicsDevice) {
+        _currentEffect = new BasicEffect(Services.GetGraphicsDevice()) {
             TextureEnabled = true,
             VertexColorEnabled = true
         };
-        (_currentEffect as IEffectMatrices).Projection = Matrix.CreateOrthographicOffCenter(0f, Services.GraphicsDevice.Viewport.Width, Services.GraphicsDevice.Viewport.Height, 0f, 0f, -1f);
+        (_currentEffect as IEffectMatrices).Projection = Matrix.CreateOrthographicOffCenter(0f, Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height, 0f, 0f, -1f);
         (_currentEffect as IEffectMatrices).View = Matrix.Identity;
         
         if (_currentEffect is BasicEffect textureEffect)
@@ -82,7 +82,7 @@ public class Map : SceneObject, ISelfDrawable
     {
         base.Draw(gameTime);
 
-        Services.GetService<IRenderService>().DrawBatched(this);
+        Services.Get<IRenderService>().DrawBatched(this);
     }
 
     public void DrawImmediate(GameTime gameTime)
@@ -94,17 +94,17 @@ public class Map : SceneObject, ISelfDrawable
                 Matrix.CreateTranslation(-Origin.X, -Origin.Y, 0) * LocalMatrix, 
                 this.GetParentScene().Camera.World);
         
-        Services.GraphicsDevice.SetVertexBuffer(_vertexBuffer);
-        Services.GraphicsDevice.Indices = _indexBuffer;
-        Services.GraphicsDevice.BlendState = BlendState.AlphaBlend;
-        Services.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
-        Services.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-        Services.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+        Services.GetGraphicsDevice().SetVertexBuffer(_vertexBuffer);
+        Services.GetGraphicsDevice().Indices = _indexBuffer;
+        Services.GetGraphicsDevice().BlendState = BlendState.AlphaBlend;
+        Services.GetGraphicsDevice().SamplerStates[0] = SamplerState.PointClamp;
+        Services.GetGraphicsDevice().DepthStencilState = DepthStencilState.Default;
+        Services.GetGraphicsDevice().RasterizerState = RasterizerState.CullCounterClockwise;
         
         foreach (EffectPass pass in _currentEffect.CurrentTechnique.Passes)
         {
             pass.Apply();
-            Services.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _indicies.Length / 3);
+            Services.GetGraphicsDevice().DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _indicies.Length / 3);
         }
     }
 

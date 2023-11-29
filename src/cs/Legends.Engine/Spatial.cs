@@ -45,6 +45,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         _offsetScale = Vector2.One;
         UpdateMatrix();
     }
+    
     public void Move(float x, float y)
     {
         Move(new Vector2(x, y));

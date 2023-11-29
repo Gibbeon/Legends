@@ -16,7 +16,7 @@ public class MapScreen : Screen
 {
     private Legends.App.Actor _entity;
     private Scene _scene;
-    private SystemServices _services;
+    private IServiceProvider _services;
 
     private InputManager _input;
 
@@ -28,12 +28,12 @@ public class MapScreen : Screen
             OriginNormalized = new Vector2(.5f, .5f)
         };
 
-        result.GetBehavior<SpriteRenderBehavior>().TextureRegion = new MonoGame.Extended.TextureAtlases.TextureRegion2D(_services.Content.Load<Texture2D>("npc1"), new Rectangle(Point.Zero, (Point)result.Size));
+        result.GetBehavior<SpriteRenderBehavior>().TextureRegion = new MonoGame.Extended.TextureAtlases.TextureRegion2D(_services.GetContentManager().Load<Texture2D>("npc1"), new Rectangle(Point.Zero, (Point)result.Size));
 
         return result;
     }
     
-    public MapScreen(SystemServices services)
+    public MapScreen(IServiceProvider services)
     {
         _services = services;
         

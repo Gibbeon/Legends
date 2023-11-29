@@ -8,8 +8,7 @@ namespace Legends.App;
 
 public class MainGame : Microsoft.Xna.Framework.Game
 {
-    private SystemServices _services;
-    private GraphicsDeviceService _graphicsDeviceManager;
+    private GraphicsDeviceManager _graphicsDeviceManager;
     private RenderService _spriteRenderService;
 
     private InputHandlerService _inputService;
@@ -17,11 +16,9 @@ public class MainGame : Microsoft.Xna.Framework.Game
     
     public MainGame()
     {
-        _services = new SystemServices(this);
-
-        _graphicsDeviceManager  = new GraphicsDeviceService(_services);        
-        _spriteRenderService    = new RenderService(_services);
-        _inputService           = new InputHandlerService(_services);
+        _graphicsDeviceManager  = new GraphicsDeviceManager(this);        
+        _spriteRenderService    = new RenderService(Services);
+        _inputService           = new InputHandlerService(Services);
 
         _screenManager = new ScreenManager();
         Content.RootDirectory = "Content";
@@ -38,7 +35,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
 
     protected override void LoadContent()
     {        
-        _screenManager.LoadScreen(new Screens.TitleScreen(_services));
+        _screenManager.LoadScreen(new Screens.TitleScreen(Services));
     }
 
     protected override void Update(GameTime gameTime)

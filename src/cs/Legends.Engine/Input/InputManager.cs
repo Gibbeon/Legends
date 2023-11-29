@@ -15,19 +15,19 @@ public class InputManager
     private readonly MouseListenerSettings    _mouseListenerSettings;
     public KeyboardListener KeyboardListener => _keyboardListener;
     public MouseListener MouseListener => _mouseListener;
-    public IInputHandlerService InputHandlerService => Services.GetService<IInputHandlerService>();
-    public SystemServices Services { get; private set; }
+    public IInputHandlerService InputHandlerService => Services.Get<IInputHandlerService>();
+    public IServiceProvider Services { get; private set; }
     public IList<InputCommandSet> CommandSets { get; private set; }
     public bool Enabled { get; set; }
-    public InputManager(SystemServices services, KeyboardListenerSettings keyboardListenerSettings) : this(services, keyboardListenerSettings, new MouseListenerSettings())
+    public InputManager(IServiceProvider services, KeyboardListenerSettings keyboardListenerSettings) : this(services, keyboardListenerSettings, new MouseListenerSettings())
     {
 
     }
-    public InputManager(SystemServices services) : this(services, new KeyboardListenerSettings(), new MouseListenerSettings())
+    public InputManager(IServiceProvider services) : this(services, new KeyboardListenerSettings(), new MouseListenerSettings())
     {
         
     }
-    public InputManager(SystemServices services, KeyboardListenerSettings keyboardListenerSettings, MouseListenerSettings mouseListenerSettings)
+    public InputManager(IServiceProvider services, KeyboardListenerSettings keyboardListenerSettings, MouseListenerSettings mouseListenerSettings)
     {
         Services = services;
         CommandSets = new List<InputCommandSet>();
@@ -37,7 +37,7 @@ public class InputManager
         _keyboardListener = new KeyboardListener(_keyboardListenerSettings);
         _mouseListener = new MouseListener(_mouseListenerSettings); 
 
-        services.GetService<IInputHandlerService>().Push(this);
+        Services.Get<IInputHandlerService>().Push(this);
     }
 
     public void Activate()
@@ -96,7 +96,7 @@ public class InputManager
 
     public void Dispose()
     {
-        Services.GetService<IInputHandlerService>().Remove(this);
+        Services.Get<IInputHandlerService>().Remove(this);
     }
 }
 

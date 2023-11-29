@@ -14,12 +14,12 @@ namespace Legends.Engine;
 public abstract class BaseBehavior : IBehavior
 {
     [JsonIgnore]
-    public SystemServices? Services { get; private set; }
+    public IServiceProvider? Services { get; private set; }
     
     [JsonIgnore]
     public SceneObject? Parent { get; private set; }
 
-    public BaseBehavior(SystemServices? services, SceneObject? parent)
+    public BaseBehavior(IServiceProvider? services, SceneObject? parent)
     {
         Services = services;
         Parent = parent;

@@ -11,16 +11,17 @@ namespace Legends.Engine.Input;
 
 public class InputHandlerService : IUpdate, IInputHandlerService
 {
-    public SystemServices Services { get; private set; }
+    public IServiceProvider Services { get; private set; }
 
     public InputManager? Current => _managers.Count == 0 ? null : _managers[_managers.Count - 1];
 
     private IList<InputManager> _managers;
 
-    public InputHandlerService(SystemServices services)
+    public InputHandlerService(IServiceProvider services)
     {
         Services = services;
-        services.Services.AddService<IInputHandlerService>(this);
+        Services.Add<IInputHandlerService>(this);
+        
         _managers = new List<InputManager>();
     }
 

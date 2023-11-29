@@ -3,20 +3,21 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using MonoGame.Extended.BitmapFonts;
+using System;
 namespace Legends.Engine;
 
 public class RenderService : IRenderService
 { 
-    public SystemServices   Services { get; private set; }
+    public IServiceProvider   Services { get; private set; }
     public RenderState      DefaultRenderState { get; set; }
-    public Texture2D        DefaultTexture { get; private set; }
-    public GraphicsDevice   GraphicsDevice => Services.GraphicsDevice;
+    public Texture2D?        DefaultTexture { get; private set; }
+    public GraphicsDevice   GraphicsDevice => Services.GetGraphicsDevice();
     private List<ILayer>    _layers;
 
-    public RenderService(SystemServices services)
+    public RenderService(IServiceProvider services)
     {
         Services = services;
-        services.Services.AddService<IRenderService>(this);
+        Services.Add<IRenderService>(this);
         DefaultRenderState = new RenderState();
         _layers = new List<ILayer>();
     }
@@ -25,10 +26,10 @@ public class RenderService : IRenderService
     {
         if(DefaultTexture == null || DefaultRenderState.Effect == null)
         {            
-            DefaultTexture = new Texture2D(Services.GraphicsDevice, 1, 1);
-            DefaultTexture.SetData<Color>(new Color[] { Color.Green });
+            DefaultTexture = new Texture2D(GraphicsDevice, 1, 1);
+            DefaultTexture.SetData(new Color[] { Color.Green });
 
-            DefaultRenderState.Effect = new BasicEffect (Services.GraphicsDevice)
+            DefaultRenderState.Effect = new BasicEffect (GraphicsDevice)
             {
                 VertexColorEnabled = true,
                 TextureEnabled = true

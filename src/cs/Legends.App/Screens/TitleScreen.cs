@@ -19,9 +19,9 @@ namespace Legends.App.Screens
 
 public class ContentManager2
 {
-    SystemServices Services { get; set; }
+    IServiceProvider Services { get; set; }
 
-    public ContentManager2(SystemServices services)
+    public ContentManager2(IServiceProvider services)
     {
         Services = services;
     }
@@ -49,7 +49,7 @@ public class ContentManager2
                 }
                 else if (property.Item1.FieldType == typeof(string))
                 {
-                    property.Item2.SetValue(destination, Services.Content.Load<BitmapFont>(value.ToString()));
+                    property.Item2.SetValue(destination, Services.GetContentManager().Load<BitmapFont>(value.ToString()));
                 }
                 else if(property.Item1.FieldType.GetInterface(typeof(IEnumerable).Name) != null)
                 {                       
@@ -101,12 +101,14 @@ public class ContentManager2
 
     public TType Load<TType>(string assetName, TType result)
     {
-        var innerClass = typeof(TType).GetNestedTypes()[0];
-        var loadMethod = typeof(ContentManager).GetMethods().Single(n => n.IsGenericMethod && n.Name == "Load");
-        var loadContentMethod = loadMethod.MakeGenericMethod(innerClass);
-        var source = loadContentMethod.Invoke(Services.Content, new object[] { assetName });
 
-        SetValues(source.GetType(), source, typeof(TType), result);
+        //var loadMethod = typeof(ContentManager).GetMethods().Single(n => n.IsGenericMethod && n.Name == "Load");
+        //var loadContentMethod = loadMethod.MakeGenericMethod(innerClass);
+        //var source = loadContentMethod.Invoke(Services.Content, new object[] { assetName });
+
+        return Services.GetContentManager().Load<TType>(assetName);
+
+       // SetValues(source.GetType(), source, typeof(TType), result);
 
         return result;
     }
@@ -115,17 +117,19 @@ public class ContentManager2
 
     public class TitleScreen : Screen
     {
-        private SystemServices _services;
+        private IServiceProvider _services;
         private Scene _scene;
         //private SceneObject _text;
         private InputCommandSet _commands;
         private InputManager _input;
-        public TitleScreen(SystemServices services)
+        public TitleScreen(IServiceProvider services)
         {
-            ContentManager2 cm2 = new ContentManager2(services);
-            _scene = cm2.Load("Scenes/test", new Scene(services));
-
             _services = services;
+            //ContentManager2 cm2 = new ContentManager2(IServiceProvider);
+            //_scene = cm2.Load("Scenes/test", new Scene(services));
+
+            _scene = _services.GetContentManager().Load<Scene>("Scenes/test");
+
             _input = new InputManager(_services);
 
             _commands = new InputCommandSet(_services);
@@ -160,7 +164,7 @@ public class ContentManager2
             {
                 switch(action.Name)
                 {
-                    case "EXIT": _services.Exit(); break;
+                    //case "EXIT": _services.Exit(); break;
                     case "START": Start(); break;
                 }
             }
@@ -171,7 +175,7 @@ public class ContentManager2
         protected void Start()
         {
             _input.Enabled = false;
-            ScreenManager.LoadScreen(new MapScreen(_services), new MonoGame.Extended.Screens.Transitions.FadeTransition(_services.GraphicsDevice, Color.Black));
+            ScreenManager.LoadScreen(new MapScreen(_services), new MonoGame.Extended.Screens.Transitions.FadeTransition(_services.GetGraphicsDevice(), Color.Black));
         }
 
         public override void Dispose()

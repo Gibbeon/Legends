@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
+using System;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -41,7 +42,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     [JsonIgnore]
     public BitmapFont SourceData => Font;
-    public TextRenderBehavior(SystemServices services, SceneObject parent) : base(services, parent)
+    public TextRenderBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
     {
         Color = Color.White;
     }
@@ -57,7 +58,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
         if(IsVisible && Parent != null)
         {
-            Parent.Services?.GetService<IRenderService>().DrawBatched(this);  
+            Parent.Services?.Get<IRenderService>().DrawBatched(this);  
         }      
     }
 
