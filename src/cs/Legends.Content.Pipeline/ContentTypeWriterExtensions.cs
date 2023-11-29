@@ -136,7 +136,8 @@ public static class ContentTypeWriterExtensions
                 BindingFlags.Public |  
                 BindingFlags.Instance);
 
-            var properties = typeof(TType).GetProperties(BindingFlags.DeclaredOnly |
+            var properties = typeof(TType).GetProperties(
+                BindingFlags.DeclaredOnly |
                 BindingFlags.Public |  
                 BindingFlags.Instance);
 
@@ -173,6 +174,7 @@ public static class ContentTypeWriterExtensions
                 else if(field.FieldType.IsEnum)
                 {
                     Log<TType>("..Enum: {0}", field.GetValue(value)?.ToString());
+                    output.Write(field.GetValue(value)?.ToString());
                 }
                 else if(field.FieldType.IsArray || field.FieldType.GetInterface(typeof(IEnumerable).Name) != null)
                 {
@@ -238,6 +240,8 @@ public static class ContentTypeWriterExtensions
                 else if(property.PropertyType.IsEnum)
                 {
                     Log<TType>("..Enum: {0}", property.GetValue(value)?.ToString());
+                    output.Write(property.GetValue(value)?.ToString());
+
                 }
                 else if(property.PropertyType.IsArray || property.PropertyType.GetInterface(typeof(IEnumerable).Name) != null)
                 {   
