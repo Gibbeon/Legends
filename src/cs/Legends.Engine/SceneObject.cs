@@ -17,10 +17,10 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     private IList<SceneObject> _children;
 
     [JsonIgnore]
-    public IServiceProvider? Services { get; private set; }
+    public IServiceProvider? Services { get; protected set; }
     
     [JsonIgnore]
-    public SceneObject? Parent { get; private set; }
+    public SceneObject? Parent { get; protected set; }
     
     public string Name { get; set; }
     

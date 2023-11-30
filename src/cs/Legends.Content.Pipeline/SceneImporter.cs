@@ -3,8 +3,6 @@ using System.IO;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Newtonsoft.Json;
 using Legends.Engine;
-using MonoGame.Extended.BitmapFonts;
-using MonoGame.Extended.Serialization;
 using Legends.Engine.Graphics2D;
 
 namespace Legends.Content.Pipline;
@@ -47,11 +45,7 @@ public class SceneImporter : ContentImporter<Scene>
 
             settings.Converters.Add(new AssetJsonConverter());
             
-            context.Logger.LogMessage("Start DeserializeObject");
-            
             var result = JsonConvert.DeserializeObject<Scene>(File.ReadAllText(filename), settings);
-
-            context.Logger.LogMessage("Complete DeserializeObject");
 
 
             context.Logger.LogMessage(JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)).Replace("{", "{{").Replace("}", "}}"));

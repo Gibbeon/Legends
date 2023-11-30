@@ -41,6 +41,15 @@ public class Scene : SceneObject
 
                 SetCamera(camera);
             }
+            else
+            {
+                SetCamera(new Camera(Services, this));
+            }
+        }
+        else
+        {
+            Camera.Setup(Services, this);
+            Camera.Initialize();
         }
     }
 

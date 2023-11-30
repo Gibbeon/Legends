@@ -1,5 +1,13 @@
 {
     "name": "Test Scene",
+    "camera": {
+        "name": "test camera",
+        "behaviors": [
+            {
+                "$type": "Legends.App.CameraControlsBehavior, Legends.App"
+            }
+        ]
+    },
     "children": [
         {
             "name": "Text",

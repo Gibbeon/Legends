@@ -10,11 +10,21 @@ public class CameraControlsBehavior : BaseBehavior
 {
     public float ScrollSpeed;
     private InputCommandSet _commands;
-    public CameraControlsBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
+
+    public CameraControlsBehavior(): this(null, null)
+    {
+
+    }
+    public CameraControlsBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
     {
         ScrollSpeed = 1;
+    }
 
-        _commands = new InputCommandSet(services);
+    public override void Initialize()
+    {
+        base.Initialize();
+
+        _commands = new InputCommandSet(Services);
         
         //_commands.Add("LOOK_AT",      EventType.MouseClicked,  MouseButton.Right);  
         //_commands.Add("ZOOM",         EventType.MouseScroll,   MouseButton.Middle); 
@@ -29,7 +39,6 @@ public class CameraControlsBehavior : BaseBehavior
 
         _commands.Enabled = true;
     }
-
     public override void Dispose()
     {
         _commands?.Dispose();

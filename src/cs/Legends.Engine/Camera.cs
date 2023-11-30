@@ -45,6 +45,12 @@ public class Camera : SceneObject, IViewState
         SetSize(0, 0);
     }
 
+    public void Setup(IServiceProvider services, Scene parent)
+    {
+        Services = services;
+        Parent = parent;
+    }
+
     public override void SetSize(Size2 size)
     {
         if(size == Size2.Empty)
