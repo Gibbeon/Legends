@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using System.Data.Common;
 
 namespace Legends.Engine;
 
@@ -43,6 +44,11 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         protected set => _behaviors = (IList<IBehavior>)value;
     }
 
+    public SceneObject() : this(null, null)
+    {
+
+    }
+
     public SceneObject(IServiceProvider? systems, SceneObject? parent = default) : base()
     {
         Services    = systems;
@@ -56,6 +62,25 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         {
             this.AttachTo(parent);
         }
+
+        Enabled = true;
+        IsVisible = true;
+    }
+
+    public virtual void Initialize()
+    {
+        foreach(var child in _children)
+        {
+            child.AttachTo(this);
+            child.Initialize();
+        }
+
+        foreach(var behavior in _behaviors)
+        {
+            behavior.AttachTo(this);
+            behavior.Initialize();
+        }
+
     }
 
     public TType GetBehavior<TType>()
@@ -105,6 +130,11 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
     internal void AttachTo(SceneObject parent)
     {
+        if(parent != null && Services == null)
+        {
+            Services = parent.Services;
+        }
+
         if(Parent != parent)
         {
             Detach();
@@ -124,13 +154,25 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
     public void AttachBehavior(IBehavior behavior)
     {
-        _behaviors.Add(behavior);
+        if(!_behaviors.Contains(behavior))
+        {
+            _behaviors.Add(behavior);
+        }
     }
 
     public void DetachBehavior<TType>()
         where TType : IBehavior
     {
-        _behaviors.Remove(_behaviors.OfType<TType>().Single());
+        DetachBehavior(_behaviors.OfType<TType>().SingleOrDefault());
+    }
+
+    public void DetachBehavior<TType>(TType? behavior)
+        where TType : IBehavior
+    {
+        if(behavior != null)
+        {
+            _behaviors.Remove(behavior);
+        }
     }
 
     public void AttachChild(SceneObject node, bool relative = false)
@@ -201,6 +243,8 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
     public virtual void Dispose()
     {
+        GC.SuppressFinalize(this);
+
         Enabled = false;
         IsVisible = false;
 

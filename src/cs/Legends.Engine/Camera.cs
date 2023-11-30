@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using System;
+using System.IO.Pipes;
 
 namespace Legends.Engine;
 
@@ -26,12 +27,22 @@ public class Camera : SceneObject, IViewState
     [JsonIgnore]
     public IViewState ViewState => new ViewState() { View = View, Projection = Projection, World = World };
 
+    public Camera() : base(null, null)
+    {
+
+    }
+
     public Camera(IServiceProvider? services, Scene? scene) : base(services, scene)
     {
         _zoomBounds = new BoundedValue<float>(float.Epsilon, float.MaxValue);
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+
         OriginNormalized = new Vector2(.5f, .5f);
         SetSize(0, 0);
-        Detach();
     }
 
     public override void SetSize(Size2 size)
@@ -52,6 +63,7 @@ public class Camera : SceneObject, IViewState
         
         _world      = Matrix.CreateTranslation(Size.Width / 2, Size.Height / 2, 0.0f);
         _projection = Matrix.CreateOrthographicOffCenter(0f, Size.Width, Size.Height, 0f, -1f, 0f);
+        HasChanged = true;
     }
 
     public override void SetScale(Vector2 scale)

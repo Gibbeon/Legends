@@ -25,4 +25,28 @@ public abstract class BaseBehavior : IBehavior
     public virtual void Draw(GameTime gameTime) {}
     
     public abstract void Dispose();
+
+    public void AttachTo(SceneObject parent)
+    {
+        if(parent != null && Services == null)
+        {
+            Services = parent.Services;
+        }
+
+        if(Parent != parent)
+        {
+            Detach();
+            Parent = parent;
+            parent?.AttachBehavior(this);
+        }
+    }
+
+    public void Detach(bool detachChildren = true)
+    {
+        if(detachChildren)
+        {
+            Parent?.DetachBehavior(this);
+        }
+        Parent = null;
+    }
 }

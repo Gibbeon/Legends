@@ -81,6 +81,34 @@ public static class ContentReaderExtensions
         return query;
     }
 
+    public static object? Create(Type type, params object?[]? objects)
+    {
+        foreach(var ctor in type.GetConstructors().Where(n => n.GetParameters().Length <= objects?.Length).OrderBy(n => n.GetParameters().Length))
+        {
+            var ctorParamList = ctor.GetParameters();
+            var typeParams = new object[ctorParamList.Length]; 
+            for(int i = 0; i < ctorParamList.Length; i++)
+            {
+                if(typeParams[i] == null)
+                {
+                    typeParams[i] = objects?.SingleOrDefault(n => n.GetType().IsAssignableTo( ctorParamList[i].ParameterType));
+                }
+            }
+
+            if(typeParams.All(n => n != null))
+            {
+                return (object?)Activator.CreateInstance(type, typeParams);
+            }
+        }
+
+        return null;
+    }
+
+    public static TType? Create<TType>(params object?[]? objects)
+    {
+        return (TType?)Create(typeof(TType), objects);
+    }
+
     public static void ReadFields<TType>(this ContentReader input, TType value)
     {
         var fields = typeof(TType).GetFields(
@@ -113,7 +141,6 @@ public static class ContentReaderExtensions
             }
 
             input.Log<TType>("Reading Property: {0}", property.Name);
-
             var readMethod = _contentReaderReadMethods.SingleOrDefault(
                     n => 
                     !n.IsStatic && n.ReturnType.IsAssignableTo(property.PropertyType)
@@ -166,10 +193,6 @@ public static class ContentReaderExtensions
                     else
                     {
                         list = Activator.CreateInstance(property.PropertyType);
-                        if(list.GetType().GetInterfaces().Any(n => n.IsGenericType && n.GetGenericTypeDefinition() == typeof(IList<>)))
-                        {
-                            
-                        }
                     }
 
                     property.SetValue(value, list);
@@ -204,17 +227,17 @@ public static class ContentReaderExtensions
             else
             {
                 readMethod = _contentReaderReadMethods.Single(n => n.Name == "ReadObject" && n.IsGenericMethod && n.GetParameters().Length == 0).MakeGenericMethod(property.PropertyType);
-
+                
                 var readObject = readMethod.Invoke(input, null);
                 property.SetValue(value, readObject);
                 
-                input.Log<TType>("..Writing Object of Type {0} = {1}", property.PropertyType.Name, readObject);
+                input.Log<TType>("..Reading Object of Type {0} = {1}", property.PropertyType.Name, readObject);
             }
         }
     }
 }
 
-public class SceneGenericReader : ContentTypeReader<Scene>
+/*public class SceneGenericReader : ContentTypeReader<Scene>
 {
     protected override Scene Read(ContentReader input, Scene existingInstance)
     {
@@ -277,14 +300,17 @@ public class TextRenderBehaviorReader : ContentTypeReader<TextRenderBehavior>
 
         return result;
     }
-}
+}*/
 
 
 public class GenericReader<TType> : ContentTypeReader<TType>
 {
     protected override TType Read(ContentReader input, TType existingInstance)
     {
-        var result = existingInstance ?? (TType)Activator.CreateInstance(typeof(TType), new object?[] { input.ContentManager.ServiceProvider, null });
+        var result = existingInstance ?? 
+            ContentReaderExtensions.Create<TType>(new object?[] { input.ContentManager.ServiceProvider });
+
+            //(//TType)Activator.CreateInstance(typeof(TType), new object?[] { input.ContentManager.ServiceProvider, null });
 
         input.ReadBaseObject(result);
         input.ReadFields(result);

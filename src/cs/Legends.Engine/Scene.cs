@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace Legends.Engine;
@@ -19,7 +20,28 @@ public class Scene : SceneObject
 
     public Scene(IServiceProvider? services, SceneObject? parent) : base(services, parent)
     {
-        SetCamera(new Camera(services, this));
+        if(services != null)
+        {
+            SetCamera(new Camera(services, this));
+        }
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+
+        if(Camera == null)
+        {
+            var camera = (Camera?)Children.SingleOrDefault(n => n.GetType().IsAssignableTo(typeof(Camera)));
+
+            if(camera != null)
+            {
+                camera?.Initialize();
+                camera?.Detach();
+
+                SetCamera(camera);
+            }
+        }
     }
 
     public virtual void SetCamera(Camera camera)
