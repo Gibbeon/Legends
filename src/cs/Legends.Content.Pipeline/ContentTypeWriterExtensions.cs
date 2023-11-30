@@ -22,12 +22,12 @@ public static class ContentTypeWriterExtensions
     private static int IndentSpaces = 2;
 
     public static bool OutputToConsole = true;
-    public static bool OutputToFile = true;
+    public static bool OutputToFile = false;
 
     public static bool InitFile;
 
 
-    public static void Log<TType>(string message, params object?[]? args)
+    public static void Log<TType>(this ContentWriter output, string message, params object?[]? args)
     {
         if(!InitFile)
         {
@@ -40,6 +40,9 @@ public static class ContentTypeWriterExtensions
         }
         if(OutputToConsole)
         {
+            var pos = output.Seek(0, SeekOrigin.Current);
+            Console.Write("{0,8} ", pos.ToString("D8"));
+
             if(Indent * IndentSpaces > 0)
             {
                 Console.Write(new string(Enumerable.Repeat(' ', Indent * IndentSpaces).ToArray()));
@@ -80,7 +83,7 @@ public static class ContentTypeWriterExtensions
     {
         if(typeof(TType).BaseType != null && typeof(TType).BaseType != typeof(Object))
         {
-            Log<TType>("Writing Base Type: {0}", typeof(TType).BaseType.Name);
+            output.Log<TType>("Writing Base Type: {0}", typeof(TType).BaseType.Name);
             try
             {
                 Indent++;
@@ -157,23 +160,23 @@ public static class ContentTypeWriterExtensions
             {
                 if(field.CustomAttributes.Any(n => n.AttributeType == typeof(JsonIgnoreAttribute)))
                 {
-                    Log<TType>("!!Ignoring Field: {0}", field.Name);
+                     output.Log<TType>("!!Ignoring Field: {0}", field.Name);
                     continue;
                 }
 
-                Log<TType>("Writing Field: {0}", field.Name);
+                 output.Log<TType>("Writing Field: {0}", field.Name);
 
                 var writeMethod = _contentWriterWriteMethods.SingleOrDefault(
                     n => !n.IsStatic && n.GetParameters().All(m => m.ParameterType.IsAssignableTo(field.FieldType))
                         || n.IsStatic && n.GetParameters().Any(m => m.ParameterType.IsAssignableTo(field.FieldType)));
                 if(writeMethod != null)
                 {
-                    Log<TType>("..Ordinal: {0}", field.GetValue(value)?.ToString());
+                     output.Log<TType>("..Ordinal: {0}", field.GetValue(value)?.ToString());
                     writeMethod.Invoke(output, new object?[] { field.GetValue(value) });
                 }
                 else if(field.FieldType.IsEnum)
                 {
-                    Log<TType>("..Enum: {0}", field.GetValue(value)?.ToString());
+                     output.Log<TType>("..Enum: {0}", field.GetValue(value)?.ToString());
                     output.Write(field.GetValue(value)?.ToString());
                 }
                 else if(field.FieldType.IsArray || field.FieldType.GetInterface(typeof(IEnumerable).Name) != null)
@@ -185,7 +188,7 @@ public static class ContentTypeWriterExtensions
                         while(enumerator.MoveNext()) ++count;
                         output.Write(count);
                         
-                        Log<TType>("..Array [{0}] of Size {1} ", field.FieldType.Name, count);
+                         output.Log<TType>("..Array [{0}] of Size {1} ", field.FieldType.Name, count);
                         count = 0;
                         
                         foreach(var item in list)
@@ -193,12 +196,12 @@ public static class ContentTypeWriterExtensions
                             writeMethod = _contentWriterWriteMethods.SingleOrDefault(n => n.GetParameters().All(m => m.ParameterType == item.GetType()));
                             if(writeMethod != null)
                             {
-                                Log<TType>("..Ordinal [{0}]: {1}", count++, item?.ToString());
+                                output.Log<TType>("..Ordinal [{0}]: {1}", count++, item?.ToString());
                                 writeMethod.Invoke(output, new object[] { item });
                             }
                             else 
                             {
-                                Log<TType>("..Object [{0}] of Type {1}", count++, item.GetType().Name);
+                                output.Log<TType>("..Object [{0}] of Type {1}", count++, item.GetType().Name);
                                 _writeObjectMethod.MakeGenericMethod(item.GetType()).Invoke(output, new object?[] { item });
                             }
                         }
@@ -206,7 +209,7 @@ public static class ContentTypeWriterExtensions
                 }
                 else
                 {
-                    Log<TType>("..Writing Object of Type {0}", field.FieldType.Name);
+                     output.Log<TType>("..Writing Object of Type {0}", field.FieldType.Name);
                     _writeObjectMethod.MakeGenericMethod(field.FieldType).Invoke(output, new object?[] { field.GetValue(value) });
                 }
             }
@@ -215,11 +218,11 @@ public static class ContentTypeWriterExtensions
             {
                 if(property.CustomAttributes.Any(n => n.AttributeType == typeof(JsonIgnoreAttribute)))
                 {
-                    Log<TType>("!!Ignoring Property: {0}", property.Name);
+                     output.Log<TType>("!!Ignoring Property: {0}", property.Name);
                     continue;
                 }
 
-                Log<TType>("Writing Property: {0}", property.Name);
+                 output.Log<TType>("Writing Property: {0}", property.Name);
 
                 var writeMethod = _contentWriterWriteMethods.SingleOrDefault(
                     n => !n.IsStatic && n.GetParameters().All(m => m.ParameterType.IsAssignableFrom(property.PropertyType))
@@ -227,7 +230,7 @@ public static class ContentTypeWriterExtensions
                         
                 if(writeMethod != null)
                 {
-                    Log<TType>("..Ordinal: {0}", property.GetValue(value)?.ToString());
+                     output.Log<TType>("..Ordinal: {0}", property.GetValue(value)?.ToString());
                     if(!writeMethod.IsStatic)
                     {
                         writeMethod.Invoke(output, new object?[] { property.GetValue(value) });
@@ -239,7 +242,7 @@ public static class ContentTypeWriterExtensions
                 }
                 else if(property.PropertyType.IsEnum)
                 {
-                    Log<TType>("..Enum: {0}", property.GetValue(value)?.ToString());
+                     output.Log<TType>("..Enum: {0}", property.GetValue(value)?.ToString());
                     output.Write(property.GetValue(value)?.ToString());
 
                 }
@@ -252,7 +255,7 @@ public static class ContentTypeWriterExtensions
                         while(enumerator.MoveNext()) ++count;
                         output.Write(count);
 
-                        Log<TType>("..Array [{0}] of Size {1} ", property.PropertyType.Name, count);
+                         output.Log<TType>("..Array [{0}] of Size {1} ", property.PropertyType.Name, count);
 
                         count = 0;
                         
@@ -264,7 +267,7 @@ public static class ContentTypeWriterExtensions
 
                             if(writeMethod != null)
                             {
-                                Log<TType>("..Ordinal [{0}]: {1}", count++, item?.ToString());
+                                 output.Log<TType>("..Ordinal [{0}]: {1}", count++, item?.ToString());
                                 if(!writeMethod.IsStatic)
                                 {
                                     writeMethod.Invoke(output, new object?[] { item });
@@ -276,7 +279,7 @@ public static class ContentTypeWriterExtensions
                             }
                             else 
                             {
-                                Log<TType>("..Object [{0}] of Type {1}", count++, item.GetType().Name);
+                                 output.Log<TType>("..Object [{0}] of Type {1}", count++, item.GetType().Name);
                                 Indent++;
                                 _writeObjectMethod.MakeGenericMethod(item.GetType()).Invoke(output, new object?[] { item });
                                 Indent--;
@@ -285,12 +288,12 @@ public static class ContentTypeWriterExtensions
                     }
                     else
                     {
-                        Log<TType>("ERROR -- Array but not Enumerable?");
+                         output.Log<TType>("ERROR -- Array but not Enumerable?");
                     }
                 }
                 else
                 {
-                    Log<TType>("..Writing Object of Type {0}", property.PropertyType.Name);
+                     output.Log<TType>("..Writing Object of Type {0}", property.PropertyType.Name);
                     Indent++;
                     _writeObjectMethod.MakeGenericMethod(property.PropertyType).Invoke(output, new object?[] { property.GetValue(value) });
                     Indent--;

@@ -7,22 +7,63 @@ using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json;
 using Legends.Engine.Graphics2D;
+using MonoGame.Extended;
+using System.Xml.Linq;
+using System.Runtime.InteropServices;
 
 namespace Legends.Engine.Serialization;
 
 public static class ContentReaderExtensions
 {
+    private static int Indent;
+
+    private static int IndentSpaces = 2;
+
+    public static bool OutputToConsole = true;
+
+    public static bool InitFile;
+
+    public static void Log<TType>(this ContentReader input, string message, params object?[]? args)
+    {
+        if(OutputToConsole)
+        {
+            Console.Write("{0,8} ", input.BaseStream.Position.ToString("D8"));
+            if(Indent * IndentSpaces > 0)
+            {
+                Console.Write(new string(Enumerable.Repeat(' ', Indent * IndentSpaces).ToArray()));
+            }
+            Console.Write("{0}: ", typeof(TType).Name);
+            Console.WriteLine(message, args);
+        }
+    }
+
     private static MethodInfo _readRawObject;
     private static MethodInfo[] _contentReaderReadMethods;
     public static void ReadBaseObject<TType>(this ContentReader input, TType result)
     {
+
         if(typeof(TType).BaseType != null && typeof(TType).BaseType != typeof(object))
-        {
+        {        
+            input.Log<TType>("Reading Base Type: {0}", typeof(TType).BaseType.Name);
+            Indent++;
+            
             _readRawObject = _readRawObject ?? 
                 typeof(ContentReader).GetMethods().Single(n => n.Name == "ReadRawObject" && n.IsGenericMethod && n.GetParameters().Length == 1 && n.GetParameters()[0].ParameterType.IsGenericParameter);
             _readRawObject.MakeGenericMethod(typeof(TType).BaseType)?.Invoke(input, new object[] { result });
             //input.ReadRawObject<SceneObject>(result);
+            
+            Indent--;
         }
+    }
+
+    static Size2 ReadSize2(this ContentReader input)
+    {
+        return new Size2(input.ReadSingle(), input.ReadSingle());
+    }
+
+    static Asset<TType> ReadAsset<TType>(this ContentReader input)
+    {
+        return new Asset<TType>(input.ReadString());
     }
 
     static IEnumerable<MethodInfo> GetExtensionMethods(Type extendedType, Assembly? assembly = default)
@@ -67,36 +108,55 @@ public static class ContentReaderExtensions
         {
             if(property.CustomAttributes.Any(n => n.AttributeType == typeof(JsonIgnoreAttribute)))
             {
-                //Log<TType>("!!Ignoring Property: {0}", property.Name);
+                input.Log<TType>("!!Ignoring Property: {0}", property.Name);
                 continue;
             }
 
+            input.Log<TType>("Reading Property: {0}", property.Name);
+
             var readMethod = _contentReaderReadMethods.SingleOrDefault(
-                    n => !n.IsStatic && n.ReturnType.IsAssignableTo(property.PropertyType)
-                    || n.IsStatic && n.ReturnType.IsAssignableTo(property.PropertyType));
+                    n => 
+                    !n.IsStatic && n.ReturnType.IsAssignableTo(property.PropertyType)
+                    || n.IsStatic && n.ReturnType.IsAssignableTo(property.PropertyType)
+                    || property.PropertyType.IsGenericType && n.ReturnType.IsGenericType && n.ReturnType.GetGenericTypeDefinition().MakeGenericType(property.PropertyType.GenericTypeArguments).IsAssignableTo(property.PropertyType));
 
             if(readMethod != null)
             {
-                if(!readMethod.IsStatic)
+                if(readMethod.IsGenericMethod && readMethod.IsStatic)
                 {
-                    property.SetValue(value, readMethod.Invoke(input, new object?[]{}));
+                    var genericValue = readMethod.MakeGenericMethod(property.PropertyType.GenericTypeArguments).Invoke(null, new object?[] { input });
+                    property.SetValue(value, genericValue);
+                }
+                else if(!readMethod.IsStatic)
+                {
+                    var instanceReadValue = readMethod.Invoke(input, null);
+                    property.SetValue(value, instanceReadValue);
                 } 
                 else
                 {
-                    property.SetValue(value, readMethod.Invoke(null, new object?[] { input }));
+                    var staticReadValue = readMethod.Invoke(null, new object?[] { input });
+                    property.SetValue(value, staticReadValue);
                 }
+
+                input.Log<TType>("..Ordinal: {0} = {1}", property.PropertyType.Name, property.GetValue(value));
             }
             else if(property.PropertyType.IsEnum)
             {
                 property.SetValue(value, Enum.Parse(property.PropertyType, input.ReadString()));
+                
+                input.Log<TType>("..Enum: {0} = {1}", property.PropertyType.Name, property.GetValue(value));
             }
             else if(property.PropertyType.IsArray || property.PropertyType.GetInterface(typeof(IEnumerable).Name) != null)
             {  
                 int count = input.ReadInt32();
+                
+                input.Log<TType>("..Array [{0}] of Size {1} ", property.PropertyType.Name, count);
+
                 var itemType = property.PropertyType.IsArray ? property.PropertyType.GetElementType() :
                     property.PropertyType.GenericTypeArguments[0];
 
                 var list = property.GetValue( value );
+
                 if(list == null)
                 {
                     if(property.PropertyType.IsArray)
@@ -126,22 +186,29 @@ public static class ContentReaderExtensions
                         readMethod = _contentReaderReadMethods.Single(n => n.Name == "ReadObject" && n.IsGenericMethod && n.GetParameters().Length == 0).MakeGenericMethod(itemType);
                     }
 
+                    var itemValue = readMethod.Invoke(input, null);
+
                     if(list.GetType().IsArray)
                     {
-                        ((Array)list).SetValue(readMethod.Invoke(input, null), i);
+                        ((Array)list).SetValue(itemValue, i);
                     }
                     else
                     {
                         var addMethod = typeof(ICollection<>).MakeGenericType(itemType).GetMethod("Add");
-                        addMethod.Invoke(list, new object?[] { readMethod.Invoke(input, null) });
+                        addMethod.Invoke(list, new object?[] { itemValue });
                     }
+                    
+                    input.Log<TType>("..Ordinal [{0}]: {1}", i, itemValue?.ToString());
                 }
             }
             else
             {
                 readMethod = _contentReaderReadMethods.Single(n => n.Name == "ReadObject" && n.IsGenericMethod && n.GetParameters().Length == 0).MakeGenericMethod(property.PropertyType);
 
-                property.SetValue(value, readMethod.Invoke(input, null));
+                var readObject = readMethod.Invoke(input, null);
+                property.SetValue(value, readObject);
+                
+                input.Log<TType>("..Writing Object of Type {0} = {1}", property.PropertyType.Name, readObject);
             }
         }
     }
