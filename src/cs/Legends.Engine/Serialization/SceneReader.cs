@@ -23,11 +23,15 @@ public static class ContentReaderExtensions
 
     public static bool InitFile;
 
+    public static int? _offset;
+
     public static void Log<TType>(this ContentReader input, string message, params object?[]? args)
     {
         if(OutputToConsole)
         {
-            Console.Write("{0,8} ", input.BaseStream.Position.ToString("D8"));
+            if(_offset == null) _offset = (int)input.BaseStream.Position - 1;
+
+            Console.Write("{0,8} ", (input.BaseStream.Position - (int)_offset).ToString("D8"));
             if(Indent * IndentSpaces > 0)
             {
                 Console.Write(new string(Enumerable.Repeat(' ', Indent * IndentSpaces).ToArray()));

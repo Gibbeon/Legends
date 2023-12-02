@@ -11,7 +11,7 @@ public class SceneWriter : ContentTypeWriter<Scene>
 {
     protected override void Write(ContentWriter output, Scene value)
     {  
-        output.WriteAll(value);
+        this.GenericWriteObject(output, value);
     }
 
     public override string GetRuntimeType(TargetPlatform targetPlatform)
@@ -30,7 +30,7 @@ public class SceneObjectWriter : ContentTypeWriter<SceneObject>
 {
     protected override void Write(ContentWriter output, SceneObject value)
     {  
-        output.WriteAll(value);
+        this.GenericWriteObject(output, value);
     }
 
     public override string GetRuntimeType(TargetPlatform targetPlatform)
@@ -49,7 +49,7 @@ public class SpatialWriter : ContentTypeWriter<Spatial>
 {
     protected override void Write(ContentWriter output, Spatial value)
     {  
-        output.WriteAll(value);
+        this.GenericWriteObject(output, value);
     }
 
     public override string GetRuntimeType(TargetPlatform targetPlatform)
@@ -68,7 +68,7 @@ public class CameraWriter : ContentTypeWriter<Camera>
 {
     protected override void Write(ContentWriter output, Camera value)
     {  
-        output.WriteAll(value);
+        this.GenericWriteObject(output, value);
     }
 
     public override string GetRuntimeType(TargetPlatform targetPlatform)
@@ -87,7 +87,7 @@ public class TextRenderBehaviorWriter : ContentTypeWriter<TextRenderBehavior>
 {
     protected override void Write(ContentWriter output, TextRenderBehavior value)
     {  
-        output.WriteAll(value);
+        this.GenericWriteObject(output, value);
     }
 
     public override string GetRuntimeType(TargetPlatform targetPlatform)
