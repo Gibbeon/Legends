@@ -3,27 +3,28 @@ using System.IO;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Newtonsoft.Json;
 using Legends.Engine;
-using Legends.Engine.Graphics2D;
+using Legends.Content.Pipline.JsonConverters;
+using Legends.Engine.Serialization;
 
 namespace Legends.Content.Pipline;
 
-public class AssetJsonConverter : JsonConverter
+public static class StdStuff
 {
-    public override bool CanConvert(Type objectType)
-    {
-        return objectType.IsAssignableTo(typeof(Asset));
-    }
+    public static string Code = @"
+        using Microsoft.Xna.Framework.Content.Pipeline;
+        using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+        using Legends.Engine;
+        using Legends.Engine.Graphics2D;
+        using Legends.Engine.Serialization;
 
-    public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
-    {
-        return Activator.CreateInstance(objectType, reader.Value);
-        ///return new Asset(reader.Value.ToString());
-    }
-
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-    {
-        writer.WriteValue((value as Asset).Name);
-    }
+        namespace Legends.Content.Pipline;
+    
+        [ContentTypeWriter]
+        public class {0}Writer : ContentTypeWriter<{0}> {{
+            protected override void Write(ContentWriter output, {0} value)         {{ this.GenericWriteObject(output, value); }}
+            public override string GetRuntimeType(TargetPlatform targetPlatform)   {{ return GetType().BaseType.GenericTypeArguments[0].AssemblyQualifiedName; }}
+            public override string GetRuntimeReader(TargetPlatform targetPlatform) {{ return typeof(GenericReader<>).MakeGenericType(GetType().BaseType.GenericTypeArguments[0]).AssemblyQualifiedName; }}
+        }}";
 }
 
 [ContentImporter(".json", DisplayName = "Legends Scene Importer", DefaultProcessor = "SceneProcessor")]
@@ -34,22 +35,23 @@ public class SceneImporter : ContentImporter<Scene>
         context.Logger.LogMessage("Importing file: {0}", filename);
         try
         {
-            var settings = new Newtonsoft.Json.JsonSerializerSettings
+            //context.Logger.LogMessage(StdStuff.Code, "SceneObject");
+            
+            DynamicClassLoader.Compile("SceneObject",           string.Format(StdStuff.Code, "SceneObject"));        
+            DynamicClassLoader.Compile("Spatial",               string.Format(StdStuff.Code, "Spatial"));        
+            DynamicClassLoader.Compile("Camera",                string.Format(StdStuff.Code, "Camera"));
+            DynamicClassLoader.Compile("TextRenderBehavior",    string.Format(StdStuff.Code, "TextRenderBehavior"));
+            
+            var settings = new JsonSerializerSettings
             {
-                //Formatting = Formatting.Indented,
-                //ObjectCreationHandling = ObjectCreationHandling.Auto,
-                //NullValueHandling = NullValueHandling.Ignore,
-                //TypeNameAssemblyFormatHandling = Newtonsoft.Json.TypeNameAssemblyFormatHandling.Simple,
-                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
+                TypeNameHandling = TypeNameHandling.Auto,
             };
 
             settings.Converters.Add(new AssetJsonConverter());
             
             var result = JsonConvert.DeserializeObject<Scene>(File.ReadAllText(filename), settings);
 
-
             context.Logger.LogMessage(JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)).Replace("{", "{{").Replace("}", "}}"));
-
 
             return result ?? new Scene(null);
         } 

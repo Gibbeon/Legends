@@ -1,76 +1,12 @@
-﻿using System.Linq;
+using System;
+using System.Text;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Collections;
-using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using System;
-using Newtonsoft.Json;
-using System.IO;
 using System.Runtime.CompilerServices;
-using MonoGame.Extended;
-using Legends.Engine.Graphics2D;
-using System.Text.RegularExpressions;
-using System.Text;
 
-namespace Legends.Content.Pipline;
-
-public static class ContentTypeWriterWriteExtensions
-{
-    public static void Write(this ContentWriter output, Size2 size2)
-    {
-        output.Write(size2.Width);
-        output.Write(size2.Height);
-    }
-
-    public static void Write(this ContentWriter output, Asset asset)
-    {
-        output.Write(asset.Name);
-    }
-}
-
-public static class ContentTypeWriterLogExtensions
-{
-    private static int Indent;
-    
-    private static int IndentSpaces = 2;
-
-    public static bool OutputToConsole = true;
-
-    public class LogContext : IDisposable
-    {
-        public LogContext()
-        {
-            Indent++;
-        }
-        public void Dispose()
-        {
-            Indent--;
-        }
-    }
-
-    public static LogContext LogEntry<TType>(this ContentWriter output, string message, params object?[]? args)
-    {
-        output.Log<TType>(message, args);
-
-        return new LogContext();
-    }
-
-    public static void Log<TType>(this ContentWriter output, string message, params object?[]? args)
-    {
-        if(OutputToConsole)
-        {
-            var pos = output.Seek(0, SeekOrigin.Current);
-            Console.Write("{0,8} ", pos.ToString("D8"));
-
-            if(Indent * IndentSpaces > 0)
-            {
-                Console.Write(new string(Enumerable.Repeat(' ', Indent * IndentSpaces).ToArray()));
-            }
-            Console.Write("{0}: ", typeof(TType).Name);
-            Console.WriteLine(message, args);
-        }
-    }
-}
+namespace Legends.Engine.Runtime;
 
 public static class TypeExtensions
 {    
@@ -187,7 +123,7 @@ public static class TypeExtensions
     }
 
     public static IEnumerable<MethodInfo> GetExtensionMethods(this Type extendedType)
-    {
+    {        
         var isGenericTypeDefinition = extendedType.IsGenericType && extendedType.IsTypeDefinition;
         var query = from type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(n => n.GetTypes())
             where type.IsSealed && !type.IsGenericType && !type.IsNested
@@ -276,152 +212,3 @@ public static class TypeExtensions
     }
 }
 
-public static class ContentTypeWriterExtensions
-{   
-    public static void GenericWriteValue<TType>(this ContentTypeWriter writer, ContentWriter output, Type memberType, object? memberValue)
-    {
-        var nativeWriteMethod = typeof(ContentWriter).GetAnyMethod("Write", memberType);
-                
-        if(nativeWriteMethod != null)
-        {
-            output.Log<TType>("Write Native");
-            nativeWriteMethod.InvokeAny(output, memberValue);
-        }
-
-        else if(memberType.IsEnum)
-        {
-            output.Log<TType>("Write Enum as String [{0}]", Enum.GetName(memberType, memberValue == null ? 0 : memberValue));
-            typeof(ContentWriter)?.GetAnyMethod("Write", typeof(string))?.InvokeAny(output, Enum.GetName(memberType, memberValue == null ? 0 : memberValue));
-        }
-        else if(memberType.IsArray)
-        {
-            var itemType = memberType.GetElementType();
-            if(itemType == null) itemType = typeof(object);
-
-            output.Write(memberValue == null ? 0 : ((Array)memberValue).Length);            
-            output.Log<TType>("Write Array Size Of [{0}]", memberValue == null ? 0 : ((Array)memberValue).Length);
-
-            if(memberValue != null)
-            {
-                foreach(var item in (Array)memberValue)
-                {
-                    writer.GenericWriteValue<TType>(output, item != null ? item.GetType() : itemType, item);
-                }
-            }
-        }
-        else if(memberType.GetInterfaces().Any(n => n == typeof(ICollection)))
-        {
-            var itemType =  typeof(object);
-            var memberCollectionValue = (memberValue as ICollection);
-            if(memberCollectionValue == null)
-            {
-                output.Log<TType>("Type implements ICollection but value was NULL");
-                output.Write(0);
-            }
-            else
-            {
-                output.Log<TType>("Write ICollection Size Of [{0}]", memberCollectionValue.Count);
-                output.Write(memberCollectionValue.Count);
-                foreach(var item in memberCollectionValue)
-                {
-                    typeof(ContentWriter)?.GetAnyMethod("WriteObject", item != null ? item.GetType() : itemType)
-                        ?.InvokeAny(output, item);
-                }
-            }                                  
-        } 
-        else if(memberType.GetInterfaces().Any(n => n.IsGenericType && n.GetGenericTypeDefinition() == (typeof(ICollection<>))))
-        {
-            var memberCollectionType = memberType.GetInterfaces().Single(n => n.IsGenericType && n.GetGenericTypeDefinition() == (typeof(ICollection<>)));
-            var itemType = memberCollectionType.GenericTypeArguments[0];
-
-            if(memberValue == null)
-            {
-                output.Log<TType>("Type implements ICollection<> but value was NULL");
-                output.Write(0);
-            }
-            else
-            {
-                var count = (int?)memberValue.GetType()?.GetProperty("Count")?.GetValue(memberValue);
-                
-                output.Log<TType>("Write {0} Size Of [{1}]", memberValue.GetType().Name, count);
-
-                output.Write(count == null ? 0 : (int)count);
-                foreach(var item in ((IEnumerable)memberValue))
-                {
-                    typeof(ContentWriter)?.GetAnyMethod("WriteObject", item != null ? item.GetType() : itemType)
-                        ?.InvokeAny(output, item);
-                }  
-            }                                
-        }
-        else
-        {
-            output.Log<TType>("WriteObject {0}", memberType.Name);
-            typeof(ContentWriter)?.GetAnyMethod("WriteObject", memberType)?.InvokeAny(output, memberValue);
-        }
-    }
-
-    public static void GenericWriteObject<TType>(this ContentTypeWriter writer, ContentWriter output, TType? value)
-    {
-        if(value == null)
-        {
-            output.Log<TType>("Skip Write [value is null]");
-            return;
-        }
-
-        using(output.LogEntry<TType>("Write Object of Type [{0}]", value.GetType().Name))
-        {           
-            writer.GenericWriteBaseObject<TType>(output, value);
-
-            IEnumerable<MemberInfo> members = Enumerable.Concat<MemberInfo>(
-                typeof(TType).GetFields(
-                    BindingFlags.DeclaredOnly |
-                    BindingFlags.Public |  
-                    BindingFlags.Instance),
-                typeof(TType).GetProperties(
-                    BindingFlags.DeclaredOnly |
-                    BindingFlags.Public |  
-                    BindingFlags.Instance));
-
-            foreach(var member in members)
-            {
-                var property    = member as PropertyInfo;
-                var field       = member as FieldInfo;
-
-                if(field == null && property == null) throw new InvalidOperationException();
-
-                var memberDesc  = property != null ? "Property" : "Field";
-                var memberType  = property != null ? property.PropertyType : field != null ? field.FieldType : typeof(object);
-
-                Func<object?, object?>               funcGetValue        = (instance) =>            property != null ? property?.GetValue(instance) : field?.GetValue(instance);
-                //Func<object?, object, object?>       funcGetValueIndexed = (instance, index) =>     property != null ? property?.GetValue(instance, new [] { index }) : ((Array?)field?.GetValue(instance))?.GetValue((int)index);
-
-                if(member.GetCustomAttribute<JsonIgnoreAttribute>(true) != null)
-                {
-                    output.Log<TType>("Skip {0} {1} {2}", memberDesc, memberType.Name, member.Name);
-                    continue;
-                } 
-
-                var memberValue = funcGetValue(value);
-
-                using(output.LogEntry<TType>("{0} {1} {2} => {3}", memberDesc, memberType.Name, member.Name, memberValue))
-                {                    
-                    writer.GenericWriteValue<TType>(output, memberType, memberValue);
-                }
-            }
-        }
-    }
-
-    public static void GenericWriteBaseObject<TType>(this ContentTypeWriter writer, ContentWriter output, TType? value)
-    {
-        if(value== null) throw new NotSupportedException();
-
-        if(typeof(TType).BaseType != null && typeof(TType).BaseType != typeof(Object))
-        {
-            using(output.LogEntry<TType>("Write BaseClass of Type {0}", typeof(TType).BaseType?.Name))
-            {   
-                typeof(ContentWriter)?.GetAnyMethod("WriteRawObject", typeof(TType).BaseType)
-                    ?.InvokeAny(output, value);
-            }
-        }
-    }
-}

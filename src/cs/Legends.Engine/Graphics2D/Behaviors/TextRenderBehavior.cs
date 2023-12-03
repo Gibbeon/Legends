@@ -9,8 +9,12 @@ namespace Legends.Engine.Graphics2D;
 
 public class Asset
 {
-    public string Name { get; }
+    public string Name { get; protected set; }
 
+    public Asset() : this(String.Empty)
+    {
+        
+    }
     public Asset(string name)
     {
         Name = name;
@@ -25,6 +29,11 @@ public class Asset<TType> : Asset
     public void Load(ContentManager manager)
     {
         _local = manager.Load<TType>(Name);
+    }
+
+    public Asset() : this(String.Empty)
+    {
+        
     }
 
     public Asset(string name) : base(name)

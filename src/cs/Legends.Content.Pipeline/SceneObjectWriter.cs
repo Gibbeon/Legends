@@ -6,6 +6,7 @@ using Legends.Engine.Serialization;
 
 namespace Legends.Content.Pipline;
 
+
 [ContentTypeWriter]
 public class SceneWriter : ContentTypeWriter<Scene>
 {
@@ -22,9 +23,11 @@ public class SceneWriter : ContentTypeWriter<Scene>
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {
         return typeof(GenericReader<>).MakeGenericType(GetType().BaseType.GenericTypeArguments[0]).AssemblyQualifiedName;
-    }
+    }   
 }
 
+
+/*
 [ContentTypeWriter]
 public class SceneObjectWriter : ContentTypeWriter<SceneObject>
 {
@@ -101,4 +104,4 @@ public class TextRenderBehaviorWriter : ContentTypeWriter<TextRenderBehavior>
     }
 }
 
-
+*/
