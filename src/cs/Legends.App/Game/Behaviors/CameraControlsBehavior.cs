@@ -41,21 +41,25 @@ public class CameraControlsBehavior : BaseBehavior
     }
     public override void Dispose()
     {
+        GC.SuppressFinalize(this);
         _commands?.Dispose();
     }
     public override void Update(GameTime gameTime)
     {
-        foreach(var command in _commands.EventActions)
+        if(_commands != null)
         {
-            switch(command.Name)
+            foreach(var command in _commands.EventActions)
             {
-                case "MOVE_LEFT":   Parent?.GetParentScene()?.Camera?.Move(-ScrollSpeed, 0); break;
-                case "MOVE_RIGHT":  Parent?.GetParentScene()?.Camera?.Move( ScrollSpeed, 0); break;
-                case "MOVE_UP":     Parent?.GetParentScene()?.Camera?.Move( 0,-ScrollSpeed); break;
-                case "MOVE_DOWN":   Parent?.GetParentScene()?.Camera?.Move( 0, ScrollSpeed); break;
-                default:
-                    Console.WriteLine("Unknown Command: {0}", command.Name); break;             
-            }
-        }  
+                switch(command.Name)
+                {
+                    case "MOVE_LEFT":   Parent?.GetParentScene()?.Camera?.Move(-ScrollSpeed, 0); break;
+                    case "MOVE_RIGHT":  Parent?.GetParentScene()?.Camera?.Move( ScrollSpeed, 0); break;
+                    case "MOVE_UP":     Parent?.GetParentScene()?.Camera?.Move( 0,-ScrollSpeed); break;
+                    case "MOVE_DOWN":   Parent?.GetParentScene()?.Camera?.Move( 0, ScrollSpeed); break;
+                    default:
+                        Console.WriteLine("Unknown Command: {0}", command.Name); break;             
+                }
+            }  
+        }
     }
 }

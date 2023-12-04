@@ -5,6 +5,13 @@ using Newtonsoft.Json;
 using Legends.Engine;
 using Legends.Content.Pipline.JsonConverters;
 using Legends.Engine.Serialization;
+using System.Linq;
+using System.Collections.Generic;
+using System.Collections;
+using Microsoft.Xna.Framework;
+using MonoGame.Extended;
+using Legends.Engine.Graphics2D;
+using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 
 namespace Legends.Content.Pipline;
 
@@ -16,6 +23,7 @@ public static class StdStuff
         using Legends.Engine;
         using Legends.Engine.Graphics2D;
         using Legends.Engine.Serialization;
+        using {1};
 
         namespace Legends.Content.Pipline;
     
@@ -30,16 +38,76 @@ public static class StdStuff
 [ContentImporter(".json", DisplayName = "Legends Scene Importer", DefaultProcessor = "SceneProcessor")]
 public class SceneImporter : ContentImporter<Scene>
 {
+    public IEnumerable<Type> GetTypesForInstance(object? instance, IList<Type>? result = default)
+    {
+        result = result ?? new List<Type>();
+
+        if(instance == null) return result;
+
+        //typeof(ContentWriter).Write params + extensions instead of hardcoded list
+
+        if(result.Contains(instance.GetType()))     return result;
+        if(instance.GetType() == typeof(string))    return result;
+        if(instance.GetType() == typeof(object))    return result;
+        if(instance.GetType() == typeof(Vector2))   return result;
+        if(instance.GetType() == typeof(Vector3))   return result;
+        if(instance.GetType() == typeof(Size2))     return result;
+        if(instance.GetType() == typeof(Point2))    return result;
+        if(instance.GetType() == typeof(RectangleF)) return result;
+        if(instance.GetType() == typeof(Color))     return result;
+        if(instance.GetType() == typeof(Matrix))    return result;
+        if(instance.GetType() == typeof(Asset))     return result;
+        if(instance.GetType().IsGenericType && instance.GetType().GetGenericTypeDefinition() == typeof(Asset<>)) return result;
+        if(instance.GetType().IsPrimitive)          return result;
+        if(instance.GetType().IsEnum)               return result;
+        if(instance.GetType().IsArray)            
+        {
+            Array value = (Array)instance;
+            foreach(var item in value)
+            {
+                GetTypesForInstance(item, result);
+            }
+            return result;
+        }
+
+        if(instance is IEnumerable enumerable)
+        {
+            foreach(var item in enumerable)
+            {
+                GetTypesForInstance(item, result);
+            }
+        }
+
+        foreach(var field in instance.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+        {
+            GetTypesForInstance(field.GetValue(instance), result);
+        }
+
+        foreach(var property in instance.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+        {
+            if(property.GetIndexParameters().Length > 0) continue;
+            if(property.IsDefined(typeof(JsonIgnoreAttribute), true)) continue;
+
+            GetTypesForInstance(property.GetValue(instance), result);
+        }
+        
+        if(!(instance.GetType().IsGenericType && instance.GetType().GetGenericTypeDefinition() == typeof(List<>)))
+        { 
+            result.Add(instance.GetType());
+        }
+
+        return result;
+    }
+
     public override Scene Import(string filename, ContentImporterContext context)
     {
         context.Logger.LogMessage("Importing file: {0}", filename);
         try
         {            
-            DynamicClassLoader.Compile("Scene",                 string.Format(StdStuff.Code, "Scene"));       
-            DynamicClassLoader.Compile("SceneObject",           string.Format(StdStuff.Code, "SceneObject"));        
-            DynamicClassLoader.Compile("Spatial",               string.Format(StdStuff.Code, "Spatial"));        
-            DynamicClassLoader.Compile("Camera",                string.Format(StdStuff.Code, "Camera"));
-            DynamicClassLoader.Compile("TextRenderBehavior",    string.Format(StdStuff.Code, "TextRenderBehavior"));
+            //DynamicClassLoader.Compile("Scene",                 string.Format(StdStuff.Code, "Scene"));       
+            //DynamicClassLoader.Compile("SceneObject",           string.Format(StdStuff.Code, "SceneObject"));       
+            //DynamicClassLoader.Compile("Camera",                string.Format(StdStuff.Code, "Camera"));
+            //DynamicClassLoader.Compile("TextRenderBehavior",    string.Format(StdStuff.Code, "TextRenderBehavior"));
             
             var settings = new JsonSerializerSettings
             {
@@ -49,6 +117,12 @@ public class SceneImporter : ContentImporter<Scene>
             settings.Converters.Add(new AssetJsonConverter());
             
             var result = JsonConvert.DeserializeObject<Scene>(File.ReadAllText(filename), settings);
+
+            foreach(var item in GetTypesForInstance(result))
+            {
+                Console.WriteLine("Dynamic support for type {0}, {1}", item.Name, item.Namespace);
+                DynamicClassLoader.Compile(item.Name, string.Format(StdStuff.Code, item.Name, item.Namespace));
+            }
 
             context.Logger.LogMessage(JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)).Replace("{", "{{").Replace("}", "}}"));
 
