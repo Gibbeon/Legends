@@ -108,15 +108,15 @@ public static class ContentTypeWriterExtensions
 
         using(output.LogEntry<TType>("Write Object of Type [{0}]", value.GetType().Name))
         {           
-            writer.GenericWriteBaseObject<TType>(output, value);
+            //writer.GenericWriteBaseObject<TType>(output, value);
 
             IEnumerable<MemberInfo> members = Enumerable.Concat<MemberInfo>(
                 typeof(TType).GetFields(
-                    BindingFlags.DeclaredOnly |
+                    //BindingFlags.DeclaredOnly |
                     BindingFlags.Public |  
                     BindingFlags.Instance),
                 typeof(TType).GetProperties(
-                    BindingFlags.DeclaredOnly |
+                    //BindingFlags.DeclaredOnly |
                     BindingFlags.Public |  
                     BindingFlags.Instance));
 
@@ -149,7 +149,7 @@ public static class ContentTypeWriterExtensions
         }
     }
 
-    public static void GenericWriteBaseObject<TType>(this ContentTypeWriter writer, ContentWriter output, TType? value)
+    /*public static void GenericWriteBaseObject<TType>(this ContentTypeWriter writer, ContentWriter output, TType? value)
     {
         if(value== null) throw new NotSupportedException();
 
@@ -161,5 +161,5 @@ public static class ContentTypeWriterExtensions
                     ?.InvokeAny(output, value);
             }
         }
-    }
+    }*/
 }
