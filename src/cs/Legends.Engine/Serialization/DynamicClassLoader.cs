@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using System.IO;
 using Microsoft.CodeAnalysis.Emit;
+using Legends.Engine.Runtime;
 
 namespace Legends.Engine.Serialization;
 
@@ -23,12 +24,35 @@ namespace Legends.Engine.Serialization;
     {
         // loaded assemblies
         static Dictionary<string, Assembly> _loadedAssemblies = new Dictionary<string, Assembly>();
+        static Dictionary<string, byte[]> _loadedAssembliesBytes = new Dictionary<string, byte[]>();
+
+        static bool _supportDynamicAssembly;
 
         /// <summary>
         /// Compile assembly, or return instance from cache.
         /// </summary>
         public static Assembly Compile(string codeIdentifier, string code)
         {
+            if(!_supportDynamicAssembly)
+            {
+                Console.WriteLine("Setting up to _supportDynamicAssembly");
+
+                AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
+
+                    Console.WriteLine("AssemblyResolve: Trying to resolve: {0}", args.Name);
+                    return _loadedAssemblies.SingleOrDefault(n => n.Value.FullName == args.Name).Value;
+                };
+
+                AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += (sender, args) => {
+                    Console.WriteLine("ReflectionOnlyAssemblyResolve: Trying to resolve: {0}", args.Name);
+                    Assembly res;
+                    _loadedAssemblies.TryGetValue(args.Name, out res);
+                    return res;
+                };
+
+                _supportDynamicAssembly = true;
+            }
+
             // get from cache
             Assembly ret = null;
             if (_loadedAssemblies.TryGetValue(codeIdentifier, out ret))
@@ -60,10 +84,16 @@ namespace Legends.Engine.Serialization;
             */
 
             MetadataReference[] references = 
-            AppDomain.CurrentDomain.GetAssemblies()
-                .Where (n => !n.IsDynamic && File.Exists(n.Location)).Distinct()
-                .Select(n => MetadataReference.CreateFromFile(n.Location)
-            ).ToArray();
+                Enumerable.Concat(AppDomain.CurrentDomain.GetAssemblies()
+                    .Where (n => !n.IsDynamic && File.Exists(n.Location)).Distinct()
+                    .Select(n => MetadataReference.CreateFromFile(n.Location)
+                ),
+                
+                _loadedAssembliesBytes
+                    .Select(n => {
+                        return MetadataReference.CreateFromImage(n.Value);
+                    }
+            )).ToArray();
 
             // setup compiler
             CSharpCompilation compilation = CSharpCompilation.Create(
@@ -96,9 +126,9 @@ namespace Legends.Engine.Serialization;
                 {
                     // load assembly and add to cache
                     ms.Seek(0, SeekOrigin.Begin);
-                    ret = Assembly.Load(ms.ToArray());
+                    _loadedAssembliesBytes[codeIdentifier] = ms.ToArray();
+                    ret = Assembly.Load(_loadedAssembliesBytes[codeIdentifier]);
                     _loadedAssemblies[codeIdentifier] = ret;
-
                     // return assembly
                     return ret;
                 }

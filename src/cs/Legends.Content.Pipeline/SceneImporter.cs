@@ -12,6 +12,9 @@ using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using Legends.Engine.Graphics2D;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+using System.Runtime.CompilerServices;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace Legends.Content.Pipline;
 
@@ -40,14 +43,17 @@ public class SceneImporter : ContentImporter<Scene>
 {
     public IEnumerable<Type> GetTypesForInstance(object? instance, IList<Type>? result = default)
     {
-        result = result ?? new List<Type>();
+        result ??= new List<Type>();
 
         if(instance == null) return result;
 
         //typeof(ContentWriter).Write params + extensions instead of hardcoded list
 
+        Console.WriteLine("{0}", instance.GetType());
+
         if(result.Contains(instance.GetType()))     return result;
         if(instance.GetType() == typeof(string))    return result;
+        if(instance.GetType().Namespace.StartsWith("Newtonsoft.Json"))      return result;
         if(instance.GetType() == typeof(object))    return result;
         if(instance.GetType() == typeof(Vector2))   return result;
         if(instance.GetType() == typeof(Vector3))   return result;
@@ -60,8 +66,22 @@ public class SceneImporter : ContentImporter<Scene>
         if(instance.GetType().IsGenericType && instance.GetType().GetGenericTypeDefinition() == typeof(Asset<>)) return result;
         if(instance.GetType().IsPrimitive)          return result;
         if(instance.GetType().IsEnum)               return result;
+        
+        if(instance is IDynamicallyCompiledType script)
+        {
+            var type = DynamicClassLoader.CompileCodeAndExtractClass(script.Source, File.ReadAllText(script.Source), script.TypeName);
+            //foreach(var type in assembly.GetTypes())
+            {
+                Console.WriteLine("Dynamicly compiled type {0} from {1}", type.Name, script.Source);
+                GetTypesForInstance(Activator.CreateInstance(type), result);
+            }
+            return result;
+            //dynamicly compiple ScriptBehavior
+        }
+        
         if(instance.GetType().IsArray)            
         {
+            Console.WriteLine("IsArray {0}", instance.GetType().Name);
             Array value = (Array)instance;
             foreach(var item in value)
             {
@@ -72,6 +92,7 @@ public class SceneImporter : ContentImporter<Scene>
 
         if(instance is IEnumerable enumerable)
         {
+            Console.WriteLine("IEnumerable {0}", instance.GetType().Name);
             foreach(var item in enumerable)
             {
                 GetTypesForInstance(item, result);

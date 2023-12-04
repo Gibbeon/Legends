@@ -7,42 +7,19 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Engine.Graphics2D;
 
-public class Asset
+public enum HorizontalAlignment
 {
-    public string Name { get; protected set; }
-
-    public Asset() : this(String.Empty)
-    {
-        
-    }
-    public Asset(string name)
-    {
-        Name = name;
-    }
-}
-public class Asset<TType> : Asset
-{
-    TType? _local;
-    public TType? Get() => _local;
-    public void Set(TType? local) => _local = local;
-
-    public void Load(ContentManager manager)
-    {
-        _local = manager.Load<TType>(Name);
-    }
-
-    public Asset() : this(String.Empty)
-    {
-        
-    }
-
-    public Asset(string name) : base(name)
-    {
-    }
-
-    public static implicit operator TType?(Asset<TType> Asset) => Asset.Get();
+    Left,
+    Center,
+    Right
 }
 
+public enum VerticalAlignment
+{
+    Top,
+    Middle,
+    Bottom
+}
 public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 {
     public Color Color { get; set; }
@@ -55,11 +32,17 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public RenderState? RenderState { get; set; }
     
+[JsonProperty("halign")]
+    public HorizontalAlignment HorizontalAlignment { get; set; }
+
+    [JsonProperty("valign")]
+    public VerticalAlignment VerticalAlignment { get; set; }
+    
     [JsonIgnore]
     public bool IsVisible   => Parent != null && Parent.IsVisible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent != null ? Parent.Position : Vector2.Zero;
+    public Vector2 Position => Parent != null ? Parent.Position + new Vector2(GetHorizontalOffset(), GetVerticalOffset()) : Vector2.Zero;
 
     [JsonIgnore]
     public float Rotation   => Parent != null ? Parent.Rotation : 0.0f;
@@ -103,9 +86,33 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
         }
     }
 
+    public float GetVerticalOffset()
+    {
+        switch (VerticalAlignment)
+        {
+            case VerticalAlignment.Top:     return 0;
+            case VerticalAlignment.Bottom:  return -((BitmapFont)Font).MeasureString(Text).Height * Scale.Y;
+            case VerticalAlignment.Middle:  return -((BitmapFont)Font).MeasureString(Text).Height * Scale.Y / 2;
+            default:
+                return 0;
+        }
+    }
+
+        public float GetHorizontalOffset()
+    {
+        switch (HorizontalAlignment)
+        {
+            case HorizontalAlignment.Left:      return 0;
+            case HorizontalAlignment.Right:     return -((BitmapFont)Font).MeasureString(Text).Width * Scale.X;
+            case HorizontalAlignment.Center:    return -((BitmapFont)Font).MeasureString(Text).Width * Scale.Y/ 2;
+            default:
+                return 0;
+        }
+    }
+
     public override void Update(GameTime gameTime)
     {
-        //base.Update(gameTime);
+
     }
 
     public override void Draw(GameTime gameTime)
