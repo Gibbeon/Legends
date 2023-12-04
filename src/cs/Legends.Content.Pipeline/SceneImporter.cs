@@ -34,9 +34,8 @@ public class SceneImporter : ContentImporter<Scene>
     {
         context.Logger.LogMessage("Importing file: {0}", filename);
         try
-        {
-            //context.Logger.LogMessage(StdStuff.Code, "SceneObject");
-            
+        {            
+            DynamicClassLoader.Compile("Scene",                 string.Format(StdStuff.Code, "Scene"));       
             DynamicClassLoader.Compile("SceneObject",           string.Format(StdStuff.Code, "SceneObject"));        
             DynamicClassLoader.Compile("Spatial",               string.Format(StdStuff.Code, "Spatial"));        
             DynamicClassLoader.Compile("Camera",                string.Format(StdStuff.Code, "Camera"));

@@ -6,6 +6,7 @@ using Legends.Engine.Serialization;
 
 namespace Legends.Content.Pipline;
 
+/*
 
 [ContentTypeWriter]
 public class SceneWriter : ContentTypeWriter<Scene>
@@ -27,7 +28,7 @@ public class SceneWriter : ContentTypeWriter<Scene>
 }
 
 
-/*
+
 [ContentTypeWriter]
 public class SceneObjectWriter : ContentTypeWriter<SceneObject>
 {

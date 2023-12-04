@@ -65,11 +65,6 @@ namespace Legends.Engine.Serialization;
                 .Select(n => MetadataReference.CreateFromFile(n.Location)
             ).ToArray();
 
-            foreach(var x in references)
-            {
-                Console.WriteLine(x.Display);
-            }
-
             // setup compiler
             CSharpCompilation compilation = CSharpCompilation.Create(
                 assemblyName,

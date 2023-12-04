@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using System;
 using Newtonsoft.Json;
 using Legends.Engine.Runtime;
+using Legends.Engine.Serialization;
 
 namespace Legends.Content.Pipline;
 
@@ -57,8 +58,10 @@ public static class ContentTypeWriterExtensions
                 output.Write(memberCollectionValue.Count);
                 foreach(var item in memberCollectionValue)
                 {
-                    typeof(ContentWriter)?.GetAnyMethod("WriteObject", item != null ? item.GetType() : itemType)
-                        ?.InvokeAny(output, item);
+                    writer.GenericWriteValue<TType>(output, item != null ? item.GetType() : itemType, item);
+
+                    //typeof(ContentWriter)?.GetAnyMethod("WriteObject", item != null ? item.GetType() : itemType)
+                    //    ?.InvokeAny(output, item);
                 }
             }                                  
         } 
@@ -81,8 +84,10 @@ public static class ContentTypeWriterExtensions
                 output.Write(count == null ? 0 : (int)count);
                 foreach(var item in ((IEnumerable)memberValue))
                 {
-                    typeof(ContentWriter)?.GetAnyMethod("WriteObject", item != null ? item.GetType() : itemType)
-                        ?.InvokeAny(output, item);
+                    writer.GenericWriteValue<TType>(output, item != null ? item.GetType() : itemType, item);
+
+                    //typeof(ContentWriter)?.GetAnyMethod("WriteObject", item != null ? item.GetType() : itemType)
+                    //    ?.InvokeAny(output, item);
                 }  
             }                                
         }
@@ -151,7 +156,7 @@ public static class ContentTypeWriterExtensions
         if(typeof(TType).BaseType != null && typeof(TType).BaseType != typeof(Object))
         {
             using(output.LogEntry<TType>("Write BaseClass of Type {0}", typeof(TType).BaseType?.Name))
-            {   
+            {                 
                 typeof(ContentWriter)?.GetAnyMethod("WriteRawObject", typeof(TType).BaseType)
                     ?.InvokeAny(output, value);
             }
