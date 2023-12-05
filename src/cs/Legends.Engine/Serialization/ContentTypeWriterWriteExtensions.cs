@@ -7,8 +7,18 @@ using System;
 using Newtonsoft.Json;
 using Legends.Engine.Runtime;
 using Legends.Engine.Serialization;
+using Legends.Engine;
+using System.Runtime.InteropServices.ObjectiveC;
+using Microsoft.Xna.Framework.Input.Touch;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Legends.Content.Pipline;
+
+public enum ObjectType
+{
+    Static,
+    Dynamic
+}
 
 public static class ContentTypeWriterExtensions
 {   
@@ -65,6 +75,24 @@ public static class ContentTypeWriterExtensions
                 }
             }                                  
         } 
+        else if(memberType.GetInterfaces().Any(n => n == typeof(IDynamicallyCompiledType)))
+        {
+            if(memberValue is IDynamicallyCompiledType dynamicValue)
+            {
+                output.Write7BitEncodedInt((int)ObjectType.Dynamic);
+                output.Write(dynamicValue.Source);
+                output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
+                output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source));
+                output.Write(dynamicValue.TypeName);
+                object objValue = dynamicValue.Properties;
+
+                writer.GenericWriteObject(output, objValue.GetType(), objValue);
+            }
+            else
+            {
+                output.Log<TType>("IDynamicallyCompiledType [{0}] but value was not castable, Null?", memberType.Name);
+            }
+        }
         else if(memberType.GetInterfaces().Any(n => n.IsGenericType && n.GetGenericTypeDefinition() == (typeof(ICollection<>))))
         {
             var memberCollectionType = memberType.GetInterfaces().Single(n => n.IsGenericType && n.GetGenericTypeDefinition() == (typeof(ICollection<>)));
@@ -94,8 +122,18 @@ public static class ContentTypeWriterExtensions
         else
         {
             output.Log<TType>("WriteObject {0}", memberType.Name);
+            output.Write7BitEncodedInt((int)ObjectType.Static);
             typeof(ContentWriter)?.GetAnyMethod("WriteObject", memberType)?.InvokeAny(output, memberValue);
         }
+    }
+
+    public static void GenericWriteObject(this ContentTypeWriter writer, ContentWriter output, Type type, object value)
+    {
+        typeof(ContentTypeWriterExtensions)
+            .GetMethods()
+            .Single(n => n.IsStatic && n.IsGenericMethod && n.Name == "GenericWriteObject")
+            .MakeGenericMethod(type)
+            .Invoke(null, new object[] { writer, output, value });
     }
 
     public static void GenericWriteObject<TType>(this ContentTypeWriter writer, ContentWriter output, TType? value)

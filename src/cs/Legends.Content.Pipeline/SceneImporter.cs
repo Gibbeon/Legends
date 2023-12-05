@@ -161,8 +161,9 @@ public class SceneImporter : ContentImporter<Scene>
             {
                 if(value.GetValue(x) is IDynamicallyCompiledType dynType)
                 {
-                    Console.Write("Replacing {0} type in array with ", value.GetValue(x).GetType().Name);
-                    value.SetValue(ParseDynamiclyCompiledType(dynType), x);
+                    Console.Write("Replacing Properties {0} type in array with ", value.GetValue(x).GetType().Name);
+                    dynType.Properties = ParseDynamiclyCompiledType(dynType);
+                    //value.SetValue(ParseDynamiclyCompiledType(dynType), x);
                     Console.WriteLine("{0}.", value.GetValue(x).GetType().Name);
                 } 
                 else
@@ -178,8 +179,9 @@ public class SceneImporter : ContentImporter<Scene>
             {
                 if(list[x] is IDynamicallyCompiledType dynType)
                 {                    
-                    Console.Write("Replacing {0} type in list with ", list[x].GetType().Name);
-                    list[x] = ParseDynamiclyCompiledType(dynType);
+                    Console.Write("Replacing Properties {0} type in list with ", list[x].GetType().Name);
+                    dynType.Properties = ParseDynamiclyCompiledType(dynType);
+                    //list[x] = ParseDynamiclyCompiledType(dynType);
                     Console.WriteLine("{0}.", list[x].GetType().Name);
                 } 
                 else
@@ -207,19 +209,13 @@ public class SceneImporter : ContentImporter<Scene>
             Console.WriteLine("Eval {0}.{1}", instance.GetType().Name, property.Name);
             UpdateDynamicallyTypedObjects(property.GetValue(instance));
         }
-
     }
 
     public override Scene Import(string filename, ContentImporterContext context)
     {
         context.Logger.LogMessage("Importing file: {0}", filename);
         try
-        {            
-            //DynamicClassLoader.Compile("Scene",                 string.Format(StdStuff.Code, "Scene"));       
-            //DynamicClassLoader.Compile("SceneObject",           string.Format(StdStuff.Code, "SceneObject"));       
-            //DynamicClassLoader.Compile("Camera",                string.Format(StdStuff.Code, "Camera"));
-            //DynamicClassLoader.Compile("TextRenderBehavior",    string.Format(StdStuff.Code, "TextRenderBehavior"));
-            
+        {                        
             var settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
@@ -255,39 +251,5 @@ class SceneProcessor : ContentProcessor<Scene, Scene>
     public override Scene Process(Scene input, ContentProcessorContext context)
     {
         return input;
-    }
-}
-
-
-public class DynamicType
-{
-    public string CodeIdentifier { get; set; }
-    public byte[] Data { get; set; }
-
-    [JsonIgnore]
-    public Assembly Assembly { get; set; }
-    public DynamicType() {}
-}
-
-[ContentTypeWriter]
-public class DynamicTypeWriter : ContentTypeWriter<DynamicType> {
-    protected override void Write(ContentWriter output, DynamicType value) { this.GenericWriteObject(output, value); }
-    public override string GetRuntimeType(TargetPlatform targetPlatform)   { return GetType().BaseType.GenericTypeArguments[0].AssemblyQualifiedName; }
-    public override string GetRuntimeReader(TargetPlatform targetPlatform) { return typeof(DynamicTypeReader).AssemblyQualifiedName; }
-}
-
-
-public class DynamicTypeReader : ContentTypeReader<DynamicType>
-{
-    protected override DynamicType Read(ContentReader input, DynamicType existingInstance)
-    {
-        DynamicType type = new DynamicType();
-
-        type.CodeIdentifier = input.ReadString();
-        type.Data = new byte[input.ReadInt32()];
-        type.Data = input.ReadBytes(type.Data.Length);
-        type.Assembly = DynamicClassLoader.Load(type.CodeIdentifier, type.Data);
-
-        return type;
     }
 }

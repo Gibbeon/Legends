@@ -15,6 +15,7 @@ using System.IO;
 using Microsoft.CodeAnalysis.Emit;
 using Legends.Engine.Runtime;
 using System.Xml.Serialization;
+using SharpDX.D3DCompiler;
 
 namespace Legends.Engine.Serialization;
 
@@ -28,6 +29,33 @@ namespace Legends.Engine.Serialization;
         static Dictionary<string, byte[]> _loadedAssembliesBytes = new Dictionary<string, byte[]>();
 
         static bool _supportDynamicAssembly;
+
+        public static byte[] GetBytes(string codeIdentifier)
+        {
+            return _loadedAssembliesBytes[codeIdentifier];
+        }
+
+        public static Type LoadAndExtractClass(string codeIdentifier, byte[] code, string className)
+        {
+              Type ret = null;
+
+            // extract class
+            if (!string.IsNullOrEmpty(className))
+            {
+                // get assembly and try to extract class
+                var assembly = Load(codeIdentifier, code);
+                ret = assembly.GetType(className);
+
+                // didn't find main class?
+                if (ret == null)
+                {
+                    throw new Exception("Fail to find class '" + className + "' in code '" + codeIdentifier + "'!");
+                }
+            }
+
+            // return class
+            return ret;
+        }
 
         public static Assembly Load(string codeIdentifier, byte[] code)
         {

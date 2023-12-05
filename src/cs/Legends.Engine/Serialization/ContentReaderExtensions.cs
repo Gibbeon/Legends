@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 
 using Legends.Engine.Graphics2D;
 using MonoGame.Extended;
+using Legends.Content.Pipline;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Legends.Engine.Serialization;
 
@@ -128,6 +130,11 @@ public static class ContentReaderExtensions
 
             if(readMethod != null)
             {
+                if(readMethod.Name == "ReadObject")
+                {
+                    input.Read7BitEncodedInt();
+                }
+
                 if(readMethod.IsGenericMethod && readMethod.IsStatic)
                 {
                     var genericValue = readMethod.MakeGenericMethod(property.PropertyType.GenericTypeArguments).Invoke(null, new object?[] { input });
@@ -188,7 +195,53 @@ public static class ContentReaderExtensions
                         readMethod = _contentReaderReadMethods.Single(n => n.Name == "ReadObject" && n.IsGenericMethod && n.GetParameters().Length == 0).MakeGenericMethod(itemType);
                     }
 
-                    var itemValue = readMethod.Invoke(input, null);
+                    object itemValue = default;
+
+                    if(readMethod.Name == "ReadObject")
+                    {
+                        if(input.Read7BitEncodedInt() == (int)ObjectType.Dynamic) // output.Write7BitEncodedInt((int)ObjectType.Dynamic);
+                        {
+                            var codeIdentifier = input.ReadString(); //output.Write(dynamicValue.Source);
+
+                            input.Log<TType>("..Reading Dynamic of Type {0} from {1}", itemType.Name, codeIdentifier);
+                            var len = input.ReadInt32(); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
+                            var bytes = input.ReadBytes(len); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source));
+                            var type = input.ReadString();
+
+                            var dynamicType = DynamicClassLoader.LoadAndExtractClass(codeIdentifier, bytes, type);
+                            object[] paramConstructors;
+
+                            if(GenericReaderStack.ParentObjects.Count > 0)
+                            {
+                                paramConstructors = new object?[] { input.ContentManager.ServiceProvider, GenericReaderStack.ParentObjects.Peek() };
+                            }
+                            else
+                            {
+                                paramConstructors = new object?[] { input.ContentManager.ServiceProvider };
+                            }
+
+                            itemValue = ContentReaderExtensions.Create(dynamicType, paramConstructors);
+
+                            if(itemValue == null) throw new NotSupportedException();
+                            
+                            GenericReaderStack.ParentObjects.Push(itemValue);
+
+                            input.ReadFields(itemValue);
+
+                            GenericReaderStack.ParentObjects.Pop();
+
+                            
+                            //object objValue = dynamicValue.Properties;
+                        }
+                        else
+                        {
+                            itemValue = readMethod.Invoke(input, null);
+                        }
+                    } 
+                    else
+                    {
+                        itemValue = readMethod.Invoke(input, null);
+                    }
 
                     if(list.GetType().IsArray)
                     {
@@ -207,10 +260,47 @@ public static class ContentReaderExtensions
             {
                 readMethod = _contentReaderReadMethods.Single(n => n.Name == "ReadObject" && n.IsGenericMethod && n.GetParameters().Length == 0).MakeGenericMethod(property.PropertyType);
                 
-                var readObject = readMethod.Invoke(input, null);
-                property.SetValue(value, readObject);
-                
-                input.Log<TType>("..Reading Object of Type {0} = {1}", property.PropertyType.Name, readObject);
+
+                if(input.Read7BitEncodedInt() == (int)ObjectType.Dynamic) // output.Write7BitEncodedInt((int)ObjectType.Dynamic);
+                {
+                    var codeIdentifier = input.ReadString(); //output.Write(dynamicValue.Source);
+
+                    input.Log<TType>("..Reading Dynamic of Type {0} from {1}", property.PropertyType.Name, input.ReadString());
+                    var len = input.ReadInt32(); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
+                    var bytes = input.ReadBytes(len); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source));
+                    var type = input.ReadString();
+
+                    var dynamicType = DynamicClassLoader.LoadAndExtractClass(codeIdentifier, bytes, type);
+                    object[] paramConstructors;
+
+                    if(GenericReaderStack.ParentObjects.Count > 0)
+                    {
+                        paramConstructors = new object?[] { input.ContentManager.ServiceProvider, GenericReaderStack.ParentObjects.Peek() };
+                    }
+                    else
+                    {
+                        paramConstructors = new object?[] { input.ContentManager.ServiceProvider };
+                    }
+
+                    var result = ContentReaderExtensions.Create(dynamicType, paramConstructors);
+
+                    if(result == null) throw new NotSupportedException();
+                    
+                    GenericReaderStack.ParentObjects.Push(result);
+
+                    input.ReadFields(result);
+
+                    GenericReaderStack.ParentObjects.Pop();
+
+                    
+                    //object objValue = dynamicValue.Properties;
+                }
+                else
+                {
+                    var readObject = readMethod.Invoke(input, null);
+                    property.SetValue(value, readObject);
+                    input.Log<TType>("..Reading Object of Type {0} = {1}", property.PropertyType.Name, readObject);
+                }
             }
         }
     }
