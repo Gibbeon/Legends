@@ -22,12 +22,10 @@ public class InputCommandSet
         _services = service;
         _eventActions = new List<EventAction>();
         _eventListeners = new List<EventListener>();
-
-        if((_manager = _services?.Get<IInputHandlerService>()?.Current) != null)
-        {
-            _manager.CommandSets.Add(this);
-            Enabled = true;
-        }
+        var inputService = service.Get<IInputHandlerService>();
+        _manager = inputService.Current;
+        _manager.CommandSets.Add(this);
+        Enabled = true;
     }
 
     internal void AddAction(EventAction action)

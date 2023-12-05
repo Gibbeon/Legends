@@ -18,13 +18,24 @@ public class CameraControlsBehavior : BaseBehavior
     public CameraControlsBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
     {
         ScrollSpeed = 1;
+
+        if(services != null)
+        {
+            _commands = new InputCommandSet(Services);
+
+            _commands.Add("MOVE_LEFT",    EventType.KeyPressed,    Keys.Left);             
+            _commands.Add("MOVE_RIGHT",   EventType.KeyPressed,    Keys.Right);      
+            _commands.Add("MOVE_UP",      EventType.KeyPressed,    Keys.Up);             
+            _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down);
+
+            _commands.Enabled = true;
+        }
     }
 
     public override void Initialize()
     {
         base.Initialize();
 
-        _commands = new InputCommandSet(Services);
         
         //_commands.Add("LOOK_AT",      EventType.MouseClicked,  MouseButton.Right);  
         //_commands.Add("ZOOM",         EventType.MouseScroll,   MouseButton.Middle); 
@@ -32,12 +43,7 @@ public class CameraControlsBehavior : BaseBehavior
         //_commands.Add("ROTATE",       EventType.MousePressed,  MouseButton.Left, Keys.RightAlt);
         //_commands.Add("ROTATE",       EventType.MousePressed,  MouseButton.Middle);
         
-        _commands.Add("MOVE_LEFT",    EventType.KeyPressed,    Keys.Left);             
-        _commands.Add("MOVE_RIGHT",   EventType.KeyPressed,    Keys.Right);      
-        _commands.Add("MOVE_UP",      EventType.KeyPressed,    Keys.Up);             
-        _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down);
-
-        _commands.Enabled = true;
+ 
     }
     public override void Dispose()
     {

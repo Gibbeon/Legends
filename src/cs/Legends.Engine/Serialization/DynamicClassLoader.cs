@@ -96,6 +96,7 @@ namespace Legends.Engine.Serialization;
 
             _loadedAssembliesBytes[codeIdentifier] = code;
             _loadedAssembliesSymbolBytes[codeIdentifier] = symbols;
+            
             ret = AssemblyLoadContext.Default.LoadFromStream(new MemoryStream(code), symbols == null ? null : new MemoryStream(symbols));
             //ret = Assembly.Load(_loadedAssembliesBytes[codeIdentifier]);
             _loadedAssemblies[codeIdentifier] = ret;
@@ -137,7 +138,10 @@ namespace Legends.Engine.Serialization;
             }
 
             // create syntax tree from code
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, 
+                null,
+                Path.GetFullPath(codeIdentifier),
+                Encoding.UTF8);
 
             //The location of the .NET assemblies
             var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
@@ -164,6 +168,8 @@ namespace Legends.Engine.Serialization;
             };
             */
 
+            
+
             Stack<Assembly> toLoad = new Stack<Assembly>();
             toLoad.Push(Assembly.GetEntryAssembly());
             toLoad.Push(Assembly.GetCallingAssembly());
@@ -185,7 +191,8 @@ namespace Legends.Engine.Serialization;
             }
 
             MetadataReference[] references = 
-                Enumerable.Concat(AppDomain.CurrentDomain.GetAssemblies()
+                Enumerable.Concat(
+                    AppDomain.CurrentDomain.GetAssemblies()
                     .Where (n => !n.IsDynamic && File.Exists(n.Location)).Distinct()
                     .Select(n => MetadataReference.CreateFromFile(n.Location)
                 ),
@@ -210,7 +217,7 @@ namespace Legends.Engine.Serialization;
                 using (var symbolsStream = new MemoryStream())
                 {
                     var emitOptions = new EmitOptions(
-                            debugInformationFormat: DebugInformationFormat.PortablePdb,
+                            debugInformationFormat: DebugInformationFormat.Embedded,
                             pdbFilePath: symbolsName);
 
                     var embeddedTexts = new List<EmbeddedText>
@@ -220,7 +227,7 @@ namespace Legends.Engine.Serialization;
 
                     EmitResult result = compilation.Emit(
                         peStream: assemblyStream,
-                        pdbStream: symbolsStream,
+                        //pdbStream: symbolsStream,
                         embeddedTexts: embeddedTexts,
                         options: emitOptions);
 

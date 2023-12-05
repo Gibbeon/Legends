@@ -122,13 +122,14 @@ namespace Legends.App.Screens
         public TitleScreen(IServiceProvider services)
         {
             _services = services;
+            _input = new InputManager(_services);
+
             //ContentManager2 cm2 = new ContentManager2(IServiceProvider);
             //_scene = cm2.Load("Scenes/test", new Scene(services));
 
             _scene = _services.GetContentManager().Load<Scene>("Scenes/test");
             _scene.Initialize();
 
-            _input = new InputManager(_services);
 
             _commands = new InputCommandSet(_services);
             _commands.Add("EXIT", EventType.KeyTyped, Keys.Escape);
