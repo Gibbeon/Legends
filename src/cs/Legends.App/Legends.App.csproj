@@ -5,7 +5,7 @@
     <RollForward>Major</RollForward>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ApplicationIcon>Resources/Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>

@@ -11,19 +11,18 @@ public class InputCommandSet
 {
     private readonly IList<EventListener> _eventListeners;
     private IList<EventAction> _eventActions;
-    private readonly IServiceProvider? _services;
-    private readonly InputManager? _manager;
+    private readonly IServiceProvider _services;
+    private readonly InputManager _manager;
     public IEnumerable<EventAction> EventActions => _eventActions.Where(n => !n.Handled);
     public IList<EventListener> EventListeners  => _eventListeners;
     public bool Enabled { get; set; }
 
-    public InputCommandSet(IServiceProvider? service)
+    public InputCommandSet(IServiceProvider service, InputManager manager)
     {
         _services = service;
         _eventActions = new List<EventAction>();
         _eventListeners = new List<EventListener>();
-        var inputService = service.Get<IInputHandlerService>();
-        _manager = inputService.Current;
+        _manager = manager;
         _manager.CommandSets.Add(this);
         Enabled = true;
     }

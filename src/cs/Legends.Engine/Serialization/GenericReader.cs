@@ -15,7 +15,7 @@ namespace Legends.Engine.Serialization;
 
 public class GenericReaderStack
 {
-    private static Stack<object>? _parentObjects;
+    private static Stack<object> _parentObjects;
     public static Stack<object> ParentObjects => _parentObjects ?? (_parentObjects = new Stack<object>());
 }
 
@@ -23,15 +23,15 @@ public class GenericReader<TType> : ContentTypeReader<TType>
 {
     protected override TType Read(ContentReader input, TType existingInstance)
     {
-        object?[]? paramConstructors;
+        object[] paramConstructors;
 
         if(GenericReaderStack.ParentObjects.Count > 0)
         {
-            paramConstructors = new object?[] { input.ContentManager.ServiceProvider, GenericReaderStack.ParentObjects.Peek() };
+            paramConstructors = new object[] { input.ContentManager.ServiceProvider, GenericReaderStack.ParentObjects.Peek() };
         }
         else
         {
-            paramConstructors = new object?[] { input.ContentManager.ServiceProvider };
+            paramConstructors = new object[] { input.ContentManager.ServiceProvider };
         }
 
         var result = existingInstance ?? 

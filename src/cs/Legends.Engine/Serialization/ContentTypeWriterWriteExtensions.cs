@@ -22,7 +22,7 @@ public enum ObjectType
 
 public static class ContentTypeWriterExtensions
 {   
-    public static void GenericWriteValue<TType>(this ContentTypeWriter writer, ContentWriter output, Type memberType, object? memberValue)
+    public static void GenericWriteValue<TType>(this ContentTypeWriter writer, ContentWriter output, Type memberType, object memberValue)
     {
         var nativeWriteMethod = typeof(ContentWriter).GetAnyMethod("Write", memberType);
                 
@@ -138,7 +138,7 @@ public static class ContentTypeWriterExtensions
             .Invoke(null, new object[] { writer, output, value });
     }
 
-    public static void GenericWriteObject<TType>(this ContentTypeWriter writer, ContentWriter output, TType? value)
+    public static void GenericWriteObject<TType>(this ContentTypeWriter writer, ContentWriter output, TType value)
     {
         if(value == null)
         {
@@ -170,7 +170,7 @@ public static class ContentTypeWriterExtensions
                 var memberDesc  = property != null ? "Property" : "Field";
                 var memberType  = property != null ? property.PropertyType : field != null ? field.FieldType : typeof(object);
 
-                Func<object?, object?>               funcGetValue        = (instance) =>            property != null ? property?.GetValue(instance) : field?.GetValue(instance);
+                Func<object, object>               funcGetValue        = (instance) =>            property != null ? property.GetValue(instance) : field.GetValue(instance);
                 //Func<object?, object, object?>       funcGetValueIndexed = (instance, index) =>     property != null ? property?.GetValue(instance, new [] { index }) : ((Array?)field?.GetValue(instance))?.GetValue((int)index);
 
                 if(member.GetCustomAttribute<JsonIgnoreAttribute>(true) != null)

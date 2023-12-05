@@ -136,7 +136,7 @@ public static class TypeExtensions
         return query;
     }
 
-    public static IEnumerable<MethodInfo> MatchMethodSignature(this IEnumerable<MethodInfo> methods, Type instanceType, params Type?[]? parameterTypes)
+    public static IEnumerable<MethodInfo> MatchMethodSignature(this IEnumerable<MethodInfo> methods, Type instanceType, params Type[] parameterTypes)
     {
         var instanceMethods = methods.Where(n =>    !n.IsStatic
                                                 &&  n.GetParameters().Length == parameterTypes?.Length 
@@ -157,19 +157,19 @@ public static class TypeExtensions
                 
     }
 
-    public static IEnumerable<MethodInfo> MatchReturnSignature(this IEnumerable<MethodInfo> methods, Type? returnValue)
+    public static IEnumerable<MethodInfo> MatchReturnSignature(this IEnumerable<MethodInfo> methods, Type returnValue)
     {
         return returnValue == null ? methods.Where(n => n.ReturnParameter.ParameterType.IsAssignableTo(returnValue)) : methods;
     }
 
-    public static IEnumerable<MethodInfo> MatchMethodName(this IEnumerable<MethodInfo> methods, string? methodName)
+    public static IEnumerable<MethodInfo> MatchMethodName(this IEnumerable<MethodInfo> methods, string methodName)
     {
         if(string.IsNullOrEmpty(methodName)) return methods;
 
         return methods.Where(n => Regex.IsMatch(n.Name, WildCardToRegular(methodName)));
     }
 
-    public static MethodInfo? GetAnyMethod(this Type type, string? methodName, params Type?[]? parameterTypes)
+    public static MethodInfo GetAnyMethod(this Type type, string methodName, params Type[] parameterTypes)
     {
         return type.GetAllMethods()
                     .MatchMethodName(methodName)
@@ -184,7 +184,7 @@ public static class TypeExtensions
         return Enumerable.Concat(type.GetMethods(), type.GetExtensionMethods());
     }
 
-    public static MethodInfo? MakeGenericFromSignature(this MethodInfo? methodInfo, params Type?[]? parameterTypes)
+    public static MethodInfo MakeGenericFromSignature(this MethodInfo methodInfo, params Type[] parameterTypes)
     {
         if(methodInfo != null && methodInfo.IsGenericMethod && parameterTypes != null)
         {
@@ -197,7 +197,7 @@ public static class TypeExtensions
         return methodInfo;
     }
 
-    public static object? InvokeAny(this MethodInfo method, object? instance, params object?[]? values)
+    public static object InvokeAny(this MethodInfo method, object instance, params object[] values)
     {
         if(!method.IsStatic)
         {

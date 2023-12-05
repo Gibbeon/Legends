@@ -22,9 +22,9 @@ public class Asset
 }
 public class Asset<TType> : Asset
 {
-    TType? _local;
-    public TType? Get() => _local;
-    public void Set(TType? local) => _local = local;
+    TType _local;
+    public TType Get() => _local;
+    public void Set(TType local) => _local = local;
 
     public void Load(ContentManager manager)
     {
@@ -40,5 +40,5 @@ public class Asset<TType> : Asset
     {
     }
 
-    public static implicit operator TType?(Asset<TType> Asset) => Asset.Get();
+    public static implicit operator TType (Asset<TType> Asset) => Asset.Get();
 }

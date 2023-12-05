@@ -32,9 +32,10 @@ public class Camera : SceneObject, IViewState
 
     }
 
-    public Camera(IServiceProvider? services, Scene? scene) : base(services, scene)
+    public Camera(IServiceProvider services, Scene scene) : base(services, scene)
     {
         _zoomBounds = new BoundedValue<float>(float.Epsilon, float.MaxValue);
+        Detach();
     }
 
     public override void Initialize()

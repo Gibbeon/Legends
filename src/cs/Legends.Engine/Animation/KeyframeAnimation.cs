@@ -17,12 +17,12 @@ public class KeyframeAnimation<TType> : IAnimation
 
     public class KeyframeEventArgs: EventArgs
     {
-        public Keyframe<TType>? OldValue;
-        public Keyframe<TType>? NewValue;
+        public Keyframe<TType> OldValue;
+        public Keyframe<TType> NewValue;
     }
 
-    public event EventHandler<AnimationMessageCallbackEventArgs>? MessageCallback;
-    public event EventHandler<KeyframeEventArgs>? FrameChanged;
+    public event EventHandler<AnimationMessageCallbackEventArgs> MessageCallback;
+    public event EventHandler<KeyframeEventArgs> FrameChanged;
     public string Name { get; private set; }
     protected List<Keyframe<TType>> _frames;
     protected int _currentIndex;
@@ -34,7 +34,7 @@ public class KeyframeAnimation<TType> : IAnimation
     public int Direction { get; private set; }
     public LoopType LoopType { get; set; }
     public bool IsComplete  => CurrentIndex >= _frames.Count;
-    public Keyframe<TType>? Current => IsComplete ? null : Frames[CurrentIndex];
+    public Keyframe<TType> Current => IsComplete ? null : Frames[CurrentIndex];
 
     public KeyframeAnimation(KeyframeAnimationData data) : this (data.Name, LoopType.Reverse, data.Frames)
     {

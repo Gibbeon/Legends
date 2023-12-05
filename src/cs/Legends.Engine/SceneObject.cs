@@ -17,10 +17,10 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     private IList<SceneObject> _children;
 
     [JsonIgnore]
-    public IServiceProvider? Services { get; protected set; }
+    public IServiceProvider Services { get; protected set; }
     
     [JsonIgnore]
-    public SceneObject? Parent { get; protected set; }
+    public SceneObject Parent { get; protected set; }
     
     public string Name { get; set; }
     
@@ -49,7 +49,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
     }
 
-    public SceneObject(IServiceProvider? systems, SceneObject? parent = default) : base()
+    public SceneObject(IServiceProvider systems, SceneObject parent = default) : base()
     {
         Services    = systems;
         Name        = string.Format("{0}#{1}", typeof(SceneObject).Name, _globalObjId++);
@@ -166,7 +166,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         DetachBehavior(_behaviors.OfType<TType>().SingleOrDefault());
     }
 
-    public void DetachBehavior<TType>(TType? behavior)
+    public void DetachBehavior<TType>(TType behavior)
         where TType : IBehavior
     {
         if(behavior != null)
@@ -206,7 +206,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         }
     }
 
-    public Scene? GetParentScene() 
+    public Scene GetParentScene() 
     {
         return (Parent is Scene) ? (Scene)Parent : Parent?.GetParentScene();
     } 

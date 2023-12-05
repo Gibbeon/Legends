@@ -15,13 +15,13 @@ public class CameraControlsBehavior : BaseBehavior
     {
 
     }
-    public CameraControlsBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
+    public CameraControlsBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         ScrollSpeed = 1;
 
         if(services != null)
         {
-            _commands = new InputCommandSet(Services);
+            _commands = new InputCommandSet(Services, services.Get<IInputHandlerService>().Current);
 
             _commands.Add("MOVE_LEFT",    EventType.KeyPressed,    Keys.Left);             
             _commands.Add("MOVE_RIGHT",   EventType.KeyPressed,    Keys.Right);      

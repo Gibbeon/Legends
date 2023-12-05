@@ -8,7 +8,7 @@ namespace Legends.Engine;
 public interface IBehavior : IUpdate, IDisposable
 {    
     [JsonIgnore]
-    SceneObject? Parent { get; }
+    SceneObject Parent { get; }
     void Draw(GameTime gameTime);
 
     void AttachTo(SceneObject parent);

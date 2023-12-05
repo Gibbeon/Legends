@@ -9,17 +9,17 @@ namespace Legends.Engine.Graphics2D;
 
 public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 {
-    public TextureRegion2D? TextureRegion { get; set; }
+    public TextureRegion2D TextureRegion { get; set; }
 
     public Color Color { get; set; }
 
-    public RenderState? RenderState { get; set; }
+    public RenderState RenderState { get; set; }
 
     [DefaultValue(SpriteEffects.None)]
     public SpriteEffects Effect  { get; set; }
 
     [JsonIgnore]
-    public Texture2D? SourceData => TextureRegion?.Texture;
+    public Texture2D SourceData => TextureRegion?.Texture;
 
     [JsonIgnore]
     public bool IsVisible   => Parent != null && Parent.IsVisible;
@@ -37,7 +37,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     public Vector2 Origin   => Parent != null ? Parent.Origin : Vector2.Zero;
     
     [JsonIgnore]
-    public IViewState? ViewState => Parent?.GetParentScene()?.Camera;
+    public IViewState ViewState => Parent?.GetParentScene()?.Camera;
 
     [JsonIgnore]
     public Rectangle SourceBounds{ get => TextureRegion == null ? Rectangle.Empty : TextureRegion.Bounds; set => SetTextureRegionBounnds(value); }
@@ -49,7 +49,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     {
 
     }
-    public SpriteRenderBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
+    public SpriteRenderBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         Color = Color.White;
     }

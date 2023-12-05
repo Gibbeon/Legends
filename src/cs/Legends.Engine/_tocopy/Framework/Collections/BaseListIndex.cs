@@ -8,7 +8,7 @@ namespace LitEngine.Framework.Collections
     {
         protected List<TType> _list;
         protected List<int> _index;
-        protected IComparer<int>? _comparer;
+        protected IComparer<int> _comparer;
         public TType this[int index]
         {
             get => GetValue(index);
@@ -167,7 +167,7 @@ namespace LitEngine.Framework.Collections
                 arrayIndex++;
             }
         }
-        protected void OnOrderHasChanged(object? sender = null, EventArgs? args = null)
+        protected void OnOrderHasChanged(object sender = null, EventArgs args = null)
         {
             OrderHasChanged = true;
         }

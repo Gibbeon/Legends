@@ -5,7 +5,7 @@ namespace Legends.Engine.Animation;
 
 public class AnimationChannel
 {
-    public IAnimation? Current { get; set; }
+    public IAnimation Current { get; set; }
     public float Speed { get; set; }
     public bool Enabled { get; set; }
     public AnimationChannel Loop(LoopType type = LoopType.Loop) 
@@ -23,7 +23,7 @@ public class AnimationChannel
         return this; 
     }
 
-    public AnimationChannel Play(IAnimation? animation, EventHandler<AnimationMessageCallbackEventArgs>? callback = default)
+    public AnimationChannel Play(IAnimation animation, EventHandler<AnimationMessageCallbackEventArgs> callback = default)
     {
         if(Current == animation || Current?.Name == animation?.Name) return this;
         

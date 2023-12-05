@@ -32,14 +32,14 @@ public static class ContentWriterLogExtensions
         }
     }
 
-    public static LogContext LogEntry<TType>(this ContentWriter output, string message, params object?[]? args)
+    public static LogContext LogEntry<TType>(this ContentWriter output, string message, params object[] args)
     {
         output.Log<TType>(message, args);
 
         return new LogContext();
     }
 
-    public static void Log<TType>(this ContentWriter output, string message, params object?[]? args)
+    public static void Log<TType>(this ContentWriter output, string message, params object[] args)
     {
         if(OutputToConsole)
         {

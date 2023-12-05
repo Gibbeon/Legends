@@ -43,7 +43,7 @@ public static class StdStuff
 [ContentImporter(".json", DisplayName = "Legends Scene Importer", DefaultProcessor = "SceneProcessor")]
 public class SceneImporter : ContentImporter<Scene>
 {
-    public IEnumerable<Type> GetTypesForInstance(object? instance, IList<Type>? result = default)
+    public IEnumerable<Type> GetTypesForInstance(object instance, IList<Type> result = default)
     {
         result ??= new List<Type>();
 
@@ -124,14 +124,14 @@ public class SceneImporter : ContentImporter<Scene>
         return result;
     }
 
-    public object? ParseDynamiclyCompiledType(IDynamicallyCompiledType script)
+    public object ParseDynamiclyCompiledType(IDynamicallyCompiledType script)
     {
         var type = DynamicClassLoader.CompileCodeAndExtractClass(script.Source, File.ReadAllText(script.Source), script.TypeName);
 
         return JsonConvert.DeserializeObject(JsonConvert.SerializeObject(script.Properties), type);
     }
 
-    public void UpdateDynamicallyTypedObjects(object? instance)
+    public void UpdateDynamicallyTypedObjects(object instance)
     {
         if(instance == null) return;
 

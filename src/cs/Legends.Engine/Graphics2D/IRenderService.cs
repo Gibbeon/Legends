@@ -7,7 +7,7 @@ public interface IRenderService
 {
     GraphicsDevice  GraphicsDevice { get; }
     RenderState     DefaultRenderState { get; }
-    Texture2D?      DefaultTexture { get; }
+    Texture2D      DefaultTexture { get; }
     void Initialize();
     void DrawBatched(IDrawable drawable);
 }

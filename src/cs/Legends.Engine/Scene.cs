@@ -1,79 +1,65 @@
 using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 
 namespace Legends.Engine;
 
 public class Scene : SceneObject
 {
-    public Camera? Camera { get; set; }
+    private Camera _camera;
+    public Camera Camera 
+    {
+        get => _camera;
+        set => SetCamera(value);
+    } 
 
     protected Scene() : this(null)
     {
 
     }
 
-    public Scene(IServiceProvider? services) : this (services, null)
+    public Scene(IServiceProvider services) : this (services, null)
     {
 
     }
 
-    public Scene(IServiceProvider? services, SceneObject? parent) : base(services, parent)
+    public Scene(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-        if(services != null)
-        {
-            SetCamera(new Camera(services, this));
-        }
+
     }
 
     public override void Initialize()
     {
         base.Initialize();
-
-        if(Camera == null)
-        {
-            var camera = (Camera?)Children.SingleOrDefault(n => n.GetType().IsAssignableTo(typeof(Camera)));
-
-            if(camera != null)
-            {
-                camera?.Initialize();
-                camera?.Detach();
-
-                SetCamera(camera);
-            }
-            else
-            {
-                SetCamera(new Camera(Services, this));
-            }
-        }
-        else
-        {
-            Camera.Setup(Services, this);
-            Camera.Initialize();
-        }
     }
 
     public virtual void SetCamera(Camera camera)
     {
-        Camera?.Dispose();
-        Camera = camera;
+        if(Camera != camera)
+        {
+            if(Camera != null)
+            {
+                Camera.Dispose();                    
+            }
+            _camera = camera;
+        }
     }
 
     public override void Draw(GameTime gameTime)
     {        
         base.Draw(gameTime);
-        Camera?.Draw(gameTime);
+        Camera.Draw(gameTime);
     }
 
     public override void Update(GameTime gameTime)
     {
         base.Update(gameTime);
-        Camera?.Update(gameTime);
+        Camera.Update(gameTime);
     }
 
     public override void Dispose()
     {
-        Camera?.Dispose();
         base.Dispose();
     }
 }

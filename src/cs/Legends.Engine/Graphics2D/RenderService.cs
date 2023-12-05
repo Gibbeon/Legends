@@ -10,7 +10,7 @@ public class RenderService : IRenderService
 {
     public IServiceProvider Services { get; private set; }
     public RenderState DefaultRenderState { get; set; }
-    public Texture2D? DefaultTexture { get; private set; }
+    public Texture2D DefaultTexture { get; private set; }
     public GraphicsDevice GraphicsDevice => Services.GetGraphicsDevice();
     private readonly List<ILayer> _layers;
 
@@ -78,7 +78,7 @@ public class Layer : ILayer
     protected SpriteBatch _spriteBatch;
     public IList<IDrawable> Drawables => _drawables;
     public IOrderedEnumerable<IDrawable> OrderedVisibleDrawables => _drawables.Where(n => n.IsVisible || true).OrderBy(n => DrawableComparer ?? Comparer<IDrawable>.Default);
-    public IComparer<IDrawable>? DrawableComparer { get; set; }
+    public IComparer<IDrawable> DrawableComparer { get; set; }
     public Color? ClearColor { get; set; }
     public bool IsVisible { get; set; }
 
@@ -226,7 +226,7 @@ public class Layer : ILayer
 
 public class YPositionDrawableComparer : IComparer<IBatchDrawable>
 {
-    public int Compare(IBatchDrawable? x, IBatchDrawable? y)
+    public int Compare(IBatchDrawable x, IBatchDrawable y)
     {
         if (x == null || y == null)
         {

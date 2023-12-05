@@ -25,7 +25,7 @@ public static class ContentReaderExtensions
 
     public static bool InitFile;
 
-    public static void Log<TType>(this ContentReader input, string message, params object?[]? args)
+    public static void Log<TType>(this ContentReader input, string message, params object[] args)
     {
         if(OutputToConsole)
         {
@@ -39,7 +39,7 @@ public static class ContentReaderExtensions
         }
     }
 
-    private static MethodInfo _readRawObject;
+    //private static MethodInfo _readRawObject;
     private static MethodInfo[] _contentReaderReadMethods;
 
     static Size2 ReadSize2(this ContentReader input)
@@ -52,7 +52,7 @@ public static class ContentReaderExtensions
         return new Asset<TType>(input.ReadString());
     }
 
-    static IEnumerable<MethodInfo> GetExtensionMethods(Type extendedType, Assembly? assembly = default)
+    static IEnumerable<MethodInfo> GetExtensionMethods(Type extendedType, Assembly assembly = default)
     {
         assembly = assembly ?? typeof(ContentReaderExtensions).Assembly;
         var isGenericTypeDefinition = extendedType.IsGenericType && extendedType.IsTypeDefinition;
@@ -67,7 +67,7 @@ public static class ContentReaderExtensions
         return query;
     }
 
-    public static object? Create(Type type, params object?[]? objects)
+    public static object Create(Type type, params object[] objects)
     {
         foreach(var ctor in type.GetConstructors().Where(n => n.GetParameters().Length <= objects?.Length).OrderByDescending(n => n.GetParameters().Length))
         {
@@ -83,16 +83,16 @@ public static class ContentReaderExtensions
 
             if(typeParams.All(n => n != null))
             {
-                return (object?)Activator.CreateInstance(type, typeParams);
+                return (object)Activator.CreateInstance(type, typeParams);
             }
         }
 
         return null;
     }
 
-    public static TType? Create<TType>(params object?[]? objects)
+    public static TType Create<TType>(params object[] objects)
     {
-        return (TType?)Create(typeof(TType), objects);
+        return (TType)Create(typeof(TType), objects);
     }
 
     public static void ReadFields(this ContentReader input, Type typeOf, object value)
@@ -145,7 +145,7 @@ public static class ContentReaderExtensions
 
                 if(readMethod.IsGenericMethod && readMethod.IsStatic)
                 {
-                    var genericValue = readMethod.MakeGenericMethod(property.PropertyType.GenericTypeArguments).Invoke(null, new object?[] { input });
+                    var genericValue = readMethod.MakeGenericMethod(property.PropertyType.GenericTypeArguments).Invoke(null, new object[] { input });
                     property.SetValue(value, genericValue);
                 }
                 else if(!readMethod.IsStatic)
@@ -155,7 +155,7 @@ public static class ContentReaderExtensions
                 } 
                 else
                 {
-                    var staticReadValue = readMethod.Invoke(null, new object?[] { input });
+                    var staticReadValue = readMethod.Invoke(null, new object[] { input });
                     property.SetValue(value, staticReadValue);
                 }
 
@@ -232,11 +232,11 @@ public static class ContentReaderExtensions
 
                             if(GenericReaderStack.ParentObjects.Count > 0)
                             {
-                                paramConstructors = new object?[] { input.ContentManager.ServiceProvider, GenericReaderStack.ParentObjects.Peek() };
+                                paramConstructors = new object[] { input.ContentManager.ServiceProvider, GenericReaderStack.ParentObjects.Peek() };
                             }
                             else
                             {
-                                paramConstructors = new object?[] { input.ContentManager.ServiceProvider };
+                                paramConstructors = new object[] { input.ContentManager.ServiceProvider };
                             }
 
                             itemValue = ContentReaderExtensions.Create(dynamicType, paramConstructors);
@@ -269,7 +269,7 @@ public static class ContentReaderExtensions
                     else
                     {
                         var addMethod = typeof(ICollection<>).MakeGenericType(itemType).GetMethod("Add");
-                        addMethod.Invoke(list, new object?[] { itemValue });
+                        addMethod.Invoke(list, new object[] { itemValue });
                     }
                     
                     input.Log<TType>("..Ordinal [{0}]: {1}", i, itemValue?.ToString());
@@ -296,11 +296,11 @@ public static class ContentReaderExtensions
 
                     if(GenericReaderStack.ParentObjects.Count > 0)
                     {
-                        paramConstructors = new object?[] { input.ContentManager.ServiceProvider, GenericReaderStack.ParentObjects.Peek() };
+                        paramConstructors = new object[] { input.ContentManager.ServiceProvider, GenericReaderStack.ParentObjects.Peek() };
                     }
                     else
                     {
-                        paramConstructors = new object?[] { input.ContentManager.ServiceProvider };
+                        paramConstructors = new object[] { input.ContentManager.ServiceProvider };
                     }
 
                     var result = ContentReaderExtensions.Create(dynamicType, paramConstructors);

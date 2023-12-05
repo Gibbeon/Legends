@@ -29,7 +29,7 @@ namespace LitEngine.Framework.Graphics
             get; protected set;
         }
 
-        public Camera? LocalCamera
+        public Camera LocalCamera
         {
             get; set;
         }

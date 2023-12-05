@@ -9,15 +9,15 @@ public class AnimationBehavior : BaseBehavior
 {
     public IList<IAnimation> Animations { get; private set; }
 
-    public IAnimation? Current { get; set; }
+    public IAnimation Current { get; set; }
 
     public float Speed { get; set; }
 
     public bool Enabled { get; set; }
 
-    public EventHandler<AnimationMessageCallbackEventArgs>? MessageCallback;
+    public EventHandler<AnimationMessageCallbackEventArgs> MessageCallback;
     
-    public AnimationBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
+    public AnimationBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         Animations = new List<IAnimation>();
         Speed = 1;

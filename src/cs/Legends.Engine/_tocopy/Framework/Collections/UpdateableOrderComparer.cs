@@ -7,7 +7,7 @@ namespace LitEngine.Framework.Collections
     {
         public static UpdateableOrderComparer Default = new UpdateableOrderComparer();
 
-        public int Compare(IUpdateable? a, IUpdateable? b)
+        public int Compare(IUpdateable a, IUpdateable b)
         {
             if(a == null || b == null) {
                 return -1;

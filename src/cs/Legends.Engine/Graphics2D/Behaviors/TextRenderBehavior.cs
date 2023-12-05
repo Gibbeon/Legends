@@ -28,9 +28,9 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public string Text {get; set; }
 
-    public Asset<BitmapFont>? Font { get; set; }
+    public Asset<BitmapFont> Font { get; set; }
 
-    public RenderState? RenderState { get; set; }
+    public RenderState RenderState { get; set; }
     
 [JsonProperty("halign")]
     public HorizontalAlignment HorizontalAlignment { get; set; }
@@ -54,20 +54,20 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
     public Vector2 Origin   => Parent != null ? Parent.Origin : Vector2.Zero;
     
     [JsonIgnore]
-    public IViewState? ViewState => Parent?.GetParentScene()?.Camera;
+    public IViewState ViewState => Parent?.GetParentScene()?.Camera;
     
     [JsonIgnore]
     public Rectangle SourceBounds => new(Position.ToPoint(), SourceData == null ? Point.Zero : (Point)SourceData.MeasureString(Text));
 
     [JsonIgnore]
-    public BitmapFont? SourceData => Font;
+    public BitmapFont SourceData => Font;
 
     public TextRenderBehavior() : this(null, null)
     {
 
     }
 
-    public TextRenderBehavior(IServiceProvider? services, SceneObject? parent) : base(services, parent)
+    public TextRenderBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         Color   = Color.White;
         Text    = string.Empty;

@@ -14,7 +14,7 @@ public class ViewState : IViewState, IComparable<ViewState>
     public Matrix World { get; set; }
     public Matrix View { get; set; }
     public Matrix Projection { get; set; }
-    public int CompareTo(ViewState? other)
+    public int CompareTo(ViewState other)
     {
         if(other != null)
         {
@@ -27,7 +27,7 @@ public class ViewState : IViewState, IComparable<ViewState>
         return -1;   
     }
 
-    public void CopyFrom(IViewState? state)
+    public void CopyFrom(IViewState state)
     {
         if(state != null)
         {

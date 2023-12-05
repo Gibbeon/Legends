@@ -5,13 +5,13 @@ namespace Legends.Engine;
 public class RenderState : IComparable<RenderState>
 {
     public SpriteSortMode SpriteSortMode { get; set; }
-    public BlendState? BlendState { get; set; }
-    public SamplerState? SamplerState { get; set; }
-    public DepthStencilState? DepthStencilState { get; set; }
-    public RasterizerState? RasterizerState { get; set; }
-    public Effect? Effect { get; set; }
+    public BlendState BlendState { get; set; }
+    public SamplerState SamplerState { get; set; }
+    public DepthStencilState DepthStencilState { get; set; }
+    public RasterizerState RasterizerState { get; set; }
+    public Effect Effect { get; set; }
 
-    public int CompareTo(RenderState? other)
+    public int CompareTo(RenderState other)
     {
         if(other != null)
         {

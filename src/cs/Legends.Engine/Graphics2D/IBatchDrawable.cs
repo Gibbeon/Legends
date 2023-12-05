@@ -13,11 +13,11 @@ public interface IBatchDrawable : IDrawable
     Color Color { get; }
     Vector2 Origin { get; }
     SpriteEffects Effect { get; }
-    RenderState? RenderState { get; }
-    IViewState? ViewState { get; }
+    RenderState RenderState { get; }
+    IViewState ViewState { get; }
 }
 
 public interface IBatchDrawable<TType> : IBatchDrawable
 {
-    TType? SourceData { get; }
+    TType SourceData { get; }
 }

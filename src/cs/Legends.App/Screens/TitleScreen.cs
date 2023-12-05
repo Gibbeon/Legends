@@ -131,7 +131,7 @@ namespace Legends.App.Screens
             _scene.Initialize();
 
 
-            _commands = new InputCommandSet(_services);
+            _commands = new InputCommandSet(_services, _input);
             _commands.Add("EXIT", EventType.KeyTyped, Keys.Escape);
             _commands.Add("EXIT", EventType.MouseClicked, MouseButton.Right);
 

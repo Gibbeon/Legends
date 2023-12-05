@@ -8,7 +8,7 @@ namespace LitEngine.Framework.Collections
     {
         public static DrawableOrderComparer Default = new DrawableOrderComparer();
 
-        public int Compare(IDrawable? a, IDrawable? b)
+        public int Compare(IDrawable a, IDrawable b)
         {
             if(a == null || b == null) {
                 return -1;

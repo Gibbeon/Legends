@@ -31,7 +31,7 @@ public struct IndexedListEnumerator<TType> : IEnumerator<TType>
 
     }
 
-    object? System.Collections.IEnumerator.Current
+    object System.Collections.IEnumerator.Current
     {
         get
         {

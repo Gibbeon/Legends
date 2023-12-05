@@ -12,9 +12,9 @@ public class EventAction
     public EventArgs Args { get; private set; }
     public bool Handled { get; set; }
 
-    public MouseEventArgs? MouseEventArgs            { get => Args as MouseEventArgs; }
-    public TouchEventArgs? TouchEventArgs            { get => Args as TouchEventArgs; }
-    public KeyboardEventArgs? KeyboardEventArgs      { get => Args as KeyboardEventArgs; }
+    public MouseEventArgs MouseEventArgs            { get => Args as MouseEventArgs; }
+    public TouchEventArgs TouchEventArgs            { get => Args as TouchEventArgs; }
+    public KeyboardEventArgs KeyboardEventArgs      { get => Args as KeyboardEventArgs; }
 
     public EventAction(EventListener listener, EventType type, EventArgs args)
     {
@@ -23,38 +23,38 @@ public class EventAction
         Args = args;
     }
 
-    public Point2? GetPosition()
+    public Point2 GetPosition()
     {
         if(Args is MouseEventArgs)
         {
-            return (Args as MouseEventArgs)?.Position;
+            return (Args as MouseEventArgs).Position;
         }    
 
         if(Args is TouchEventArgs)
         {
-            return (Args as TouchEventArgs)?.RawTouchLocation.Position;
+            return (Args as TouchEventArgs).RawTouchLocation.Position;
         }    
 
         return Point2.NaN;
     }
 
-    public float? GetScrollValue()
+    public float GetScrollValue()
     {
-        return (Args as MouseEventArgs)?.ScrollWheelValue / 1000.0f;
+        return (Args as MouseEventArgs).ScrollWheelValue / 1000.0f;
     }
 
-    public float? GetScrollDelta()
+    public float GetScrollDelta()
     {
-        return (Args as MouseEventArgs)?.ScrollWheelDelta / 1000.0f;
+        return (Args as MouseEventArgs).ScrollWheelDelta / 1000.0f;
     }
 
-    public char? GetCharacter()
+    public char GetCharacter()
     {
-        if(Args is KeyboardEventArgs)
+        if(Args is KeyboardEventArgs keyArgs)
         {
-            return (Args as KeyboardEventArgs)?.Character;
+            return keyArgs.Character == null ? (char)0 : (char)keyArgs.Character;
         }
 
-        return null; 
+        return (char)0; 
     }
 }

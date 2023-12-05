@@ -4,6 +4,6 @@ namespace Legends.Engine;
 
 public interface IBitmapFontBatchDrawable : IBatchDrawable<BitmapFont>
 {
-    public string? Text { get; }
+    public string Text { get; }
 
 }

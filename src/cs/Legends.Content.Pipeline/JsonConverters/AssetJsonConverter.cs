@@ -14,12 +14,12 @@ public class AssetJsonConverter : JsonConverter
         return objectType.IsAssignableTo(typeof(Asset));
     }
 
-    public override object? ReadJson(JsonReader reader, Type objectType, object? value, JsonSerializer serializer)
+    public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
     {
         return Activator.CreateInstance(objectType, reader.Value);
     }
 
-    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
         if(value is Asset assetValue)
         {

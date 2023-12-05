@@ -9,7 +9,7 @@ public class InputHandlerService : IUpdate, IInputHandlerService
 {
     public IServiceProvider Services { get; private set; }
 
-    public InputManager? Current => _managers.Count == 0 ? null : _managers[_managers.Count - 1];
+    public InputManager Current => _managers.Count == 0 ? null : _managers[_managers.Count - 1];
 
     private IList<InputManager> _managers;
 

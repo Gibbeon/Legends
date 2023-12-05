@@ -10,7 +10,7 @@ namespace Legends.Engine.Animation;
 public class AnimationBehavior : BaseBehavior
 {
     private List<AnimationChannel> _channels;
-    public EventHandler<AnimationMessageCallbackEventArgs>? MessageCallback;
+    public EventHandler<AnimationMessageCallbackEventArgs> MessageCallback;
     public IList<IAnimation> Animations { get; private set; }
     public IReadOnlyList<AnimationChannel> AnimationChannels  => _channels.AsReadOnly();
 
