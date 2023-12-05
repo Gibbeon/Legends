@@ -1,13 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Legends.Engine;
-using System;
+using Legends.Engine.Input;
+using Microsoft.Xna.Framework.Input;
 
 namespace Legends.App;
 
 public class CameraControlsBehavior : BaseBehavior
 {
-    public float ScrollSpeed;
-    //private InputCommandSet _commands;
+    public float ScrollSpeed { get; set; }
+    private InputCommandSet _commands;
 
     public CameraControlsBehavior(): this(null, null)
     {
@@ -18,17 +20,7 @@ public class CameraControlsBehavior : BaseBehavior
         ScrollSpeed = 1;
     }
 
-    public override void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
-
-    public override void Update(GameTime gameTime)
-    {
-        throw new NotImplementedException();
-    }
-
-    /*public override void Initialize()
+    public override void Initialize()
     {
         base.Initialize();
 
@@ -69,5 +61,5 @@ public class CameraControlsBehavior : BaseBehavior
                 }
             }  
         }
-    }*/
+    }
 }

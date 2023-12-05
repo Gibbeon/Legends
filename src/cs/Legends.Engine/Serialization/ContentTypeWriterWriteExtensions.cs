@@ -83,6 +83,8 @@ public static class ContentTypeWriterExtensions
                 output.Write(dynamicValue.Source);
                 output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
                 output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source));
+                output.Write(DynamicClassLoader.GetSymbolBytes(dynamicValue.Source).Length);
+                output.Write(DynamicClassLoader.GetSymbolBytes(dynamicValue.Source));
                 output.Write(dynamicValue.TypeName);
                 object objValue = dynamicValue.Properties;
 

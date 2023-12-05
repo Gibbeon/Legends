@@ -95,6 +95,14 @@ public static class ContentReaderExtensions
         return (TType?)Create(typeof(TType), objects);
     }
 
+    public static void ReadFields(this ContentReader input, Type typeOf, object value)
+    {
+        typeof(ContentReaderExtensions).GetMethods()
+            .Single(n => n.IsGenericMethod && n.Name == "ReadFields")
+            .MakeGenericMethod(typeOf)
+            .Invoke(null, new [] { input, value });
+    }
+
     public static void ReadFields<TType>(this ContentReader input, TType value)
     {
         var fields = typeof(TType).GetFields(
@@ -206,9 +214,20 @@ public static class ContentReaderExtensions
                             input.Log<TType>("..Reading Dynamic of Type {0} from {1}", itemType.Name, codeIdentifier);
                             var len = input.ReadInt32(); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
                             var bytes = input.ReadBytes(len); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source));
-                            var type = input.ReadString();
+                            var slen = input.ReadInt32(); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
+                            var sbytes = input.ReadBytes(slen); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source));
+                            var typeName = input.ReadString();
+                            //var padding = input.Read7BitEncodedInt();
+                            //var padding2 = input.Read7BitEncodedInt();
+                            //var padding3 = input.Read7BitEncodedInt();
+                            //var padding4 = input.Read7BitEncodedInt();
 
-                            var dynamicType = DynamicClassLoader.LoadAndExtractClass(codeIdentifier, bytes, type);
+                            //Console.WriteLine("{0} {1} {2} {3}", padding, padding2, padding3, padding4);
+
+
+                            input.Log<TType>("..Dynamic Type Found {0}", typeName);
+
+                            var dynamicType = DynamicClassLoader.LoadAndExtractClass(codeIdentifier, bytes,sbytes, typeName);
                             object[] paramConstructors;
 
                             if(GenericReaderStack.ParentObjects.Count > 0)
@@ -226,7 +245,7 @@ public static class ContentReaderExtensions
                             
                             GenericReaderStack.ParentObjects.Push(itemValue);
 
-                            input.ReadFields(itemValue);
+                            input.ReadFields(itemValue.GetType(), itemValue);
 
                             GenericReaderStack.ParentObjects.Pop();
 
@@ -268,9 +287,11 @@ public static class ContentReaderExtensions
                     input.Log<TType>("..Reading Dynamic of Type {0} from {1}", property.PropertyType.Name, input.ReadString());
                     var len = input.ReadInt32(); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
                     var bytes = input.ReadBytes(len); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source));
+                    var slen = input.ReadInt32(); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
+                    var sbytes = input.ReadBytes(slen); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source));
                     var type = input.ReadString();
 
-                    var dynamicType = DynamicClassLoader.LoadAndExtractClass(codeIdentifier, bytes, type);
+                    var dynamicType = DynamicClassLoader.LoadAndExtractClass(codeIdentifier, bytes, sbytes, type);
                     object[] paramConstructors;
 
                     if(GenericReaderStack.ParentObjects.Count > 0)

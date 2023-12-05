@@ -16,6 +16,9 @@ using Microsoft.CodeAnalysis.Emit;
 using Legends.Engine.Runtime;
 using System.Xml.Serialization;
 using SharpDX.D3DCompiler;
+using System.Text;
+using Microsoft.CodeAnalysis.Text;
+using System.Runtime.Loader;
 
 namespace Legends.Engine.Serialization;
 
@@ -27,6 +30,7 @@ namespace Legends.Engine.Serialization;
         // loaded assemblies
         static Dictionary<string, Assembly> _loadedAssemblies = new Dictionary<string, Assembly>();
         static Dictionary<string, byte[]> _loadedAssembliesBytes = new Dictionary<string, byte[]>();
+        static Dictionary<string, byte[]> _loadedAssembliesSymbolBytes = new Dictionary<string, byte[]>();
 
         static bool _supportDynamicAssembly;
 
@@ -35,7 +39,12 @@ namespace Legends.Engine.Serialization;
             return _loadedAssembliesBytes[codeIdentifier];
         }
 
-        public static Type LoadAndExtractClass(string codeIdentifier, byte[] code, string className)
+        public static byte[] GetSymbolBytes(string codeIdentifier)
+        {
+            return _loadedAssembliesSymbolBytes[codeIdentifier];
+        }
+
+        public static Type LoadAndExtractClass(string codeIdentifier, byte[] code, byte[] symbols, string className)
         {
               Type ret = null;
 
@@ -43,7 +52,7 @@ namespace Legends.Engine.Serialization;
             if (!string.IsNullOrEmpty(className))
             {
                 // get assembly and try to extract class
-                var assembly = Load(codeIdentifier, code);
+                var assembly = Load(codeIdentifier, code, symbols);
                 ret = assembly.GetType(className);
 
                 // didn't find main class?
@@ -57,7 +66,7 @@ namespace Legends.Engine.Serialization;
             return ret;
         }
 
-        public static Assembly Load(string codeIdentifier, byte[] code)
+        public static Assembly Load(string codeIdentifier, byte[] code, byte[] symbols)
         {
             if(!_supportDynamicAssembly)
             {
@@ -86,7 +95,9 @@ namespace Legends.Engine.Serialization;
             }
 
             _loadedAssembliesBytes[codeIdentifier] = code;
-            ret = Assembly.Load(_loadedAssembliesBytes[codeIdentifier]);
+            _loadedAssembliesSymbolBytes[codeIdentifier] = symbols;
+            ret = AssemblyLoadContext.Default.LoadFromStream(new MemoryStream(code), symbols == null ? null : new MemoryStream(symbols));
+            //ret = Assembly.Load(_loadedAssembliesBytes[codeIdentifier]);
             _loadedAssemblies[codeIdentifier] = ret;
 
             return ret;
@@ -133,6 +144,11 @@ namespace Legends.Engine.Serialization;
 
             // get randomly generated assembly name
             string assemblyName = Path.GetRandomFileName();
+            string symbolsName = Path.ChangeExtension(assemblyName, "pdb");
+
+            var buffer = Encoding.UTF8.GetBytes(code);
+            var sourceText = SourceText.From(buffer, buffer.Length, Encoding.UTF8, canBeEmbedded: true);
+
             
             /*
             MetadataReference[] references = new MetadataReference[]
@@ -147,6 +163,26 @@ namespace Legends.Engine.Serialization;
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Collections.dll")),
             };
             */
+
+            Stack<Assembly> toLoad = new Stack<Assembly>();
+            toLoad.Push(Assembly.GetEntryAssembly());
+            toLoad.Push(Assembly.GetCallingAssembly());
+
+            while(toLoad.Count > 0)
+            {
+                foreach(var assemblyRef in toLoad.Pop().GetReferencedAssemblies())
+                {
+                    if(AppDomain.CurrentDomain.GetAssemblies().Any(n => assemblyRef.FullName == n.FullName)) continue;
+
+                    try
+                    {
+                        toLoad.Push(Assembly.Load(assemblyRef));
+                    } catch
+                    {
+                        
+                    }
+                }
+            }
 
             MetadataReference[] references = 
                 Enumerable.Concat(AppDomain.CurrentDomain.GetAssemblies()
@@ -165,39 +201,60 @@ namespace Legends.Engine.Serialization;
                 assemblyName,
                 syntaxTrees: new[] { syntaxTree },
                 references: references,
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                                .WithOptimizationLevel(OptimizationLevel.Debug)
+                                .WithPlatform(Platform.AnyCpu));
 
-            // compile code
-            using (var ms = new MemoryStream())
-            {
-                // first compile
-                EmitResult result = compilation.Emit(ms);
 
-                // if failed, get error message
-                if (!result.Success)
+            using (var assemblyStream = new MemoryStream())
+                using (var symbolsStream = new MemoryStream())
                 {
-                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
-                        diagnostic.IsWarningAsError ||
-                        diagnostic.Severity == DiagnosticSeverity.Error);
+                    var emitOptions = new EmitOptions(
+                            debugInformationFormat: DebugInformationFormat.PortablePdb,
+                            pdbFilePath: symbolsName);
 
-                    foreach (Diagnostic diagnostic in failures)
+                    var embeddedTexts = new List<EmbeddedText>
                     {
-                        throw new Exception(string.Format("Failed to compile code '{0}'! {1}: {2}", codeIdentifier, diagnostic.Id, diagnostic.GetMessage()));
+                        EmbeddedText.FromSource(codeIdentifier, sourceText),
+                    };
+
+                    EmitResult result = compilation.Emit(
+                        peStream: assemblyStream,
+                        pdbStream: symbolsStream,
+                        embeddedTexts: embeddedTexts,
+                        options: emitOptions);
+
+                    if (!result.Success)
+                    {
+                        var errors = new List<string>();
+
+                        IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                            diagnostic.IsWarningAsError ||
+                            diagnostic.Severity == DiagnosticSeverity.Error);
+
+                        foreach (Diagnostic diagnostic in failures)
+                            errors.Add($"{diagnostic.Id}: {diagnostic.GetMessage()}");
+
+                        throw new Exception(String.Join("\n", errors));
                     }
-                    throw new Exception("Unknown error while compiling code '" + codeIdentifier + "'!");
+
+                    //Console.WriteLine(code);
+
+                    assemblyStream.Seek(0, SeekOrigin.Begin);
+                    symbolsStream?.Seek(0, SeekOrigin.Begin);
+
+                    var assembly = AssemblyLoadContext.Default.LoadFromStream(assemblyStream, symbolsStream);
+
+                    assemblyStream.Seek(0, SeekOrigin.Begin);
+                    symbolsStream.Seek(0, SeekOrigin.Begin);
+
+                    _loadedAssembliesBytes[codeIdentifier]          = assemblyStream.ToArray();
+                    _loadedAssembliesSymbolBytes[codeIdentifier]    = symbolsStream.ToArray();
+                    //ret = Assembly.Load(_loadedAssembliesBytes[codeIdentifier]);
+                    _loadedAssemblies[codeIdentifier] = assembly;
+
+                    return assembly;
                 }
-                // on success, load into assembly
-                else
-                {
-                    // load assembly and add to cache
-                    ms.Seek(0, SeekOrigin.Begin);
-                    _loadedAssembliesBytes[codeIdentifier] = ms.ToArray();
-                    ret = Assembly.Load(_loadedAssembliesBytes[codeIdentifier]);
-                    _loadedAssemblies[codeIdentifier] = ret;
-                    // return assembly
-                    return ret;
-                }
-            }
         }
 
         /// <summary>
