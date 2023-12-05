@@ -15,6 +15,8 @@ using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
+using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Content.Pipline;
 
@@ -69,6 +71,7 @@ public class SceneImporter : ContentImporter<Scene>
         
         if(instance is IDynamicallyCompiledType script)
         {
+            Console.WriteLine("TEST {0} of {1}", script.Source, instance.GetType());
             var type = DynamicClassLoader.CompileCodeAndExtractClass(script.Source, File.ReadAllText(script.Source), script.TypeName);
             //foreach(var type in assembly.GetTypes())
             {
@@ -93,6 +96,7 @@ public class SceneImporter : ContentImporter<Scene>
         if(instance is IEnumerable enumerable)
         {
             Console.WriteLine("IEnumerable {0}", instance.GetType().Name);
+
             foreach(var item in enumerable)
             {
                 GetTypesForInstance(item, result);
@@ -120,6 +124,92 @@ public class SceneImporter : ContentImporter<Scene>
         return result;
     }
 
+    public object? ParseDynamiclyCompiledType(IDynamicallyCompiledType script)
+    {
+        var type = DynamicClassLoader.CompileCodeAndExtractClass(script.Source, File.ReadAllText(script.Source), script.TypeName);
+
+        return JsonConvert.DeserializeObject(JsonConvert.SerializeObject(script.Properties), type);
+    }
+
+    public void UpdateDynamicallyTypedObjects(object? instance)
+    {
+        if(instance == null) return;
+
+        if(instance.GetType() == typeof(string))    return;
+        if(instance.GetType().Namespace.StartsWith("Newtonsoft.Json"))      return;
+        if(instance.GetType() == typeof(object))    return;
+        if(instance.GetType() == typeof(Vector2))   return;
+        if(instance.GetType() == typeof(Vector3))   return;
+        if(instance.GetType() == typeof(Size2))     return;
+        if(instance.GetType() == typeof(Point2))    return;
+        if(instance.GetType() == typeof(RectangleF)) return;
+        if(instance.GetType() == typeof(Color))     return;
+        if(instance.GetType() == typeof(Matrix))    return;
+        if(instance.GetType() == typeof(Asset))     return;
+        if(instance.GetType().IsGenericType && instance.GetType().GetGenericTypeDefinition() == typeof(Asset<>)) return;
+        if(instance.GetType().IsPrimitive)          return;
+        if(instance.GetType().IsEnum)               return;
+        
+        Console.WriteLine("UpdateDynamicallyTypedObjects {0}", instance.GetType().Name);
+
+        if(instance.GetType().IsArray)            
+        {
+            Console.WriteLine("IsArray {0}", instance.GetType().Name);
+            Array value = (Array)instance;
+
+            for(var x = 0; x < value.Length; x++)
+            {
+                if(value.GetValue(x) is IDynamicallyCompiledType dynType)
+                {
+                    Console.Write("Replacing {0} type in array with ", value.GetValue(x).GetType().Name);
+                    value.SetValue(ParseDynamiclyCompiledType(dynType), x);
+                    Console.WriteLine("{0}.", value.GetValue(x).GetType().Name);
+                } 
+                else
+                {
+                    UpdateDynamicallyTypedObjects(value.GetValue(x));
+                }
+            }
+        } 
+        else if(instance is IList list)
+        { 
+            Console.WriteLine("\tlist.Count {0}", list.Count);
+            for(var x = 0; x < list.Count; x++)
+            {
+                if(list[x] is IDynamicallyCompiledType dynType)
+                {                    
+                    Console.Write("Replacing {0} type in list with ", list[x].GetType().Name);
+                    list[x] = ParseDynamiclyCompiledType(dynType);
+                    Console.WriteLine("{0}.", list[x].GetType().Name);
+                } 
+                else
+                {
+                    UpdateDynamicallyTypedObjects(list[x]);
+                }
+            }
+        } 
+        else if(instance is IEnumerable)
+        { 
+            throw new NotSupportedException(); 
+        }   
+        
+        foreach(var field in instance.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+        {
+            UpdateDynamicallyTypedObjects(field.GetValue(instance));
+        }
+
+        foreach(var property in instance.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+        {
+            if(property.GetIndexParameters().Length > 0) continue;
+            if(property.IsDefined(typeof(JsonIgnoreAttribute), true)) continue;
+
+            
+            Console.WriteLine("Eval {0}.{1}", instance.GetType().Name, property.Name);
+            UpdateDynamicallyTypedObjects(property.GetValue(instance));
+        }
+
+    }
+
     public override Scene Import(string filename, ContentImporterContext context)
     {
         context.Logger.LogMessage("Importing file: {0}", filename);
@@ -145,6 +235,8 @@ public class SceneImporter : ContentImporter<Scene>
                 DynamicClassLoader.Compile(item.Name, string.Format(StdStuff.Code, item.Name, item.Namespace));
             }
 
+            UpdateDynamicallyTypedObjects(result);
+
             context.Logger.LogMessage(JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)).Replace("{", "{{").Replace("}", "}}"));
 
             return result ?? new Scene(null);
@@ -163,5 +255,39 @@ class SceneProcessor : ContentProcessor<Scene, Scene>
     public override Scene Process(Scene input, ContentProcessorContext context)
     {
         return input;
+    }
+}
+
+
+public class DynamicType
+{
+    public string CodeIdentifier { get; set; }
+    public byte[] Data { get; set; }
+
+    [JsonIgnore]
+    public Assembly Assembly { get; set; }
+    public DynamicType() {}
+}
+
+[ContentTypeWriter]
+public class DynamicTypeWriter : ContentTypeWriter<DynamicType> {
+    protected override void Write(ContentWriter output, DynamicType value) { this.GenericWriteObject(output, value); }
+    public override string GetRuntimeType(TargetPlatform targetPlatform)   { return GetType().BaseType.GenericTypeArguments[0].AssemblyQualifiedName; }
+    public override string GetRuntimeReader(TargetPlatform targetPlatform) { return typeof(DynamicTypeReader).AssemblyQualifiedName; }
+}
+
+
+public class DynamicTypeReader : ContentTypeReader<DynamicType>
+{
+    protected override DynamicType Read(ContentReader input, DynamicType existingInstance)
+    {
+        DynamicType type = new DynamicType();
+
+        type.CodeIdentifier = input.ReadString();
+        type.Data = new byte[input.ReadInt32()];
+        type.Data = input.ReadBytes(type.Data.Length);
+        type.Assembly = DynamicClassLoader.Load(type.CodeIdentifier, type.Data);
+
+        return type;
     }
 }

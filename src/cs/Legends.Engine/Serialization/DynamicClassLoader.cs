@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis;
 using System.IO;
 using Microsoft.CodeAnalysis.Emit;
 using Legends.Engine.Runtime;
+using System.Xml.Serialization;
 
 namespace Legends.Engine.Serialization;
 
@@ -27,6 +28,42 @@ namespace Legends.Engine.Serialization;
         static Dictionary<string, byte[]> _loadedAssembliesBytes = new Dictionary<string, byte[]>();
 
         static bool _supportDynamicAssembly;
+
+        public static Assembly Load(string codeIdentifier, byte[] code)
+        {
+            if(!_supportDynamicAssembly)
+            {
+                Console.WriteLine("Setting up to _supportDynamicAssembly");
+
+                AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
+
+                    Console.WriteLine("AssemblyResolve: Trying to resolve: {0}", args.Name);
+                    return _loadedAssemblies.SingleOrDefault(n => n.Value.FullName == args.Name).Value;
+                };
+
+                AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += (sender, args) => {
+                    Console.WriteLine("ReflectionOnlyAssemblyResolve: Trying to resolve: {0}", args.Name);
+                    Assembly res;
+                    _loadedAssemblies.TryGetValue(args.Name, out res);
+                    return res;
+                };
+
+                _supportDynamicAssembly = true;
+            }
+
+            Assembly ret = null;
+            if (_loadedAssemblies.TryGetValue(codeIdentifier, out ret))
+            {
+                return ret;
+            }
+
+            _loadedAssembliesBytes[codeIdentifier] = code;
+            ret = Assembly.Load(_loadedAssembliesBytes[codeIdentifier]);
+            _loadedAssemblies[codeIdentifier] = ret;
+
+            return ret;
+
+        }
 
         /// <summary>
         /// Compile assembly, or return instance from cache.
