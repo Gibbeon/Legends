@@ -67,22 +67,6 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         IsVisible = true;
     }
 
-    public virtual void Initialize()
-    {
-        foreach(var child in _children)
-        {
-            child.AttachTo(this);
-            child.Initialize();
-        }
-
-        foreach(var behavior in _behaviors)
-        {
-            behavior.AttachTo(this);
-            behavior.Initialize();
-        }
-
-    }
-
     public TType GetBehavior<TType>()
         where TType: class
     {

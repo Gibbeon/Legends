@@ -38,10 +38,8 @@ public class Camera : SceneObject, IViewState
         Detach();
     }
 
-    public override void Initialize()
+    public void Initialize()
     {
-        base.Initialize();
-
         OriginNormalized = new Vector2(.5f, .5f);
         SetSize(0, 0);
     }

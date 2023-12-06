@@ -73,19 +73,6 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
         Text    = string.Empty;
     }
 
-    public override void Initialize()
-    {
-        var cm = Services?.GetContentManager();
-        if(cm != null)
-        {
-            Font?.Load(cm);
-        }
-        else
-        {
-            throw new Exception("Cannot load content without a Content Manager");
-        }
-    }
-
     public float GetVerticalOffset()
     {
         switch (VerticalAlignment)

@@ -29,10 +29,6 @@ public class Scene : SceneObject
 
     }
 
-    public override void Initialize()
-    {
-        base.Initialize();
-    }
 
     public virtual void SetCamera(Camera camera)
     {

@@ -19,6 +19,11 @@ public class Asset
     {
         Name = name;
     }
+
+    public virtual void Load(ContentManager manager)
+    {
+        throw new NotSupportedException();
+    }
 }
 public class Asset<TType> : Asset
 {
@@ -26,14 +31,13 @@ public class Asset<TType> : Asset
     public TType Get() => _local;
     public void Set(TType local) => _local = local;
 
-    public void Load(ContentManager manager)
+    public override void Load(ContentManager manager)
     {
         _local = manager.Load<TType>(Name);
     }
 
     public Asset() : this(String.Empty)
     {
-        
     }
 
     public Asset(string name) : base(name)

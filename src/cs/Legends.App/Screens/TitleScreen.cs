@@ -119,7 +119,6 @@ namespace Legends.App.Screens
             //_scene = cm2.Load("Scenes/test", new Scene(services));
 
             _scene = _services.GetContentManager().Load<Scene>("Scenes/test");
-            _scene.Initialize();
 
 
             _commands = new InputCommandSet(_services, _input);

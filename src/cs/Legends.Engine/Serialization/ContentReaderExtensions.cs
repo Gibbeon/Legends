@@ -49,7 +49,9 @@ public static class ContentReaderExtensions
 
     static Asset<TType> ReadAsset<TType>(this ContentReader input)
     {
-        return new Asset<TType>(input.ReadString());
+        var asset = new Asset<TType>(input.ReadString());
+        asset.Load(input.ContentManager);
+        return asset;
     }
 
     static IEnumerable<MethodInfo> GetExtensionMethods(Type extendedType, Assembly assembly = default)
@@ -217,13 +219,6 @@ public static class ContentReaderExtensions
                             var slen = input.ReadInt32(); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
                             var sbytes = input.ReadBytes(slen); //output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source));
                             var typeName = input.ReadString();
-                            //var padding = input.Read7BitEncodedInt();
-                            //var padding2 = input.Read7BitEncodedInt();
-                            //var padding3 = input.Read7BitEncodedInt();
-                            //var padding4 = input.Read7BitEncodedInt();
-
-                            //Console.WriteLine("{0} {1} {2} {3}", padding, padding2, padding3, padding4);
-
 
                             input.Log<TType>("..Dynamic Type Found {0}", typeName);
 
@@ -248,9 +243,6 @@ public static class ContentReaderExtensions
                             input.ReadFields(itemValue.GetType(), itemValue);
 
                             GenericReaderStack.ParentObjects.Pop();
-
-                            
-                            //object objValue = dynamicValue.Properties;
                         }
                         else
                         {

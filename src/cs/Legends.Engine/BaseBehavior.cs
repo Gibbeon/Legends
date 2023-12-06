@@ -17,8 +17,6 @@ public abstract class BaseBehavior : IBehavior
         Services = services;
         Parent = parent;
     }
-
-    public virtual void Initialize() {}
     
     public abstract void Update(GameTime gameTime);
     

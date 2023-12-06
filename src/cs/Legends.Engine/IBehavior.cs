@@ -10,7 +10,4 @@ public interface IBehavior : IUpdate, IDisposable
     [JsonIgnore]
     SceneObject Parent { get; }
     void Draw(GameTime gameTime);
-
-    void AttachTo(SceneObject parent);
-    void Initialize();
 }

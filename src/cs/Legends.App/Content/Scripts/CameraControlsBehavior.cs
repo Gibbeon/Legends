@@ -32,19 +32,6 @@ public class CameraControlsBehavior : BaseBehavior
         }
     }
 
-    public override void Initialize()
-    {
-        base.Initialize();
-
-        
-        //_commands.Add("LOOK_AT",      EventType.MouseClicked,  MouseButton.Right);  
-        //_commands.Add("ZOOM",         EventType.MouseScroll,   MouseButton.Middle); 
-        //_commands.Add("ROTATE",       EventType.MousePressed,  MouseButton.Left, Keys.LeftAlt);
-        //_commands.Add("ROTATE",       EventType.MousePressed,  MouseButton.Left, Keys.RightAlt);
-        //_commands.Add("ROTATE",       EventType.MousePressed,  MouseButton.Middle);
-        
- 
-    }
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
