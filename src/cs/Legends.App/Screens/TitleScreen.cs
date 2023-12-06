@@ -98,16 +98,7 @@ namespace Legends.App.Screens
 
     public TType Load<TType>(string assetName, TType result)
     {
-
-        //var loadMethod = typeof(ContentManager).GetMethods().Single(n => n.IsGenericMethod && n.Name == "Load");
-        //var loadContentMethod = loadMethod.MakeGenericMethod(innerClass);
-        //var source = loadContentMethod.Invoke(Services.Content, new object[] { assetName });
-
         return Services.GetContentManager().Load<TType>(assetName);
-
-       // SetValues(source.GetType(), source, typeof(TType), result);
-
-        return result;
     }
 }
 
