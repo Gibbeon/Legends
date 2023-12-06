@@ -3,7 +3,7 @@ using Legends.Engine;
 using System;
 using MonoGame.Extended;
 
-namespace Legends.App;
+namespace Legends.Scripts;
 
 public class RandomMovementBehavior : BaseBehavior
 {

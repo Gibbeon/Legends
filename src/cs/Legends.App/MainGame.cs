@@ -10,19 +10,20 @@ public class MainGame : Microsoft.Xna.Framework.Game
     private GraphicsDeviceManager   _graphicsDeviceManager;
     private RenderService           _spriteRenderService;
 
-    private GameManagementService   _gameManagementService;
+    private readonly GameManagementService   _gameManagementService;
 
     private InputHandlerService _inputService;
-    private ScreenManager _screenManager;
+    private readonly ScreenManager _screenManager;
     
     public MainGame()
     {
-        _gameManagementService  = new GameManagementService(this);
+        _screenManager = new ScreenManager();
+
+        _gameManagementService  = new GameManagementService(this, _screenManager);
         _graphicsDeviceManager  = new GraphicsDeviceManager(this);        
         _spriteRenderService    = new RenderService(Services);
         _inputService           = new InputHandlerService(Services);
 
-        _screenManager = new ScreenManager();
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
     }

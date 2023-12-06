@@ -4,7 +4,7 @@ using Legends.Engine;
 using Legends.Engine.Input;
 using Microsoft.Xna.Framework.Input;
 
-namespace Legends.App;
+namespace Legends.Scripts;
 
 public class CameraControlsBehavior : BaseBehavior
 {

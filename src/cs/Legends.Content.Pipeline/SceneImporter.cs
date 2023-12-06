@@ -11,19 +11,13 @@ using System.Collections;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using Legends.Engine.Graphics2D;
-using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Linq;
-using System.Reflection;
-using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Content.Pipline;
 
 public static class StdStuff
 {
     public static string Code = @"
-        using Microsoft.Xna.Framework.Content.Pipeline;
+                using Microsoft.Xna.Framework.Content.Pipeline;
         using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
         using Legends.Engine;
         using Legends.Engine.Graphics2D;
@@ -51,7 +45,7 @@ public class SceneImporter : ContentImporter<Scene>
 
         //typeof(ContentWriter).Write params + extensions instead of hardcoded list
 
-        Console.WriteLine("{0}", instance.GetType());
+        //Console.WriteLine("{0}", instance.GetType());
 
         if(result.Contains(instance.GetType()))     return result;
         if(instance.GetType() == typeof(string))    return result;
@@ -71,11 +65,11 @@ public class SceneImporter : ContentImporter<Scene>
         
         if(instance is IDynamicallyCompiledType script)
         {
-            Console.WriteLine("TEST {0} of {1}", script.Source, instance.GetType());
+            //Console.WriteLine("TEST {0} of {1}", script.Source, instance.GetType());
             var type = DynamicClassLoader.CompileCodeAndExtractClass(script.Source, File.ReadAllText(script.Source), script.TypeName);
             //foreach(var type in assembly.GetTypes())
             {
-                Console.WriteLine("Dynamicly compiled type {0} from {1}", type.Name, script.Source);
+                //Console.WriteLine("Dynamicly compiled type {0} from {1}", type.Name, script.Source);
                 GetTypesForInstance(Activator.CreateInstance(type), result);
             }
             return result;
@@ -84,7 +78,7 @@ public class SceneImporter : ContentImporter<Scene>
         
         if(instance.GetType().IsArray)            
         {
-            Console.WriteLine("IsArray {0}", instance.GetType().Name);
+            //Console.WriteLine("IsArray {0}", instance.GetType().Name);
             Array value = (Array)instance;
             foreach(var item in value)
             {
@@ -95,7 +89,7 @@ public class SceneImporter : ContentImporter<Scene>
 
         if(instance is IEnumerable enumerable)
         {
-            Console.WriteLine("IEnumerable {0}", instance.GetType().Name);
+            //Console.WriteLine("IEnumerable {0}", instance.GetType().Name);
 
             foreach(var item in enumerable)
             {
@@ -124,11 +118,11 @@ public class SceneImporter : ContentImporter<Scene>
         return result;
     }
 
-    public object ParseDynamiclyCompiledType(IDynamicallyCompiledType script)
+    public static object ParseDynamiclyCompiledType(IDynamicallyCompiledType script)
     {
         var type = DynamicClassLoader.CompileCodeAndExtractClass(script.Source, File.ReadAllText(script.Source), script.TypeName);
 
-        return JsonConvert.DeserializeObject(JsonConvert.SerializeObject(script.Properties), type);
+        return JsonConvert.DeserializeObject(JsonConvert.SerializeObject(script.Properties ?? new object()), type);
     }
 
     public void UpdateDynamicallyTypedObjects(object instance)
@@ -150,21 +144,21 @@ public class SceneImporter : ContentImporter<Scene>
         if(instance.GetType().IsPrimitive)          return;
         if(instance.GetType().IsEnum)               return;
         
-        Console.WriteLine("UpdateDynamicallyTypedObjects {0}", instance.GetType().Name);
+        //Console.WriteLine("UpdateDynamicallyTypedObjects {0}", instance.GetType().Name);
 
         if(instance.GetType().IsArray)            
         {
-            Console.WriteLine("IsArray {0}", instance.GetType().Name);
+            //Console.WriteLine("IsArray {0}", instance.GetType().Name);
             Array value = (Array)instance;
 
             for(var x = 0; x < value.Length; x++)
             {
                 if(value.GetValue(x) is IDynamicallyCompiledType dynType)
                 {
-                    Console.Write("Replacing Properties {0} type in array with ", value.GetValue(x).GetType().Name);
+                    //Console.Write("Replacing Properties {0} type in array with ", value.GetValue(x).GetType().Name);
                     dynType.Properties = ParseDynamiclyCompiledType(dynType);
                     //value.SetValue(ParseDynamiclyCompiledType(dynType), x);
-                    Console.WriteLine("{0}.", value.GetValue(x).GetType().Name);
+                    //Console.WriteLine("{0}.", value.GetValue(x).GetType().Name);
                 } 
                 else
                 {
@@ -174,15 +168,15 @@ public class SceneImporter : ContentImporter<Scene>
         } 
         else if(instance is IList list)
         { 
-            Console.WriteLine("\tlist.Count {0}", list.Count);
+            //Console.WriteLine("\tlist.Count {0}", list.Count);
             for(var x = 0; x < list.Count; x++)
             {
                 if(list[x] is IDynamicallyCompiledType dynType)
                 {                    
-                    Console.Write("Replacing Properties {0} type in list with ", list[x].GetType().Name);
+                    //Console.Write("Replacing Properties {0} type in list with ", list[x].GetType().Name);
                     dynType.Properties = ParseDynamiclyCompiledType(dynType);
                     //list[x] = ParseDynamiclyCompiledType(dynType);
-                    Console.WriteLine("{0}.", list[x].GetType().Name);
+                    //Console.WriteLine("{0}.", list[x].GetType().Name);
                 } 
                 else
                 {
@@ -205,15 +199,12 @@ public class SceneImporter : ContentImporter<Scene>
             if(property.GetIndexParameters().Length > 0) continue;
             if(property.IsDefined(typeof(JsonIgnoreAttribute), true)) continue;
 
-            
-            Console.WriteLine("Eval {0}.{1}", instance.GetType().Name, property.Name);
             UpdateDynamicallyTypedObjects(property.GetValue(instance));
         }
     }
 
     public override Scene Import(string filename, ContentImporterContext context)
     {
-        context.Logger.LogMessage("Importing file: {0}", filename);
         try
         {                        
             var settings = new JsonSerializerSettings
@@ -235,7 +226,7 @@ public class SceneImporter : ContentImporter<Scene>
 
             context.Logger.LogMessage(JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)).Replace("{", "{{").Replace("}", "}}"));
 
-            return result ?? new Scene(null);
+            return result;
         } 
         catch(Exception err)
         {

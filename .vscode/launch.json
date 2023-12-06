@@ -21,6 +21,15 @@
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
+        },
+        {
+            "name": "Build MGCB Content",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "args":[ "mgcb", "./content.mgcb", "/clean", "/launchdebugger"],
+            "cwd": "${workspaceFolder}/src/cs/Legends.App/Content/",
+            "preLaunchTask": "build"
         }
     ]
 }

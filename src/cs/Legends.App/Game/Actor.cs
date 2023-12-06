@@ -31,9 +31,9 @@ public class Actor : SceneObject
         _resolver.Add("idle", (actor) => { return actor.Facing == DirectionConstants.Up; }, "idle_up");
         _resolver.Add("idle", (actor) => { return actor.Facing == DirectionConstants.Down; }, "idle_down");
 
-        AttachBehavior(new SpriteRenderBehavior(services, this));
+        //AttachBehavior(new SpriteRenderBehavior(services, this));
         //AttachBehavior(new AnimationBehavior(services, this));
-        AttachBehavior(new RandomMovementBehavior(services, this));
+        //AttachBehavior(new RandomMovementBehavior(services, this));
 
         foreach(var data in Data.AnimationData)
         {

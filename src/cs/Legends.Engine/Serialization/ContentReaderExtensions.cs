@@ -19,7 +19,7 @@ public static class ContentReaderExtensions
 {
     private static int Indent;
 
-    private static int IndentSpaces = 2;
+    private static readonly int IndentSpaces = 2;
 
     public static bool OutputToConsole = true;
 
@@ -56,7 +56,7 @@ public static class ContentReaderExtensions
 
     static IEnumerable<MethodInfo> GetExtensionMethods(Type extendedType, Assembly assembly = default)
     {
-        assembly = assembly ?? typeof(ContentReaderExtensions).Assembly;
+        assembly ??= typeof(ContentReaderExtensions).Assembly;
         var isGenericTypeDefinition = extendedType.IsGenericType && extendedType.IsTypeDefinition;
         var query = from type in assembly.GetTypes()
             where type.IsSealed && !type.IsGenericType && !type.IsNested
@@ -117,7 +117,7 @@ public static class ContentReaderExtensions
             BindingFlags.Public |  
             BindingFlags.Instance);
 
-        _contentReaderReadMethods = _contentReaderReadMethods ?? Enumerable.Concat(input.GetType().GetMethods(
+        _contentReaderReadMethods ??= Enumerable.Concat(input.GetType().GetMethods(
                                                                         BindingFlags.Public |  
                                                                         BindingFlags.Instance)
                                                                         .Where(n => n.Name.StartsWith("Read")),
@@ -295,10 +295,7 @@ public static class ContentReaderExtensions
                         paramConstructors = new object[] { input.ContentManager.ServiceProvider };
                     }
 
-                    var result = ContentReaderExtensions.Create(dynamicType, paramConstructors);
-
-                    if(result == null) throw new NotSupportedException();
-                    
+                    var result = ContentReaderExtensions.Create(dynamicType, paramConstructors) ?? throw new NotSupportedException();
                     GenericReaderStack.ParentObjects.Push(result);
 
                     input.ReadFields(result);

@@ -1,21 +1,12 @@
-using Microsoft.Xna.Framework.Content;
 using System.Linq;
 using System;
-using System.Runtime.CompilerServices;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Newtonsoft.Json;
-using Legends.Engine.Graphics2D;
-using MonoGame.Extended;
 using Microsoft.CodeAnalysis.CSharp;
 
 using Microsoft.CodeAnalysis;
 using System.IO;
 using Microsoft.CodeAnalysis.Emit;
-using Legends.Engine.Runtime;
-using System.Xml.Serialization;
-using SharpDX.D3DCompiler;
 using System.Text;
 using Microsoft.CodeAnalysis.Text;
 using System.Runtime.Loader;
@@ -28,9 +19,9 @@ namespace Legends.Engine.Serialization;
     public static class DynamicClassLoader
     {
         // loaded assemblies
-        static Dictionary<string, Assembly> _loadedAssemblies = new Dictionary<string, Assembly>();
-        static Dictionary<string, byte[]> _loadedAssembliesBytes = new Dictionary<string, byte[]>();
-        static Dictionary<string, byte[]> _loadedAssembliesSymbolBytes = new Dictionary<string, byte[]>();
+        static readonly Dictionary<string, Assembly> _loadedAssemblies = new();
+        static readonly Dictionary<string, byte[]> _loadedAssembliesBytes = new ();
+        static readonly Dictionary<string, byte[]> _loadedAssembliesSymbolBytes = new ();
 
         static bool _supportDynamicAssembly;
 
@@ -70,7 +61,7 @@ namespace Legends.Engine.Serialization;
         {
             if(!_supportDynamicAssembly)
             {
-                Console.WriteLine("Setting up to _supportDynamicAssembly");
+               // Console.WriteLine("Setting up to _supportDynamicAssembly");
 
                 AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
 
@@ -80,21 +71,19 @@ namespace Legends.Engine.Serialization;
 
                 AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += (sender, args) => {
                     Console.WriteLine("ReflectionOnlyAssemblyResolve: Trying to resolve: {0}", args.Name);
-                    Assembly res;
-                    _loadedAssemblies.TryGetValue(args.Name, out res);
+                    _loadedAssemblies.TryGetValue(args.Name, out Assembly res);
                     return res;
                 };
 
                 _supportDynamicAssembly = true;
             }
 
-            Assembly ret = null;
-            if (_loadedAssemblies.TryGetValue(codeIdentifier, out ret))
-            {
-                return ret;
-            }
+        if (_loadedAssemblies.TryGetValue(codeIdentifier, out Assembly ret))
+        {
+            return ret;
+        }
 
-            _loadedAssembliesBytes[codeIdentifier] = code;
+        _loadedAssembliesBytes[codeIdentifier] = code;
             _loadedAssembliesSymbolBytes[codeIdentifier] = symbols;
             
             ret = AssemblyLoadContext.Default.LoadFromStream(new MemoryStream(code), symbols == null ? null : new MemoryStream(symbols));
@@ -112,7 +101,7 @@ namespace Legends.Engine.Serialization;
         {
             if(!_supportDynamicAssembly)
             {
-                Console.WriteLine("Setting up to _supportDynamicAssembly");
+                //Console.WriteLine("Setting up to _supportDynamicAssembly");
 
                 AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
 
@@ -122,23 +111,21 @@ namespace Legends.Engine.Serialization;
 
                 AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += (sender, args) => {
                     Console.WriteLine("ReflectionOnlyAssemblyResolve: Trying to resolve: {0}", args.Name);
-                    Assembly res;
-                    _loadedAssemblies.TryGetValue(args.Name, out res);
+                    _loadedAssemblies.TryGetValue(args.Name, out Assembly res);
                     return res;
                 };
 
                 _supportDynamicAssembly = true;
             }
 
-            // get from cache
-            Assembly ret = null;
-            if (_loadedAssemblies.TryGetValue(codeIdentifier, out ret))
-            {
-                return ret;
-            }
+        // get from cache
+        if (_loadedAssemblies.TryGetValue(codeIdentifier, out Assembly ret))
+        {
+            return ret;
+        }
 
-            // create syntax tree from code
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, 
+        // create syntax tree from code
+        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, 
                 null,
                 Path.GetFullPath(codeIdentifier),
                 Encoding.UTF8);
@@ -170,7 +157,7 @@ namespace Legends.Engine.Serialization;
 
             
 
-            Stack<Assembly> toLoad = new Stack<Assembly>();
+            Stack<Assembly> toLoad = new();
             toLoad.Push(Assembly.GetEntryAssembly());
             toLoad.Push(Assembly.GetCallingAssembly());
 
@@ -183,7 +170,8 @@ namespace Legends.Engine.Serialization;
                     try
                     {
                         toLoad.Push(Assembly.Load(assemblyRef));
-                    } catch
+                    } 
+                    catch
                     {
                         
                     }

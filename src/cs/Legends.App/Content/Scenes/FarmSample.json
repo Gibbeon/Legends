@@ -1,0 +1,59 @@
+{
+    "name": "TitleScreen",
+    "children": [
+        {
+            "name": "Map",
+            "behaviors": [
+                {
+                    "$type": "Legends.Engine.MapRenderBehavior, Legends.Engine",
+                    "tileSet": "ville_0_tiles",
+                    "map": "ville_0_map"
+                }
+            ]
+        },
+        {
+            "name": "CropTile",
+            "behaviors": [
+                {
+                    "$type": "Legends.Engine.SpriteRenderBehavior, Legends.Engine",
+                    "spritesheet": "crops_flower",
+                    "size": "16, 16"
+                }
+            ]
+        },
+        {
+            "name": "Player",
+            "behaviors": [
+                {
+                    "$type": "Legends.Engine.Graphics2D.SpriteRenderBehavior, Legends.Engine",
+                    "spritesheet": "npc1_sprites",
+                    "size": "24,36"
+                },
+                {
+                    "$type": "Legends.Engine.Graphics2D.AnimationBehavior, Legends.Engine",
+                    "animations": [
+                        {
+                            "$type": "Legends.Engine.Graphics2D.KeyframeAnimation, Legends.Engine",
+                            "name": "walk_left",
+                            "loop": "Reverse",
+                            "keyframes": [
+                                {   "duration": 0.2,
+                                    "value": "0, 0, 24, 36",
+                                    "messages": {
+                                        "start": ".1",
+                                        "message": "foot_down"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "$type":    "Legends.Engine.ScriptBehavior, Legends.Engine",
+                    "source":   "Scripts/PlayerControlBehavior.cs",
+                    "typeName": "Legends.Scripts.PlayerControlBehavior"
+                }
+            ]
+        }
+    ]
+}

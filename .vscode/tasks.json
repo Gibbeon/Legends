@@ -36,6 +36,21 @@
                 "${workspaceFolder}/Legends.sln"
             ],
             "problemMatcher": "$msCompile"
-        }
+        },
+        {
+            "label": "build content",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "mgcb",
+                "./content.mgcb",
+                "/clean",
+                "/launchdebugger"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/src/cs/Legends.App/Content"
+            }
+        },
+        
     ]
 }

@@ -79,6 +79,8 @@ public static class ContentTypeWriterExtensions
         {
             if(memberValue is IDynamicallyCompiledType dynamicValue)
             {
+                output.Log<TType>("IDynamicallyCompiledType from {0} type {1}", dynamicValue.Source, dynamicValue.TypeName);
+
                 output.Write7BitEncodedInt((int)ObjectType.Dynamic);
                 output.Write(dynamicValue.Source);
                 output.Write(DynamicClassLoader.GetBytes(dynamicValue.Source).Length);
