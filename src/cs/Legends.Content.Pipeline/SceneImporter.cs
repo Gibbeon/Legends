@@ -13,7 +13,7 @@ using MonoGame.Extended;
 using Legends.Engine.Graphics2D;
 
 namespace Legends.Content.Pipline;
-
+/*
 public static class StdStuff
 {
     public static string Code = @"
@@ -243,4 +243,4 @@ class SceneProcessor : ContentProcessor<Scene, Scene>
     {
         return input;
     }
-}
+}*/

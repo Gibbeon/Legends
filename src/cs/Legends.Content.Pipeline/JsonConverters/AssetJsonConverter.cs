@@ -1,11 +1,8 @@
 using System;
-using System.IO;
-using Microsoft.Xna.Framework.Content.Pipeline;
+using System.Linq;
 using Newtonsoft.Json;
-using Legends.Engine;
-using Legends.Engine.Graphics2D;
 using Newtonsoft.Json.Linq;
-using Legends.Engine.Runtime;
+using Legends.Engine.Content;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
@@ -18,43 +15,48 @@ public class AssetJsonConverter : JsonConverter
 
     public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
     {   
-        Console.WriteLine("AssetJsonConverter.ReadJson {0}", objectType.GetGenericArguments()[0].FullName);
-        
-
-        if(reader.ValueType == typeof(string))
+        try
         {
-            return Activator.CreateInstance(objectType, reader.Value);
-        }
-        else
-        {
-            reader.SupportMultipleContent = true;
-
-            JObject parsedValue = JObject.Load(reader);
-            Console.WriteLine(parsedValue.ToString());
+            if(reader.ValueType == typeof(string))
+            {
+                return Activator.CreateInstance(objectType, reader.Value, value);
+            }
             
-            Console.WriteLine(parsedValue.ToObject<Scriptable>());
-            return parsedValue.ToObject<Scriptable>();
+            //Console.WriteLine("AssetJsonConverter.ReadJson {0}[{1}]='{2}'", 
+            //    objectType.Name, 
+            //    objectType.GetGenericArguments().SingleOrDefault()?.Name, 
+            //    value);
+            
+            value = JObject.Load(reader).ToObject(objectType);
+
+            //Console.WriteLine("AssetJsonConverter.ReadJson value='{0}'", value);
+        }
+        catch(Exception error)
+        {
+            Console.WriteLine("AssetJsonConverter.ReadJson Error:" + error.Message);
+            throw;
         }
 
-        throw new NotSupportedException();
+        return value;
     }
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {       
-        Console.WriteLine("AssetJsonConverter.WriteJson {0}", value.GetType());
-
-        if(value is Scriptable scriptable)
+        try
         {
-            writer.WriteStartObject();        
-            writer.WritePropertyName("Source");    
-            writer.WriteValue(scriptable.Source); 
-            writer.WritePropertyName("TypeName");           
-            writer.WriteValue(scriptable.TypeName);
-            writer.WriteEndObject();
+            if(value is IScriptable scriptable)
+            {
+                serializer.Serialize(writer, scriptable);
+            }
+            else if(value is Asset asset)
+            {
+                writer.WriteValue(asset.Source);
+            }
         }
-        else if(value is Asset asset)
+        catch(Exception error)
         {
-            writer.WriteValue(asset.Source);
+            Console.WriteLine("AssetJsonConverter.WriteJson Error:" + error.Message);
+            throw;
         }
     }
 }

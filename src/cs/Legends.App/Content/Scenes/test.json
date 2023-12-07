@@ -1,24 +1,15 @@
 {
-    "$type": "Legends.Content.Pipline.SceneLike, Legends.Content.Pipeline",
+    "$type": "Legends.Content.Pipeline.SceneLike, Legends.Content.Pipeline",
     "name": "TitleScreen",
-    "texture": "npc1",
+    "texture": "npc1.png",
     "behaviors": [
         {
-            "$type":    "Legends.Content.Pipline.ScriptableBehavior, Legends.Content.Pipeline",
             "typeName": "Legends.Scripts.LegendsBehaviorLike",
             "source":   "Scripts/LegendsBehaviorLike.cs",
             "properties": {
                 "duval":    "TestValue",
                 "other":    "OtherValue"
             }
-        },
-        {
-            "$type":    "Legends.Engine.Graphics2D.TextRenderBehavior, Legends.Engine",
-            "font":     "Sensation",
-            "text":     "Press ESC to Exit or ENTER to start",
-            "color":    "255, 255, 255, 255",
-            "halign":   "Center",
-            "valign":   "Middle"
         }
     ]
 }

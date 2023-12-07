@@ -229,5 +229,10 @@ public static class TypeExtensions
 
         return IsAssignableToGenericType(baseType, genericType);
     }
+
+    public static object Create(this Type type, params object[] parameters)
+    {
+        return Activator.CreateInstance(type, parameters);
+    }
 }
 
