@@ -2,31 +2,58 @@
 using System.IO;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Newtonsoft.Json;
-using Legends.Engine;
-using Legends.Engine.Graphics2D;
-using SharpFont;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using Microsoft.Xna.Framework.Content;
 using MonoGame.Extended.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Legends.Engine.Runtime;
+using System.Collections.Generic;
+using Legends.Content.Pipline.JsonConverters;
+using System.Dynamic;
 
 namespace Legends.Content.Pipline;
 
-public abstract class Asset
+public static class ContentManagerExtensions
 {
-    internal readonly object _value;
-    public abstract Type AssetType { get; }
-    public TType Get<TType>() { return (TType)Convert.ChangeType(_value, typeof(TType)); }
-    public static Asset Create(object value, Type assetType)
+    public static FileSystemWatcher _watcher;
+    
+    public static void EnableAssetWatching(this ContentManager contentManager)
     {
-        return (Asset)Activator.CreateInstance(typeof(Asset<>).MakeGenericType(assetType), new[] { value } );
+        _watcher = new FileSystemWatcher(contentManager.RootDirectory);
+        _watcher.Changed += (sender, args) => { if(args.ChangeType == WatcherChangeTypes.Changed) contentManager.ReloadAsset(args.Name); }; 
     }
 
-    public Asset(object value)
+    public static void ReloadAsset(this ContentManager contentManager, string assetName)
     {
-        _value = value;
+        var asset = contentManager.Load<Asset>(assetName);
+
+        typeof(ContentManager).GetAnyMethod("ReloadAsset", asset.AssetType, typeof(string), typeof(Asset)).Invoke(contentManager, new []
+        {
+            assetName,
+            Convert.ChangeType(asset, asset.GetType())
+        });
     }
+
+    public static void ReloadAsset<TType>(this ContentManager contentManager, string assetName, Asset<TType> asset)
+    {
+        //contentManager.ReloadAsset<TType>(assetName, asset);
+    }
+
+    public static void LoadAsset<T>(this ContentManager contentManager, string assetName, out Asset<T> assetValue)
+    {
+        assetValue = contentManager.Load(assetName, new AssetLoader<T>());        
+    }
+}
+
+public abstract class Asset
+{
+    internal readonly object    _value;
+    public string Source  { get; set; }
+    public abstract Type        AssetType { get; }
+    public TType Get<TType>()   {  return (TType)Convert.ChangeType(_value ?? Load(), typeof(TType)); }
+    protected abstract object Load();
+    public Asset(string name) {  Source = name; }
 }
 
 public class Asset<TType> : Asset
@@ -34,49 +61,55 @@ public class Asset<TType> : Asset
     public override Type AssetType      => typeof(TType);
     public TType Get()                  => Get<TType>();
 
-    public static Asset<TType> Create(Asset value)
-    {
-        return new (value.Get<TType>());
-    }
+    protected override object Load() { return _value; }
+    public Asset(string name) : base(name) {}
+    public static implicit operator TType (Asset<TType> asset) { return asset.Get(); }
+    public static TType operator~ (Asset<TType> asset) { return asset.Get(); }
+}
 
-    public Asset(TType value): base(value)
-    {
+public class Scriptable : Asset<IBehaviorLike>
+{
+    public string TypeName { get; set; }
+    public Scriptable(string name) : base(name) {}
 
-    }
-
-    public static implicit operator TType (Asset<TType> asset)
+    public override string ToString()
     {
-        return asset.Get();
-    }
-
-        public static TType operator~ (Asset<TType> asset)
-    {
-        return asset.Get();
+        return string.Format("TypeName: {0} Source: {1}", TypeName, Source);
     }
 }
 
+
 [ContentImporter(".json", DisplayName = "Legends Dynamic Importer", DefaultProcessor = "DynamicProcessor")]
-public class DynamicImporter : ContentImporter<dynamic>
+public class DynamicImporter : ContentImporter<SceneLike>
 {
-    public override dynamic Import(string filename, ContentImporterContext context)
+    public override SceneLike Import(string filename, ContentImporterContext context)
     {
         var settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
             };
+        
+        settings.Converters.Add(new AssetJsonConverter());
             
-        return JsonConvert.DeserializeObject(File.ReadAllText(filename), settings);
+        return JsonConvert.DeserializeObject<SceneLike>(File.ReadAllText(filename), settings);
     }
 }
 
 [ContentProcessor(DisplayName = "Legends Asset Processor")]
-public class DynamicProcessor : ContentProcessor<dynamic, Asset>
+public class DynamicProcessor : ContentProcessor<SceneLike, Asset>
 {
-    public override Asset Process(dynamic input, ContentProcessorContext context)
+    public override Asset Process(SceneLike input, ContentProcessorContext context)
     {
-        Console.WriteLine("{0}", ((object)input).GetType().Name);
+        var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            };
 
-        return Asset.Create(input, ((object)input).GetType());
+        settings.Converters.Add(new AssetJsonConverter());
+
+        Console.WriteLine(JsonConvert.ToString(JsonConvert.SerializeObject(input, settings)));
+
+        return null;//Asset.Create(input, ((object)input).GetType());
     }
 }
 
@@ -106,33 +139,28 @@ public class AssetLoader<TType> : IContentLoader<Asset<TType>>
 {
     public Asset<TType> Load(ContentManager contentManager, string path)
     {
-        return Asset<TType>.Create(contentManager.Load<Asset>(path));
+        return null;
     }
 }
 
-public static class ContentManagerExtensions
+public interface IBehaviorLike
 {
-    public static void Load<TType>(this ContentManager contentManager, string path, out Asset<TType> value)
-    {
-        value = contentManager.Load(path, new AssetLoader<TType>());
-    } 
+    public string Duval { get; }
+}
+public class BehaviorLike : IBehaviorLike
+{
+    public string Duval { get; set; }
+    public Asset<Texture2D> Texture { get; set; }  
 }
 
 public class SceneLike
 {
-    public string Name { get; protected set; }
-    public Asset<Texture2D> _textureAsset { get; protected set; }
-    private Texture2D SourceData => ~_textureAsset;
+    public string Name { get; set; }
+    public Asset<Texture2D> Texture { get; set; }  
+    public List<Asset<IBehaviorLike>> Behaviors { get; set; }
+    private Texture2D SourceData => ~Texture;
 
     public void Update()
-    {
-        
-    }
-}
-
-public static class ExtensionTest
-{
-    public static void Update<TType>(this Asset<TType> value)
     {
         
     }
@@ -145,7 +173,7 @@ public class TesterClass
     public TesterClass(ContentManager content)
     {
         Content = content;
-        content.Load("Scenes/test", out _scene);
+        content.LoadAsset("Scenes/test", out _scene);
     }
 
     public void Update()

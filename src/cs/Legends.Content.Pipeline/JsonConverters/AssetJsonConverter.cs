@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Content.Pipeline;
 using Newtonsoft.Json;
 using Legends.Engine;
 using Legends.Engine.Graphics2D;
+using Newtonsoft.Json.Linq;
+using Legends.Engine.Runtime;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
@@ -15,19 +17,44 @@ public class AssetJsonConverter : JsonConverter
     }
 
     public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
-    {
-        return Activator.CreateInstance(objectType, reader.Value);
-    }
+    {   
+        Console.WriteLine("AssetJsonConverter.ReadJson {0}", objectType.GetGenericArguments()[0].FullName);
+        
 
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-    {
-        if(value is Asset assetValue)
+        if(reader.ValueType == typeof(string))
         {
-            writer.WriteValue(assetValue.Name);
+            return Activator.CreateInstance(objectType, reader.Value);
         }
         else
         {
-            throw new NotSupportedException();
+            reader.SupportMultipleContent = true;
+
+            JObject parsedValue = JObject.Load(reader);
+            Console.WriteLine(parsedValue.ToString());
+            
+            Console.WriteLine(parsedValue.ToObject<Scriptable>());
+            return parsedValue.ToObject<Scriptable>();
+        }
+
+        throw new NotSupportedException();
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {       
+        Console.WriteLine("AssetJsonConverter.WriteJson {0}", value.GetType());
+
+        if(value is Scriptable scriptable)
+        {
+            writer.WriteStartObject();        
+            writer.WritePropertyName("Source");    
+            writer.WriteValue(scriptable.Source); 
+            writer.WritePropertyName("TypeName");           
+            writer.WriteValue(scriptable.TypeName);
+            writer.WriteEndObject();
+        }
+        else if(value is Asset asset)
+        {
+            writer.WriteValue(asset.Source);
         }
     }
 }

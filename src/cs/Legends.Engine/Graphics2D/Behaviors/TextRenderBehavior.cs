@@ -28,7 +28,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public string Text {get; set; }
 
-    public Asset<BitmapFont> Font { get; set; }
+    public BitmapFont Font { get; set; }
 
     public RenderState RenderState { get; set; }
     

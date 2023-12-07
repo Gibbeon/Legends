@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Engine.Graphics2D;
 
+/*
 public class Asset
 {
     public string Name { get; protected set; }
@@ -46,3 +47,4 @@ public class Asset<TType> : Asset
 
     public static implicit operator TType (Asset<TType> Asset) => Asset.Get();
 }
+*/

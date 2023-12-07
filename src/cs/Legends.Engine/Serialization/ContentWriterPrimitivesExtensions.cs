@@ -12,8 +12,8 @@ public static class ContentWriterPrimitivesExtensions
         output.Write(size2.Height);
     }
 
-    public static void Write(this ContentWriter output, Asset asset)
+    /*public static void Write(this ContentWriter output, Asset asset)
     {
         output.Write(asset.Name);
-    }
+    }*/
 }

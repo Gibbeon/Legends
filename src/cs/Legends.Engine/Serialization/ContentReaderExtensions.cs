@@ -47,12 +47,12 @@ public static class ContentReaderExtensions
         return new Size2(input.ReadSingle(), input.ReadSingle());
     }
 
-    static Asset<TType> ReadAsset<TType>(this ContentReader input)
+    /*static Asset<TType> ReadAsset<TType>(this ContentReader input)
     {
         var asset = new Asset<TType>(input.ReadString());
         asset.Load(input.ContentManager);
         return asset;
-    }
+    }*/
 
     static IEnumerable<MethodInfo> GetExtensionMethods(Type extendedType, Assembly assembly = default)
     {
