@@ -13,12 +13,14 @@ using Legends.Engine.Runtime;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using Microsoft.CodeAnalysis;
+using Legends.Engine;
+using Legends.Content.Pipeline;
 
 namespace Legends.Content.Pipline;
 
 public static class AssetProcessorExtensions
 {
-
     private static readonly Type[] ExclusionTypes =
     {
         typeof(string),
@@ -92,9 +94,9 @@ public class DynamicImporter : ContentImporter<dynamic>
 }
 
 [ContentProcessor(DisplayName = "Legends Asset Processor")]
-public class DynamicProcessor : ContentProcessor<dynamic, Asset>
+public class DynamicProcessor : ContentProcessor<dynamic, SceneLike>
 {
-    public override Asset Process(dynamic input, ContentProcessorContext context)
+    public override SceneLike Process(dynamic input, ContentProcessorContext context)
     {
         var settings = new JsonSerializerSettings
             {
@@ -104,7 +106,7 @@ public class DynamicProcessor : ContentProcessor<dynamic, Asset>
         settings.Converters.Add(new AssetJsonConverter());
 
         context.BuildAssetDependencies((object)input, ((object)input).GetType());
-
-        return Asset.Create(context.OutputFilename, (object)input, ((object)input).GetType());
+                
+        return (SceneLike)Convert.ChangeType((object)input, typeof(SceneLike));
     }
 }

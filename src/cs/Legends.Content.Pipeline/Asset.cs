@@ -11,6 +11,7 @@ namespace Legends.Engine.Content;
 public abstract class Asset
 {
     internal readonly object    _value;
+    public object Value      => _value;
     public string Source        { get; set; }
     public abstract Type        AssetType { get; }
     public TType Get<TType>()   {  return (TType)Convert.ChangeType(_value, typeof(TType)); }

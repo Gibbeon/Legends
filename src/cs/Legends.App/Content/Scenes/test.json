@@ -4,8 +4,8 @@
     "texture": "npc1.png",
     "behaviors": [
         {
-            "typeName": "Legends.Scripts.LegendsBehaviorLike",
-            "source":   "Scripts/LegendsBehaviorLike.cs",
+            "typeName": "Legends.Scripts.SampleBehaviorLike",
+            "source":   "Scripts/SampleBehaviorLike.cs",
             "properties": {
                 "duval":    "TestValue",
                 "other":    "OtherValue"
@@ -13,3 +13,5 @@
         }
     ]
 }
+
+

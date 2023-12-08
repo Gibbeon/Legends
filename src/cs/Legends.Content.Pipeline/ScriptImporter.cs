@@ -13,41 +13,27 @@ using Legends.Engine.Runtime;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using Legends.Engine.Serialization;
 
 namespace Legends.Content.Pipline;
 
 
 
-[ContentImporter(".cs", DisplayName = "Legends Script Importer", DefaultProcessor = "Script Processor")]
-public class ScriptImporter : ContentImporter<dynamic>
+[ContentImporter(".cs", DisplayName = "Legends Script Importer", DefaultProcessor = "ScriptProcessor")]
+public class ScriptImporter : ContentImporter<Assembly>
 {
-    public override dynamic Import(string filename, ContentImporterContext context)
+    public override Assembly Import(string filename, ContentImporterContext context)
     {
-        var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-            };
         
-        settings.Converters.Add(new AssetJsonConverter());
-            
-        return JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
+        return DynamicClassLoader.Compile(filename, File.ReadAllText(filename));
     }
 }
 
-[ContentProcessor(DisplayName = "Legends Asset Processor")]
-public class ScriptProcessor : ContentProcessor<dynamic, object>
+[ContentProcessor(DisplayName = "Legends Script Processor")]
+public class ScriptProcessor : ContentProcessor<Assembly, Assembly>
 {
-    public override object Process(dynamic input, ContentProcessorContext context)
+    public override Assembly Process(Assembly input, ContentProcessorContext context)
     {
-        var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            };
-
-        settings.Converters.Add(new AssetJsonConverter());
-
-        context.BuildAssetDependencies((object)input, ((object)input).GetType());
-
-        return (object)input;
+        return (Assembly)input;
     }
 }
