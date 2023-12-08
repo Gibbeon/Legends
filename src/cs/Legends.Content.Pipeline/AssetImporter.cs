@@ -94,9 +94,9 @@ public class DynamicImporter : ContentImporter<dynamic>
 }
 
 [ContentProcessor(DisplayName = "Legends Asset Processor")]
-public class DynamicProcessor : ContentProcessor<dynamic, SceneLike>
+public class DynamicProcessor : ContentProcessor<dynamic, IContentObject>
 {
-    public override SceneLike Process(dynamic input, ContentProcessorContext context)
+    public override IContentObject Process(dynamic input, ContentProcessorContext context)
     {
         var settings = new JsonSerializerSettings
             {
@@ -107,6 +107,6 @@ public class DynamicProcessor : ContentProcessor<dynamic, SceneLike>
 
         context.BuildAssetDependencies((object)input, ((object)input).GetType());
                 
-        return (SceneLike)Convert.ChangeType((object)input, typeof(SceneLike));
+        return (IContentObject)Convert.ChangeType((object)input, typeof(IContentObject));
     }
 }

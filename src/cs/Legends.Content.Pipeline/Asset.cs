@@ -1,14 +1,18 @@
 using System;
-using Legends.Content.Pipline;
 using Legends.Engine.Runtime;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Content.Pipeline;
-using SharpFont;
+using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 
 namespace Legends.Engine.Content;
 
-public abstract class Asset
+public interface IContentReadWrite
+{
+    public void Read(ContentReader reader);
+    public void Write(ContentWriter writer);
+}
+
+public abstract class Asset : IContentReadWrite
 {
     internal readonly object    _value;
     public object Value      => _value;
@@ -32,6 +36,16 @@ public abstract class Asset
     public static Asset Create(string source, object data, Type type )
     {
         return (Asset)typeof(Asset<>).MakeGenericType(type).Create(source, data);
+    }
+
+    public void Read(ContentReader reader)
+    {
+
+    }
+    
+    public void Write(ContentWriter writer)
+    {
+        writer.Write(Source);
     }
 }
 

@@ -18,69 +18,110 @@ namespace Legends.Engine.Content;
 
 public static class ContentExtensions
 {
+    private static int Indent;
+    private static void Log(string message, params object[] args)
+    {
+        if(Indent > 0) Console.Write(new string(Enumerable.Repeat(' ', 2 * Indent).ToArray()));
+        Console.WriteLine(message, args);
+    }
+
     public static void WriteArray(this ContentWriter writer, ICollection instance, Type type)
     {
-        writer.Write(type.AssemblyQualifiedName); 
+        var derivedType = instance != null ? instance.GetType() : type;
+        var elementType = typeof(object);
 
-        if(type.IsArray)        writer.Write(type.GetElementType().AssemblyQualifiedName);
-        else if(type.IsGenericType)  writer.Write(type.GenericTypeArguments[0].AssemblyQualifiedName);
-        else writer.Write(typeof(object).AssemblyQualifiedName);
+        if(derivedType.IsArray)                 elementType = derivedType.GetElementType();
+        else if(derivedType.IsGenericType)      elementType = derivedType.GenericTypeArguments[0];
 
+        Log("Array: {0}<{1}>[{2}]", derivedType.Name, elementType.Name, instance.Count);
+
+        writer.Write(derivedType.AssemblyQualifiedName); 
+        writer.Write(elementType.AssemblyQualifiedName); 
         writer.Write(instance.Count);
+
+        int count = 0;
 
         foreach(var element in instance)
         {
+            Log("[{0}]", count++);
             writer.WriteField(element, element.GetType());
         }
     }
 
     public static void WriteField(this ContentWriter writer, object instance, Type type)
     {
-        var native = typeof(ContentWriter).GetAnyMethod("Write", type);
+        var derivedType = instance != null ? instance.GetType() : type;
+
+        Log("WriteField: {0} of type {1}", derivedType.Name, type.Name); 
+        Indent++;
+
+        var native = typeof(ContentWriter).GetAnyMethod("Write", derivedType);
 
         if(native != null)
         {
+            Log("native Found [{0}]", native.GetSignature());
             native.InvokeAny(writer, instance);
+            Indent--;
             return;
         }
 
         if(instance is ICollection enumerable)
         {
+            Log("typeof(ICollection) Found {0}", enumerable.GetType().Name);
             writer.WriteArray(enumerable, type);
+            Indent--;
             return;
         }
 
+        if(instance is IContentReadWrite readWrite)
+        {
+            Log("typeof(IContentReadWrite) Found {0}", readWrite.GetType().Name);
+            readWrite.Write(writer);
+            Indent--;
+            return;
+        }
+
+        Log("typeof(object) Found {0}", derivedType.Name);
         writer.WriteObject(instance, type);
+        Indent--;
     }
 
     public static void WriteObject(this ContentWriter writer, object instance, Type type)
-    {        
+    {     
+          
         try
         {
-            writer.Write(type.AssemblyQualifiedName); 
+            var derivedType = instance != null ? instance.GetType() : type;
+
+            Log("WriteObject: {0} of type {1}", derivedType.Name, type.Name); Indent++; 
+            writer.Write(derivedType.AssemblyQualifiedName); 
 
             foreach(var member in Enumerable.Concat<MemberInfo>(
-                type.GetProperties(BindingFlags.Public | BindingFlags.Instance),
-                type.GetFields(BindingFlags.Public | BindingFlags.Instance))
+                derivedType .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
+                            .Where(n => n.CanRead && n.CanWrite),
+                derivedType.GetFields(BindingFlags.Public | BindingFlags.Instance))
                 .Where(n => !n.IsDefined(typeof(JsonIgnoreAttribute))))
             {
                 if(member is PropertyInfo property)
                 {
-                    writer.WriteField(property.GetValue(instance), property.PropertyType);
+                    Log(".{0} = '{1}' (field)", property.Name, property.GetValue(instance)); Indent++;
+                    writer.WriteField(property.GetValue(instance), property.PropertyType); Indent--;
                 }
                 if(member is FieldInfo field)
                 {
-                    writer.WriteField(field.GetValue(instance), field.FieldType);
+                    Log(".{0} = '{1}' (property)", field.Name, field.GetValue(instance)); Indent++;
+                    writer.WriteField(field.GetValue(instance), field.FieldType); Indent--;
                 }
             }   
         } 
         catch(Exception err)
         {
-            Console.WriteLine("{0}\n{1}", err.Message, err.StackTrace);
+            Log("Error: {0}\n{1}", err.Message, err.StackTrace);
         }  
+        Indent--;
     }
 
-    private static readonly Stack<object> _parents = new Stack<object>();
+    private static readonly Stack<object> _parents = new();
 
     public static object ReadArray(this ContentReader reader, ICollection instance)
     {
@@ -164,22 +205,22 @@ public static class ContentExtensions
 }
 
 [ContentTypeWriter]
-public class SceneObjectWriter : ContentTypeWriter<SceneLike>
+public class SceneObjectWriter : ContentTypeWriter<IContentObject>
 {
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {
-        return typeof(SceneObjectReader).AssemblyQualifiedName;
+        return typeof(ContentObjectReader).AssemblyQualifiedName;
     }
 
-    protected override void Write(ContentWriter output, SceneLike value)
+    protected override void Write(ContentWriter output, IContentObject value)
     {
         output.WriteObject(value, value.GetType());
     }
 }
 
-public class SceneObjectReader : ContentTypeReader<Asset<SceneLike>>
+public class ContentObjectReader : ContentTypeReader<IContentObject>
 {
-    protected override Asset<SceneLike> Read(ContentReader input, Asset<SceneLike> existingInstance)
+    protected override IContentObject Read(ContentReader input, IContentObject existingInstance)
     {
         return input.ReadObject(existingInstance);       
     }
