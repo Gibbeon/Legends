@@ -93,10 +93,10 @@ public class DynamicImporter : ContentImporter<dynamic>
     }
 }
 
-[ContentProcessor(DisplayName = "Legends Asset Processor")]
-public class DynamicProcessor : ContentProcessor<dynamic, IContentObject>
+[ContentProcessor(DisplayName = "Legends ContentObject Processor")]
+public class DynamicProcessor : ContentProcessor<dynamic, ContentObject>
 {
-    public override IContentObject Process(dynamic input, ContentProcessorContext context)
+    public override ContentObject Process(dynamic input, ContentProcessorContext context)
     {
         var settings = new JsonSerializerSettings
             {
@@ -104,9 +104,11 @@ public class DynamicProcessor : ContentProcessor<dynamic, IContentObject>
             };
 
         settings.Converters.Add(new AssetJsonConverter());
-
+    
+        Console.WriteLine("PRE BuildAssetDependencies");        
         context.BuildAssetDependencies((object)input, ((object)input).GetType());
+        Console.WriteLine("POST BuildAssetDependencies");
                 
-        return (IContentObject)Convert.ChangeType((object)input, typeof(IContentObject));
+        return ContentObject.Wrap((object)input);
     }
 }

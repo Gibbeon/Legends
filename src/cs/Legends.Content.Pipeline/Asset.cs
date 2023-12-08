@@ -14,7 +14,7 @@ public interface IContentReadWrite
 
 public abstract class Asset : IContentReadWrite
 {
-    internal readonly object    _value;
+    internal object    _value;
     public object Value      => _value;
     public string Source        { get; set; }
     public abstract Type        AssetType { get; }
@@ -43,7 +43,7 @@ public abstract class Asset : IContentReadWrite
 
     }
     
-    public void Write(ContentWriter writer)
+    public virtual void Write(ContentWriter writer)
     {
         writer.Write(Source);
     }

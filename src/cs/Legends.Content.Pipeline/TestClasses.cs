@@ -6,10 +6,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Legends.Content.Pipeline;
 
-public interface IContentObject
-{
-
-}
 
 public interface IBehaviorLike
 {
@@ -21,7 +17,16 @@ public class BehaviorLike : IBehaviorLike
     public Asset<Texture2D> Texture { get; set; }  
 }
 
-public class SceneLike : IContentObject
+public sealed class ContentObject
+{
+    public object Instance { get; set; }
+
+    public ContentObject(object instance) { Instance = instance; }
+
+    public static ContentObject Wrap<T>(T instance) { return new ContentObject(instance); }
+}
+
+public class SceneLike
 {
     public string Name { get; set; }
     public Asset<Texture2D> Texture { get; set; }  

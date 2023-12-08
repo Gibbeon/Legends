@@ -88,7 +88,6 @@ public static class ContentExtensions
 
     public static void WriteObject(this ContentWriter writer, object instance, Type type)
     {     
-          
         try
         {
             var derivedType = instance != null ? instance.GetType() : type;
@@ -205,24 +204,24 @@ public static class ContentExtensions
 }
 
 [ContentTypeWriter]
-public class SceneObjectWriter : ContentTypeWriter<IContentObject>
+public class SceneObjectWriter : ContentTypeWriter<ContentObject>
 {
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {
         return typeof(ContentObjectReader).AssemblyQualifiedName;
     }
 
-    protected override void Write(ContentWriter output, IContentObject value)
+    protected override void Write(ContentWriter output, ContentObject value)
     {
-        output.WriteObject(value, value.GetType());
+        output.WriteObject(value.Instance, value.Instance.GetType());
     }
 }
 
-public class ContentObjectReader : ContentTypeReader<IContentObject>
+public class ContentObjectReader : ContentTypeReader<ContentObject>
 {
-    protected override IContentObject Read(ContentReader input, IContentObject existingInstance)
+    protected override ContentObject Read(ContentReader input, ContentObject existingInstance)
     {
-        return input.ReadObject(existingInstance);       
+        return ContentObject.Wrap(input.ReadObject(existingInstance));       
     }
 }
 

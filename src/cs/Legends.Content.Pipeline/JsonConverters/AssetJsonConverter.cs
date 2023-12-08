@@ -3,6 +3,13 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Legends.Engine.Content;
+using Legends.Engine.Serialization;
+using System.IO;
+using System.Data;
+using System.Dynamic;
+using Legends.Engine.Runtime;
+using System.Reflection;
+using SharpDX.Direct3D;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
@@ -22,14 +29,13 @@ public class AssetJsonConverter : JsonConverter
                 return Activator.CreateInstance(objectType, reader.Value, value);
             }
             
-            //Console.WriteLine("AssetJsonConverter.ReadJson {0}[{1}]='{2}'", 
-            //    objectType.Name, 
-            //    objectType.GetGenericArguments().SingleOrDefault()?.Name, 
-            //    value);
-            
             value = JObject.Load(reader).ToObject(objectType);
 
-            //Console.WriteLine("AssetJsonConverter.ReadJson value='{0}'", value);
+            if(value is IScriptable scriptable)
+            {
+                var derivedType = DynamicClassLoader.CompileCodeAndExtractClass(scriptable.Source, File.ReadAllText(scriptable.Source), scriptable.TypeName);
+                scriptable.Set(serializer.Deserialize(new StringReader(scriptable.Properties.ToString()), derivedType));
+            }
         }
         catch(Exception error)
         {
