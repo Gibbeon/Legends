@@ -3,11 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using Legends.Content.Pipeline;
 using Legends.Engine.Runtime;
-using Legends.Engine.Serialization;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
@@ -200,35 +196,5 @@ public static class ContentExtensions
         finally{
             _parents.Pop();
         }
-    }
-}
-
-[ContentTypeWriter]
-public class SceneObjectWriter : ContentTypeWriter<ContentObject>
-{
-    public override string GetRuntimeReader(TargetPlatform targetPlatform)
-    {
-        return typeof(ContentObjectReader).AssemblyQualifiedName;
-    }
-
-    protected override void Write(ContentWriter output, ContentObject value)
-    {
-        output.WriteObject(value.Instance, value.Instance.GetType());
-    }
-}
-
-public class ContentObjectReader : ContentTypeReader<ContentObject>
-{
-    protected override ContentObject Read(ContentReader input, ContentObject existingInstance)
-    {
-        return ContentObject.Wrap(input.ReadObject(existingInstance));       
-    }
-}
-
-public class AssetLoader<TType> : IContentLoader<Asset<TType>>
-{
-    public Asset<TType> Load(ContentManager contentManager, string path)
-    {
-        return contentManager.Load<Asset<TType>>(path);
     }
 }

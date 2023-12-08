@@ -1,18 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Microsoft.Xna.Framework.Content.Pipeline;
-using Newtonsoft.Json;
-using Legends.Content.Pipline.JsonConverters;
-using Legends.Engine.Content;
 using System.Reflection;
-using System.Linq;
-using System.Data;
-using System.Collections;
-using System.Collections.Generic;
-using Legends.Engine.Runtime;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Xna.Framework;
-using MonoGame.Extended;
 using Legends.Engine.Serialization;
 
 namespace Legends.Content.Pipline;

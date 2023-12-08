@@ -1,7 +1,7 @@
 
 #----------------------------- Global Properties ----------------------------#
 
-/outputDir:./bin/../Debug/net6.0/Content
+/outputDir:./../bin/Debug/net6.0/Content
 /intermediateDir:./../obj/Debug/net6.0/Content
 /platform:DesktopGL
 /config:
