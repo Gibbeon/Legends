@@ -3,6 +3,7 @@ using Legends.Engine.Runtime;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+using Newtonsoft.Json;
 
 namespace Legends.Engine.Content;
 
@@ -39,7 +40,7 @@ public abstract class Asset : IContentReadWrite
     
     public virtual void Write(ContentWriter writer)
     {
-        writer.Write(Source);
+        writer.Write(Source ?? "");
     }
 }
 

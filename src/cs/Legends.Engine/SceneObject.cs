@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using System.Data.Common;
+using Legends.Engine.Content;
 
 namespace Legends.Engine;
 
@@ -13,7 +14,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 {   
     private static int _globalObjId;
     private IList<string> _tags;    
-    private IList<IBehavior> _behaviors;
+    private IList<Scriptable<IBehavior>> _behaviors;
     private IList<SceneObject> _children;
 
     [JsonIgnore]
@@ -38,10 +39,14 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         protected set => _children = (IList<SceneObject>)value;
     }
     
-    public IList<IBehavior> Behaviors
+    [JsonIgnore]
+    public IEnumerable<IBehavior> Behaviors => _behaviors.Select(n => (IBehavior)n.Value);
+
+    [JsonProperty(PropertyName = "behaviors")]
+    public IEnumerable<Scriptable<IBehavior>> ScriptableBehaviors
     {
         get => _behaviors;
-        protected set => _behaviors = (IList<IBehavior>)value;
+        set => _behaviors = value.ToList();
     }
 
     public SceneObject() : this(null, null)
@@ -55,7 +60,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         Name        = string.Format("{0}#{1}", typeof(SceneObject).Name, _globalObjId++);
         
         _children   = new List<SceneObject>();
-        _behaviors  = new List<IBehavior>();
+        _behaviors  = new List<Scriptable<IBehavior>>();
         _tags       = new List<string>();
 
         if(parent != null)
@@ -138,9 +143,9 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
     public void AttachBehavior(IBehavior behavior)
     {
-        if(!_behaviors.Contains(behavior))
+        if(!_behaviors.Select(n => n.Value).Contains(behavior))
         {
-            _behaviors.Add(behavior);
+            _behaviors.Add(Scriptable.Wrap(behavior));
         }
     }
 
@@ -155,7 +160,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     {
         if(behavior != null)
         {
-            _behaviors.Remove(behavior);
+            _behaviors.Remove(Scriptable.Wrap<IBehavior>(behavior));
         }
     }
 

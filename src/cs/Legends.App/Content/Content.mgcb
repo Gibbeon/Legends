@@ -33,9 +33,9 @@
 /build:Sensation.fnt
 
 #begin Scenes\TitleScreen.json
-#/importer:SceneImporter
-#/processor:SceneProcessor
-#/build:Scenes\TitleScreen.json
+/importer:DynamicImporter
+/processor:DynamicProcessor
+/build:Scenes\TitleScreen.json
 
 #begin Scenes\test.json
 /importer:DynamicImporter

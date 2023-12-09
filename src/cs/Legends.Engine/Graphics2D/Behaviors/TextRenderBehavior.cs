@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System;
 using Microsoft.Xna.Framework.Content;
+using Legends.Engine.Content;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -28,7 +29,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public string Text {get; set; }
 
-    public BitmapFont Font { get; set; }
+    public Asset<BitmapFont> Font { get; set; }
 
     public RenderState RenderState { get; set; }
     

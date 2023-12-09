@@ -1,15 +1,9 @@
 using System;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Legends.Engine.Content;
 using Legends.Engine.Serialization;
 using System.IO;
-using System.Data;
-using System.Dynamic;
-using Legends.Engine.Runtime;
-using System.Reflection;
-using SharpDX.Direct3D;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
@@ -29,12 +23,25 @@ public class AssetJsonConverter : JsonConverter
                 return Activator.CreateInstance(objectType, reader.Value, value);
             }
             
-            value = JObject.Load(reader).ToObject(objectType);
+            var jObject = JObject.Load(reader);
+            var parsedValue = jObject.ToObject(objectType);
 
-            if(value is IScriptable scriptable)
+            if(parsedValue is IScriptable scriptable)
             {
-                var derivedType = DynamicClassLoader.CompileCodeAndExtractClass(scriptable.Source, File.ReadAllText(scriptable.Source), scriptable.TypeName);
-                scriptable.Set(serializer.Deserialize(new StringReader(scriptable.Properties.ToString()), derivedType));
+                if(!string.IsNullOrEmpty(scriptable.Source))
+                {
+                    var derivedType = DynamicClassLoader.CompileCodeAndExtractClass(scriptable.Source, File.ReadAllText(scriptable.Source), scriptable.TypeName);
+                    scriptable.Set(serializer.Deserialize(new StringReader(scriptable.Properties.ToString()), derivedType));
+                }
+                else
+                {
+                    scriptable.Set(serializer.Deserialize(new JTokenReader(jObject)));
+                }
+                return scriptable;
+            } 
+            else
+            {
+                throw new JsonException();
             }
         }
         catch(Exception error)
@@ -42,8 +49,6 @@ public class AssetJsonConverter : JsonConverter
             Console.WriteLine("AssetJsonConverter.ReadJson Error:" + error.Message);
             throw;
         }
-
-        return value;
     }
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

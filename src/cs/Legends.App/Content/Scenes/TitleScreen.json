@@ -1,4 +1,5 @@
 {
+    "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "TitleScreen",
     "camera": {},
     "children": [
@@ -14,7 +15,6 @@
                     "valign":   "Middle"
                 },
                 {
-                    "$type":    "Legends.Engine.ScriptBehavior, Legends.Engine",
                     "source":   "Scripts/CameraControlsBehavior.cs",
                     "typeName": "Legends.Scripts.CameraControlsBehavior",
                     "properties":
