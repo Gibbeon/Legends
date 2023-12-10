@@ -15,6 +15,7 @@ public abstract class Asset : IContentReadWrite
     public abstract Type        AssetType { get; }
     public TType Get<TType>()   {  return (TType)Convert.ChangeType(_value, typeof(TType)); }
     protected abstract object Load(ContentManager manager);
+    public Asset() {}
     public Asset(string source) {  Source = source; }
     public Asset(string source, object value) : this(source) { _value = value; }
 
@@ -33,9 +34,9 @@ public abstract class Asset : IContentReadWrite
         return (Asset)typeof(Asset<>).MakeGenericType(type).Create(source, data);
     }
 
-    public void Read(ContentReader reader)
+    public virtual void Read(ContentReader reader)
     {
-
+        Source = reader.ReadString();
     }
     
     public virtual void Write(ContentWriter writer)
@@ -49,6 +50,7 @@ public class Asset<TType> : Asset
     public override Type AssetType      => typeof(TType);
     public TType Get()                  => Get<TType>();
     protected override object Load(ContentManager manager) { return manager.Load<Asset<TType>>(Source); }
+    public Asset() {}
     public Asset(string source) : base(source) {}
     public Asset(string source, TType value) : base(source, value) {}
     public static implicit operator TType (Asset<TType> asset) { return asset.Get(); }

@@ -1,8 +1,10 @@
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text.Json.Nodes;
 using Legends.Engine.Runtime;
 using Legends.Engine.Serialization;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using Newtonsoft.Json;
 
@@ -27,6 +29,7 @@ public class Scriptable<TType> : Asset<TType>, IScriptable
 {
     public string TypeName { get; set; }
     public dynamic Properties { get; set; }
+    public Scriptable() : base() {}
     public Scriptable(string name) : base(name) {}
     internal Scriptable(string name, TType value) : base(name) { _value = value; }
 
@@ -42,5 +45,17 @@ public class Scriptable<TType> : Asset<TType>, IScriptable
         base.Write(writer);
         writer.Write(TypeName ?? "");
         writer.WriteObject(Value, AssetType);
+    }
+
+    public override void Read(ContentReader reader)
+    {        
+        base.Read(reader);
+        TypeName = reader.ReadString();
+
+        if(!string.IsNullOrEmpty(Source) && !string.IsNullOrEmpty(TypeName))
+        {
+            var assembly = reader.ContentManager.Load<Assembly>(Path.ChangeExtension(Source, ""));
+        }
+        _value = reader.ReadObject(_value, AssetType);
     }
 }

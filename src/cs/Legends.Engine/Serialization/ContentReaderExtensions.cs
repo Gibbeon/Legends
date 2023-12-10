@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Legends.Engine.Runtime;
@@ -11,20 +12,25 @@ namespace Legends.Engine.Content;
 
 public static class ContentReaderExtensions
 {
-    private static int Indent;
-    private static void Log(string message, params object[] args)
-    {
-        if(Indent > 0) Console.Write(new string(Enumerable.Repeat(' ', 2 * Indent).ToArray()));
-        Console.WriteLine(message, args);
-    }
-
     private static readonly Stack<object> _parents = new();
 
     public static object ReadArray(this ContentReader reader, ICollection instance)
     {
-        var type        = Type.GetType(reader.ReadString());
-        var elementType = Type.GetType(reader.ReadString());
-        var count       = reader.ReadInt32();
+        var typeName = reader.ReadString();
+        var typeElementName = reader.ReadString();
+        var count       = reader.ReadInt32(); 
+
+        var type        = Type.GetType(typeName);
+        var elementType = Type.GetType(typeElementName); 
+
+        if(type == null)
+        {
+            throw new NullReferenceException(string.Format("ICollection Type not found, {0}.", typeName));
+        } 
+        if(type == null)
+        {
+            throw new NullReferenceException(string.Format("ICollection.ElementType not found, {0}.", typeElementName));
+        }          
 
         instance ??=    type.IsArray
                         ? Array.CreateInstance(elementType, count)
@@ -32,11 +38,15 @@ public static class ContentReaderExtensions
 
         for(var index = 0; index < count; index++)
         {
-            var element = reader.ReadField(null, elementType);
+            using(ContentLogger.LogBegin(reader.BaseStream.Position, "[{0}] ", index))
+            {
+                var element = reader.ReadField(null, elementType);
+                if(element == null) throw new NullReferenceException();
 
-            if(type.IsArray) ((Array)instance).SetValue(element, index);
-            else if(instance is IList list) { list.Add(element); }
-            else type.GetType().GetAnyMethod("Add*", elementType).InvokeAny(instance, element);
+                if(type.IsArray) ((Array)instance).SetValue(element, index);
+                else if(instance is IList list) { list.Add(element); }
+                else type.GetType().GetAnyMethod("Add*", elementType).InvokeAny(instance, element);
+            }
         }
 
         return instance;
@@ -44,59 +54,106 @@ public static class ContentReaderExtensions
 
     public static object ReadField(this ContentReader reader, object instance, Type type)
     {
-        var native = typeof(ContentReader)
-                        .GetAllMethods()
-                        .SingleOrDefault(n =>   !n.IsGenericMethod 
-                                                && n.Name.StartsWith("Read") 
-                                                && n.ReturnParameter.ParameterType == type);
+        var derivedType = instance != null ? instance.GetType() : type;
+        var native = typeof(ContentReader).GetAnyMethod(derivedType, "Read*");
+        object result = default;
 
         if(native != null)
         {
-            return Convert.ChangeType(native.InvokeAny(reader), type);            
+            ContentLogger.LogAppend("(invoke)", native.GetSignature());                
+            result = Convert.ChangeType(native.InvokeAny(reader), derivedType); 
+            ContentLogger.LogEnd("{0}", result);  
+            return result;         
         }
 
-        if(type.GetInterfaces().Any(n => n == typeof(ICollection)))
+        if(derivedType.GetInterfaces().Any(n => n == typeof(ICollection)))
         {
-            return reader.ReadArray(instance as ICollection);
+            ContentLogger.LogAppend("(array)", derivedType.Name);
+            result =  reader.ReadArray(instance as ICollection);
+            ContentLogger.LogEnd("{0}", result);
+            return result;
         }
 
-        return reader.ReadObject(instance);
+        if(derivedType.GetInterfaces().Any(n => n == typeof(IContentReadWrite)))
+        {
+            ContentLogger.LogAppend("(IContentReadWrite)");
+
+            instance ??=  derivedType.Create();
+
+            derivedType.GetAnyMethod("Read", typeof(ContentReader)).InvokeAny(instance, reader);
+            result = instance;
+            ContentLogger.LogEnd("{0}", result);
+            return result;
+        }
+
+        if(derivedType.IsEnum)
+        {
+            ContentLogger.LogAppend("(enum)", derivedType.Name);         
+            var intValue = reader.ReadInt32();
+            //((int)typeof(ContentReader).GetAnyMethod(typeof(int), "Read").InvokeAny(reader));   
+            result = Enum.Parse(derivedType,intValue.ToString());
+            ContentLogger.LogEnd("{0}", result);
+            return result;
+        }
+        ContentLogger.LogEnd("(object)", derivedType.Name); 
+        return reader.ReadObject(instance, derivedType);
     }
 
-    public static object ReadObject(this ContentReader reader, object instance)
+    public static object ReadObject(this ContentReader reader, object instance, Type type)
     {
-        var type = Type.GetType(reader.ReadString());
-
-        instance ??=  type.Create(_parents.Count == 0  
-            ? new[] { reader.ContentManager.ServiceProvider }
-            : new[] { reader.ContentManager.ServiceProvider, _parents.Peek() });
-
-        _parents.Push(instance);
-        try{
-            foreach(var member in Enumerable.Concat<MemberInfo>(
-                type.GetProperties(BindingFlags.Public | BindingFlags.Instance),
-                type.GetFields(BindingFlags.Public | BindingFlags.Instance))
-                .Where(n => !n.IsDefined(typeof(JsonIgnoreAttribute))))
-            {
-                if(member is PropertyInfo property)
-                {
-                    property.SetValue(instance, reader.ReadField(property.GetValue(instance), property.PropertyType));
-                }
-                if(member is FieldInfo field)
-                {
-                    field.SetValue(instance, reader.ReadField(field.GetValue(instance), field.FieldType));
-                }
-            }   
-
-            return instance;
-        }
-        catch(Exception err)
+        using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), "Reading Object of type {0}", type.Name))
         {
-            Console.WriteLine("{0}\n{1}", err.Message, err.StackTrace);
-            throw;
+            var isNull = reader.Read7BitEncodedInt() == 0;
+            if(isNull)
+            {               
+                ContentLogger.LogEnd("value is (null)");
+                return null;
+            }
         }
-        finally{
-            _parents.Pop();
+
+        var typeName = reader.ReadString();
+        var derivedType = Type.GetType(typeName);
+
+        using(ContentLogger.Log(reader.BaseStream.Seek(0, SeekOrigin.Current), "Object found of type {0}, existing instance is ({1})", derivedType.Name, instance == null ? "null" : "not null"))
+        {
+            instance ??=  derivedType.Create(_parents.Count == 0  
+                ? new[] { reader.ContentManager.ServiceProvider }
+                : new[] { reader.ContentManager.ServiceProvider, _parents.Peek() });
+
+            _parents.Push(instance);
+
+            try{
+                foreach(var member in Enumerable.Concat<MemberInfo>(
+                    derivedType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty),
+                    derivedType.GetFields(BindingFlags.Public | BindingFlags.Instance))
+                    .Where(n => !n.IsDefined(typeof(JsonIgnoreAttribute))))
+                {
+                    if(member is PropertyInfo property)
+                    {
+                        using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", property.Name))
+                        {
+                            property.SetValue(instance, reader.ReadField(property.GetValue(instance), property.PropertyType));
+                        }
+                    }
+                    if(member is FieldInfo field)
+                    {
+                        using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", field.Name))
+                        {
+                            field.SetValue(instance, reader.ReadField(field.GetValue(instance), field.FieldType));
+                        }
+                    }
+                }   
+
+                return instance;
+            }
+            catch(Exception err)
+            {
+                ContentLogger.Log(reader.BaseStream.Seek(0, SeekOrigin.Current), "{0}\n{1}", err.Message, err.StackTrace);
+                throw;
+            }
+            finally{
+                _parents.Pop();
+            }
         }
     }
 }

@@ -179,6 +179,16 @@ public static class TypeExtensions
                     .MakeGenericFromSignature(parameterTypes);
     }
 
+    public static MethodInfo GetAnyMethod(this Type type, Type returnType, string methodName, params Type[] parameterTypes)
+    {
+        return type.GetAllMethods()
+                    .MatchMethodName(methodName)
+                    .MatchMethodSignature(type, parameterTypes)
+                    .OrderBy(n => !n.IsDefined(typeof(ExtensionAttribute)))
+                    .FirstOrDefault(n => n.ReturnParameter.ParameterType.IsAssignableTo(returnType))
+                    .MakeGenericFromSignature(parameterTypes);
+    }
+
     public static IEnumerable<MethodInfo> GetAllMethods(this Type type)
     {
         return Enumerable.Concat(type.GetMethods(), type.GetExtensionMethods());

@@ -23,6 +23,8 @@ public class ContentObjectReader : ContentTypeReader<ContentObject>
 {
     protected override ContentObject Read(ContentReader input, ContentObject existingInstance)
     {
-        return ContentObject.Wrap(input.ReadObject(existingInstance));       
+        var result = input.ReadObject(existingInstance, typeof(object));
+
+        return ContentObject.Wrap(result);       
     }
 }
