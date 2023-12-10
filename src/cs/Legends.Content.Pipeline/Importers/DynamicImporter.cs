@@ -34,11 +34,8 @@ public class DynamicProcessor : ContentProcessor<dynamic, ContentObject>
                 TypeNameHandling = TypeNameHandling.Auto
             };
 
-        settings.Converters.Add(new AssetJsonConverter());
-    
-        Console.WriteLine("PRE BuildAssetDependencies");        
+        settings.Converters.Add(new AssetJsonConverter());     
         context.BuildAssetDependencies((object)input, ((object)input).GetType());
-        Console.WriteLine("POST BuildAssetDependencies");
                 
         return ContentObject.Wrap((object)input);
     }

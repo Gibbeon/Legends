@@ -12,21 +12,24 @@ namespace Legends.Engine.Content;
 public static class ContentWriterExtensions
 {
     private static int Indent;
+    private const int IndentSpaces = 2;
 
-    private class IndentContext : IDisposable { public IndentContext() { Indent++; } public void Dispose() { Indent--; } }
+    private class IndentContext : IDisposable { public IndentContext() { Indent++;} public void Dispose() { Indent--; } }
 
-    private static IndentContext LogBegin(string message, params object[] args)
+    private static IndentContext LogBegin(long filePos, string message, params object[] args)
     {
-        if(Indent > 0) Console.Write(new string(Enumerable.Repeat(' ', 2 * Indent).ToArray()));
+        Console.Write("{0:D8}", filePos);
+
+        if(Indent > 0) Console.Write(new string(Enumerable.Repeat(' ', IndentSpaces * Indent).ToArray()));
         var result = new IndentContext();
         if(string.IsNullOrEmpty(message)) return result;
         Console.Write(message, args);
         return result;
     }
 
-    private static IndentContext Log(string message, params object[] args)
+    private static IndentContext Log(long filePos, string message, params object[] args)
     {
-        var result = LogBegin(message, args);
+        var result = LogBegin(filePos, message, args);
         Console.WriteLine();
         return result;
     }
@@ -62,7 +65,7 @@ public static class ContentWriterExtensions
             //Console.WriteLine();
             foreach(var element in instance)
             {
-                using(LogBegin("[{0}] ", count++))
+                using(LogBegin(writer.BaseStream.Position, "[{0}] ", count++))
                 {
                     if(element == null) throw new NullReferenceException();
                     writer.WriteField(element, element.GetType()); 
@@ -107,6 +110,7 @@ public static class ContentWriterExtensions
                 return;
             }
 
+            Console.WriteLine();
             //LogEnd("typeof(object) of type {0}", derivedType.Name);
             writer.WriteObject(instance, type);
         }
@@ -118,13 +122,12 @@ public static class ContentWriterExtensions
         {
             var derivedType = instance != null ? instance.GetType() : type;
 
-            using(Log("Object: {0} of type {1}", derivedType.Name, type.Name))
+            using(Log(writer.BaseStream.Position, "Object: {0} of type {1} ({2})", derivedType.Name, type.Name, instance == null ? "null" : "not null"))
             {
                 writer.Write7BitEncodedInt(instance == null ? 0 : 1);
-                if(instance == null)  { Log("Value is (null)"); return; }
+                if(instance == null) return;
 
-                writer.Write(derivedType.AssemblyQualifiedName); 
-
+                writer.Write(derivedType.FullName); 
                 foreach(var member in Enumerable.Concat<MemberInfo>(
                     derivedType .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
                                 .Where(n => n.CanRead && n.CanWrite),
@@ -133,14 +136,14 @@ public static class ContentWriterExtensions
                 {
                     if(member is PropertyInfo property)
                     {
-                        using(LogBegin(".{0} = '{1}' (field)\t", property.Name, property.GetValue(instance)))
+                        using(LogBegin(writer.BaseStream.Position, ".{0} = '{1}' (field)\t", property.Name, property.GetValue(instance)))
                         {
                             writer.WriteField(property.GetValue(instance), property.PropertyType);
                         }
                     }
                     if(member is FieldInfo field)
                     {
-                        using(LogBegin(".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance)))
+                        using(LogBegin(writer.BaseStream.Position, ".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance)))
                         {
                             writer.WriteField(field.GetValue(instance), field.FieldType);
                         }
@@ -150,7 +153,7 @@ public static class ContentWriterExtensions
         } 
         catch(Exception err)
         {
-            Log("Error: {0}\n{1}", err.Message, err.StackTrace);
+            Log(writer.BaseStream.Position, "Error: {0}\n{1}", err.Message, err.StackTrace);
             throw;
         }  
     }

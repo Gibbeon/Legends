@@ -38,6 +38,6 @@
 /build:Scenes\TitleScreen.json
 
 #begin Scenes\test.json
-/importer:DynamicImporter
-/processor:DynamicProcessor
-/build:Scenes\test.json
+#/importer:DynamicImporter
+#/processor:DynamicProcessor
+#/build:Scenes\test.json

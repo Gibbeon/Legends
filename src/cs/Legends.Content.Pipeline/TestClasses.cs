@@ -1,8 +1,10 @@
 
 using System.Collections.Generic;
+using Legends.Content.Pipline.JsonConverters;
 using Legends.Engine.Content;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 
 namespace Legends.Content.Pipeline;
 
@@ -20,9 +22,9 @@ public class BehaviorLike : IBehaviorLike
 public class SceneLike
 {
     public string Name { get; set; }
-    public Asset<Texture2D> Texture { get; set; }  
+    public Texture2D Texture { get; set; }  
     public List<Scriptable<IBehaviorLike>> Behaviors { get; set; }
-    private Texture2D SourceData => ~Texture;
+    private Texture2D SourceData => Texture;
 
     public void Update()
     {
