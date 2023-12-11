@@ -1,4 +1,5 @@
 ﻿using Legends.Engine;
+using Legends.Engine.Content;
 using Legends.Engine.Input;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Screens;
@@ -25,6 +26,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _inputService           = new InputHandlerService(Services);
 
         Content.RootDirectory = "Content";
+        Content.EnableAssetWatching();
         IsMouseVisible = true;
     }
 

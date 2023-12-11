@@ -38,6 +38,7 @@ public abstract class Asset : IContentReadWrite
     {
         Source = reader.ReadString();
         Load(reader.ContentManager);
+        reader.ContentManager.Track(this);
     }
     
     public virtual void Write(ContentWriter writer)

@@ -17,7 +17,7 @@ public class TitleScreen : Screen
         _services = services;
         _input = new InputManager(_services);
 
-        _scene = (Scene)_services.GetContentManager().Load<ContentObject>("Scenes/TitleScreen").Instance;
+        _scene = (Scene)_services.GetContentManager().Load<ContentObject>("Scenes/TitleScreen").Instance
     }
 
     public override void Draw(GameTime gameTime)
