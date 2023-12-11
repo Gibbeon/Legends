@@ -12,7 +12,6 @@ public class ScriptImporter : ContentImporter<Assembly>
 {
     public override Assembly Import(string filename, ContentImporterContext context)
     {
-        
         return DynamicClassLoader.Compile(filename, File.ReadAllText(filename));
     }
 }

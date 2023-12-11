@@ -54,7 +54,7 @@ public class Scriptable<TType> : Asset<TType>, IScriptable
 
         if(!string.IsNullOrEmpty(Source) && !string.IsNullOrEmpty(TypeName))
         {
-            var assembly = reader.ContentManager.Load<Assembly>(Path.ChangeExtension(Source, ""));
+            var assembly = reader.ContentManager.Load<Assembly>(Path.ChangeExtension(Source, null) + "_0");
         }
         _value = reader.ReadObject(_value, AssetType);
     }

@@ -26,7 +26,7 @@ public abstract class Asset : IContentReadWrite
 
     public virtual object AsExternalReference()
     {
-        return Activator.CreateInstance(typeof(ExternalReference<>).MakeGenericType(MakeGenericType()), Source);
+        return Activator.CreateInstance(typeof(ExternalReference<>).MakeGenericType(AssetType), Source);
     }
 
     public static Asset Create(string source, object data, Type type )
