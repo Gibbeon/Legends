@@ -42,20 +42,25 @@ public class Scriptable<TType> : Asset<TType>, IScriptable
 
     public override void Write(ContentWriter writer)
     {
-        base.Write(writer);
+        writer.Write(Source ?? "");
         writer.Write(TypeName ?? "");
         writer.WriteObject(Value, AssetType);
     }
 
     public override void Read(ContentReader reader)
     {        
-        base.Read(reader);
+        Source = reader.ReadString();
         TypeName = reader.ReadString();
 
         if(!string.IsNullOrEmpty(Source) && !string.IsNullOrEmpty(TypeName))
         {
-            var assembly = reader.ContentManager.Load<Assembly>(Path.ChangeExtension(Source, null) + "_0");
+            var assembly = reader.ContentManager.Load<DynamicAssembly>(Path.ChangeExtension(Source, null));
+            var type = assembly.GetType(TypeName);
+            _value = reader.ReadObject(_value, type);
         }
-        _value = reader.ReadObject(_value, AssetType);
+        else
+        {
+            _value = reader.ReadObject(_value, AssetType);
+        }
     }
 }

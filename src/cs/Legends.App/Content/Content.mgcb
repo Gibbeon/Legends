@@ -32,12 +32,18 @@
 /processor:BitmapFontProcessor
 /build:Sensation.fnt
 
+#begin Scripts\CameraControlsBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Scripts\CameraControlsBehavior.cs
+
 #begin Scenes\TitleScreen.json
-/importer:DynamicImporter
-/processor:DynamicProcessor
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/processorParam:debug=True
 /build:Scenes\TitleScreen.json
 
 #begin Scenes\test.json
-#/importer:DynamicImporter
-#/processor:DynamicProcessor
+#/importer:ContentObjectImporter
+#/processor:ContentObjectProcessor
 #/build:Scenes\test.json

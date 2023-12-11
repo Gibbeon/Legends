@@ -30,7 +30,7 @@ public class AssetJsonConverter : JsonConverter
             {
                 if(!string.IsNullOrEmpty(scriptable.Source))
                 {
-                    var derivedType = DynamicClassLoader.CompileCodeAndExtractClass(scriptable.Source, File.ReadAllText(scriptable.Source), scriptable.TypeName);
+                    var derivedType = DynamicClassLoader.Compile(scriptable.Source, File.ReadAllText(scriptable.Source)).GetType(scriptable.TypeName);
                     scriptable.Set(serializer.Deserialize(new StringReader(scriptable.Properties.ToString()), derivedType));
                 }
                 else

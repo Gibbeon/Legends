@@ -77,7 +77,7 @@ public static class ContentWriterExtensions
                 return;
             }
 
-            Console.WriteLine();
+            ContentLogger.LogEnd("");
             //LogEnd("typeof(object) of type {0}", derivedType.Name);
             writer.WriteObject(instance, type);
         }

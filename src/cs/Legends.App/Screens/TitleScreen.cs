@@ -3,6 +3,7 @@ using MonoGame.Extended.Screens;
 using Legends.Engine.Input;
 using Legends.Engine;
 using System;
+using Legends.Engine.Content;
 
 namespace Legends.App.Screens;
 
@@ -16,7 +17,7 @@ public class TitleScreen : Screen
         _services = services;
         _input = new InputManager(_services);
 
-        _scene = _services.GetContentManager().Load<Scene>("Scenes/TitleScreen");
+        _scene = (Scene)_services.GetContentManager().Load<ContentObject>("Scenes/TitleScreen").Instance;
     }
 
     public override void Draw(GameTime gameTime)

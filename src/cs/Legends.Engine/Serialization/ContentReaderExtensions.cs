@@ -66,7 +66,7 @@ public static class ContentReaderExtensions
             return result;         
         }
 
-        if(derivedType.GetInterfaces().Any(n => n == typeof(ICollection)))
+        else if(derivedType.GetInterfaces().Any(n => n == typeof(ICollection)))
         {
             ContentLogger.LogAppend("(array)", derivedType.Name);
             result =  reader.ReadArray(instance as ICollection);
@@ -74,19 +74,19 @@ public static class ContentReaderExtensions
             return result;
         }
 
-        if(derivedType.GetInterfaces().Any(n => n == typeof(IContentReadWrite)))
+        else if(derivedType.GetInterfaces().Any(n => n == typeof(IContentReadWrite)))
         {
             ContentLogger.LogAppend("(IContentReadWrite)");
 
-            instance ??=  derivedType.Create();
+            instance ??= derivedType.Create();
 
-            derivedType.GetAnyMethod("Read", typeof(ContentReader)).InvokeAny(instance, reader);
+            derivedType.GetAnyMethod("Read", reader.GetType()).InvokeAny(instance, reader);
             result = instance;
             ContentLogger.LogEnd("{0}", result);
             return result;
         }
 
-        if(derivedType.IsEnum)
+        else if(derivedType.IsEnum)
         {
             ContentLogger.LogAppend("(enum)", derivedType.Name);         
             var intValue = reader.ReadInt32();
@@ -112,7 +112,7 @@ public static class ContentReaderExtensions
         }
 
         var typeName = reader.ReadString();
-        var derivedType = Type.GetType(typeName);
+        var derivedType = Type.GetType(typeName) ?? type;
 
         using(ContentLogger.Log(reader.BaseStream.Seek(0, SeekOrigin.Current), "Object found of type {0}, existing instance is ({1})", derivedType.Name, instance == null ? "null" : "not null"))
         {

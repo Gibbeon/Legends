@@ -14,7 +14,7 @@ public abstract class Asset : IContentReadWrite
     public string Source        { get; set; }
     public abstract Type        AssetType { get; }
     public TType Get<TType>()   {  return (TType)Convert.ChangeType(_value, typeof(TType)); }
-    protected abstract object Load(ContentManager manager);
+    public abstract void Load(ContentManager manager);
     public Asset() {}
     public Asset(string source) {  Source = source; }
     public Asset(string source, object value) : this(source) { _value = value; }
@@ -37,6 +37,7 @@ public abstract class Asset : IContentReadWrite
     public virtual void Read(ContentReader reader)
     {
         Source = reader.ReadString();
+        Load(reader.ContentManager);
     }
     
     public virtual void Write(ContentWriter writer)
@@ -49,7 +50,7 @@ public class Asset<TType> : Asset
 {
     public override Type AssetType      => typeof(TType);
     public TType Get()                  => Get<TType>();
-    protected override object Load(ContentManager manager) { return manager.Load<Asset<TType>>(Source); }
+    public override void Load(ContentManager manager) { _value = manager.Load<TType>(Source); }
     public Asset() {}
     public Asset(string source) : base(source) {}
     public Asset(string source, TType value) : base(source, value) {}

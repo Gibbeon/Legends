@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using Microsoft.CodeAnalysis;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Legends.Content.Pipline;
 
@@ -33,7 +34,7 @@ public static class ContentProcessorExtensions
         typeof(Type)
     };
     
-    private static void BuildAsset(this ContentProcessorContext processor, Asset asset)
+    public static void BuildAssetReference(this ContentProcessorContext processor, Asset asset)
     {
         try
         {
@@ -57,7 +58,7 @@ public static class ContentProcessorExtensions
         }
     }
 
-    private static void ProcessBuildAssetMemberValue(this ContentProcessorContext processor, object instance, Type type)
+    private static void GetAssetMemberValue(this ContentProcessorContext processor, object instance, Type type, ref IList<Asset> results)
     { 
         var derivedType = instance == null ? type : instance.GetType();
 
@@ -68,27 +69,27 @@ public static class ContentProcessorExtensions
                 || instance.GetType().IsEnum
                 || instance.GetType().IsValueType) return;
 
-        if(instance is Asset asset) processor.BuildAsset(asset);
-        else if(instance is IEnumerable enumerable) foreach(var item in enumerable) processor.BuildAssetDependencies(item, item.GetType());
-        else processor.BuildAssetDependencies(instance, type);
+        if(instance is Asset asset) results.Add(asset);
+        else if(instance is IEnumerable enumerable) foreach(var item in enumerable) processor.GetAssetDependencies(item, item.GetType(), results);
+        else processor.GetAssetDependencies(instance, type, results);
     }
 
-    public static void BuildAssetDependencies(this ContentProcessorContext processor, object instance, Type type)
+    public static IEnumerable<Asset> GetAssetDependencies(this ContentProcessorContext processor, object instance, Type type, IList<Asset> results = default)
     {
+        results ??= new List<Asset>();
+
         try
         {
             var derivedType = instance == null ? type : instance.GetType();
-
-            //Console.WriteLine("{0}", derivedType.Name);
 
             if(instance == null 
                 || derivedType == typeof(object)
                 || ExclusionTypes.Any(n => n.IsAssignableFrom(derivedType))
                 || instance.GetType().IsPrimitive
                 || instance.GetType().IsEnum
-                || instance.GetType().IsValueType) return;
+                || instance.GetType().IsValueType) return results;
 
-            if(instance is Asset asset) { processor.BuildAsset(asset); }            
+            if(instance is Asset asset) { results.Add(asset); }            
 
             foreach(var member in Enumerable.Concat<MemberInfo>(
                 derivedType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty),
@@ -98,11 +99,11 @@ public static class ContentProcessorExtensions
                 if(member is PropertyInfo property)
                 {
                     //Console.WriteLine(".{0}", property.Name);
-                    processor.ProcessBuildAssetMemberValue(property.GetValue(instance), property.PropertyType);
+                    processor.GetAssetMemberValue(property.GetValue(instance), property.PropertyType, ref results);
                 }
                 if(member is FieldInfo field)
                 {
-                    processor.ProcessBuildAssetMemberValue(field.GetValue(instance), field.FieldType);
+                    processor.GetAssetMemberValue(field.GetValue(instance), field.FieldType, ref results);
                 }
             }
         } 
@@ -110,5 +111,7 @@ public static class ContentProcessorExtensions
         {
             Console.WriteLine(error.Message);
         }
+
+        return results;
     }
 }

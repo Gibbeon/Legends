@@ -8,8 +8,8 @@ using Legends.Engine.Content;
 
 namespace Legends.Content.Pipline;
 
-[ContentImporter(".json", DisplayName = "Legends Dynamic Importer", DefaultProcessor = "DynamicProcessor")]
-public class DynamicImporter : ContentImporter<dynamic>
+[ContentImporter(".json", DisplayName = "Legends ContentObject Importer", DefaultProcessor = "ContentObjectProcessor")]
+public class ContentObjectImporter : ContentImporter<dynamic>
 {
     public override dynamic Import(string filename, ContentImporterContext context)
     {
@@ -25,17 +25,22 @@ public class DynamicImporter : ContentImporter<dynamic>
 }
 
 [ContentProcessor(DisplayName = "Legends ContentObject Processor")]
-public class DynamicProcessor : ContentProcessor<dynamic, ContentObject>
+public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
 {
     public override ContentObject Process(dynamic input, ContentProcessorContext context)
     {
+        foreach(var item in context.Parameters)
+        {
+            Console.Write("{0}={1}", item.Key, item.Value);
+        }
+        
         var settings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.Auto
+                TypeNameHandling = TypeNameHandling.Auto,
             };
-
+            
         settings.Converters.Add(new AssetJsonConverter());     
-        context.BuildAssetDependencies((object)input, ((object)input).GetType());
+        //context.BuildAssetDependencies((object)input, ((object)input).GetType());
                 
         return ContentObject.Wrap((object)input);
     }
