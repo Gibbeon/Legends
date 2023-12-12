@@ -22,28 +22,28 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     public Texture2D SourceData => TextureRegion?.Texture;
 
     [JsonIgnore]
-    public bool IsVisible   => Parent != null && Parent.IsVisible;
+    public bool IsVisible   => Parent != null && (~Parent).IsVisible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent != null ? Parent.Position : Vector2.Zero;
+    public Vector2 Position => Parent != null ? (~Parent).Position : Vector2.Zero;
 
     [JsonIgnore]
-    public float Rotation   => Parent != null ? Parent.Rotation : 0.0f;
+    public float Rotation   => Parent != null ? (~Parent).Rotation : 0.0f;
     
     [JsonIgnore]
-    public Vector2 Scale    => Parent != null ? Parent.Scale : Vector2.One;
+    public Vector2 Scale    => Parent != null ? (~Parent).Scale : Vector2.One;
     
     [JsonIgnore]
-    public Vector2 Origin   => Parent != null ? Parent.Origin : Vector2.Zero;
+    public Vector2 Origin   => Parent != null ? (~Parent).Origin : Vector2.Zero;
     
     [JsonIgnore]
-    public IViewState ViewState => Parent?.GetParentScene()?.Camera;
+    public IViewState ViewState => (~Parent).GetParentScene().Camera.Get();
 
     [JsonIgnore]
     public Rectangle SourceBounds{ get => TextureRegion == null ? Rectangle.Empty : TextureRegion.Bounds; set => SetTextureRegionBounnds(value); }
 
     [JsonIgnore]
-    public Rectangle DestinationBounds => Parent == null ? Rectangle.Empty : (Rectangle)Parent.BoundingRectangle; 
+    public Rectangle DestinationBounds => Parent == null ? Rectangle.Empty : (Rectangle)(~Parent).BoundingRectangle; 
 
     public SpriteRenderBehavior(): this (null, null)
     {
@@ -58,7 +58,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     {
         if(IsVisible)
         {
-            Parent?.Services?.Get<IRenderService>().DrawBatched(this);
+            (~Parent).Services.Get<IRenderService>().DrawBatched(this);
         }
     }
 

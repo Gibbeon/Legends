@@ -103,7 +103,7 @@ public static class ContentWriterExtensions
                 {
                     if(member is PropertyInfo property)
                     {
-                        using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (field)\t", property.Name, property.GetValue(instance)))
+                        using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance)))
                         {
                             writer.WriteField(property.GetValue(instance), property.PropertyType);
                         }

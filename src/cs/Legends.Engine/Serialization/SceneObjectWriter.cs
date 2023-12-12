@@ -6,7 +6,7 @@ using MonoGame.Extended.Content;
 namespace Legends.Engine.Content;
 
 [ContentTypeWriter]
-public class SceneObjectWriter : ContentTypeWriter<ContentObject>
+public class ContentObjectWriter : ContentTypeWriter<ContentObject>
 {
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {

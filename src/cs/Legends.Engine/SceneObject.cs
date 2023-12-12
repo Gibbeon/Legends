@@ -10,18 +10,18 @@ using Legends.Engine.Content;
 
 namespace Legends.Engine;
 
-public class SceneObject : Spatial, IDisposable, IUpdate
+public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject
 {   
     private static int _globalObjId;
     private IList<string> _tags;    
-    private IList<Scriptable<IBehavior>> _behaviors;
-    private IList<SceneObject> _children;
+    private IList<Ref<IBehavior>> _behaviors;
+    private IList<Ref<SceneObject>> _children;
 
     [JsonIgnore]
     public IServiceProvider Services { get; protected set; }
     
     [JsonIgnore]
-    public SceneObject Parent { get; protected set; }
+    public Ref<SceneObject> Parent { get; protected set; }
     
     public string Name { get; set; }
     
@@ -33,20 +33,16 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     [DefaultValue(true)]
     public bool IsVisible { get; set; }
     
-    public IList<SceneObject> Children
+    public IList<Ref<SceneObject>> Children
     {
         get => _children;
-        protected set => _children = (IList<SceneObject>)value;
+        protected set => _children = value;
     }
-    
-    [JsonIgnore]
-    public IEnumerable<IBehavior> Behaviors => _behaviors.Select(n => (IBehavior)n.Value);
 
-    [JsonProperty(PropertyName = "behaviors")]
-    public IEnumerable<Scriptable<IBehavior>> ScriptableBehaviors
+    public IList<Ref<IBehavior>> Behaviors
     {
         get => _behaviors;
-        set => _behaviors = value.ToList();
+        protected set => _behaviors = value;
     }
 
     public SceneObject() : this(null, null)
@@ -59,8 +55,8 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         Services    = systems;
         Name        = string.Format("{0}#{1}", typeof(SceneObject).Name, _globalObjId++);
         
-        _children   = new List<SceneObject>();
-        _behaviors  = new List<Scriptable<IBehavior>>();
+        _children   = new List<Ref<SceneObject>>();
+        _behaviors  = new List<Ref<IBehavior>>();
         _tags       = new List<string>();
 
         if(parent != null)
@@ -84,9 +80,9 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
         if(_children != null)
         {
-            foreach(var item in _children)
+            foreach(var child in _children)
             {
-                item.OffsetPosition = position;
+                (~child).OffsetPosition = position;
             }
         }   
     }
@@ -97,9 +93,9 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
         if(_children != null)
         {
-            foreach(var item in _children)
+            foreach(var child in _children)
             {
-                item.OffsetScale = scale;
+                (~child).OffsetScale = scale;
             }
         }   
     }
@@ -110,9 +106,9 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
         if(_children != null)
         {
-            foreach(var item in _children)
+            foreach(var child in _children)
             {
-                item.OffsetRotation = radians;
+                (~child).OffsetRotation = radians;
             }
         }   
     }
@@ -124,7 +120,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
             Services = parent.Services;
         }
 
-        if(Parent != parent)
+        if((~Parent) != parent)
         {
             Detach();
             Parent = parent;
@@ -136,23 +132,23 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     {
         if(detachChildren)
         {
-            Parent?.DetachChild(this);
+            (~Parent).DetachChild(this);
         }
         Parent = null;
     }
 
     public void AttachBehavior(IBehavior behavior)
     {
-        if(!_behaviors.Select(n => n.Value).Contains(behavior))
+        if(!_behaviors.Contains((Ref<IBehavior>)behavior))
         {
-            _behaviors.Add(Scriptable.Wrap(behavior));
+            _behaviors.Add((Ref<IBehavior>)behavior);
         }
     }
 
     public void DetachBehavior<TType>()
         where TType : IBehavior
     {
-        DetachBehavior(_behaviors.OfType<TType>().SingleOrDefault());
+        DetachBehavior<TType>(_behaviors.OfType<TType>().SingleOrDefault());
     }
 
     public void DetachBehavior<TType>(TType behavior)
@@ -160,7 +156,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     {
         if(behavior != null)
         {
-            _behaviors.Remove(Scriptable.Wrap<IBehavior>(behavior));
+            _behaviors.Remove(behavior);
         }
     }
 
@@ -168,7 +164,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
     {
         if(!_children.Contains(node))
         {
-            _children.Add(node);
+            _children.Add(new Ref<SceneObject>(node));
             node.AttachTo(this);
 
             if(relative)
@@ -197,7 +193,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
     public Scene GetParentScene() 
     {
-        return (Parent is Scene) ? (Scene)Parent : Parent?.GetParentScene();
+        return (~Parent is Scene scene) ? scene : (~Parent).GetParentScene();
     } 
 
     public virtual void Update(GameTime gameTime)
@@ -206,12 +202,12 @@ public class SceneObject : Spatial, IDisposable, IUpdate
         
         foreach(var behavior in Behaviors)
         {
-            behavior.Update(gameTime);
+            (~behavior).Update(gameTime);
         }
         
         foreach(var child in Children)
         {
-            child.Update(gameTime);
+            (~child).Update(gameTime);
         }
     }
 
@@ -221,12 +217,12 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
         foreach(var behavior in Behaviors)
         {
-            behavior.Draw(gameTime);
+            (~behavior).Draw(gameTime);
         }
         
         foreach(var child in Children)
         {
-            child.Draw(gameTime);
+            (~child).Draw(gameTime);
         }
     }
 
@@ -239,12 +235,12 @@ public class SceneObject : Spatial, IDisposable, IUpdate
 
         foreach(var behavior in Behaviors)
         {
-            behavior.Dispose();
+            (~behavior).Dispose();
         }
         
         foreach(var child in Children)
         {
-            child.Dispose();
+            (~child).Dispose();
         }
     }
 }  

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 
 namespace Legends.Content.Pipline;
 
+/*
 public static class ContentProcessorExtensions
 {
     private static readonly Type[] ExclusionTypes =
@@ -115,3 +116,4 @@ public static class ContentProcessorExtensions
         return results;
     }
 }
+*/

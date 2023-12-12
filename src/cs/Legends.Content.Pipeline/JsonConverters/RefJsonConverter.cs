@@ -4,15 +4,15 @@ using Newtonsoft.Json.Linq;
 using Legends.Engine.Content;
 using Legends.Engine.Serialization;
 using System.IO;
+using Legends.Engine;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
-/*
-public class AssetJsonConverter : JsonConverter
+public class RefJsonConverter : JsonConverter
 {
     public override bool CanConvert(Type objectType)
     {
-        return objectType.IsAssignableTo(typeof(Asset));
+        return objectType.IsAssignableTo(typeof(IRef));
     }
 
     public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
@@ -21,10 +21,22 @@ public class AssetJsonConverter : JsonConverter
         {
             if(reader.ValueType == typeof(string))
             {
-                return Activator.CreateInstance(objectType, reader.Value, value);
+                var result= Activator.CreateInstance(objectType, reader.Value);
+
+                Console.WriteLine("Returning Ref {0}", result);
+                return result;
+            } 
+            else 
+            {
+                var jObject = JObject.Load(reader);
+                var refType = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : objectType;
+                var parsedValue = jObject.ToObject(refType);
+                var result = Activator.CreateInstance(objectType, parsedValue);
+                Console.WriteLine("Returning Ref {0}", result);
+                return result;
             }
             
-            var jObject = JObject.Load(reader);
+            /*var jObject = JObject.Load(reader);
             var parsedValue = jObject.ToObject(objectType);
 
             if(parsedValue is IScriptable scriptable)
@@ -39,11 +51,11 @@ public class AssetJsonConverter : JsonConverter
                     scriptable.Set(serializer.Deserialize(new JTokenReader(jObject)));
                 }
                 return scriptable;
-            } 
-            else
-            {
-                throw new JsonException();
-            }
+            }*/
+            //else
+            //{
+            //    throw new JsonException();
+           // }
         }
         catch(Exception error)
         {
@@ -56,13 +68,14 @@ public class AssetJsonConverter : JsonConverter
     {       
         try
         {
-            if(value is IScriptable scriptable)
+            //if(value is IScriptable scriptable)
+            //{
+            //    serializer.Serialize(writer, scriptable);
+            //}
+            //else 
+            if(value is IRef reference)
             {
-                serializer.Serialize(writer, scriptable);
-            }
-            else if(value is Asset asset)
-            {
-                writer.WriteValue(asset.Source);
+                writer.WriteValue(reference.Name);
             }
         }
         catch(Exception error)
@@ -71,4 +84,4 @@ public class AssetJsonConverter : JsonConverter
             throw;
         }
     }
-}*/
+}

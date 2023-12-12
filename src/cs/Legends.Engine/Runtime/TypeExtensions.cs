@@ -151,7 +151,17 @@ public static class TypeExtensions
                                                 &&  n.IsDefined(typeof(ExtensionAttribute), false)
                                                 &&  n.GetParameters().Length == parameterTypes?.Length + 1
                                                 &&  n.GetParameters()[0].ParameterType.IsAssignableFrom(instanceType)
-                                                &&  n.GetParameters().Skip(1).All( m => parameterTypes != null && parameterTypes.Any(x => x != null && x.IsAssignableTo(m.ParameterType))));
+                                                &&  n.GetParameters().Skip(1)
+                                                                     .All(m => parameterTypes != null 
+                                                                            && parameterTypes.Any(x => 
+                                                                                                        x.IsAssignableTo(m.ParameterType)
+                                                                                                    ||  (n.IsGenericMethod 
+                                                                                                        && m.ParameterType.IsGenericMethodParameter)
+                                                                                                    ||  (n.IsGenericMethod
+                                                                                                        && m.ParameterType.IsGenericType)
+                                                                                                        
+                                                                                                    
+                                                )));
 
         return Enumerable.Concat(instanceMethods, Enumerable.Concat(extensionMethods, genericMethods));
                 
@@ -198,9 +208,15 @@ public static class TypeExtensions
     {
         if(methodInfo != null && methodInfo.IsGenericMethod && parameterTypes != null)
         {
-            var signatureMap = methodInfo.GetParameters().Zip(parameterTypes).Where(n => n.First.ParameterType.IsGenericMethodParameter).DistinctBy(n => n.First.ParameterType.GenericParameterPosition).OrderBy(n => n.First.ParameterType.GenericParameterPosition);
-            //var typeArray = (methodInfo.ReturnType.IsGenericMethodParameter ? Enumerable.Concat(new [] { methodInfo.ReturnParameter }, signatureMap) : signatureMap).DistinctBy(n => n.ParameterType.GenericParameterPosition).OrderBy(n => n.ParameterType.GenericParameterPosition).ToArray();
-           
+            var signatureMap = methodInfo
+                                    .GetParameters()
+                                    .Skip(methodInfo.IsDefined(typeof(ExtensionAttribute)) ? 1 : 0)
+                                    .Zip(parameterTypes.SelectMany( n => !n.IsGenericType ? new Type[] { n } : n.GetGenericArguments()))
+                                    .Where(n => n.First.ParameterType.IsGenericMethodParameter 
+                                            ||  n.First.ParameterType.IsGenericType 
+                                                && n.First.ParameterType.GetGenericArguments()[0].IsGenericMethodParameter)
+                                    ;
+
             return methodInfo.MakeGenericMethod(signatureMap.Select(n => n.Second == null ? typeof(object) : n.Second).ToArray());
         }
 
@@ -209,13 +225,24 @@ public static class TypeExtensions
 
     public static object InvokeAny(this MethodInfo method, object instance, params object[] values)
     {
-        if(!method.IsStatic)
+        try
         {
-            return method.Invoke(instance, values);
-        }
-        else if(method.IsStatic && method.IsDefined(typeof(ExtensionAttribute)))
+            if(!method.IsStatic)
+            {
+                return method.Invoke(instance, values);
+            }
+            else if(method.IsStatic && method.IsDefined(typeof(ExtensionAttribute)))
+            {
+                return method.Invoke(null, values != null ? Enumerable.Concat( new [] { instance }, values).ToArray() : new[] { instance });
+            }
+        } 
+        catch(Exception error)
         {
-            return method.Invoke(null, values != null ? Enumerable.Concat( new [] { instance }, values).ToArray() : new[] { instance });
+            Console.WriteLine("instance {0}", instance);
+            Console.WriteLine("valuesCount {0}", values == null ? -1 : values.Length);
+            foreach(var value in values) Console.WriteLine("value {0}", value);
+            Console.WriteLine("InvokeAny failed to invoke the desired method {0}", method.GetSignature());
+            throw error.InnerException;
         }
 
         throw new NotSupportedException();

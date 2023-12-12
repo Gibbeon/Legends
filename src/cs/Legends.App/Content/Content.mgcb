@@ -33,9 +33,9 @@
 /build:Sensation.fnt
 
 #begin Scripts\CameraControlsBehavior.cs
-/importer:DynamicAssemblyImporter
-/processor:DynamicAssemblyProcessor
-/build:Scripts\CameraControlsBehavior.cs
+#/importer:DynamicAssemblyImporter
+#/processor:DynamicAssemblyProcessor
+#/build:Scripts\CameraControlsBehavior.cs
 
 #begin Scenes\TitleScreen.json
 /importer:ContentObjectImporter

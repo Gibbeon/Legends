@@ -10,7 +10,7 @@ public abstract class BaseBehavior : IBehavior
     public IServiceProvider Services { get; private set; }
     
     [JsonIgnore]
-    public SceneObject Parent { get; private set; }
+    public Ref<SceneObject> Parent { get; private set; }
 
     public BaseBehavior(IServiceProvider services, SceneObject parent)
     {
@@ -31,7 +31,7 @@ public abstract class BaseBehavior : IBehavior
             Services = parent.Services;
         }
 
-        if(Parent != parent)
+        if(~Parent != parent)
         {
             Detach();
             Parent = parent;
@@ -43,7 +43,7 @@ public abstract class BaseBehavior : IBehavior
     {
         if(detachChildren)
         {
-            Parent?.DetachBehavior(this);
+            (~Parent).DetachBehavior(this);
         }
         Parent = null;
     }

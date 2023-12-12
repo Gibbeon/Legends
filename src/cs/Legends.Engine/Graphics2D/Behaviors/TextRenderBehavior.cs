@@ -29,7 +29,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public string Text {get; set; }
 
-    public Asset<BitmapFont> Font { get; set; }
+    public Ref<BitmapFont> Font { get; set; }
 
     public RenderState RenderState { get; set; }
     
@@ -40,28 +40,28 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
     public VerticalAlignment VerticalAlignment { get; set; }
     
     [JsonIgnore]
-    public bool IsVisible   => Parent != null && Parent.IsVisible;
+    public bool IsVisible   => Parent != null && (~Parent).IsVisible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent != null ? Parent.Position + new Vector2(GetHorizontalOffset(), GetVerticalOffset()) : Vector2.Zero;
+    public Vector2 Position => Parent != null ? (~Parent).Position + new Vector2(GetHorizontalOffset(), GetVerticalOffset()) : Vector2.Zero;
 
     [JsonIgnore]
-    public float Rotation   => Parent != null ? Parent.Rotation : 0.0f;
+    public float Rotation   => Parent != null ? (~Parent).Rotation : 0.0f;
     
     [JsonIgnore]
-    public Vector2 Scale    => Parent != null ? Parent.Scale : Vector2.One;
+    public Vector2 Scale    => Parent != null ? (~Parent).Scale : Vector2.One;
     
     [JsonIgnore]
-    public Vector2 Origin   => Parent != null ? Parent.Origin : Vector2.Zero;
+    public Vector2 Origin   => Parent != null ? (~Parent).Origin : Vector2.Zero;
     
     [JsonIgnore]
-    public IViewState ViewState => Parent?.GetParentScene()?.Camera;
+    public IViewState ViewState => (~Parent).GetParentScene().Camera.Get();
     
     [JsonIgnore]
     public Rectangle SourceBounds => new(Position.ToPoint(), SourceData == null ? Point.Zero : (Point)SourceData.MeasureString(Text));
 
     [JsonIgnore]
-    public BitmapFont SourceData => Font;
+    public BitmapFont SourceData => (BitmapFont)Font;
 
     public TextRenderBehavior() : this(null, null)
     {
@@ -109,7 +109,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
         if(IsVisible && Parent != null)
         {
-            Parent.Services?.Get<IRenderService>().DrawBatched(this);  
+            (~Parent).Services.Get<IRenderService>().DrawBatched(this);  
         }      
     }
 

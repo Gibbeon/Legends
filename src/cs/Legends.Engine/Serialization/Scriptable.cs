@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 
 namespace Legends.Engine.Content;
 
+/*
 public interface IScriptable
 {
     string Source { get; }
@@ -64,3 +65,4 @@ public class Scriptable<TType> : Asset<TType>, IScriptable
         }
     }
 }
+*/

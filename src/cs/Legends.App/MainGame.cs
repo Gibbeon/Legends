@@ -26,7 +26,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _inputService           = new InputHandlerService(Services);
 
         Content.RootDirectory = "Content";
-        Content.EnableAssetWatching();
+        //Content.EnableAssetWatching();
         IsMouseVisible = true;
     }
 

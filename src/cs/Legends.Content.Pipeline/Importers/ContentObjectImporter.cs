@@ -3,7 +3,6 @@ using System.IO;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Newtonsoft.Json;
 using Legends.Content.Pipline.JsonConverters;
-using Legends.Content.Pipeline;
 using Legends.Engine.Content;
 
 namespace Legends.Content.Pipline;
@@ -13,14 +12,25 @@ public class ContentObjectImporter : ContentImporter<dynamic>
 {
     public override dynamic Import(string filename, ContentImporterContext context)
     {
-        var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-            };
-        
-        settings.Converters.Add(new AssetJsonConverter());
+        try
+        {
+            ContentLogger.Enabled = true;
+            var settings = new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto,
+                };
             
-        return JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
+            settings.Converters.Add(new RefJsonConverter());
+                
+            var result = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
+            context.Logger.LogMessage("{0}", JsonConvert.ToString(JsonConvert.SerializeObject(result)));
+            return result;
+        }
+        catch(Exception error)
+        {
+            Console.WriteLine("Import Error: {0}\n{1}", error.Message, error.StackTrace);
+            throw;
+        }
     }
 }
 
@@ -28,20 +38,24 @@ public class ContentObjectImporter : ContentImporter<dynamic>
 public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
 {
     public override ContentObject Process(dynamic input, ContentProcessorContext context)
-    {
-        foreach(var item in context.Parameters)
-        {
-            Console.Write("{0}={1}", item.Key, item.Value);
-        }
-        
-        var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-            };
-            
-        settings.Converters.Add(new AssetJsonConverter());     
-        //context.BuildAssetDependencies((object)input, ((object)input).GetType());
+    {      
+        try
+        {  
+            ContentLogger.Enabled = true;
+            var settings = new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto,
+                };
                 
-        return ContentObject.Wrap((object)input);
+            settings.Converters.Add(new RefJsonConverter());     
+            //context.BuildAssetDependencies((object)input, ((object)input).GetType());
+                    
+            return ContentObject.Wrap((object)input);
+        }
+        catch(Exception error)
+        {
+            Console.WriteLine("Import Error: {0}\n{1}", error.Message, error.StackTrace);
+            throw;
+        }
     }
 }
