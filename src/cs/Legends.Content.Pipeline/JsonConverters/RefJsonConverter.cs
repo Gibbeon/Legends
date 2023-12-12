@@ -22,17 +22,15 @@ public class RefJsonConverter : JsonConverter
             if(reader.ValueType == typeof(string))
             {
                 var result= Activator.CreateInstance(objectType, reader.Value);
-
-                Console.WriteLine("Returning Ref {0}", result);
                 return result;
             } 
             else 
             {
                 var jObject = JObject.Load(reader);
                 var refType = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : objectType;
-                var parsedValue = jObject.ToObject(refType);
+                var parsedValue = serializer.Deserialize(new StringReader(jObject.ToString()), refType);
+
                 var result = Activator.CreateInstance(objectType, parsedValue);
-                Console.WriteLine("Returning Ref {0}", result);
                 return result;
             }
             

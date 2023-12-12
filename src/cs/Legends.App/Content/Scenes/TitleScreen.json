@@ -4,5 +4,10 @@
     "camera": {
         "name": "This is a test",
         "position": "10, 10"
-    }
+    },
+    "behaviors": [
+        {
+            "$type":    "Legends.Engine.Graphics2D.TextRenderBehavior, Legends.Engine"
+        }
+    ]
 }

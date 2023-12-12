@@ -26,19 +26,32 @@ public static class ContentPrimitivesExtensions
 
     public static void Write(this ContentWriter output, IRef result)
     {
-        if(result.IsExternal)
+        if(result == null) 
         {
+            output.Write7BitEncodedInt(0);
+        }
+        else if(result.IsExternal)
+        {
+            output.Write7BitEncodedInt(1);
             output.Write(result.Name);
         } 
         else
         {
+            output.Write7BitEncodedInt(2);
             output.WriteObject(result.Get(), result.RefType);
         }
     }
 
     public static IRef ReadRef(this ContentReader input)
     {
-        input.ReadString();
+        switch(input.Read7BitEncodedInt())
+        {
+            case 0: return null;
+            case 1: return new Ref<object>(input.ReadString());
+            case 2: return new Ref<object>(input.ReadObject(null, null));
+        }
+
+        
         return null;
     }
 }

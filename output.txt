@@ -1,42 +1,50 @@
-Build started 12/12/2023 3:05:11PM
+Build started 12/12/2023 3:15:45PM
 
 Cleaning /Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/bin/Debug/net6.0/Content/Sensation_0.xnb
 Cleaning /Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/bin/Debug/net6.0/Content/Sensation.xnb
-Cleaning /Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/bin/Debug/net6.0/Content/Scenes/TitleScreen.xnb
 /Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Sensation_0.png
 /Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Sensation.fnt
 	Importing XML file: /Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Sensation.fnt
 	Processing BMFont
 	Expected texture asset: Sensation_0
 /Users/riwoods/Documents/dev/Legends/src/cs/Legends.App/Content/Scenes/TitleScreen.json
-Returning Ref ref Legends.Engine.Camera
-	"{\"Camera\":{\"IsExternal\":false,\"RefType\":\"Legends.Engine.Camera, Legends.Engine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null\",\"Name\":\"This is a test\"},\"Name\":\"TitleScreen\",\"Tags\":[],\"Enabled\":true,\"IsVisible\":true,\"Children\":[],\"Behaviors\":[],\"Position\":\"0, 0\",\"Scale\":\"1, 1\",\"Rotation\":0.0,\"Size\":{\"Width\":0.0,\"Height\":0.0,\"IsEmpty\":true},\"Origin\":\"0, 0\"}"
+	"{\"Camera\":{\"IsExternal\":false,\"RefType\":\"Legends.Engine.Camera, Legends.Engine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null\",\"Name\":\"This is a test\"},\"Name\":\"TitleScreen\",\"Tags\":[],\"Enabled\":true,\"IsVisible\":true,\"Children\":[],\"Behaviors\":[{\"IsExternal\":false,\"RefType\":\"Legends.Engine.IBehavior, Legends.Engine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null\",\"Name\":null}],\"Position\":\"0, 0\",\"Scale\":\"1, 1\",\"Rotation\":0.0,\"Size\":{\"Width\":0.0,\"Height\":0.0,\"IsEmpty\":true},\"Origin\":\"0, 0\"}"
 00000001Object: Scene of type Scene (not null)
 00000023  .Camera = 'ref Legends.Engine.Camera' (property)	 Invoke Method
-00000023    Object: Camera of type Camera (not null)
-00000046      .Name = 'This is a test' (property)	 Invoke Method
-00000061      .Tags = 'System.Collections.Generic.List`1[System.String]' (property)	 ICollection.Count: [0] of type List`1
-00000222      .Enabled = 'True' (property)	 Invoke Method
-00000223      .IsVisible = 'True' (property)	 Invoke Method
-00000224      .Children = 'System.Collections.Generic.List`1[Legends.Engine.Ref`1[Legends.Engine.SceneObject]]' (property)	 ICollection.Count: [0] of type List`1
-00000581      .Behaviors = 'System.Collections.Generic.List`1[Legends.Engine.Ref`1[Legends.Engine.IBehavior]]' (property)	 ICollection.Count: [0] of type List`1
-00000934      .Position = '{X:10 Y:10}' (property)	 Invoke Method
-00000942      .Scale = '{X:1 Y:1}' (property)	 Invoke Method
-00000950      .Rotation = '0' (property)	 Invoke Method
-00000954      .Size = 'Width: 0, Height: 0' (property)	 Invoke Method
-00000962      .Origin = '{X:0 Y:0}' (property)	 Invoke Method
-00000970  .Name = 'TitleScreen' (property)	 Invoke Method
-00000982  .Tags = 'System.Collections.Generic.List`1[System.String]' (property)	 ICollection.Count: [0] of type List`1
-00001143  .Enabled = 'True' (property)	 Invoke Method
-00001144  .IsVisible = 'True' (property)	 Invoke Method
-00001145  .Children = 'System.Collections.Generic.List`1[Legends.Engine.Ref`1[Legends.Engine.SceneObject]]' (property)	 ICollection.Count: [0] of type List`1
-00001502  .Behaviors = 'System.Collections.Generic.List`1[Legends.Engine.Ref`1[Legends.Engine.IBehavior]]' (property)	 ICollection.Count: [0] of type List`1
-00001855  .Position = '{X:0 Y:0}' (property)	 Invoke Method
-00001863  .Scale = '{X:1 Y:1}' (property)	 Invoke Method
-00001871  .Rotation = '0' (property)	 Invoke Method
-00001875  .Size = 'Width: 0, Height: 0' (property)	 Invoke Method
-00001883  .Origin = '{X:0 Y:0}' (property)	 Invoke Method
+00000024    Object: Camera of type Camera (not null)
+00000047      .Name = 'This is a test' (property)	 Invoke Method
+00000062      .Tags = 'System.Collections.Generic.List`1[System.String]' (property)	 ICollection.Count: [0] of type List`1
+00000223      .Enabled = 'True' (property)	 Invoke Method
+00000224      .IsVisible = 'True' (property)	 Invoke Method
+00000225      .Children = 'System.Collections.Generic.List`1[Legends.Engine.Ref`1[Legends.Engine.SceneObject]]' (property)	 ICollection.Count: [0] of type List`1
+00000582      .Behaviors = 'System.Collections.Generic.List`1[Legends.Engine.Ref`1[Legends.Engine.IBehavior]]' (property)	 ICollection.Count: [0] of type List`1
+00000935      .Position = '{X:10 Y:10}' (property)	 Invoke Method
+00000943      .Scale = '{X:1 Y:1}' (property)	 Invoke Method
+00000951      .Rotation = '0' (property)	 Invoke Method
+00000955      .Size = 'Width: 0, Height: 0' (property)	 Invoke Method
+00000963      .Origin = '{X:0 Y:0}' (property)	 Invoke Method
+00000971  .Name = 'TitleScreen' (property)	 Invoke Method
+00000983  .Tags = 'System.Collections.Generic.List`1[System.String]' (property)	 ICollection.Count: [0] of type List`1
+00001144  .Enabled = 'True' (property)	 Invoke Method
+00001145  .IsVisible = 'True' (property)	 Invoke Method
+00001146  .Children = 'System.Collections.Generic.List`1[Legends.Engine.Ref`1[Legends.Engine.SceneObject]]' (property)	 ICollection.Count: [0] of type List`1
+00001503  .Behaviors = 'System.Collections.Generic.List`1[Legends.Engine.Ref`1[Legends.Engine.IBehavior]]' (property)	 ICollection.Count: [1] of type List`1
+00001856    [0]  Invoke Method
+00001857      Object: TextRenderBehavior of type IBehavior (not null)
+00001903        .Color = '{R:255 G:255 B:255 A:255}' (property)	 Invoke Method
+00001907        .Effect = 'None' (property)	 Enum of type SpriteEffects
+00001911        .Text = '' (property)	 Invoke Method
+00001912        .Font = '' (property)	 Invoke Method
+00001913        .RenderState = '' (property)	 
+00001913          Object: RenderState of type RenderState (null)
+00001914        .HorizontalAlignment = 'Left' (property)	 Enum of type HorizontalAlignment
+00001918        .VerticalAlignment = 'Top' (property)	 Enum of type VerticalAlignment
+00001922  .Position = '{X:0 Y:0}' (property)	 Invoke Method
+00001930  .Scale = '{X:1 Y:1}' (property)	 Invoke Method
+00001938  .Rotation = '0' (property)	 Invoke Method
+00001942  .Size = 'Width: 0, Height: 0' (property)	 Invoke Method
+00001950  .Origin = '{X:0 Y:0}' (property)	 Invoke Method
 
 Build 3 succeeded, 0 failed.
 
-Time elapsed 00:00:02.49.
+Time elapsed 00:00:02.98.
