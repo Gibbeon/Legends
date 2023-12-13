@@ -195,7 +195,7 @@ public static class TypeExtensions
                     .MatchMethodName(methodName)
                     .MatchMethodSignature(type, parameterTypes)
                     .OrderBy(n => !n.IsDefined(typeof(ExtensionAttribute)))
-                    .FirstOrDefault(n => n.ReturnParameter.ParameterType.IsAssignableTo(returnType))
+                    .FirstOrDefault(n => n.ReturnParameter.ParameterType.IsAssignableFrom(returnType))
                     .MakeGenericFromSignature(parameterTypes);
     }
 

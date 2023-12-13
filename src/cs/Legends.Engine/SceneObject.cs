@@ -130,7 +130,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject
 
     internal void Detach(bool detachChildren = true)
     {
-        if(detachChildren)
+        if(detachChildren && Parent != null)
         {
             (~Parent).DetachChild(this);
         }

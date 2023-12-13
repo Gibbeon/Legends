@@ -60,8 +60,9 @@ public static class ContentReaderExtensions
 
         if(native != null)
         {
-            ContentLogger.LogAppend("(invoke)", native.GetSignature());                
-            result = Convert.ChangeType(native.InvokeAny(reader), derivedType); 
+            ContentLogger.LogAppend("(invoke)", native.GetSignature()); 
+            var value = native.InvokeAny(reader);               
+            result = Convert.ChangeType(value, derivedType); 
             ContentLogger.LogEnd("{0}", result);  
             return result;         
         }
@@ -96,12 +97,12 @@ public static class ContentReaderExtensions
             return result;
         }
         ContentLogger.LogEnd("(object)", derivedType.Name); 
-        return reader.ReadObject(instance, derivedType);
+        return reader.ReadComplexObject(instance, derivedType);
     }
 
-    public static object ReadObject(this ContentReader reader, object instance, Type type)
+    public static object ReadComplexObject(this ContentReader reader, object instance, Type type)
     {
-        using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), "Reading Object of type {0}", type.Name))
+        using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), "Reading Object of type {0}", type == null ? "(unknown type)" : type?.Name))
         {
             var isNull = reader.Read7BitEncodedInt() == 0;
             if(isNull)
@@ -110,6 +111,7 @@ public static class ContentReaderExtensions
                 return null;
             }
         }
+        ContentLogger.LogEnd("");
 
         var typeName = reader.ReadString();
         var derivedType = Type.GetType(typeName) ?? type;

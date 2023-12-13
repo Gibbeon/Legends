@@ -19,7 +19,7 @@ public static class ContentLogger
 
     public static IndentContext LogBegin(long filePos, string message, params object[] args)
     {
-        if(Enabled) Console.Write("{0:D8}", filePos);
+        if(Enabled) Console.Write("{0:D8} ", filePos);
         if(Enabled && Indent > 0) Console.Write(new string(Enumerable.Repeat(' ', IndentSpaces * Indent).ToArray()));
         var result = new IndentContext();
         if(string.IsNullOrEmpty(message)) return result;
