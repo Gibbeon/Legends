@@ -8,6 +8,7 @@ using SharpFont;
 using System.Xml.Linq;
 using Legends.Engine.Content;
 using System;
+using Legends.Engine.Serialization;
 
 namespace Legends.Content.Pipline;
 
@@ -30,18 +31,24 @@ public static class ContentPrimitivesExtensions
         {
             output.Write7BitEncodedInt(0);
         }
-        else if(result.IsExternal)
+        else if(result.IsExternal && !result.IsExtended)
         {
             output.Write7BitEncodedInt(1);
-            output.Write(result.RefType.AssemblyQualifiedName);
-            output.Write(result.Name);
         } 
-        else
+        else if(result.IsExternal && result.IsExtended)
         {
             output.Write7BitEncodedInt(2);
-            output.Write(result.RefType.AssemblyQualifiedName);
-            output.WriteObject(result.Get(), result.RefType);
         }
+        else
+        {
+            output.Write7BitEncodedInt(3);
+        }
+
+        output.Write(result.RefType.AssemblyQualifiedName);
+        output.Write(result.Name);
+        
+        if(!result.IsExternal || result.IsExtended)
+            output.WriteObject(result.Get(), result.RefType);
     }
 
     public static IRef ReadRef(this ContentReader input)
@@ -51,19 +58,29 @@ public static class ContentPrimitivesExtensions
             case 0: return null;
             case 1: 
             {
-                var str = input.ReadString();
-                var type = Type.GetType(str);
+                var type = Type.GetType(input.ReadString());
                 var result = (IRef)Activator.CreateInstance(typeof(Ref<>).MakeGenericType(type), input.ReadString());
                 result.Load(input.ContentManager);
                 return result;
             }
-            
             case 2: 
             {
+                var typeName = input.ReadString(); 
+                var srcName = input.ReadString();
+                var type = Type.GetType(typeName);
+
+                input.ContentManager.Load<DynamicAssembly>(srcName);
+
+                var result = (IRef)Activator.CreateInstance(typeof(Ref<>).MakeGenericType(type), srcName);
+                result.Set(input.ReadComplexObject(result.Get(), type));
+                return result;
+            }
+            case 3: 
+            {
                 var type = Type.GetType(input.ReadString());
-                var instance = input.ReadComplexObject(null, type);
-                if(instance == null) return null;
-                return (IRef)Activator.CreateInstance(typeof(Ref<>).MakeGenericType(type), instance);
+                var result = (IRef)Activator.CreateInstance(typeof(Ref<>).MakeGenericType(type), input.ReadString());
+                result.Set(input.ReadComplexObject(result.Get(), type));
+                return result;
             }
         }
 

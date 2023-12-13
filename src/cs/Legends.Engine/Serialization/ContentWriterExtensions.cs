@@ -93,8 +93,9 @@ public static class ContentWriterExtensions
             {
                 writer.Write7BitEncodedInt(instance == null ? 0 : 1);
                 if(instance == null) return;
-
-                writer.Write(derivedType.FullName); 
+                
+                writer.Write(derivedType.FullName);
+                
                 foreach(var member in Enumerable.Concat<MemberInfo>(
                     derivedType .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
                                 .Where(n => n.CanRead && n.CanWrite),

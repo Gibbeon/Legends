@@ -28,17 +28,25 @@ public class RefJsonConverter : JsonConverter
                 var jObject = JObject.Load(reader);
                 var valueType = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : objectType;
                 var jProperty = jObject.Property("$src");
+                var name = (string)"";
+                bool isExternal = false;
+                bool isExtended = false;
                 
                 if(jProperty != null)
                 {
                     var assembly = DynamicClassLoader.Compile(jProperty.Value.ToString(), File.ReadAllText(jProperty.Value.ToString()));
                     valueType = assembly.Assembly.GetType(jObject.Property("$type").Value.ToString());
+                    name = Path.ChangeExtension(jObject.Property("$src").Value.ToString(), null);
                     jObject.Remove("$src");
                     jObject.Remove("$type");
+                    isExternal = true;
+                    isExtended = true;
                 }
 
+                Console.WriteLine("isExternal {0} for {1}", isExternal, valueType.Name);
+
                 var parsedValue = serializer.Deserialize(new StringReader(jObject.ToString()), valueType);
-                var result = Activator.CreateInstance(objectType, parsedValue);
+                var result = Activator.CreateInstance(objectType, name, parsedValue, isExternal, isExtended);
                 return result;
             }
             

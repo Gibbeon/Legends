@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Legends.Engine.Runtime;
+using Legends.Engine.Serialization;
 using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
 
@@ -114,7 +115,7 @@ public static class ContentReaderExtensions
         ContentLogger.LogEnd("");
 
         var typeName = reader.ReadString();
-        var derivedType = Type.GetType(typeName) ?? type;
+        var derivedType = Type.GetType(typeName) ?? DynamicClassLoader.GetType(typeName) ?? type;
 
         using(ContentLogger.Log(reader.BaseStream.Seek(0, SeekOrigin.Current), "Object found of type {0}, existing instance is ({1})", derivedType.Name, instance == null ? "null" : "not null"))
         {

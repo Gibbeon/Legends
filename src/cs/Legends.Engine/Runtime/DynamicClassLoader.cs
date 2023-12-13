@@ -86,6 +86,14 @@ public static class DynamicClassLoader
         }
     }
 
+    public static Type GetType(string typeName)
+    {
+        return _assemblyCache
+                    .Values
+                    .Select(n => n.Assembly.GetType(typeName))
+                    .FirstOrDefault(n => n != null);
+    }
+
     public static void Register(DynamicAssembly dynamicAssembly)
     {
         _assemblyCache[dynamicAssembly.Identifier] = dynamicAssembly;

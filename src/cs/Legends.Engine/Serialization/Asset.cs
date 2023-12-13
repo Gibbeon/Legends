@@ -85,11 +85,13 @@ public interface INamedObject
 public interface IRef : INamedObject
 {
     bool IsExternal { get; }
+    bool IsExtended { get; }
     Type RefType { get; }
 
     void Load(ContentManager manager);
 
     object Get();
+    void Set(object value);
 }
 
 public interface IRef<TType> : IRef
@@ -102,11 +104,17 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
 {
     private TType _value;
     private string _name;
-    public bool IsExternal => !string.IsNullOrEmpty(_name);
+    private bool _external;
+    private bool _extended;
+    public bool IsExternal => _external;
+    public bool IsExtended { get => _extended; set => _extended = value; }
     public Type RefType => typeof(TType);
     public string Name => (_value is INamedObject namedValue) ? namedValue.Name : _name;
     public TType Get() => _value;    
     object IRef.Get() => _value;
+
+    public TType Set(TType value) => _value = value;
+    void IRef.Set(object value) => _value = (TType)value;
 
     public void Load(ContentManager manager)
     {
@@ -122,20 +130,31 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
     public static implicit operator Ref<TType> (TType value) => new (value);
     public static implicit operator Ref<TType> (string value) => new (value);
     public static TType operator~ (Ref<TType> reference) => reference?.Get();
-    public Ref(string name)
+    public Ref(string name): this(name, null)
     {
-        _name = name;
+  
     }
-    public Ref(string name, TType reference)
+    public Ref(TType reference): this(null, reference)
     {
-        _name = name;
-        _value = reference;
+
     }
-    public Ref(TType reference)
+    public Ref(string name, TType reference): this(name, reference, !string.IsNullOrEmpty(name))
     {
-        _value = reference;
+
+    }  
+    public Ref(string name, TType reference, bool external): this(name, reference, external, false)
+    {
     }
 
+    public Ref(string name, TType reference, bool external, bool extended)
+    {
+        _name = name;
+        _value = reference;
+        _external = external;
+        _extended = extended;
+    }
+  
+  
     public override string ToString()
     {
         return string.Format("ref {0}", IsExternal ? _name : _value == null ? "(null)" : _value.ToString());
