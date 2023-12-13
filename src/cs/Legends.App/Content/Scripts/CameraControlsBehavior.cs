@@ -19,7 +19,7 @@ public class CameraControlsBehavior : BaseBehavior
     {
         ScrollSpeed = 1;
 
-        if(services != null)
+        /*if(services != null)
         {
             _commands = new InputCommandSet(Services, services.Get<IInputHandlerService>().Current);
 
@@ -29,17 +29,17 @@ public class CameraControlsBehavior : BaseBehavior
             _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down);
 
             _commands.Enabled = true;
-        }
+        }*/
     }
 
     public override void Dispose()
     {
-        GC.SuppressFinalize(this);
-        _commands?.Dispose();
+        //GC.SuppressFinalize(this);
+        //_commands?.Dispose();
     }
     public override void Update(GameTime gameTime)
     {
-        if(_commands != null)
+        /*if(_commands != null)
         {
             foreach(var command in _commands.EventActions)
             {
@@ -53,6 +53,6 @@ public class CameraControlsBehavior : BaseBehavior
                         Console.WriteLine("Unknown Command: {0}", command.Name); break;             
                 }
             }  
-        }
+        }*/
     }
 }

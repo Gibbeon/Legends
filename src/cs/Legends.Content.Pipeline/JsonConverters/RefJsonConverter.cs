@@ -1,10 +1,9 @@
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Legends.Engine.Content;
-using Legends.Engine.Serialization;
 using System.IO;
 using Legends.Engine;
+using Legends.Engine.Serialization;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
@@ -27,9 +26,18 @@ public class RefJsonConverter : JsonConverter
             else 
             {
                 var jObject = JObject.Load(reader);
-                var refType = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : objectType;
-                var parsedValue = serializer.Deserialize(new StringReader(jObject.ToString()), refType);
+                var valueType = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : objectType;
+                var jProperty = jObject.Property("$src");
+                
+                if(jProperty != null)
+                {
+                    var assembly = DynamicClassLoader.Compile(jProperty.Value.ToString(), File.ReadAllText(jProperty.Value.ToString()));
+                    valueType = assembly.Assembly.GetType(jObject.Property("$type").Value.ToString());
+                    jObject.Remove("$src");
+                    jObject.Remove("$type");
+                }
 
+                var parsedValue = serializer.Deserialize(new StringReader(jObject.ToString()), valueType);
                 var result = Activator.CreateInstance(objectType, parsedValue);
                 return result;
             }

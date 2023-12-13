@@ -33,13 +33,13 @@ public static class ContentPrimitivesExtensions
         else if(result.IsExternal)
         {
             output.Write7BitEncodedInt(1);
-            output.Write(result.RefType.FullName);
+            output.Write(result.RefType.AssemblyQualifiedName);
             output.Write(result.Name);
         } 
         else
         {
             output.Write7BitEncodedInt(2);
-            output.Write(result.RefType.FullName);
+            output.Write(result.RefType.AssemblyQualifiedName);
             output.WriteObject(result.Get(), result.RefType);
         }
     }
@@ -51,8 +51,11 @@ public static class ContentPrimitivesExtensions
             case 0: return null;
             case 1: 
             {
-                var type = Type.GetType(input.ReadString());
-                return (IRef)Activator.CreateInstance(typeof(Ref<>).MakeGenericType(type), input.ReadString());
+                var str = input.ReadString();
+                var type = Type.GetType(str);
+                var result = (IRef)Activator.CreateInstance(typeof(Ref<>).MakeGenericType(type), input.ReadString());
+                result.Load(input.ContentManager);
+                return result;
             }
             
             case 2: 

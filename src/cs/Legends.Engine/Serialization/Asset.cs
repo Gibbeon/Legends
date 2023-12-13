@@ -8,6 +8,7 @@ using Legends.Engine.Runtime;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+using MonoGame.Extended.Content;
 using Newtonsoft.Json;
 
 namespace Legends.Engine;
@@ -86,6 +87,8 @@ public interface IRef : INamedObject
     bool IsExternal { get; }
     Type RefType { get; }
 
+    void Load(ContentManager manager);
+
     object Get();
 }
 
@@ -94,7 +97,7 @@ public interface IRef<TType> : IRef
     new TType Get();
 }
 
-public class Ref<TType> : IRef, IComparable<Ref<TType>>
+public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
     where TType : class
 {
     private TType _value;
@@ -105,9 +108,14 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>
     public TType Get() => _value;    
     object IRef.Get() => _value;
 
+    public void Load(ContentManager manager)
+    {
+        _value = manager.Load<TType>(_name);
+    }
+
     public int CompareTo(Ref<TType> other)
     {
-        return Comparer.Default.Compare(this._value, other._value);
+        return Comparer<Ref<TType>>.Default.Compare(this._value, other._value);
     }
 
     public static implicit operator TType (Ref<TType> reference) => reference?.Get();
@@ -118,6 +126,11 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>
     {
         _name = name;
     }
+    public Ref(string name, TType reference)
+    {
+        _name = name;
+        _value = reference;
+    }
     public Ref(TType reference)
     {
         _value = reference;
@@ -126,6 +139,11 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>
     public override string ToString()
     {
         return string.Format("ref {0}", IsExternal ? _name : _value == null ? "(null)" : _value.ToString());
+    }
+
+    public bool Equals(Ref<TType> other)
+    {
+        return this._value == other._value;
     }
 }
 
@@ -190,8 +208,8 @@ public static class ContentManagerExtensions
         where TType : class
     {
         var instance = contentManager.Load<object>(name);
-        if(instance is ContentObject co) return new Ref<TType>((TType)co.Instance);
-        return new Ref<TType>((TType)instance);
+        if(instance is ContentObject co) return new Ref<TType>(name, (TType)co.Instance);
+        return new Ref<TType>(name, (TType)instance);
     }
 
     public static void ReloadAsset(this ContentManager contentManager, string name)
