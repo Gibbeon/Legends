@@ -43,7 +43,7 @@ public class RefJsonConverter : JsonConverter
                     isExtended = true;
                 }
 
-                Console.WriteLine("isExternal {0} for {1}", isExternal, valueType.Name);
+                //Console.WriteLine("isExternal {0} for {1}", isExternal, valueType.Name);
 
                 var parsedValue = serializer.Deserialize(new StringReader(jObject.ToString()), valueType);
                 var result = Activator.CreateInstance(objectType, name, parsedValue, isExternal, isExtended);

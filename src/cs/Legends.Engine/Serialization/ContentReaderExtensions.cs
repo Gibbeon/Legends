@@ -64,6 +64,8 @@ public static class ContentReaderExtensions
             ContentLogger.LogAppend("(invoke)", native.GetSignature()); 
             var value = native.InvokeAny(reader);               
             result = Convert.ChangeType(value, derivedType); 
+            if(result is IRef) return result;
+            
             ContentLogger.LogEnd("{0}", result);  
             return result;         
         }

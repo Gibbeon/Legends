@@ -9,7 +9,7 @@
                 {
                     "$type":    "Legends.Engine.Graphics2D.TextRenderBehavior, Legends.Engine",
                     "font":     "Sensation",
-                    "text":     "Press ESC to Exit or ENTER to start",
+                    "text":     "Press ESC to Exit or ENTER to start!",
                     "color":    "255, 255, 255, 255",
                     "halign":   "Center",
                     "valign":   "Middle"
@@ -18,7 +18,7 @@
                     "$type":    "Legends.Scripts.CameraControlsBehavior",
                     "$src":     "Scripts/CameraControlsBehavior.cs",
                     "font":     "Sensation",
-                    "text":     "Press ESC to Exit or ENTER to start",
+                    "text":     "Press ESC to Exit or ENTER to START",
                     "color":    "255, 255, 255, 255",
                     "halign":   "Center",
                     "valign":   "Middle"

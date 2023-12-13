@@ -27,7 +27,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
 
         ContentLogger.Enabled = true;
         Content.RootDirectory = "Content";
-        //Content.EnableAssetWatching();
+        Content.EnableAssetWatching();
         IsMouseVisible = true;
     }
 

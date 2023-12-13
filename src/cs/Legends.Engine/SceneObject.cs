@@ -10,7 +10,7 @@ using Legends.Engine.Content;
 
 namespace Legends.Engine;
 
-public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject
+public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyReload
 {   
     private static int _globalObjId;
     private IList<string> _tags;    
@@ -237,10 +237,28 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject
         {
             (~behavior).Dispose();
         }
-        
+        Behaviors.Clear();
         foreach(var child in Children)
         {
             (~child).Dispose();
         }
+        Children.Clear();
+    }
+
+    public void OnReload()
+    {
+        Enabled = false;
+        IsVisible = false;
+
+        foreach(var behavior in Behaviors)
+        {
+            (~behavior).Dispose();
+        }
+        Behaviors.Clear();
+        foreach(var child in Children)
+        {
+            (~child).Dispose();
+        }
+        Children.Clear();
     }
 }  

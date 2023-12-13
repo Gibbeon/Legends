@@ -238,10 +238,10 @@ public static class TypeExtensions
         } 
         catch(Exception error)
         {
-            Console.WriteLine("instance {0}", instance);
-            Console.WriteLine("valuesCount {0}", values == null ? -1 : values.Length);
-            foreach(var value in values) Console.WriteLine("value {0}", value);
-            Console.WriteLine("InvokeAny failed to invoke the desired method {0}", method.GetSignature());
+            //Console.WriteLine("instance {0}", instance);
+            //Console.WriteLine("valuesCount {0}", values == null ? -1 : values.Length);
+            //foreach(var value in values) Console.WriteLine("value {0}", value);
+            //Console.WriteLine("InvokeAny failed to invoke the desired method {0}", method.GetSignature());
             throw error.InnerException;
         }
 

@@ -11,7 +11,7 @@ public class DynamicAssemblyImporter : ContentImporter<DynamicAssembly>
 {
     public override DynamicAssembly Import(string filename, ContentImporterContext context)
     {
-        Console.WriteLine("Filename {0}", filename);
+        //Console.WriteLine("Filename {0}", filename);
 
         return DynamicClassLoader.Compile(filename, File.ReadAllText(filename));
     }

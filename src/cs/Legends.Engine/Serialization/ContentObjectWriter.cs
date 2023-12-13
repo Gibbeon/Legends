@@ -23,7 +23,8 @@ public class ContentObjectReader : ContentTypeReader<ContentObject>
 {
     protected override ContentObject Read(ContentReader input, ContentObject existingInstance)
     {
-        var result = input.ReadComplexObject(existingInstance, typeof(object));
+        var instance = existingInstance == null ? null : existingInstance.Instance;
+        var result = input.ReadComplexObject(instance, typeof(object));
 
         return ContentObject.Wrap(result);       
     }
