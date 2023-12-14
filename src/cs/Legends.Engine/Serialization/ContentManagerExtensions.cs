@@ -14,6 +14,8 @@ public static class ContentManagerExtensions
                                                                     .GetValue(contentManager);
 
     private static FileSystemWatcher _watcher;
+    private static readonly HashSet<string> _events = new();
+    private static readonly object _lock = new();
 
     public static Ref<TType> GetRef<TType>(this ContentManager contentManager, string name) 
         where TType : class
@@ -21,6 +23,23 @@ public static class ContentManagerExtensions
         var instance = contentManager.Load<object>(name);
         if(instance is ContentObject co) return new Ref<TType>(name, (TType)co.Instance);
         return new Ref<TType>(name, (TType)instance);
+    }
+
+    public static void DoRerloads(this ContentManager contentManager)
+    {
+        lock(_lock)
+        {
+            foreach(var item in _events)
+            {
+                contentManager.ReloadAsset(item);
+            }
+            _events.Clear();
+        }
+    }
+
+    public static void QueueReload(this ContentManager contentManager, string name)
+    {
+        _events.Add(name);
     }
 
     public static void ReloadAsset(this ContentManager contentManager, string name)
@@ -56,52 +75,7 @@ public static class ContentManagerExtensions
             IncludeSubdirectories = true,
             EnableRaisingEvents = true
         };
-        _watcher.Changed += (sender, args) => { if(args.ChangeType == WatcherChangeTypes.Changed) ReloadAsset(contentManager, Path.ChangeExtension(Path.GetRelativePath(_watcher.Path, args.FullPath), null) ); };
+        _watcher.Changed += (sender, args) => { if(args.ChangeType == WatcherChangeTypes.Changed) QueueReload(contentManager, Path.ChangeExtension(Path.GetRelativePath(_watcher.Path, args.FullPath), null) ); };
 
-        //_watcher.Changed += OnChanged;
-        _watcher.Created += OnCreated;
-        _watcher.Deleted += OnDeleted;
-        _watcher.Renamed += OnRenamed;
-        _watcher.Error += OnError;
-    }
-
-    private static void OnChanged(object sender, FileSystemEventArgs e)
-    {
-        if (e.ChangeType != WatcherChangeTypes.Changed)
-        {
-            return;
-        }
-        Console.WriteLine($"Changed: {e.FullPath}");
-    }
-
-    private static void OnCreated(object sender, FileSystemEventArgs e)
-    {
-        string value = $"Created: {e.FullPath}";
-        Console.WriteLine(value);
-    }
-
-    private static void OnDeleted(object sender, FileSystemEventArgs e) =>
-        Console.WriteLine($"Deleted: {e.FullPath}");
-
-    private static void OnRenamed(object sender, RenamedEventArgs e)
-    {
-        Console.WriteLine($"Renamed:");
-        Console.WriteLine($"    Old: {e.OldFullPath}");
-        Console.WriteLine($"    New: {e.FullPath}");
-    }
-
-    private static void OnError(object sender, ErrorEventArgs e) =>
-        PrintException(e.GetException());
-
-    private static void PrintException(Exception ex)
-    {
-        if (ex != null)
-        {
-            Console.WriteLine($"Message: {ex.Message}");
-            Console.WriteLine("Stacktrace:");
-            Console.WriteLine(ex.StackTrace);
-            Console.WriteLine();
-            PrintException(ex.InnerException);
-        }
     }
 }
