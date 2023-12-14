@@ -1,15 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Legends.Engine.Content;
-using Legends.Engine.Runtime;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Content.Pipeline;
-using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using MonoGame.Extended.Content;
-using Newtonsoft.Json;
 
 namespace Legends.Engine;
 
@@ -39,8 +31,8 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
     where TType : class
 {
     private TType _value;
-    private string _name;
-    private bool _external;
+    private readonly string _name;
+    private readonly bool _external;
     private bool _extended;
     public bool IsExternal => _external;
     public bool IsExtended { get => _extended; set => _extended = value; }
@@ -54,7 +46,9 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
 
     public void Load(ContentManager manager)
     {
-        _value = manager.Load<TType>(_name);
+        var result = manager.Load<object>(_name);
+        if(result is ContentObject co) _value = (TType)co.Instance;
+        else _value = (TType)result;
     }
 
     public int CompareTo(Ref<TType> other)
@@ -99,5 +93,15 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
     public bool Equals(Ref<TType> other)
     {
         return this._value == other._value;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as Ref<TType>);
+    }
+
+    public override int GetHashCode()
+    {
+        return _value != null ? _value.GetHashCode() : base.GetHashCode();
     }
 }

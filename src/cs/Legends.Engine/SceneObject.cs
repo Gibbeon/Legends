@@ -5,8 +5,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Data.Common;
-using Legends.Engine.Content;
 
 namespace Legends.Engine;
 

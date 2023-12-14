@@ -17,7 +17,7 @@ public abstract class Script : INamedObject, INotifyReload
 {    
     private readonly List<WeakReference> _references = new();
     private readonly object _lock = new();
-    private byte[] _data;
+    //private byte[] _data;
     public string Name { get; protected set; }    
     public Type ScriptType { get; }
 

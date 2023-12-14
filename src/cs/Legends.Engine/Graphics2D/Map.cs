@@ -6,45 +6,42 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Legends.App;
+namespace Legends.Engine.Graphics2D;
 
 public class Map : SceneObject, ISelfDrawable
 {
-    public struct TileData
-    {
-        public int TileIndex;
-    }
-    public Size TileSize;
-    public Size TileCount;
-    public TileSet TileSet;
-    public TileData[,] Tiles;
+    public Size2        TileCount { get; set; }
+    public TileSet      TileSet { get; set; }
+    public ushort[]     Tiles { get; set; }
+    public bool NeedUpdate { get; set; }
+    private VertexPositionColorTexture[] _vertices;
+    private uint[] _indicies;
+    private DynamicVertexBuffer _vertexBuffer;
+    private DynamicIndexBuffer _indexBuffer;
+    private Effect _currentEffect;
+    public Map(): this(null, null) {}
     public Map(IServiceProvider services, Scene parent) : base(services, parent)
     {
-        TileSize = new Size(8, 8);
-        TileSet = new TileSet()
-        {
-            Texture = Services.GetContentManager().Load<Texture2D>("ville_0"),
-            TileSize = new Size(8, 8)
-        };
-        
-        TileCount = new Size(312 / TileSize.Width, 288 / TileSize.Height);
+        NeedUpdate = true;
+    }
 
-        TileCount *= 2;
-
-        Tiles = new TileData[TileCount.Width, TileCount.Height];
-
-        var x_count = (TileSet.Texture.Width / TileSize.Width);        
-        var y_count = (TileSet.Texture.Height / TileSize.Height);
+    public void CreateMapFromTexture()
+    {
+        var x_count = ((~TileSet.Texture).Width / TileSet.TileSize.Width);        
+        var y_count = ((~TileSet.Texture).Height / TileSet.TileSize.Height);
         
         for(var y = 0; y < TileCount.Height; y++)
         {
             for(var x = 0; x < TileCount.Width; x++)
             {
-                Tiles[x, y].TileIndex = x % x_count + (y % y_count) * x_count;
+                Tiles[(int)(y * TileCount.Width) + x] = (ushort)(x % x_count + (y % y_count) * x_count);
             }
         }
+    }
 
-        Size = new Size2(TileCount.Width * TileSize.Width, TileCount.Height * TileSize.Height);
+    public void Initialize()
+    {   
+        Size = new Size2(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
         OriginNormalized = new Vector2(.5f, .5f);
 
         _vertices = BuildVerticies().ToArray();
@@ -60,6 +57,7 @@ public class Map : SceneObject, ISelfDrawable
             TextureEnabled = true,
             VertexColorEnabled = true
         };
+
         (_currentEffect as IEffectMatrices).Projection = Matrix.CreateOrthographicOffCenter(0f, Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height, 0f, 0f, -1f);
         (_currentEffect as IEffectMatrices).View = Matrix.Identity;
         
@@ -69,11 +67,12 @@ public class Map : SceneObject, ISelfDrawable
         }
     }
 
-    private VertexPositionColorTexture[] _vertices;
-    private uint[] _indicies;
-    private DynamicVertexBuffer _vertexBuffer;
-    private DynamicIndexBuffer _indexBuffer;
-    private Effect _currentEffect;
+    public override void Update(GameTime gameTime)
+    {
+        if(NeedUpdate) Initialize();
+
+        base.Update(gameTime);
+    }
 
     public override void Draw(GameTime gameTime)
     {
@@ -117,7 +116,6 @@ public class Map : SceneObject, ISelfDrawable
                 yield return (uint)((y * TileCount.Width + x) * 4 + 1);
                 yield return (uint)((y * TileCount.Width + x) * 4 + 3);
                 yield return (uint)((y * TileCount.Width + x) * 4 + 2);
-
             }
         }
     }
@@ -128,27 +126,27 @@ public class Map : SceneObject, ISelfDrawable
         {
             for(int x = 0; x < TileCount.Width; x++)
             {
-                var uvCoords = TileSet.GetUV(Tiles[x, y].TileIndex);
+                var uvCoords = TileSet.GetUV(Tiles[(int)(y * TileCount.Width) + x]);
                 yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSize.Width, y * TileSize.Height, 0),
+                    new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
                     Color.White,
                     uvCoords.TopLeft
                 );
 
                 yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSize.Width + TileSize.Width, y * TileSize.Height, 0),
+                    new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
                     Color.White,
                     uvCoords.TopRight
                 );
 
                 yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSize.Width, y * TileSize.Height + TileSize.Height, 0),
+                    new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
                     Color.White,
                     uvCoords.BottomLeft
                 );
 
                 yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSize.Width + TileSize.Width, y * TileSize.Height + TileSize.Height, 0),
+                    new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
                     Color.White,
                     uvCoords.BottomRight
                 );
@@ -158,6 +156,7 @@ public class Map : SceneObject, ISelfDrawable
 
     public override void Dispose()
     {
+        GC.SuppressFinalize(this);
         base.Dispose();
     }
 }

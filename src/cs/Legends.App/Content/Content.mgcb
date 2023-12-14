@@ -27,6 +27,19 @@
 /processorParam:TextureFormat=Color
 /build:Sensation_0.png
 
+#begin Maps/ville_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,255,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Maps/ville_0.png
+
+
 #begin Sensation.fnt
 /importer:BitmapFontImporter
 /processor:BitmapFontProcessor
@@ -42,6 +55,11 @@
 /processor:ContentObjectProcessor
 /processorParam:debug=True
 /build:Scenes\TitleScreen.json
+
+#begin Scenes\Map.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Scenes\Map.json
 
 #begin Scenes\test.json
 #/importer:ContentObjectImporter

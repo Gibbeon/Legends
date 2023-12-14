@@ -12,6 +12,8 @@ public static class TypeExtensions
 {    
         public static string GetSignature(this MethodInfo method, bool callable = false)
         {
+            if(method == null) return "(no method found)";
+            
             var firstParam = true;
             var sigBuilder = new StringBuilder();
             if (callable == false)
@@ -140,7 +142,7 @@ public static class TypeExtensions
     {
         var instanceMethods = methods.Where(n =>    !n.IsStatic
                                                 &&  n.GetParameters().Length == parameterTypes?.Length 
-                                                &&  n.GetParameters().All( m => parameterTypes.Any(x => x != null && x.IsAssignableFrom(m.ParameterType))));
+                                                &&  n.GetParameters().All( m => parameterTypes.Any(x => x != null && x.IsAssignableTo(m.ParameterType))));
 
         var genericMethods  = methods.Where(n =>    !n.IsStatic
                                                 &&  n.IsGenericMethod
@@ -267,9 +269,22 @@ public static class TypeExtensions
         return IsAssignableToGenericType(baseType, genericType);
     }
 
+    public static IEnumerable<ConstructorInfo> MatchConstructorSignature(this IEnumerable<ConstructorInfo> methods, params Type[] parameterTypes)
+    {
+        return methods.Where(n =>   n.GetParameters().Length == parameterTypes?.Length 
+                                &&  n.GetParameters().All( m => parameterTypes.Any(x => x != null && x.IsAssignableTo(m.ParameterType))));
+
+    }
+
     public static object Create(this Type type, params object[] parameters)
     {
-        return Activator.CreateInstance(type, parameters);
+        if(type.GetConstructors()
+            .MatchConstructorSignature(parameters.Select(n => n == null ? typeof(void) : n.GetType()).ToArray())
+            .SingleOrDefault() is ConstructorInfo ctor)
+            return ctor.Invoke(parameters);
+        
+        if(parameters != null && parameters.Length > 0) Console.Write("Constructor params supplied but not used");
+        return Activator.CreateInstance(type);
     }
 }
 

@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices;
 using Legends.Engine.Runtime;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using Newtonsoft.Json;
 
@@ -12,26 +14,57 @@ namespace Legends.Engine.Content;
 
 public static class ContentWriterExtensions
 {
-    public static void WriteArray(this ContentWriter writer, ICollection instance, Type type)
+    public static void WriteArray(this ContentWriter writer, IEnumerable instance, Type type)
     {
         var derivedType = instance != null ? instance.GetType() : type;
-        var elementType = typeof(object);
+        Type elementType;
+        int count;
 
-        if(derivedType.IsArray)                 elementType = derivedType.GetElementType();
-        else if(derivedType.IsGenericType)      elementType = derivedType.GenericTypeArguments[0];
-
-        //using(LogEntry("Array: {0}<{1}>[{2}]", derivedType.Name, elementType.Name, instance.Count))
+        if(derivedType.IsArray)
         {
-            writer.Write(derivedType.FullName); 
-            writer.Write(elementType.FullName); 
-            writer.Write(instance.Count);
+            elementType = derivedType.GetElementType();
+            count = ((Array)instance).Length;
+        }
+        else if(derivedType.IsGenericType && instance is ICollection collection)
+        {
+            elementType = derivedType.GenericTypeArguments[0];
+            count = collection.Count;
+        }
+        else
+        {
+            throw new NotSupportedException(); 
+        }
 
-            int count = 0;
+        writer.Write(derivedType.FullName); 
+        writer.Write(elementType.FullName); 
+        writer.Write(count);
 
+        int logCounter = 0;
+
+        if(elementType.IsPrimitive && derivedType.IsArray)
+        {
+            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), "Write Complete Array {0}", elementType.Name))
+            {
+                foreach(var item in instance)
+                {
+                    byte[] data =  (byte[])typeof(BitConverter).GetMethods().First(n => n.Name == "GetBytes" && 
+                            n.GetParameters()[0].ParameterType.IsAssignableFrom(elementType)).Invoke(null, new object[] { item });
+
+                    logCounter += data.Length;
+
+                    //Console.WriteLine("{0}", typeof(BitConverter).GetMethods().First(n => n.Name == "GetBytes" && n.GetParameters()[0].ParameterType.IsAssignableFrom(typeof(ushort))).GetSignature());
+                    writer.Write(data);
+                    
+                }
+                ContentLogger.LogEnd(" size of {0}", logCounter);
+            }
+        }
+        else
+        {
             //Console.WriteLine();
             foreach(var element in instance)
             {
-                using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), "[{0}] ", count++))
+                using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), "[{0}] ", logCounter++))
                 {
                     if(element == null) throw new NullReferenceException();
                     writer.WriteField(element, element.GetType()); 
@@ -49,6 +82,13 @@ public static class ContentWriterExtensions
             var native = writer.GetType()
                             .GetAnyMethod("Write", derivedType);
 
+            if(instance is IContentReadWrite readWrite)
+            {
+                ContentLogger.LogEnd("IContentReadWrite.Write() of type {0}", readWrite.GetType().Name);
+                readWrite.Write(writer);
+                return;
+            }
+
             if(native != null)
             {
                 ContentLogger.LogEnd("Invoke Method", native.GetSignature());
@@ -63,17 +103,17 @@ public static class ContentWriterExtensions
                 return;
             }
 
-            if(instance is IContentReadWrite readWrite)
-            {
-                ContentLogger.LogEnd("IContentReadWrite.Write() of type {0}", readWrite.GetType().Name);
-                readWrite.Write(writer);
-                return;
-            }
-
             if(derivedType.IsEnum)
             {
                 ContentLogger.LogEnd("Enum of type {0}", derivedType.Name);
                 typeof(ContentWriter).GetAnyMethod("Write", typeof(int)).InvokeAny(writer, (int)instance);
+                return;
+            }
+            
+            if(instance is IEnumerable)
+            {
+                ContentLogger.LogEnd("ICollection.Count: [{1}] of type {0}", instance.GetType().Name, ((Array)instance).Length);
+                writer.WriteArray(instance as IEnumerable, type);
                 return;
             }
 

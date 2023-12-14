@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content.Pipeline;
 using Newtonsoft.Json;
 using Legends.Content.Pipline.JsonConverters;
 using Legends.Engine.Content;
+using MonoGame.Extended.Serialization;
 
 namespace Legends.Content.Pipline;
 
@@ -21,6 +22,7 @@ public class ContentObjectImporter : ContentImporter<dynamic>
                 };
             
             settings.Converters.Add(new RefJsonConverter());
+            settings.Converters.Add(new Size2JsonConverter());
                 
             var result = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
             context.Logger.LogMessage("{0}", JsonConvert.ToString(JsonConvert.SerializeObject(result)));
@@ -47,7 +49,8 @@ public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
                     TypeNameHandling = TypeNameHandling.Auto,
                 };
                 
-            settings.Converters.Add(new RefJsonConverter());     
+            settings.Converters.Add(new RefJsonConverter());  
+            settings.Converters.Add(new Size2JsonConverter());   
             //context.BuildAssetDependencies((object)input, ((object)input).GetType());
                     
             return ContentObject.Wrap((object)input);

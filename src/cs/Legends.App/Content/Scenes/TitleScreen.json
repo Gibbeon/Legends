@@ -4,12 +4,15 @@
     "camera": {},
     "children": [
         {
+            "$ref": "Scenes/map"
+        },
+        {
             "name": "Text",
             "behaviors": [
                 {
                     "$type":    "Legends.Engine.Graphics2D.TextRenderBehavior, Legends.Engine",
                     "font":     "Sensation",
-                    "text":     "Press ESC to Exit or ENTER to start!",
+                    "text":     "Press ESC to Exit or ENTER to DIE!",
                     "color":    "255, 255, 255, 255",
                     "halign":   "Center",
                     "valign":   "Middle"

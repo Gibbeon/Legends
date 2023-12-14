@@ -36,8 +36,6 @@ public static class ContentManagerExtensions
                 .Single(n => n.IsGenericMethod && n.Name == "ReloadAsset")
                 .MakeGenericMethod(type)
                 .Invoke(contentManager, new [] { name, result });
-            
-
         }
     }
 
@@ -49,13 +47,15 @@ public static class ContentManagerExtensions
 
     public static void EnableAssetWatching(this ContentManager contentManager)
     {
-        _watcher = new FileSystemWatcher(Path.Combine(GetExecutingDirectoryName(), contentManager.RootDirectory));
-        //_watcher.NotifyFilter =     NotifyFilters.DirectoryName
-        //                        |   NotifyFilters.LastWrite
-        //                        |   NotifyFilters.Size;
+        _watcher = new FileSystemWatcher(Path.Combine(GetExecutingDirectoryName(), contentManager.RootDirectory))
+        {
+            //_watcher.NotifyFilter =     NotifyFilters.DirectoryName
+            //                        |   NotifyFilters.LastWrite
+            //                        |   NotifyFilters.Size;
 
-        _watcher.IncludeSubdirectories = true;
-        _watcher.EnableRaisingEvents = true;
+            IncludeSubdirectories = true,
+            EnableRaisingEvents = true
+        };
         _watcher.Changed += (sender, args) => { if(args.ChangeType == WatcherChangeTypes.Changed) ReloadAsset(contentManager, Path.ChangeExtension(Path.GetRelativePath(_watcher.Path, args.FullPath), null) ); };
 
         //_watcher.Changed += OnChanged;
@@ -93,7 +93,7 @@ public static class ContentManagerExtensions
     private static void OnError(object sender, ErrorEventArgs e) =>
         PrintException(e.GetException());
 
-    private static void PrintException(Exception? ex)
+    private static void PrintException(Exception ex)
     {
         if (ex != null)
         {

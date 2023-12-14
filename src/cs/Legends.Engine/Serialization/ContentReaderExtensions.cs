@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Legends.Engine.Runtime;
 using Legends.Engine.Serialization;
 using Microsoft.Xna.Framework.Content;
@@ -37,16 +38,28 @@ public static class ContentReaderExtensions
                         ? Array.CreateInstance(elementType, count)
                         : type.Create() as ICollection;
 
-        for(var index = 0; index < count; index++)
+        if(type.IsArray && elementType.IsPrimitive)
         {
-            using(ContentLogger.LogBegin(reader.BaseStream.Position, "[{0}] ", index))
+            int elementSize = Marshal.SizeOf(elementType);
+            using(ContentLogger.LogBegin(reader.BaseStream.Position, "Read elementSize: {0} bytesSize: {1}", elementSize, count * elementSize))
             {
-                var element = reader.ReadField(null, elementType);
-                if(element == null) throw new NullReferenceException();
+                Buffer.BlockCopy(reader.ReadBytes(count * elementSize), 0, (Array)instance, 0, count);
+                ContentLogger.LogEnd(" (BlockCopy)");
+            }
+        }
+        else
+        {
+            for(var index = 0; index < count; index++)
+            {
+                using(ContentLogger.LogBegin(reader.BaseStream.Position, "[{0}] ", index))
+                {
+                    var element = reader.ReadField(null, elementType);
+                    if(element == null) throw new NullReferenceException();
 
-                if(type.IsArray) ((Array)instance).SetValue(element, index);
-                else if(instance is IList list) { list.Add(element); }
-                else type.GetType().GetAnyMethod("Add*", elementType).InvokeAny(instance, element);
+                    if(type.IsArray) ((Array)instance).SetValue(element, index);
+                    else if(instance is IList list) { list.Add(element); }
+                    else type.GetType().GetAnyMethod("Add*", elementType).InvokeAny(instance, element);
+                }
             }
         }
 

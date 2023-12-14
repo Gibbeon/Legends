@@ -13,6 +13,7 @@ using System.Text;
 using System.Security.AccessControl;
 using System.Reflection;
 using System.Linq;
+using Legends.Engine.Graphics2D;
 
 namespace Legends.App.Screens;
 
@@ -27,6 +28,7 @@ public class TitleScreen : Screen
         _input = new InputManager(_services);
 
         _scene = _services.GetContentManager().GetRef<Scene>("Scenes/TitleScreen");
+        ((Map)(~_scene).Children[0]).CreateMapFromTexture();
     }
 
     public override void Draw(GameTime gameTime)
