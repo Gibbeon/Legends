@@ -40,7 +40,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
     public VerticalAlignment VerticalAlignment { get; set; }
     
     [JsonIgnore]
-    public bool IsVisible   => Parent != null && (~Parent).IsVisible;
+    public bool Visible   => Parent != null && (~Parent).Visible;
 
     [JsonIgnore]
     public Vector2 Position => Parent != null ? (~Parent).Position + new Vector2(GetHorizontalOffset(), GetVerticalOffset()) : Vector2.Zero;
@@ -107,7 +107,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
     {   
         base.Draw(gameTime);
 
-        if(IsVisible && Parent != null)
+        if(Visible && Parent != null)
         {
             (~Parent).Services.Get<IRenderService>().DrawBatched(this);  
         }      

@@ -29,7 +29,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
     public bool Enabled { get; set; }
     
     [DefaultValue(true)]
-    public bool IsVisible { get; set; }
+    public bool Visible { get; set; }
     
     public IList<Ref<SceneObject>> Children
     {
@@ -57,13 +57,10 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
         _behaviors  = new List<Ref<IBehavior>>();
         _tags       = new List<string>();
 
-        if(parent != null)
-        {
-            this.AttachTo(parent);
-        }
+        Parent = parent;
 
         Enabled = true;
-        IsVisible = true;
+        Visible = true;
     }
 
     public TType GetBehavior<TType>()
@@ -211,7 +208,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
     public virtual void Draw(GameTime gameTime)
     {
-        if(!IsVisible) return;
+        if(!Visible) return;
 
         foreach(var behavior in Behaviors)
         {
@@ -229,7 +226,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
         GC.SuppressFinalize(this);
 
         Enabled = false;
-        IsVisible = false;
+        Visible = false;
 
         foreach(var behavior in Behaviors)
         {
@@ -246,7 +243,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
     public void OnReload()
     {
         Enabled = false;
-        IsVisible = false;
+        Visible = false;
 
         foreach(var behavior in Behaviors)
         {

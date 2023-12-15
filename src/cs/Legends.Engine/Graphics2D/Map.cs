@@ -29,6 +29,8 @@ public class Map : SceneObject, ISelfDrawable
     {
         var x_count = ((~TileSet.Texture).Width / TileSet.TileSize.Width);        
         var y_count = ((~TileSet.Texture).Height / TileSet.TileSize.Height);
+
+        Tiles = new ushort[(int)(TileCount.Height * TileCount.Width + 1)];
         
         for(var y = 0; y < TileCount.Height; y++)
         {

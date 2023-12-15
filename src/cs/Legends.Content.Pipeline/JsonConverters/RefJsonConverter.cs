@@ -20,7 +20,7 @@ public class RefJsonConverter : JsonConverter
         {
             if(reader.ValueType == typeof(string))
             {
-                var result= Activator.CreateInstance(objectType, reader.Value);
+                var result = Activator.CreateInstance(objectType, reader.Value);
                 return result;
             } 
             else 
@@ -50,27 +50,6 @@ public class RefJsonConverter : JsonConverter
                 var result = Activator.CreateInstance(objectType, name, parsedValue, isExternal, isExtended);
                 return result;
             }
-            
-            /*var jObject = JObject.Load(reader);
-            var parsedValue = jObject.ToObject(objectType);
-
-            if(parsedValue is IScriptable scriptable)
-            {
-                if(!string.IsNullOrEmpty(scriptable.Source))
-                {
-                    var derivedType = DynamicClassLoader.Compile(scriptable.Source, File.ReadAllText(scriptable.Source)).GetType(scriptable.TypeName);
-                    scriptable.Set(serializer.Deserialize(new StringReader(scriptable.Properties.ToString()), derivedType));
-                }
-                else
-                {
-                    scriptable.Set(serializer.Deserialize(new JTokenReader(jObject)));
-                }
-                return scriptable;
-            }*/
-            //else
-            //{
-            //    throw new JsonException();
-           // }
         }
         catch(Exception error)
         {
@@ -83,14 +62,23 @@ public class RefJsonConverter : JsonConverter
     {       
         try
         {
-            //if(value is IScriptable scriptable)
-            //{
-            //    serializer.Serialize(writer, scriptable);
-            //}
-            //else 
-            if(value is IRef reference)
+            if(value is IRef refValue)
             {
-                writer.WriteValue(reference.Name);
+                if(refValue.IsExternal && !refValue.IsExtended)
+                {
+                    writer.WriteValue(refValue.Name);               
+                }
+                else
+                {
+                    //writer.WriteStartObject();
+                   // writer.WritePropertyName("Name"); writer.WriteValue(refValue.Name);
+                    //writer.WritePropertyName("RefType"); writer.WriteValue(refValue.RefType.FullName);
+                    //writer.WritePropertyName("IsExternal"); writer.WriteValue(refValue.IsExternal);
+                    //writer.WritePropertyName("IsExtended"); writer.WriteValue(refValue.IsExtended);
+                    
+                    //writer.WriteEndObject();
+                    serializer.Serialize(writer, refValue.Get());
+                }
             }
         }
         catch(Exception error)

@@ -25,7 +25,7 @@ public static class ContentManagerExtensions
         return new Ref<TType>(name, (TType)instance);
     }
 
-    public static void DoRerloads(this ContentManager contentManager)
+    public static void DoReloads(this ContentManager contentManager)
     {
         lock(_lock)
         {
@@ -39,7 +39,10 @@ public static class ContentManagerExtensions
 
     public static void QueueReload(this ContentManager contentManager, string name)
     {
-        _events.Add(name);
+        lock(_lock)
+        {
+            _events.Add(name);
+        }
     }
 
     public static void ReloadAsset(this ContentManager contentManager, string name)

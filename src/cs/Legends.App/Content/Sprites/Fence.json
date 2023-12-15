@@ -1,0 +1,15 @@
+{
+    "$type": "Legends.Engine.SceneObject, Legends.Engine",
+    "name": "Fency the Fence",
+    "size": "16, 16",
+    "behaviors": [
+        {
+            "$type": "Legends.Engine.Graphics2D.SpriteRenderBehavior, Legends.Engine",
+            "textureRegion": {
+                "texture": "Sprites/desert",
+                "position": "16, 64",
+                "size": "16, 16"
+            }
+        }
+    ]
+}

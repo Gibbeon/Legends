@@ -91,7 +91,7 @@ public static class ContentWriterExtensions
 
             if(native != null)
             {
-                ContentLogger.LogEnd("Invoke Method", native.GetSignature());
+                ContentLogger.LogEnd("Invoke Method {0} {1}", native.GetSignature(), instance);
                 native.InvokeAny(writer, instance);
                 return;
             }

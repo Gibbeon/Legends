@@ -29,7 +29,7 @@ public static class ContentReaderExtensions
         {
             throw new NullReferenceException(string.Format("ICollection Type not found, {0}.", typeName));
         } 
-        if(type == null)
+        if(elementType == null)
         {
             throw new NullReferenceException(string.Format("ICollection.ElementType not found, {0}.", typeElementName));
         }          

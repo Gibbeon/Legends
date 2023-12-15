@@ -87,12 +87,12 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
   
     public override string ToString()
     {
-        return string.Format("ref {0}", IsExternal ? _name : _value == null ? "(null)" : _value.ToString());
+        return string.Format("ref '{0}' {1} IsExternal:{2} IsExtended:{3}", _name, IsExternal ? _name : _value == null ? "(null)" : _value.ToString(), IsExternal, IsExtended);
     }
 
     public bool Equals(Ref<TType> other)
     {
-        return this._value == other._value;
+        return other != null && this._value == other._value;
     }
 
     public override bool Equals(object obj)

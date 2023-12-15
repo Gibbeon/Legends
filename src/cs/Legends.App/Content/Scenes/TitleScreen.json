@@ -7,6 +7,9 @@
             "$ref": "Scenes/map"
         },
         {
+            "$ref": "Sprites/Fence"
+        },
+        {
             "name": "Text",
             "behaviors": [
                 {

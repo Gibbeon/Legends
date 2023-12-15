@@ -55,7 +55,7 @@ public class RenderService : IRenderService
 
 public interface IDrawable
 {
-    bool IsVisible { get; }
+    bool Visible { get; }
 }
 public interface ISelfDrawable : IDrawable
 {
@@ -77,10 +77,10 @@ public class Layer : ILayer
     protected ViewState _viewState;
     protected SpriteBatch _spriteBatch;
     public IList<IDrawable> Drawables => _drawables;
-    public IOrderedEnumerable<IDrawable> OrderedVisibleDrawables => _drawables.Where(n => n.IsVisible || true).OrderBy(n => DrawableComparer ?? Comparer<IDrawable>.Default);
+    public IOrderedEnumerable<IDrawable> OrderedVisibleDrawables => _drawables.Where(n => n.Visible).OrderBy(n => DrawableComparer ?? Comparer<IDrawable>.Default);
     public IComparer<IDrawable> DrawableComparer { get; set; }
     public Color? ClearColor { get; set; }
-    public bool IsVisible { get; set; }
+    public bool Visible { get; set; }
 
     public Layer(IRenderService renderService)
     {
@@ -98,12 +98,12 @@ public class Layer : ILayer
             World = Matrix.Identity
         };
 
-        IsVisible = true;
+        Visible = true;
     }
 
     public void BeginDraw()
     {
-        if (IsVisible && ClearColor.HasValue)
+        if (Visible && ClearColor.HasValue)
         {
             _renderService.GraphicsDevice.Clear(ClearColor.Value);
         }
@@ -117,7 +117,7 @@ public class Layer : ILayer
 
     public void DrawImmediate(GameTime gameTime)
     {
-        if (!IsVisible)
+        if (!Visible)
         {
             return;
         }

@@ -27,6 +27,18 @@
 /processorParam:TextureFormat=Color
 /build:Sensation_0.png
 
+#begin desert.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/desert.png
+
 #begin Maps/ville_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -65,3 +77,9 @@
 #/importer:ContentObjectImporter
 #/processor:ContentObjectProcessor
 #/build:Scenes\test.json
+
+#begin Sprites\fence.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Sprites\fence.json
+

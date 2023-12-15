@@ -46,7 +46,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
 
     protected override void Update(GameTime gameTime)
     {
-        Content.Update();
+        Content.DoReloads();
         _inputService.Update(gameTime);
         base.Update(gameTime);
     }

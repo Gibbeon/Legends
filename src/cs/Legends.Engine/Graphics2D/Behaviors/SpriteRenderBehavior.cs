@@ -1,15 +1,47 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoGame.Extended.TextureAtlases;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System;
+using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D;
 
+public class TextureRegion : Spatial
+{
+    public Ref<Texture2D> Texture { get; set; }
+
+    public TextureRegion(Texture2D texture, Rectangle region)
+        : this(texture, region.X, region.Y, region.Width, region.Height)
+    {
+    }
+
+    public  TextureRegion()
+        : this(null, 0, 0, 0, 0)
+    {
+    }
+
+    public TextureRegion(Texture2D texture)
+        : this(texture, 0, 0, texture.Width, texture.Height)
+    {
+    }
+
+    public TextureRegion(Texture2D texture, int x, int y, int width, int height) : base()
+    {
+        Texture = texture;
+        Position = new Vector2(x, y);
+        Size = new Size2(width, height);
+    }
+
+    public override string ToString()
+    {
+        return $"{string.Empty} {BoundingRectangle}";
+    }
+}
+
 public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 {
-    public TextureRegion2D TextureRegion { get; set; }
+    public Ref<TextureRegion> TextureRegion { get; set; }
 
     public Color Color { get; set; }
 
@@ -19,10 +51,10 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     public SpriteEffects Effect  { get; set; }
 
     [JsonIgnore]
-    public Texture2D SourceData => TextureRegion?.Texture;
+    public Texture2D SourceData => (~TextureRegion).Texture;
 
     [JsonIgnore]
-    public bool IsVisible   => Parent != null && (~Parent).IsVisible;
+    public bool Visible   => Parent != null && (~Parent).Visible;
 
     [JsonIgnore]
     public Vector2 Position => Parent != null ? (~Parent).Position : Vector2.Zero;
@@ -40,7 +72,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     public IViewState ViewState => (~Parent).GetParentScene().Camera.Get();
 
     [JsonIgnore]
-    public Rectangle SourceBounds{ get => TextureRegion == null ? Rectangle.Empty : TextureRegion.Bounds; set => SetTextureRegionBounnds(value); }
+    public Rectangle SourceBounds{ get => TextureRegion == null ? Rectangle.Empty : (~TextureRegion).BoundingRectangle.ToRectangle(); set => SetTextureRegionBounnds(value); }
 
     [JsonIgnore]
     public Rectangle DestinationBounds => Parent == null ? Rectangle.Empty : (Rectangle)(~Parent).BoundingRectangle; 
@@ -56,7 +88,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 
     public override void Draw(GameTime gameTime)
     {
-        if(IsVisible)
+        if(Visible)
         {
             (~Parent).Services.Get<IRenderService>().DrawBatched(this);
         }
@@ -70,7 +102,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 
     public void SetTextureRegionBounnds(Rectangle rect)
     {
-        TextureRegion = new TextureRegion2D(TextureRegion?.Texture, rect);
+        TextureRegion = new TextureRegion((~TextureRegion).Texture, rect);
     }
 
     public override void Dispose()
