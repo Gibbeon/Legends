@@ -7,38 +7,6 @@ using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D;
 
-public class TextureRegion : Spatial
-{
-    public Ref<Texture2D> Texture { get; set; }
-
-    public TextureRegion(Texture2D texture, Rectangle region)
-        : this(texture, region.X, region.Y, region.Width, region.Height)
-    {
-    }
-
-    public  TextureRegion()
-        : this(null, 0, 0, 0, 0)
-    {
-    }
-
-    public TextureRegion(Texture2D texture)
-        : this(texture, 0, 0, texture.Width, texture.Height)
-    {
-    }
-
-    public TextureRegion(Texture2D texture, int x, int y, int width, int height) : base()
-    {
-        Texture = texture;
-        Position = new Vector2(x, y);
-        Size = new Size2(width, height);
-    }
-
-    public override string ToString()
-    {
-        return $"{string.Empty} {BoundingRectangle}";
-    }
-}
-
 public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 {
     public Ref<TextureRegion> TextureRegion { get; set; }
@@ -96,7 +64,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
 
     public override void Update(GameTime gameTime)
     {
-        //base.Update(gameTime);
+        (~TextureRegion).Update();
     }
 
 

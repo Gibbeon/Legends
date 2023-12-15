@@ -7,7 +7,7 @@
             "$type": "Legends.Engine.Graphics2D.SpriteRenderBehavior, Legends.Engine",
             "textureRegion": {
                 "texture": "Sprites/desert",
-                "position": "16, 64",
+                "frame": "73",
                 "size": "16, 16"
             }
         }

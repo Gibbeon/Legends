@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using Legends.Engine.Content;
 using Microsoft.Xna.Framework.Content;
 namespace Legends.Engine;
@@ -52,12 +54,35 @@ public static class ContentManagerExtensions
             if(result is INotifyReload reloaded) 
                 reloaded.OnReload();
 
-            var type = result.GetType();
-            typeof(ContentManager)
-                .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
-                .Single(n => n.IsGenericMethod && n.Name == "ReloadAsset")
-                .MakeGenericMethod(type)
-                .Invoke(contentManager, new [] { name, result });
+            while(true)
+            {
+                try
+                {
+                    var type = result.GetType();
+                    typeof(ContentManager)
+                        .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+                        .Single(n => n.IsGenericMethod && n.Name == "ReloadAsset")
+                        .MakeGenericMethod(type)
+                        .Invoke(contentManager, new [] { name, result });
+
+                        return;
+                }
+                catch(TargetInvocationException err)
+                {
+                    if(err.InnerException.GetType() == typeof(ContentLoadException))
+                    {
+                        Thread.Sleep(10);
+                    }
+                    else
+                    {
+                        throw err.InnerException;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            } 
         }
     }
 
@@ -71,14 +96,17 @@ public static class ContentManagerExtensions
     {
         _watcher = new FileSystemWatcher(Path.Combine(GetExecutingDirectoryName(), contentManager.RootDirectory))
         {
-            //_watcher.NotifyFilter =     NotifyFilters.DirectoryName
-            //                        |   NotifyFilters.LastWrite
-            //                        |   NotifyFilters.Size;
-
             IncludeSubdirectories = true,
             EnableRaisingEvents = true
         };
-        _watcher.Changed += (sender, args) => { if(args.ChangeType == WatcherChangeTypes.Changed) QueueReload(contentManager, Path.ChangeExtension(Path.GetRelativePath(_watcher.Path, args.FullPath), null) ); };
+
+        _watcher.NotifyFilter =     NotifyFilters.LastWrite
+                                |   NotifyFilters.Size;
+
+        _watcher.Changed += (sender, args) => { 
+            if(args.ChangeType == WatcherChangeTypes.Changed)
+                 QueueReload(contentManager, Path.ChangeExtension(Path.GetRelativePath(_watcher.Path, args.FullPath), null) ); 
+        };
 
     }
 }

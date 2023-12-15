@@ -69,12 +69,12 @@ public static class ContentReaderExtensions
     public static object ReadField(this ContentReader reader, object instance, Type type)
     {
         var derivedType = instance != null ? instance.GetType() : type;
-        var native = typeof(ContentReader).GetAnyMethod(derivedType, "Read*");
+        var native = typeof(ContentReader).GetAnyMethod(derivedType, "Read?*");
         object result = default;
 
         if(native != null)
         {
-            ContentLogger.LogAppend("(invoke)", native.GetSignature()); 
+            ContentLogger.LogAppend("(invoke) {0}", native.GetSignature()); 
             var value = native.InvokeAny(reader);               
             result = Convert.ChangeType(value, derivedType); 
             if(result is IRef) return result;
