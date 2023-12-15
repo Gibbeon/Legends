@@ -7,7 +7,23 @@
             "$ref": "Scenes/map"
         },
         {
-            "$ref": "Sprites/Fence"
+            "$template": "Sprites/Fence.json",
+            "position": "-128, 0"
+        },{
+            "$template": "Sprites/Fence.json",
+            "position": "-100, 0"
+        },{
+            "$template": "Sprites/Fence.json",
+            "position": "-90, 0"
+        },{
+            "$template": "Sprites/Fence.json",
+            "position": "-60, 0"
+        },{
+            "$template": "Sprites/Fence.json",
+            "position": "-48, 0"
+        },{
+            "$template": "Sprites/Fence.json",
+            "position": "-12, 0"
         },
         {
             "name": "Text",
@@ -22,7 +38,7 @@
                 },
                 {
                     "$type":    "Legends.Scripts.CameraControlsBehavior",
-                    "$src":     "Scripts/CameraControlsBehavior.cs",
+                    "$compile": "Scripts/CameraControlsBehavior.cs",
                     "font":     "Sensation",
                     "text":     "Press ESC to Exit or ENTER to START",
                     "color":    "255, 255, 255, 255",

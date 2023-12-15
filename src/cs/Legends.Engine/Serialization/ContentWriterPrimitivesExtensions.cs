@@ -69,8 +69,7 @@ public static class ContentPrimitivesExtensions
                 var srcName = input.ReadString();
                 var type = Type.GetType(typeName);
 
-                input.ContentManager.Load<DynamicAssembly>(srcName);
-
+                input.ContentManager.Load<object>(srcName);
                 var result = (IRef)Activator.CreateInstance(typeof(Ref<>).MakeGenericType(type), srcName);
                 result.Set(input.ReadComplexObject(result.Get(), type));
                 return result;

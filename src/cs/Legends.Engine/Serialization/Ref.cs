@@ -37,7 +37,7 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
     public bool IsExternal => _external;
     public bool IsExtended { get => _extended; set => _extended = value; }
     public Type RefType => typeof(TType);
-    public string Name => (_value is INamedObject namedValue) ? namedValue.Name : _name;
+    public string Name => !string.IsNullOrEmpty(_name) ? _name : ((_value is INamedObject namedValue) ? namedValue.Name : "");
     public TType Get() => _value;    
     object IRef.Get() => _value;
 

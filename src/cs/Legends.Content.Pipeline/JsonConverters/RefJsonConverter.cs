@@ -27,8 +27,9 @@ public class RefJsonConverter : JsonConverter
             {
                 var jObject = JObject.Load(reader);
                 var valueType = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : objectType;
-                var jSource = jObject.Property("$src");
+                var jSource = jObject.Property("$compile");
                 var jRef = jObject.Property("$ref");
+                var JTemplate = jObject.Property("$template");
                 var name = jRef == null ? "" : jRef.Value.ToString();
                 bool isExternal = !string.IsNullOrEmpty(name);
                 bool isExtended = false;
@@ -37,14 +38,29 @@ public class RefJsonConverter : JsonConverter
                 {
                     var assembly = DynamicClassLoader.Compile(jSource.Value.ToString(), File.ReadAllText(jSource.Value.ToString()));
                     valueType = assembly.Assembly.GetType(jObject.Property("$type").Value.ToString());
-                    name = Path.ChangeExtension(jObject.Property("$src").Value.ToString(), null);
-                    jObject.Remove("$src");
+                    name = Path.ChangeExtension(jObject.Property("$compile").Value.ToString(), null);
+                    jObject.Remove("$compile");
                     jObject.Remove("$type");
                     isExternal = true;
                     isExtended = true;
-                }
+                } 
+                else if(JTemplate != null)
+                {
+                    var filename = JTemplate.Value.ToString();
+                    name = Path.ChangeExtension(jObject.Property("$template").Value.ToString(), null);
+                    var jTemplate = JObject.Parse(File.ReadAllText(filename));
 
-                //Console.WriteLine("isExternal {0} for {1}", isExternal, valueType.Name);
+                    jObject.Merge(jTemplate,
+                        new JsonMergeSettings() {
+                            MergeArrayHandling = MergeArrayHandling.Union
+                        }
+                    );
+
+                    jObject.Remove("$template");
+                    
+                    isExternal = true;
+                    isExtended = true;
+                }
 
                 var parsedValue = serializer.Deserialize(new StringReader(jObject.ToString()), valueType);
                 var result = Activator.CreateInstance(objectType, name, parsedValue, isExternal, isExtended);
