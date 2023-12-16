@@ -25,9 +25,9 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _spriteRenderService    = new RenderService(Services);
         _inputService           = new InputHandlerService(Services);
 
-        ContentLogger.Enabled = true;
+        //ContentLogger.Enabled = true;
         Content.RootDirectory = "Content";
-        Content.EnableAssetWatching();
+        //Content.EnableAssetWatching();
         IsMouseVisible = true;
     }
 

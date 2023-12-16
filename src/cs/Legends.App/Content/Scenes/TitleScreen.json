@@ -8,22 +8,39 @@
         },
         {
             "$template": "Sprites/Fence.json",
-            "position": "-128, 0"
-        },{
+            "position": "-64, -64"
+        },
+        {
             "$template": "Sprites/Fence.json",
-            "position": "-100, 0"
-        },{
+            "position": "-48, -64"
+        },
+        {
             "$template": "Sprites/Fence.json",
-            "position": "-90, 0"
-        },{
+            "position": "-32, -64"
+        },
+        {
             "$template": "Sprites/Fence.json",
-            "position": "-60, 0"
-        },{
+            "position": "-16, -64"
+        },
+        {
             "$template": "Sprites/Fence.json",
-            "position": "-48, 0"
-        },{
+            "position": "0, -64"
+        },
+        {
             "$template": "Sprites/Fence.json",
-            "position": "-12, 0"
+            "position": "16, -64"
+        },
+        {
+            "$template": "Sprites/Fence.json",
+            "position": "32, -64"
+        },
+        {
+            "$template": "Sprites/Fence.json",
+            "position": "48, -64"
+        },
+        {
+            "$template": "Sprites/Fence.json",
+            "position": "64, -64"
         },
         {
             "name": "Text",

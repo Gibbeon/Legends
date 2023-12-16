@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SharpDX;
 
 namespace Legends.Engine.Runtime;
 
@@ -124,17 +125,25 @@ public static class TypeExtensions
         return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$"; 
     }
 
+    private static Dictionary<Type, IEnumerable<MethodInfo>> _extensionCache = new();
+    private static IEnumerable<MethodInfo> _allExtensionMethods;
+
     public static IEnumerable<MethodInfo> GetExtensionMethods(this Type extendedType)
     {        
-        var isGenericTypeDefinition = extendedType.IsGenericType && extendedType.IsTypeDefinition;
-        var query = from type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(n => n.GetTypes())
+        if(_extensionCache.TryGetValue(extendedType, out IEnumerable<MethodInfo> result)) return result;
+
+        _allExtensionMethods ??= from type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(n => n.GetTypes())
             where type.IsSealed && !type.IsGenericType && !type.IsNested
             from method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
             where method.IsDefined(typeof(ExtensionAttribute), false)
-            where isGenericTypeDefinition
-                ? method.GetParameters()[0].ParameterType.IsGenericType && method.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == extendedType
-                : method.GetParameters()[0].ParameterType == extendedType
             select method;
+
+        var isGenericTypeDefinition = extendedType.IsGenericType && extendedType.IsTypeDefinition;
+        var query = _allExtensionMethods.Where(method => 
+                isGenericTypeDefinition
+                ? method.GetParameters()[0].ParameterType.IsGenericType && method.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == extendedType
+                : method.GetParameters()[0].ParameterType == extendedType);
+                
         return query;
     }
 

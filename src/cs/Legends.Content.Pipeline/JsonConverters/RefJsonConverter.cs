@@ -50,12 +50,14 @@ public class RefJsonConverter : JsonConverter
                     name = Path.ChangeExtension(jObject.Property("$template").Value.ToString(), null);
                     var jTemplate = JObject.Parse(File.ReadAllText(filename));
 
-                    jObject.Merge(jTemplate,
+    
+                    jTemplate.Merge(jObject,
                         new JsonMergeSettings() {
                             MergeArrayHandling = MergeArrayHandling.Union
                         }
                     );
 
+                    jObject = jTemplate;
                     jObject.Remove("$template");
                     
                     isExternal = true;
