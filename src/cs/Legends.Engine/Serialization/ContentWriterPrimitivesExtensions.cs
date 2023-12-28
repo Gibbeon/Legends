@@ -76,7 +76,8 @@ public static class ContentPrimitivesExtensions
             }
             case 3: 
             {
-                var type = Type.GetType(input.ReadString());
+                var typeName = input.ReadString(); 
+                var type = Type.GetType(typeName);
                 var result = (IRef)Activator.CreateInstance(typeof(Ref<>).MakeGenericType(type), input.ReadString());
                 result.Set(input.ReadComplexObject(result.Get(), type));
                 return result;

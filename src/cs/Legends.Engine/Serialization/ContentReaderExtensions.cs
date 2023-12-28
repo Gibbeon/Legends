@@ -12,23 +12,40 @@ using Newtonsoft.Json;
 
 namespace Legends.Engine.Content;
 
+public static class TypeCache
+{
+    private static Dictionary<string, Type> _cache = new();
+
+    public static Type GetType(string typeName)
+    {
+        Type result;
+        if(!_cache.TryGetValue(typeName, out result))
+        {
+            result = Type.GetType(typeName);
+            _cache.Add(typeName, result);
+        }
+        return result;
+    }
+}
+
 public static class ContentReaderExtensions
 {
     private static readonly Stack<object> _parents = new();
 
     public static object ReadArray(this ContentReader reader, ICollection instance)
     {
-        var typeName = reader.ReadString();
+        var typeName        = reader.ReadString();
         var typeElementName = reader.ReadString();
-        var count       = reader.ReadInt32(); 
+        var count           = reader.ReadInt32(); 
 
-        var type        = Type.GetType(typeName);
-        var elementType = Type.GetType(typeElementName); 
+        var type            = TypeCache.GetType(typeName);
+        var elementType     = TypeCache.GetType(typeElementName); 
 
         if(type == null)
         {
             throw new NullReferenceException(string.Format("ICollection Type not found, {0}.", typeName));
         } 
+
         if(elementType == null)
         {
             throw new NullReferenceException(string.Format("ICollection.ElementType not found, {0}.", typeElementName));
@@ -56,9 +73,9 @@ public static class ContentReaderExtensions
                     var element = reader.ReadField(null, elementType);
                     if(element == null) throw new NullReferenceException();
 
-                    if(type.IsArray) ((Array)instance).SetValue(element, index);
+                    if(type.IsArray)                ((Array)instance).SetValue(element, index);
                     else if(instance is IList list) { list.Add(element); }
-                    else type.GetType().GetAnyMethod("Add*", elementType).InvokeAny(instance, element);
+                    else type.GetAnyMethod("Add*", elementType).InvokeAny(instance, element);
                 }
             }
         }

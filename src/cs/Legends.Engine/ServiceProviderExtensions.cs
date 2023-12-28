@@ -7,27 +7,6 @@ using MonoGame.Extended.Screens;
 
 namespace Legends.Engine;
 
-public interface IGameManagementService
-{
-    ContentManager Content { get; }
-    ScreenManager ScreenManager { get; }
-}
-
-public class GameManagementService : IGameManagementService
-{
-    public Game Game { get; protected set; }
-    public ScreenManager ScreenManager { get; protected set; }
-    
-    public ContentManager Content => Game.Content;
-
-    public GameManagementService(Game game, ScreenManager screenManager)
-    {
-        Game = game;
-        ScreenManager = screenManager;
-        Game.Services.Add<IGameManagementService>(this);
-    }
-}
-
 public static class ServiceProviderExtensions
 {
     public static GraphicsDevice GetGraphicsDevice(this IServiceProvider serviceProvider)
@@ -58,34 +37,4 @@ public static class ServiceProviderExtensions
             throw new InvalidOperationException(string.Format("Could not register service of type: {0}", typeof(TType).Name));
         }
     }
-
-    /*
-    private Game _game;
-
-    internal Game Game => _game;
-
-    public GameServiceContainer Services => _game.Services;
-    public ContentManager Content => _game.Content;
-    public GameComponentCollection Components => _game.Components;
-    //public GamePlatform Platform => _game.Platform;
-    public GameWindow Window => _game.Window;
-
-    public GraphicsDevice GraphicsDevice => _game.Services.GetService<IGraphicsDeviceService>().GraphicsDevice;
-
-    public IServiceProviderExtensions(Game game)
-    {
-        _game = game;
-    }
-
-    public TType GetService<TType>()
-        where TType : class
-    {
-        return _game.Services.GetService<TType>();
-    }
-
-    public void Exit()
-    {
-        _game.Exit();
-    }
-    */
 }

@@ -133,17 +133,18 @@ public static class TypeExtensions
         if(_extensionCache.TryGetValue(extendedType, out IEnumerable<MethodInfo> result)) return result;
 
         _allExtensionMethods ??= from type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(n => n.GetTypes())
-            where type.IsSealed && !type.IsGenericType && !type.IsNested
-            from method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-            where method.IsDefined(typeof(ExtensionAttribute), false)
-            select method;
+            where   type.IsSealed && !type.IsGenericType && !type.IsNested
+            from    method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+            where   method.IsDefined(typeof(ExtensionAttribute), false)
+            select  method;
 
         var isGenericTypeDefinition = extendedType.IsGenericType && extendedType.IsTypeDefinition;
         var query = _allExtensionMethods.Where(method => 
                 isGenericTypeDefinition
                 ? method.GetParameters()[0].ParameterType.IsGenericType && method.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == extendedType
                 : method.GetParameters()[0].ParameterType == extendedType);
-                
+
+        _extensionCache.Add(extendedType, query);                
         return query;
     }
 
@@ -190,24 +191,47 @@ public static class TypeExtensions
         return methods.Where(n => Regex.IsMatch(n.Name, WildCardToRegular(methodName)));
     }
 
+    private static Dictionary<string, MethodInfo> _methodCache = new();
+
+    private static string Hash(Type returnType, string methodName, params Type[] parameterTypes)
+    {
+        return (returnType ?? typeof(void)).Name 
+        + "_" + methodName 
+        + "_" + (parameterTypes != null ? string.Join('_', parameterTypes.Select(n => n.Name)) : "");
+    }
+    
     public static MethodInfo GetAnyMethod(this Type type, string methodName, params Type[] parameterTypes)
     {
-        return type.GetAllMethods()
+        var hash = Hash(typeof(void), methodName, parameterTypes);
+
+        if(_methodCache.TryGetValue(hash, out MethodInfo result)) return result.MakeGenericFromSignature(parameterTypes);
+
+        result = type.GetAllMethods()
                     .MatchMethodName(methodName)
                     .MatchMethodSignature(type, parameterTypes)
                     .OrderBy(n => !n.IsDefined(typeof(ExtensionAttribute)))
-                    .FirstOrDefault()
-                    .MakeGenericFromSignature(parameterTypes);
+                    .FirstOrDefault();
+        
+        _methodCache.Add(hash, result);
+
+        return result.MakeGenericFromSignature(parameterTypes);
     }
 
     public static MethodInfo GetAnyMethod(this Type type, Type returnType, string methodName, params Type[] parameterTypes)
     {
-        return type.GetAllMethods()
+        var hash = Hash(returnType, methodName, parameterTypes);
+
+        if(_methodCache.TryGetValue(hash, out MethodInfo result)) return result.MakeGenericFromSignature(parameterTypes);
+
+        result = type.GetAllMethods()
                     .MatchMethodName(methodName)
                     .MatchMethodSignature(type, parameterTypes)
                     .OrderBy(n => !n.IsDefined(typeof(ExtensionAttribute)))
-                    .FirstOrDefault(n => n.ReturnParameter.ParameterType.IsAssignableFrom(returnType))
-                    .MakeGenericFromSignature(parameterTypes);
+                    .FirstOrDefault(n => n.ReturnParameter.ParameterType.IsAssignableFrom(returnType));
+        
+        _methodCache.Add(hash, result);
+
+        return result.MakeGenericFromSignature(parameterTypes);
     }
 
     public static IEnumerable<MethodInfo> GetAllMethods(this Type type)
