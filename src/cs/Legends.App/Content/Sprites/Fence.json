@@ -2,14 +2,58 @@
     "$type": "Legends.Engine.SceneObject, Legends.Engine",
     "name": "Fency the Fence",
     "size": "16, 16",
+    "layer": "sprite_layer",
+    "textureRegion": {
+        "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
+        "texture": "Sprites/desert",
+        "frame": "73",
+        "size": "16, 16"
+    },
+    "bounds": {
+        "$type": "Legends.Engine.Graphics2D.BoundingBox, Legends.Engine"
+    },
     "behaviors": [
         {
             "$type": "Legends.Engine.Graphics2D.SpriteRenderBehavior, Legends.Engine",
-            "textureRegion": {
-                "texture": "Sprites/desert",
-                "frame": "73",
-                "size": "16, 16"
+            "texture": "Sprites/desert"
+        },        
+        {
+            "$type": "Legends.Engine.Graphics2D.AnimationBehavior, Legends.Engine",
+            "animations": {
+                "walk_up": {
+                    "$type": "Legends.Engine.Graphics2D.KeyframeAnimation, Legends.Engine",
+                    "loop": "ReverseLoop",
+                    "keyframes": [
+                        {
+                            "duration": 0.2,
+                            "frame": "74"
+                        },                        
+                        {
+                            "duration": 0.2,
+                            "frame": "75"
+                        }
+                    ]
+                }
             }
+        },
+        {
+            "$type": "Legends.Engine.Physics.RigidBodyBehavior, Legends.Engine",
+            "layer": "sprite_collission_layer"
         }
     ]
 }
+
+
+SceneObject obj = Scene.GetObjectByName("Fency the Fence");
+obj.SetState("walking");
+obj.SetState("poisioned");
+obj.SetState("ghosted");
+obj.SetState("imp");
+
+void OnState(string state)
+{
+
+}
+
+up
+-- walk_up
