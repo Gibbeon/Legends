@@ -238,7 +238,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
     public Scene GetParentScene() 
     {
-        return (Parent is Scene scene) ? scene : (Parent).GetParentScene();
+        return (this is Scene scene) ? scene : (Parent).GetParentScene();
     } 
 
     public virtual void Update(GameTime gameTime)

@@ -28,7 +28,7 @@ public class TitleScreen : Screen
         _input = new InputManager(_services);
 
         _scene = _services.GetContentManager().GetRef<Scene>("Scenes/TitleScreen");
-        ((Map)(~_scene).Children.First()).CreateMapFromTexture();
+        //((Map)(~_scene).Children.First()).CreateMapFromTexture();
     }
 
     public override void Draw(GameTime gameTime)

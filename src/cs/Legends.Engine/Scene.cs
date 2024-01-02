@@ -18,7 +18,7 @@ public class Scene : SceneObject
     } 
 
     [JsonProperty("camera")]
-    private Ref<Camera> CameraReference => _camera;
+    protected Ref<Camera> CameraReference => _camera;
 
     protected Scene() : this(null)
     {
@@ -32,9 +32,9 @@ public class Scene : SceneObject
 
     public Scene(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-
+        _camera = new Camera(services, this);
+        Camera.Initialize();
     }
-
 
     public virtual void SetCamera(Camera camera)
     {
