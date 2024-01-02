@@ -1,49 +1,53 @@
 ﻿using System;
+using Assimp;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
 namespace Legends.Engine;
 
-public abstract class BaseBehavior : IBehavior
+public abstract class Component<TType> : IComponent
+    where TType : IComponent
 {
+    //public Type ComponentType => typeof(TType);
+    
     [JsonIgnore]
     public IServiceProvider Services { get; private set; }
     
     [JsonIgnore]
-    public Ref<SceneObject> Parent { get; private set; }
+    public SceneObject Parent { get; private set; }
 
-    public BaseBehavior(IServiceProvider services, SceneObject parent)
+    public Component(IServiceProvider services, SceneObject parent)
     {
         Services = services;
         Parent = parent;
     }
     
     public abstract void Update(GameTime gameTime);
-    
+
     public virtual void Draw(GameTime gameTime) {}
     
     public abstract void Dispose();
 
-    public void AttachTo(SceneObject parent)
+    public virtual void AttachTo(SceneObject parent)
     {
         if(parent != null && Services == null)
         {
             Services = parent.Services;
         }
 
-        if(~Parent != parent)
+        if(Parent != parent)
         {
             Detach();
             Parent = parent;
-            parent?.AttachBehavior(this);
+            parent?.AttachComponent(this);
         }
     }
 
-    public void Detach(bool detachChildren = true)
+    public virtual void Detach(bool detachChildren = true)
     {
         if(detachChildren)
         {
-            (~Parent).DetachBehavior(this);
+            (Parent).DetachComponent<TType>();
         }
         Parent = null;
     }

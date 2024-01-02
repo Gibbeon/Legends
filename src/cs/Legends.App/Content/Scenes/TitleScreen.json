@@ -1,68 +1,14 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "TitleScreen",
-    "camera": {},
-    "children": [
+    "components": [
         {
-            "$ref": "Scenes/map"
-        },
-        {
-            "$template": "Sprites/Fence.json",
-            "position": "-64, -64"
-        },
-        {
-            "$template": "Sprites/Fence.json",
-            "position": "-48, -64"
-        },
-        {
-            "$template": "Sprites/Fence.json",
-            "position": "-32, -64"
-        },
-        {
-            "$template": "Sprites/Fence.json",
-            "position": "-16, -64"
-        },
-        {
-            "$template": "Sprites/Fence.json",
-            "position": "0, -64"
-        },
-        {
-            "$template": "Sprites/Fence.json",
-            "position": "16, -64"
-        },
-        {
-            "$template": "Sprites/Fence.json",
-            "position": "32, -64"
-        },
-        {
-            "$template": "Sprites/Fence.json",
-            "position": "48, -64"
-        },
-        {
-            "$template": "Sprites/Fence.json",
-            "position": "64, -64"
-        },
-        {
-            "name": "Text",
-            "behaviors": [
-                {
-                    "$type":    "Legends.Engine.Graphics2D.TextRenderBehavior, Legends.Engine",
-                    "font":     "Sensation",
-                    "text":     "Press ESC to Exit or ENTER to DIE!",
-                    "color":    "255, 255, 255, 255",
-                    "halign":   "Center",
-                    "valign":   "Middle"
-                },
-                {
-                    "$type":    "Legends.Scripts.CameraControlsBehavior",
-                    "$compile": "Scripts/CameraControlsBehavior.cs",
-                    "font":     "Sensation",
-                    "text":     "Press ESC to Exit or ENTER to START",
-                    "color":    "255, 255, 255, 255",
-                    "halign":   "Center",
-                    "valign":   "Middle"
-                }
-            ]
+            "$type": "Legends.Engine.Graphics2D.Label, Legends.Engine",
+            "font":     "Sensation",
+            "text":     "Press ESC to Exit or ENTER to start",
+            "color":    "255, 255, 255, 255",
+            "halign":   "Center",
+            "valign":   "Middle"
         }
     ]
 }

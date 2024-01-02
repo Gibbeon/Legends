@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace Legends.Engine.Animation;
 
-public class AnimationBehavior : BaseBehavior
+public class AnimationBehavior : Component<IBehavior>, IBehavior
 {
     public IList<IAnimation> Animations { get; private set; }
 

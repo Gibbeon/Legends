@@ -58,9 +58,9 @@
 /build:Sensation.fnt
 
 #begin Scripts\CameraControlsBehavior.cs
-/importer:DynamicAssemblyImporter
-/processor:DynamicAssemblyProcessor
-/build:Scripts\CameraControlsBehavior.cs
+#/importer:DynamicAssemblyImporter
+#/processor:DynamicAssemblyProcessor
+#/build:Scripts\CameraControlsBehavior.cs
 
 #begin Scenes\TitleScreen.json
 /importer:ContentObjectImporter
@@ -69,9 +69,9 @@
 /build:Scenes\TitleScreen.json
 
 #begin Scenes\Map.json
-/importer:ContentObjectImporter
-/processor:ContentObjectProcessor
-/build:Scenes\Map.json
+#/importer:ContentObjectImporter
+#/processor:ContentObjectProcessor
+#/build:Scenes\Map.json
 
 #begin Scenes\test.json
 #/importer:ContentObjectImporter
@@ -79,7 +79,7 @@
 #/build:Scenes\test.json
 
 #begin Sprites\fence.json
-/importer:ContentObjectImporter
-/processor:ContentObjectProcessor
-/build:Sprites\fence.json
+#/importer:ContentObjectImporter
+#/processor:ContentObjectProcessor
+#/build:Sprites\fence.json
 

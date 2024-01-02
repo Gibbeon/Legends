@@ -10,20 +10,19 @@ namespace Legends.Engine;
 
 public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyReload
 {   
-    private static int _globalObjId;
-    private IList<string> _tags;    
-    private IList<Ref<IBehavior>> _behaviors;
+    private static int              _globalObjId;
+    private IList<string>           _tags;    
+    private IList<Ref<IBehavior>>   _behaviors;
     private IList<Ref<SceneObject>> _children;
+    private IList<Ref<IComponent>>  _components;
 
     [JsonIgnore]
     public IServiceProvider Services { get; protected set; }
     
     [JsonIgnore]
-    public Ref<SceneObject> Parent { get; protected set; }
+    public SceneObject Parent { get; protected set; }
     
-    public string Name { get; set; }
-    
-    public IList<string> Tags { get => _tags; protected set => _tags = value; }
+    public string Name { get; protected set; }
     
     [DefaultValue(true)]
     public bool Enabled { get; set; }
@@ -31,16 +30,48 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
     [DefaultValue(true)]
     public bool Visible { get; set; }
     
-    public IList<Ref<SceneObject>> Children
+    [JsonIgnore]
+    public IEnumerable<SceneObject> Children
     {
-        get => _children;
-        protected set => _children = value;
+        get => ChildrenReferences.Select(n => n.Get());
     }
 
-    public IList<Ref<IBehavior>> Behaviors
+    [JsonIgnore]
+    public IEnumerable<IBehavior> Behaviors
+    {
+        get => BehaviorReferences.Select(n => n.Get());
+    }
+
+    [JsonIgnore]
+    public IEnumerable<IComponent> Components
+    {
+        get => ComponentReferences.Select(n => n.Get());
+    }
+
+    [JsonProperty(nameof(Children))]
+    protected IList<Ref<SceneObject>>  ChildrenReferences
+    {
+        get => _children;
+        set => _children = value;
+    }
+
+    [JsonProperty(nameof(Behaviors))]
+    protected IList<Ref<IBehavior>>  BehaviorReferences
     {
         get => _behaviors;
-        protected set => _behaviors = value;
+        set => _behaviors = value;
+    }
+
+    [JsonProperty(nameof(Components))]
+    protected IList<Ref<IComponent>>  ComponentReferences
+    {
+        get => _components;
+        set => _components = value;
+    } 
+
+    public IList<string> Tags { 
+        get => _tags; 
+        protected set => _tags = value; 
     }
 
     public SceneObject() : this(null, null)
@@ -55,6 +86,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
         
         _children   = new List<Ref<SceneObject>>();
         _behaviors  = new List<Ref<IBehavior>>();
+        _components = new List<Ref<IComponent>>();
         _tags       = new List<string>();
 
         Parent = parent;
@@ -115,7 +147,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
             Services = parent.Services;
         }
 
-        if((~Parent) != parent)
+        if((Parent) != parent)
         {
             Detach();
             Parent = parent;
@@ -127,7 +159,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
     {
         if(detachChildren && Parent != null)
         {
-            (~Parent).DetachChild(this);
+            (Parent).DetachChild(this);
         }
         Parent = null;
     }
@@ -140,12 +172,6 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
         }
     }
 
-    public void DetachBehavior<TType>()
-        where TType : IBehavior
-    {
-        DetachBehavior<TType>(_behaviors.OfType<TType>().SingleOrDefault());
-    }
-
     public void DetachBehavior<TType>(TType behavior)
         where TType : IBehavior
     {
@@ -155,11 +181,35 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
         }
     }
 
+    public void AttachComponent<TType>(TType component)
+        where TType : IComponent
+    {
+        if(!_components.Contains(component))
+        {
+            _components.Add(component);
+        }
+    }
+
+    public void DetachComponent<TType>()
+        where TType : IComponent
+    {
+        DetachComponent(_components.OfType<TType>().SingleOrDefault());
+    }
+
+    protected void DetachComponent<TType>(TType component)
+        where TType : IComponent
+    {
+        if(component != null)
+        {
+            _components.Remove(component);
+        }
+    }
+
     public void AttachChild(SceneObject node, bool relative = false)
     {
         if(!_children.Contains(node))
         {
-            _children.Add(new Ref<SceneObject>(node));
+            _children.Add(node);
             node.AttachTo(this);
 
             if(relative)
@@ -188,7 +238,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
     public Scene GetParentScene() 
     {
-        return (~Parent is Scene scene) ? scene : (~Parent).GetParentScene();
+        return (Parent is Scene scene) ? scene : (Parent).GetParentScene();
     } 
 
     public virtual void Update(GameTime gameTime)
@@ -197,12 +247,17 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
         
         foreach(var behavior in Behaviors)
         {
-            (~behavior).Update(gameTime);
+            (behavior).Update(gameTime);
+        }
+
+        foreach(var component in Components)
+        {
+            (component).Update(gameTime);
         }
         
         foreach(var child in Children)
         {
-            (~child).Update(gameTime);
+            (child).Update(gameTime);
         }
     }
 
@@ -212,12 +267,17 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
         foreach(var behavior in Behaviors)
         {
-            (~behavior).Draw(gameTime);
+            (behavior).Draw(gameTime);
+        }
+
+        foreach(var component in Components)
+        {
+            (component).Draw(gameTime);
         }
         
         foreach(var child in Children)
         {
-            (~child).Draw(gameTime);
+            (child).Draw(gameTime);
         }
     }
 
@@ -230,30 +290,84 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
         foreach(var behavior in Behaviors)
         {
-            (~behavior).Dispose();
+            behavior.Dispose();
         }
-        Behaviors.Clear();
+
         foreach(var child in Children)
         {
-            (~child).Dispose();
+            (child).Dispose();
         }
-        Children.Clear();
     }
 
     public void OnReload()
     {
-        Enabled = false;
-        Visible = false;
-
-        foreach(var behavior in Behaviors)
-        {
-            (~behavior).Dispose();
-        }
-        Behaviors.Clear();
-        foreach(var child in Children)
-        {
-            (~child).Dispose();
-        }
-        Children.Clear();
+        Dispose();
     }
 }  
+
+/*
+SceneObject obj = Scene.GetObjectByName("Fency the Fence");
+
+obj.SetState("facing", FacingDirection.Up);
+obj.SetState("action", "walk");
+obj.SetState("ghosted", true);
+obj.SetState("imp", true);
+
+obj.SetAnimation("walk_up", true);
+
+controller: [
+    {
+        "name": "ghosted_imp_walk_up",
+        "conditions": {
+            "ghosted": true,
+            "imp": true,
+            "action": "walk",
+            "facing": "Up"
+        },
+        "animations": [
+            "walk_up", 
+            "ghosted_imp", 
+            "move_left", 
+            "fade_in_out"
+        ]
+    }
+]
+
+animations: [
+    {
+        "$type": "KeyframeAnimation",
+        "name": "walk_up"
+    },
+    {
+        "$type": "SpriteSwapAnimation",
+        "name": "ghosted_imp"
+    },
+    {
+        "$type": "SRTAnimation",
+        "name": "move_left"
+    },
+    {
+        "$type": "ColorKeyAnimation",
+        "name": "fade_in_out"
+    }
+]
+
+void OnStateChanged()
+{
+    if(Controllers.TryFindMatch(out string[] animations))
+    {
+        // disable old
+        foreach(var anim in Aniumations.Where(n => n.Enabled 
+            && !animations.Any(n.Name)))
+        {
+            SetAnimation(anim, false);
+        }
+
+        // enable new
+        foreach(var anim in Aniumations.Where(n => !n.Enabled 
+            && animations.Any(n.Name)))
+        {
+            SetAnimation(anim, true);
+        }
+    }
+}*/

@@ -157,11 +157,8 @@ public static class ContentReaderExtensions
 
             _parents.Push(instance);
 
-            try{
-                foreach(var member in Enumerable.Concat<MemberInfo>(
-                    derivedType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty),
-                    derivedType.GetFields(BindingFlags.Public | BindingFlags.Instance))
-                    .Where(n => !n.IsDefined(typeof(JsonIgnoreAttribute))))
+            try {
+                foreach(var member in ContentHelpers.GetContentMembers(derivedType))
                 {
                     if(member is PropertyInfo property)
                     {

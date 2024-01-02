@@ -21,7 +21,7 @@ public enum VerticalAlignment
     Middle,
     Bottom
 }
-public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
+public class Label : Component<Sprite>, IBitmapFontBatchDrawable
 {
     public Color Color { get; set; }
 
@@ -33,29 +33,29 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public RenderState RenderState { get; set; }
     
-[JsonProperty("halign")]
+    [JsonProperty("halign")]
     public HorizontalAlignment HorizontalAlignment { get; set; }
 
     [JsonProperty("valign")]
     public VerticalAlignment VerticalAlignment { get; set; }
     
     [JsonIgnore]
-    public bool Visible   => Parent != null && (~Parent).Visible;
+    public bool Visible   => Parent != null && (Parent).Visible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent != null ? (~Parent).Position + new Vector2(GetHorizontalOffset(), GetVerticalOffset()) : Vector2.Zero;
+    public Vector2 Position => Parent != null ? (Parent).Position + new Vector2(GetHorizontalOffset(), GetVerticalOffset()) : Vector2.Zero;
 
     [JsonIgnore]
-    public float Rotation   => Parent != null ? (~Parent).Rotation : 0.0f;
+    public float Rotation   => Parent != null ? (Parent).Rotation : 0.0f;
     
     [JsonIgnore]
-    public Vector2 Scale    => Parent != null ? (~Parent).Scale : Vector2.One;
+    public Vector2 Scale    => Parent != null ? (Parent).Scale : Vector2.One;
     
     [JsonIgnore]
-    public Vector2 Origin   => Parent != null ? (~Parent).Origin : Vector2.Zero;
+    public Vector2 Origin   => Parent != null ? (Parent).Origin : Vector2.Zero;
     
     [JsonIgnore]
-    public IViewState ViewState => (~Parent).GetParentScene().Camera.Get();
+    public IViewState ViewState => (Parent).GetParentScene().Camera;
     
     [JsonIgnore]
     public Rectangle SourceBounds => new(Position.ToPoint(), SourceData == null ? Point.Zero : (Point)SourceData.MeasureString(Text));
@@ -63,12 +63,12 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
     [JsonIgnore]
     public BitmapFont SourceData => (BitmapFont)Font;
 
-    public TextRenderBehavior() : this(null, null)
+    public Label() : this(null, null)
     {
 
     }
 
-    public TextRenderBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
+    public Label(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         Color   = Color.White;
         Text    = string.Empty;
@@ -76,26 +76,24 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
     public float GetVerticalOffset()
     {
-        switch (VerticalAlignment)
+        return VerticalAlignment switch
         {
-            case VerticalAlignment.Top:     return 0;
-            case VerticalAlignment.Bottom:  return -((BitmapFont)Font).MeasureString(Text).Height * Scale.Y;
-            case VerticalAlignment.Middle:  return -((BitmapFont)Font).MeasureString(Text).Height * Scale.Y / 2;
-            default:
-                return 0;
-        }
+            VerticalAlignment.Top => 0,
+            VerticalAlignment.Bottom => -((BitmapFont)Font).MeasureString(Text).Height * Scale.Y,
+            VerticalAlignment.Middle => -((BitmapFont)Font).MeasureString(Text).Height * Scale.Y / 2,
+            _ => 0,
+        };
     }
 
         public float GetHorizontalOffset()
     {
-        switch (HorizontalAlignment)
+        return HorizontalAlignment switch
         {
-            case HorizontalAlignment.Left:      return 0;
-            case HorizontalAlignment.Right:     return -((BitmapFont)Font).MeasureString(Text).Width * Scale.X;
-            case HorizontalAlignment.Center:    return -((BitmapFont)Font).MeasureString(Text).Width * Scale.Y/ 2;
-            default:
-                return 0;
-        }
+            HorizontalAlignment.Left => 0,
+            HorizontalAlignment.Right => -((BitmapFont)Font).MeasureString(Text).Width * Scale.X,
+            HorizontalAlignment.Center => -((BitmapFont)Font).MeasureString(Text).Width * Scale.Y / 2,
+            _ => 0,
+        };
     }
 
     public override void Update(GameTime gameTime)
@@ -109,7 +107,7 @@ public class TextRenderBehavior : BaseBehavior, IBitmapFontBatchDrawable
 
         if(Visible && Parent != null)
         {
-            (~Parent).Services.Get<IRenderService>().DrawBatched(this);  
+            Services.Get<IRenderService>().DrawBatched(this);  
         }      
     }
 

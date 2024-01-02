@@ -7,7 +7,7 @@ using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D;
 
-public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
+public class Sprite : Component<Sprite>, ISpriteBatchDrawable
 {
     public Ref<TextureRegion> TextureRegion { get; set; }
 
@@ -22,34 +22,34 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     public Texture2D SourceData => (~TextureRegion).Texture;
 
     [JsonIgnore]
-    public bool Visible   => Parent != null && (~Parent).Visible;
+    public bool Visible   => Parent != null && (Parent).Visible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent != null ? (~Parent).Position : Vector2.Zero;
+    public Vector2 Position => Parent != null ? (Parent).Position : Vector2.Zero;
 
     [JsonIgnore]
-    public float Rotation   => Parent != null ? (~Parent).Rotation : 0.0f;
+    public float Rotation   => Parent != null ? (Parent).Rotation : 0.0f;
     
     [JsonIgnore]
-    public Vector2 Scale    => Parent != null ? (~Parent).Scale : Vector2.One;
+    public Vector2 Scale    => Parent != null ? (Parent).Scale : Vector2.One;
     
     [JsonIgnore]
-    public Vector2 Origin   => Parent != null ? (~Parent).Origin : Vector2.Zero;
+    public Vector2 Origin   => Parent != null ? (Parent).Origin : Vector2.Zero;
     
     [JsonIgnore]
-    public IViewState ViewState => (~Parent).GetParentScene().Camera.Get();
+    public IViewState ViewState => (Parent).GetParentScene().Camera;
 
     [JsonIgnore]
     public Rectangle SourceBounds{ get => TextureRegion == null ? Rectangle.Empty : (~TextureRegion).BoundingRectangle.ToRectangle(); set => SetTextureRegionBounnds(value); }
 
     [JsonIgnore]
-    public Rectangle DestinationBounds => Parent == null ? Rectangle.Empty : (Rectangle)(~Parent).BoundingRectangle; 
+    public Rectangle DestinationBounds => Parent == null ? Rectangle.Empty : (Rectangle)(Parent).BoundingRectangle; 
 
-    public SpriteRenderBehavior(): this (null, null)
+    public Sprite(): this (null, null)
     {
 
     }
-    public SpriteRenderBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
+    public Sprite(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         Color = Color.White;
     }
@@ -58,7 +58,7 @@ public class SpriteRenderBehavior : BaseBehavior, ISpriteBatchDrawable
     {
         if(Visible)
         {
-            (~Parent).Services.Get<IRenderService>().DrawBatched(this);
+            (Parent).Services.Get<IRenderService>().DrawBatched(this);
         }
     }
 

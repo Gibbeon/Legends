@@ -9,11 +9,16 @@ namespace Legends.Engine;
 public class Scene : SceneObject
 {
     private Ref<Camera> _camera;
-    public Ref<Camera> Camera 
+
+    [JsonIgnore]
+    public Camera Camera 
     {
-        get => _camera;
-        set => _camera = value;
+        get => CameraReference.Get();
+        set => SetCamera(value);
     } 
+
+    [JsonProperty("camera")]
+    private Ref<Camera> CameraReference => _camera;
 
     protected Scene() : this(null)
     {
@@ -33,11 +38,11 @@ public class Scene : SceneObject
 
     public virtual void SetCamera(Camera camera)
     {
-        if(~Camera != camera)
+        if(Camera != camera)
         {
             if(Camera != null)
             {
-                (~Camera).Dispose();                    
+                (Camera).Dispose();                    
             }
             _camera = camera;
         }
@@ -46,17 +51,18 @@ public class Scene : SceneObject
     public override void Draw(GameTime gameTime)
     {        
         base.Draw(gameTime);
-        (~Camera).Draw(gameTime);
+        (Camera).Draw(gameTime);
     }
 
     public override void Update(GameTime gameTime)
     {
         base.Update(gameTime);
-        (~Camera).Update(gameTime);
+        (Camera).Update(gameTime);
     }
 
     public override void Dispose()
     {
+        GC.SuppressFinalize(this);
         base.Dispose();
     }
 }

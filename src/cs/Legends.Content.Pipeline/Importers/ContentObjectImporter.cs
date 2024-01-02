@@ -16,7 +16,7 @@ public class ContentObjectImporter : ContentImporter<dynamic>
     {
         try
         {
-            //ContentLogger.Enabled = true;
+            ContentLogger.Enabled = true;
             var settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
@@ -27,7 +27,7 @@ public class ContentObjectImporter : ContentImporter<dynamic>
                 
             var result = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
             
-            //context.Logger.LogMessage("{0}", JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)));
+            context.Logger.LogMessage("{0}", JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)));
             return result;
         }
         catch(Exception error)
@@ -45,7 +45,7 @@ public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
     {      
         try
         {  
-            ContentLogger.Enabled = false;
+            ContentLogger.Enabled = true;
             var settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto,

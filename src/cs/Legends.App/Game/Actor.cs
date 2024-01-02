@@ -7,6 +7,7 @@ using Legends.Engine.Resolvers;
 
 namespace Legends.App;
 
+/*
 public class Actor : SceneObject
 {
     public Vector2 Facing;
@@ -66,3 +67,4 @@ public class Actor : SceneObject
         base.Dispose();
     }
 }
+*/

@@ -6,13 +6,13 @@ namespace Legends.Engine.Animation;
 
 public class SpriteKeyframeAnimation : KeyframeAnimation<Rectangle>
 {
-    private SpriteRenderBehavior _sprite;
+    private Sprite _sprite;
 
-    public SpriteKeyframeAnimation(SpriteRenderBehavior sprite, KeyframeAnimationData data) : this (sprite, data.Name, data.LoopType, data.Frames)
+    public SpriteKeyframeAnimation(Sprite sprite, KeyframeAnimationData data) : this (sprite, data.Name, data.LoopType, data.Frames)
     {
 
     }
-    public SpriteKeyframeAnimation(SpriteRenderBehavior sprite, string name, LoopType type, IList<Keyframe<Rectangle>> frames) : base(name, type, frames)
+    public SpriteKeyframeAnimation(Sprite sprite, string name, LoopType type, IList<Keyframe<Rectangle>> frames) : base(name, type, frames)
     {
         _sprite = sprite;
     }

@@ -136,11 +136,7 @@ public static class ContentWriterExtensions
                 
                 writer.Write(derivedType.FullName);
                 
-                foreach(var member in Enumerable.Concat<MemberInfo>(
-                    derivedType .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty)
-                                .Where(n => n.CanRead && n.CanWrite),
-                    derivedType.GetFields(BindingFlags.Public | BindingFlags.Instance))
-                    .Where(n => !n.IsDefined(typeof(JsonIgnoreAttribute))))
+                foreach(var member in ContentHelpers.GetContentMembers(derivedType))
                 {
                     if(member is PropertyInfo property)
                     {
