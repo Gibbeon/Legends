@@ -12,9 +12,7 @@
         },
         {
             "$type":    "Legends.Engine.Animation.AnimationController, Legends.Engine",
-            "animations": {
-                "$import": "Scenes/animations.json"
-            }
+            "animations": "Scenes/animations"
         }
     ]
 }

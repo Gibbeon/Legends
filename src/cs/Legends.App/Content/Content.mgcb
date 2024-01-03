@@ -68,6 +68,12 @@
 /processorParam:debug=True
 /build:Scenes\TitleScreen.json
 
+#begin Scenes\Animations.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/processorParam:debug=True
+/build:Scenes\Animations.json
+
 #begin Scenes\Map.json
 #/importer:ContentObjectImporter
 #/processor:ContentObjectProcessor

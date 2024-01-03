@@ -26,9 +26,19 @@ public static class ContentWriterExtensions
             elementType = derivedType.GetElementType();
             count = ((Array)instance).Length;
         }
-        else if(derivedType.IsGenericType && instance is ICollection collection)
+        else if(instance is ICollection collection)
         {
-            elementType = derivedType.GenericTypeArguments[0];
+            var interfaceType = derivedType.GetInterfaces().FirstOrDefault(n => n.IsGenericType && n.GetGenericTypeDefinition() == typeof(ICollection<>));
+            
+            if(interfaceType != null)
+            {
+                elementType = interfaceType.GenericTypeArguments[0];
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
             count = collection.Count;
         }
         else

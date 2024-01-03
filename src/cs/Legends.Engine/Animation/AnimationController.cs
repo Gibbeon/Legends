@@ -249,15 +249,20 @@ public class AnimationChannel
     }
 }
 
+public class AnimationCollection : Dictionary<string, IAnimationData>
+{
+
+}
+
 public class AnimationController : Component<IComponent>
 {
     protected IList<AnimationChannel> _channels;
     
     [JsonProperty(nameof(Animations))]
-    protected Ref<IDictionary<string, IAnimationData>> _data;
+    protected Ref<AnimationCollection> _data;
 
     [JsonIgnore]
-    public IDictionary<string, IAnimationData> Animations 
+    public AnimationCollection Animations 
     { 
         get => _data.Get();
     }
@@ -270,7 +275,7 @@ public class AnimationController : Component<IComponent>
 
     public AnimationController(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-        _data = new Ref<IDictionary<string, IAnimationData>>(new Dictionary<string, IAnimationData>());
+        _data = new Ref<AnimationCollection>(new AnimationCollection());
     }
 
     protected IList<AnimationChannel> GenerateChannels()
