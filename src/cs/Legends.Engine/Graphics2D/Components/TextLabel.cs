@@ -52,7 +52,7 @@ public class TextLabel : Component<TextLabel>, IBitmapFontBatchDrawable
     public Vector2 Scale    => Parent != null ? (Parent).Scale : Vector2.One;
     
     [JsonIgnore]
-    public Vector2 Origin   => Parent != null ? (Parent).Origin : Vector2.Zero;
+    public Vector2 Origin   => Parent != null ? (Parent).Origin + new Vector2(GetHorizontalOffset(), GetVerticalOffset()) : Vector2.Zero;
     
     [JsonIgnore]
     public IViewState ViewState => (Parent).GetParentScene().Camera;

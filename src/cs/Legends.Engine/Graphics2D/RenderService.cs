@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoGame.Extended.BitmapFonts;
 using System;
+
 namespace Legends.Engine;
 
 public class RenderService : IRenderService
@@ -195,10 +196,10 @@ public class Layer : ILayer
                         _spriteBatch.DrawString(
                             fontDrawable.SourceData,
                             fontDrawable.Text,
-                            fontDrawable.Position,
+                            Vector2.Zero,
                             fontDrawable.Color,
                             fontDrawable.Rotation,
-                            fontDrawable.Origin,
+                            -fontDrawable.Position,
                             fontDrawable.Scale,
                             fontDrawable.Effect,
                             0,
