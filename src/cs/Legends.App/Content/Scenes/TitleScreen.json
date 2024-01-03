@@ -9,10 +9,11 @@
             "color":    "255, 255, 255, 255",
             "halign":   "Center",
             "valign":   "Middle"
-        },
+        }
+    ],
+    "behaviors": [
         {
-            "$type":    "Legends.Engine.Animation.AnimationController, Legends.Engine",
-            "animations": "Scenes/animations"
+            "$compile": "Screens/Scripts/TitleScreenInputBehavior.cs"
         }
     ]
 }

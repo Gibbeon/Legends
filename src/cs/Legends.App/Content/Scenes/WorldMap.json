@@ -1,0 +1,22 @@
+{
+    "$type":"Legends.Engine.Scene, Legends.Engine",
+    "name": "WorldMap",
+    "children": [
+        {
+            "name": "map",
+            "components": [
+                {
+                    "$ref": "Scenes/map.json"
+                },
+                {
+                    "$ref": "Sprites/actor.json"
+                }
+            ]
+        }
+    ],
+    "behaviors": [
+        {
+            "$compile": "Screens/Scripts/WorldMapCameraInputBehavior.cs"
+        }
+    ]
+}
