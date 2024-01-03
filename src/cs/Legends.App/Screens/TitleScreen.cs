@@ -3,17 +3,6 @@ using MonoGame.Extended.Screens;
 using Legends.Engine.Input;
 using Legends.Engine;
 using System;
-using Legends.Engine.Content;
-using System.IO;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis.CSharp;
-using SharpFont;
-using Microsoft.Xna.Framework.Content;
-using System.Text;
-using System.Security.AccessControl;
-using System.Reflection;
-using System.Linq;
-using Legends.Engine.Graphics2D;
 
 namespace Legends.App.Screens;
 

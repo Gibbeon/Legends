@@ -1,14 +1,11 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using MonoGame.Extended;
-using Legends.Engine.Graphics2D;
 using Microsoft.Xna.Framework.Content;
-using SharpDX.D3DCompiler;
 using Legends.Engine;
-using SharpFont;
-using System.Xml.Linq;
 using Legends.Engine.Content;
 using System;
-using Legends.Engine.Serialization;
+using System.Collections;
+using System.Linq;
 
 namespace Legends.Content.Pipline;
 
@@ -43,12 +40,19 @@ public static class ContentPrimitivesExtensions
         {
             output.Write7BitEncodedInt(3);
         }
-
-        output.Write(result.RefType.AssemblyQualifiedName);
-        output.Write(result.Name);
         
         if(!result.IsExternal || result.IsExtended)
+        {
+            // need the actual type name
+            output.Write(result.RefType.AssemblyQualifiedName);
+            output.Write(result.Name);
             output.WriteObject(result.Get(), result.RefType);
+        } 
+        else
+        {
+            output.Write(result.RefType.AssemblyQualifiedName);
+            output.Write(result.Name);
+        }
     }
 
     public static IRef ReadRef(this ContentReader input)

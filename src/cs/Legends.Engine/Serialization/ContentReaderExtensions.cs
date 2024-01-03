@@ -108,6 +108,14 @@ public static class ContentReaderExtensions
         var native = typeof(ContentReader).GetAnyMethod(derivedType, "Read?*");
         object result = default;
 
+        var isNull = reader.Read7BitEncodedInt() == 0;
+
+        if(isNull)
+        {
+            ContentLogger.LogEnd("value is (null)", result);
+            return null;
+        }
+
         if(native != null)
         {
             ContentLogger.LogAppend("(invoke) {0}", native.GetSignature()); 
@@ -170,40 +178,49 @@ public static class ContentReaderExtensions
 
         using(ContentLogger.Log(reader.BaseStream.Seek(0, SeekOrigin.Current), "Object found of type {0}, existing instance is ({1})", derivedType.Name, instance == null ? "null" : "not null"))
         {
-            instance ??=  derivedType.Create(_parents.Count == 0  
-                ? new[] { reader.ContentManager.ServiceProvider }
-                : new[] { reader.ContentManager.ServiceProvider, _parents.Peek() });
-
-            _parents.Push(instance);
-
-            try {
-                foreach(var member in ContentHelpers.GetContentMembers(derivedType))
-                {
-                    if(member is PropertyInfo property)
-                    {
-                        using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", property.Name))
-                        {
-                            property.SetValue(instance, reader.ReadField(property.GetValue(instance), property.PropertyType));
-                        }
-                    }
-                    if(member is FieldInfo field)
-                    {
-                        using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", field.Name))
-                        {
-                            field.SetValue(instance, reader.ReadField(field.GetValue(instance), field.FieldType));
-                        }
-                    }
-                }   
-
-                return instance;
-            }
-            catch(Exception err)
+            if(derivedType.IsArray ||
+                derivedType.GetInterfaces().Any(n => n.IsGenericType 
+                                                && n.GetGenericTypeDefinition() == typeof(ICollection<>)))
             {
-                ContentLogger.Log(reader.BaseStream.Seek(0, SeekOrigin.Current), "{0}\n{1}", err.Message, err.StackTrace);
-                throw;
+                return reader.ReadArray(instance as ICollection);
             }
-            finally{
-                _parents.Pop();
+            else
+            {
+                instance ??=  derivedType.Create(_parents.Count == 0  
+                    ? new[] { reader.ContentManager.ServiceProvider }
+                    : new[] { reader.ContentManager.ServiceProvider, _parents.Peek() });
+
+                _parents.Push(instance);
+
+                try {
+                    foreach(var member in ContentHelpers.GetContentMembers(derivedType))
+                    {
+                        if(member is PropertyInfo property)
+                        {
+                            using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", property.Name))
+                            {
+                                property.SetValue(instance, reader.ReadField(property.GetValue(instance), property.PropertyType));
+                            }
+                        }
+                        if(member is FieldInfo field)
+                        {
+                            using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", field.Name))
+                            {
+                                field.SetValue(instance, reader.ReadField(field.GetValue(instance), field.FieldType));
+                            }
+                        }
+                    }  
+
+                    return instance;
+                }
+                catch(Exception err)
+                {
+                    ContentLogger.Log(reader.BaseStream.Seek(0, SeekOrigin.Current), "{0}\n{1}", err.Message, err.StackTrace);
+                    throw;
+                }
+                finally{
+                    _parents.Pop();
+                }
             }
         }
     }

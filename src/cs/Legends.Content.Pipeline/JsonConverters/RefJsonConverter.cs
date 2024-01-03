@@ -29,7 +29,7 @@ public class RefJsonConverter : JsonConverter
                 var valueType = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : objectType;
                 var jSource = jObject.Property("$compile");
                 var jRef = jObject.Property("$ref");
-                var JTemplate = jObject.Property("$template");
+                var jImport = jObject.Property("$import");
                 var name = jRef == null ? "" : jRef.Value.ToString();
                 bool isExternal = !string.IsNullOrEmpty(name);
                 bool isExtended = false;
@@ -44,23 +44,23 @@ public class RefJsonConverter : JsonConverter
                     isExternal = true;
                     isExtended = true;
                 } 
-                else if(JTemplate != null)
+                else if(jImport != null)
                 {
-                    var filename = JTemplate.Value.ToString();
-                    name = Path.ChangeExtension(jObject.Property("$template").Value.ToString(), null);
-                    var jTemplate = JObject.Parse(File.ReadAllText(filename));
+                    var filename = jImport.Value.ToString();
+                    name = Path.ChangeExtension(jObject.Property("$import").Value.ToString(), null);
+                    var jImportValue = JObject.Parse(File.ReadAllText(filename));
 
     
-                    jTemplate.Merge(jObject,
+                    jImportValue.Merge(jObject,
                         new JsonMergeSettings() {
                             MergeArrayHandling = MergeArrayHandling.Union
                         }
                     );
 
-                    jObject = jTemplate;
-                    jObject.Remove("$template");
+                    jObject = jImportValue;
+                    jObject.Remove("$import");
                     
-                    isExternal = true;
+                    isExternal = false;
                     isExtended = true;
                 }
 

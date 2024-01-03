@@ -96,6 +96,15 @@ public static class ContentWriterExtensions
     {
         var derivedType = instance != null ? instance.GetType() : type;
 
+        if(instance == null)
+        {
+            ContentLogger.LogEnd("value was (null)");
+            writer.Write7BitEncodedInt(0);
+            return;
+        } 
+            
+        writer.Write7BitEncodedInt(1);
+
         //using(LogEntry ("Field: {0} of type {1}", derivedType.Name, type.Name))
         {
             var native = writer.GetType()
@@ -111,6 +120,7 @@ public static class ContentWriterExtensions
             if(native != null)
             {
                 ContentLogger.LogEnd("Invoke Method {0} {1}", native.GetSignature(), instance);
+
                 native.InvokeAny(writer, instance);
                 return;
             }
@@ -148,30 +158,39 @@ public static class ContentWriterExtensions
         {
             var derivedType = instance != null ? instance.GetType() : type;
 
-            using(ContentLogger.Log(writer.Seek(0, SeekOrigin.Current), "Object: {0} of type {1} ({2})", derivedType.Name, type.Name, instance == null ? "null" : "not null"))
+            writer.Write7BitEncodedInt(instance == null ? 0 : 1);
+            if(instance == null) return;
+                    
+            writer.Write(derivedType.FullName);
+
+            if(derivedType.IsArray ||
+                derivedType.GetInterfaces().Any(n => n == typeof(IEnumerable)))
             {
-                writer.Write7BitEncodedInt(instance == null ? 0 : 1);
-                if(instance == null) return;
-                
-                writer.Write(derivedType.FullName);
-                
-                foreach(var member in ContentHelpers.GetContentMembers(derivedType))
-                {
-                    if(member is PropertyInfo property)
+                writer.WriteArray(instance as IEnumerable, derivedType);
+            }
+            else
+            {
+                using(ContentLogger.Log(writer.Seek(0, SeekOrigin.Current), "Object: {0} of type {1} ({2})", derivedType.Name, type.Name, instance == null ? "null" : "not null"))
+                {   
+                    foreach(var member in ContentHelpers.GetContentMembers(derivedType))
                     {
-                        using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance)))
+                        if(member is PropertyInfo property)
                         {
-                            writer.WriteField(property.GetValue(instance), property.PropertyType);
+                            Console.WriteLine(" property.Name = {0}",  property.Name );
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance)))
+                            {
+                                writer.WriteField(property.GetValue(instance), property.PropertyType);
+                            }
                         }
-                    }
-                    if(member is FieldInfo field)
-                    {
-                        using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance)))
+                        if(member is FieldInfo field)
                         {
-                            writer.WriteField(field.GetValue(instance), field.FieldType);
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance)))
+                            {
+                                writer.WriteField(field.GetValue(instance), field.FieldType);
+                            }
                         }
-                    }
-                }   
+                    }   
+                }
             }
         } 
         catch(Exception err)

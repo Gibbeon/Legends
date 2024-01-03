@@ -1,33 +1,47 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "TitleScreen",
-    "camera": {},
-    "children": [
+    "components": [
         {
-            "name": "Text",
-            "behaviors": [
-                {
-                    "$type":    "Legends.Engine.Graphics2D.TextRenderBehavior, Legends.Engine",
-                    "font":     "Sensation",
-                    "text":     "Press ESC to Exit or ENTER to start",
-                    "color":    "255, 255, 255, 255",
-                    "halign":   "Center",
-                    "valign":   "Middle"
+            "$type":    "Legends.Engine.Graphics2D.TextLabel, Legends.Engine",
+            "font":     "Sensation",
+            "text":     "Press ESC to Exit or ENTER to start",
+            "color":    "255, 255, 255, 255",
+            "halign":   "Center",
+            "valign":   "Middle"
+        },
+        {
+            "$type":    "Legends.Engine.Animation.AnimationController, Legends.Engine",
+            "animations": {
+                "bounce": {
+                    "$type" : "Legends.Engine.Animation.TranslateAnimationData, Legends.Engine",
+                    "relative" : true,
+                    "from": "0, 0",
+                    "to": "128, 0",
+                    "duration": "1.0",
+                    "loopType": "Reverse"
                 },
-                {
-                    "$type":    "Legends.Engine.ScriptBehavior, Legends.Engine",
-                    "source":   "Scripts/CameraControlsBehavior.cs",
-                    "typeName": "Legends.Scripts.CameraControlsBehavior",
-                    "properties":
-                    {
-                        "font":     "Sensation",
-                        "text":     "Press ESC to Exit or ENTER to start",
-                        "color":    "255, 255, 255, 255",
-                        "halign":   "Center",
-                        "valign":   "Middle"
-                    }
+                "grow": {
+                    "$type" : "Legends.Engine.Animation.ScaleAnimationData, Legends.Engine",
+                    "relative" : true,
+                    "to": "1.0, 1.0",
+                    "duration": "1.0",
+                    "loopType": "Reverse"
+                },
+                "spin": {
+                    "$type" : "Legends.Engine.Animation.RotateAnimationData, Legends.Engine",
+                    "relative" : true,
+                    "to": "6.28",
+                    "duration": "1.0",
+                    "loopType": "Loop"
+                },
+                "colorize": {
+                    "$type" : "Legends.Engine.Animation.SpriteColorAnimationData, Legends.Engine",
+                    "to": "255, 0, 0, 0",
+                    "duration": "1.0",
+                    "loopType": "Reverse"
                 }
-            ]
+            }
         }
     ]
 }

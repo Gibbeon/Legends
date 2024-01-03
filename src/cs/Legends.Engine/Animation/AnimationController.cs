@@ -186,7 +186,6 @@ public class LerpProgress<TType>
 public class SpriteColorAnimationData : AnimationData
 {
 
-
     public bool Relative    { get; set; }
     public Color To       { get; set; }
 
@@ -254,27 +253,30 @@ public class AnimationController : Component<IComponent>
 {
     protected IList<AnimationChannel> _channels;
     
+    [JsonProperty(nameof(Animations))]
+    protected Ref<IDictionary<string, IAnimationData>> _data;
+
+    [JsonIgnore]
     public IDictionary<string, IAnimationData> Animations 
     { 
-        set {
-            foreach(var item in value) item.Value.Name = item.Key;
-            _channels = value.Select(n => new AnimationChannel(this, n.Value)).ToList();
-        } 
-        get => _channels.ToDictionary(n => n.AnimationData.Name, n => n.AnimationData);
-        //protected set {
-
-        //} 
+        get => _data.Get();
     }
 
     [JsonIgnore]
     public IList<AnimationChannel> Channels 
     { 
-        get => _channels;
+        get => _channels ?? (_channels = GenerateChannels());
     }
 
     public AnimationController(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-        _channels = new List<AnimationChannel>();
+        _data = new Ref<IDictionary<string, IAnimationData>>(new Dictionary<string, IAnimationData>());
+    }
+
+    protected IList<AnimationChannel> GenerateChannels()
+    {
+        foreach(var item in Animations) item.Value.Name = item.Key;
+        return Animations.Select(n => new AnimationChannel(this, n.Value)).ToList();
     }
     
     public override void Update(GameTime gameTime)
