@@ -17,7 +17,7 @@
                     "$type" : "Legends.Engine.Animation.TranslateAnimationData, Legends.Engine",
                     "relative" : true,
                     "from": "0, 0",
-                    "to": "16, 16",
+                    "to": "16, 0",
                     "duration": "1.0",
                     "loopType": "Reverse"
                 },
@@ -34,6 +34,12 @@
                     "to": "0",
                     "duration": "1.0",
                     "loopType": "Loop"
+                },
+                "colorize": {
+                    "$type" : "Legends.Engine.Animation.SpriteColorAnimationData, Legends.Engine",
+                    "to": "255, 0, 0, 0",
+                    "duration": "1.0",
+                    "loopType": "Reverse"
                 }
             }
         }

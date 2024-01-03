@@ -98,7 +98,13 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
     public TType GetBehavior<TType>()
         where TType: class
     {
-        return _behaviors.OfType<TType>().Single();
+        return Behaviors.OfType<TType>().Single();
+    } 
+
+    public TType GetComponent<TType>()
+        where TType: class
+    {
+        return Components.OfType<TType>().SingleOrDefault();
     } 
 
     public override void SetPosition(Vector2 position)
@@ -107,9 +113,9 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
         if(_children != null)
         {
-            foreach(var child in _children)
+            foreach(var child in Children)
             {
-                (~child).OffsetPosition = position;
+                (child).OffsetPosition = position;
             }
         }   
     }
@@ -120,9 +126,9 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
         if(_children != null)
         {
-            foreach(var child in _children)
+            foreach(var child in Children)
             {
-                (~child).OffsetScale = scale;
+                (child).OffsetScale = scale;
             }
         }   
     }
@@ -133,9 +139,9 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
         if(_children != null)
         {
-            foreach(var child in _children)
+            foreach(var child in Children)
             {
-                (~child).OffsetRotation = radians;
+                (child).OffsetRotation = radians;
             }
         }   
     }
@@ -166,7 +172,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
     public void AttachBehavior(IBehavior behavior)
     {
-        if(!_behaviors.Contains((Ref<IBehavior>)behavior))
+        if(!Behaviors.Contains(behavior))
         {
             _behaviors.Add((Ref<IBehavior>)behavior);
         }
@@ -184,7 +190,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
     public void AttachComponent<TType>(TType component)
         where TType : IComponent
     {
-        if(!_components.Contains(component))
+        if(!Components.Contains(component))
         {
             _components.Add(component);
         }
@@ -207,7 +213,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
     public void AttachChild(SceneObject node, bool relative = false)
     {
-        if(!_children.Contains(node))
+        if(!Children.Contains(node))
         {
             _children.Add(node);
             node.AttachTo(this);

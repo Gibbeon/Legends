@@ -6,6 +6,9 @@ using System.Dynamic;
 using MonoGame.Extended.Tweening;
 using MonoGame.Extended;
 using Newtonsoft.Json;
+using Legends.Engine.Graphics2D;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Legends.Engine.Animation;
 
@@ -39,7 +42,6 @@ public abstract class AnimationData : IAnimationData
 public class TranslateAnimationData : AnimationData
 {
     public bool Relative    { get; set; }
-    public Vector2 From     { get; set; }
     public Vector2 To       { get; set; }
 
     public override void InitializeChannel(AnimationChannel channel) 
@@ -74,7 +76,6 @@ public class TranslateAnimationData : AnimationData
 public class ScaleAnimationData : AnimationData
 {
     public bool Relative    { get; set; }
-    public Vector2 From     { get; set; }
     public Vector2 To       { get; set; }
 
     public override void InitializeChannel(AnimationChannel channel) 
@@ -82,7 +83,7 @@ public class ScaleAnimationData : AnimationData
         var tween = new Tweener()
                 .TweenTo(target: channel.Controller.Parent, 
                         expression: player => player.Scale, 
-                        toValue: To + (Relative ? channel.Controller.Parent.Scale : Vector2.Zero), 
+                        toValue: To * (Relative ? channel.Controller.Parent.Scale : Vector2.One), 
                         duration: Duration, 
                         delay: 0)
                 .Easing(EasingFunctions.Linear);
@@ -109,7 +110,6 @@ public class ScaleAnimationData : AnimationData
 public class RotateAnimationData : AnimationData
 {
     public bool Relative    { get; set; }
-    public float From     { get; set; }
     public float To       { get; set; }
 
     public override void InitializeChannel(AnimationChannel channel) 
@@ -141,6 +141,91 @@ public class RotateAnimationData : AnimationData
     }
 }
 
+public class LerpProgress<TType>
+{    
+    private static Func<TType, TType, float, TType> _defaultLerp;
+    private Func<TType, TType, float, TType> _lerp;    
+
+    public TType From     { get; set; }
+    public TType To       { get; set; }
+    public TType Value    { get => Lerp(From, To, Percentage); }
+    public Func<TType, TType, float, TType> Lerp { get => _lerp ?? GetDefaultLerp(); set => _lerp = value; }
+
+    public float Percentage;
+
+    public static Func<TType, TType, float, TType> GetDefaultLerp()
+    {
+        return _defaultLerp ?? (_defaultLerp = GenerateDefaultLerp());
+    }
+    public static Func<TType, TType, float, TType> GenerateDefaultLerp()
+    {
+        var method = typeof(TType)
+            .GetMethod("Lerp", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+        
+        if(method != null)
+        {
+            return method.CreateDelegate<Func<TType, TType, float, TType>>();
+        }
+        else
+        {
+            var value1 = Expression.Parameter(typeof(TType));
+            var value2 = Expression.Parameter(typeof(TType));
+            var amount = Expression.Parameter(typeof(float));
+
+            return Expression.Lambda<Func<TType, TType, float, TType>>(
+                Expression.Convert(Expression.Multiply(Expression.Convert(Expression.Add(value1, Expression.Subtract(value2, value1)), typeof(float)), amount), typeof(TType)),
+                value1, 
+                value2, 
+                amount
+            ).Compile();
+        }
+    }
+}
+
+
+public class SpriteColorAnimationData : AnimationData
+{
+
+
+    public bool Relative    { get; set; }
+    public Color To       { get; set; }
+
+    public override void InitializeChannel(AnimationChannel channel) 
+    {
+        var progress = new LerpProgress<Color>() {
+            To = To,
+            From = channel.Controller.Parent.GetComponent<IBatchDrawable>().Color
+        };
+
+        var tween = new Tweener()
+                .TweenTo(target: progress, 
+                        expression: player => progress.Percentage, 
+                        toValue: 1.0f, 
+                        duration: Duration, 
+                        delay: 0)
+                .Easing(EasingFunctions.Linear);
+        switch(LoopType)
+        {
+            case LoopType.Loop: 
+                tween.Repeat(RepeatCount <= 0 ? -1 : RepeatCount, RepeatDelay);
+                break;
+            case LoopType.Reverse:
+                tween.Repeat(RepeatCount <= 0 ? -1 : RepeatCount, RepeatDelay)
+                     .AutoReverse();
+                break;
+        }
+
+        channel.State = tween;
+    }
+
+    public override void UpdateChannel(AnimationChannel channel, GameTime gameTime) 
+    {
+        ((Tween)channel.State).Update(gameTime.GetElapsedSeconds());
+
+        channel.Controller.Parent.GetComponent<IBatchDrawable>().Color = (((Tween)channel.State).Target as LerpProgress<Color>).Value;
+
+    }
+}
 
 public class AnimationChannel
 {

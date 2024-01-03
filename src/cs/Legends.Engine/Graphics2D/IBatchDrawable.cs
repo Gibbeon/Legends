@@ -10,7 +10,7 @@ public interface IBatchDrawable : IDrawable
     Vector2 Position { get; }
     float Rotation { get; }
     Vector2 Scale { get; }
-    Color Color { get; }
+    Color Color { get; set; }
     Vector2 Origin { get; }
     SpriteEffects Effect { get; }
     RenderState RenderState { get; }
