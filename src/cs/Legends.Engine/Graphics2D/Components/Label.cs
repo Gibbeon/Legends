@@ -21,7 +21,7 @@ public enum VerticalAlignment
     Middle,
     Bottom
 }
-public class Label : Component<Sprite>, IBitmapFontBatchDrawable
+public class TextLabel : Component<TextLabel>, IBitmapFontBatchDrawable
 {
     public Color Color { get; set; }
 
@@ -63,12 +63,12 @@ public class Label : Component<Sprite>, IBitmapFontBatchDrawable
     [JsonIgnore]
     public BitmapFont SourceData => (BitmapFont)Font;
 
-    public Label() : this(null, null)
+    public TextLabel() : this(null, null)
     {
 
     }
 
-    public Label(IServiceProvider services, SceneObject parent) : base(services, parent)
+    public TextLabel(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         Color   = Color.White;
         Text    = string.Empty;

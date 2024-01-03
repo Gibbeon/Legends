@@ -26,7 +26,10 @@ public abstract class Component<TType> : IComponent
 
     public virtual void Draw(GameTime gameTime) {}
     
-    public abstract void Dispose();
+    public virtual void Dispose()
+    {
+        GC.SuppressFinalize(true);
+    }
 
     public virtual void AttachTo(SceneObject parent)
     {

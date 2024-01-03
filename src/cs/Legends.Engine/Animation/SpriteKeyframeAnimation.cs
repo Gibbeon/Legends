@@ -4,6 +4,7 @@ using Legends.Engine.Graphics2D;
 
 namespace Legends.Engine.Animation;
 
+/*
 public class SpriteKeyframeAnimation : KeyframeAnimation<Rectangle>
 {
     private Sprite _sprite;
@@ -26,3 +27,4 @@ public class SpriteKeyframeAnimation : KeyframeAnimation<Rectangle>
         _sprite.SourceBounds = _frames[index].Value;
     }
 }
+*/

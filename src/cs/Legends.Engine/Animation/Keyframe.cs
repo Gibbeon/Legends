@@ -2,6 +2,7 @@
 
 namespace Legends.Engine.Animation;
 
+/*
 public class Keyframe<TType>
 {
     public TType Value { get; private set; }
@@ -20,3 +21,4 @@ public class Keyframe<TType>
 
     }
 }
+*/

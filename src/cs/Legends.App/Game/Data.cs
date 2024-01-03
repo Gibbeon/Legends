@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 using Legends.Engine.Animation;
-
+/*
 public static class Data
 {
     public static KeyframeAnimation<Rectangle>.KeyframeAnimationData[] AnimationData = {
@@ -63,4 +63,4 @@ public static class Data
         }
     };
 
-}
+}*/

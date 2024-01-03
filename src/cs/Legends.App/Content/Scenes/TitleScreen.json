@@ -3,12 +3,25 @@
     "name": "TitleScreen",
     "components": [
         {
-            "$type": "Legends.Engine.Graphics2D.Label, Legends.Engine",
+            "$type":    "Legends.Engine.Graphics2D.TextLabel, Legends.Engine",
             "font":     "Sensation",
             "text":     "Press ESC to Exit or ENTER to start",
             "color":    "255, 255, 255, 255",
             "halign":   "Center",
             "valign":   "Middle"
+        },
+        {
+            "$type":    "Legends.Engine.Animation.AnimationController, Legends.Engine",
+            "animations": {
+                "bounce": {
+                    "$type" : "Legends.Engine.Animation.TranslateAnimationData, Legends.Engine",
+                    "relative" : true,
+                    "from": "0, 0",
+                    "to": "16, 16",
+                    "duration": "1.0",
+                    "loopType": "Reverse"
+                }
+            }
         }
     ]
 }

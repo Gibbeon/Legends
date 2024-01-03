@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
 namespace Legends.Engine.Animation;
-
+/*
 public class KeyframeAnimation<TType> : IAnimation
 {
     public class KeyframeAnimationData
@@ -127,3 +127,4 @@ public class KeyframeAnimation<TType> : IAnimation
         }
     }
 }
+*/

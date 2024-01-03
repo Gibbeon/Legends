@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -57,6 +58,24 @@ public static class ContentWriterExtensions
                     
                 }
                 ContentLogger.LogEnd(" size of {0}", logCounter);
+            }
+        }
+        else if(instance is IDictionary dictionary)
+        {
+             var dictionaryType = dictionary.GetType().GetInterfaces().SingleOrDefault(x =>
+                x.IsGenericType &&
+                x.GetGenericTypeDefinition() == typeof(IDictionary<,>));
+                
+            if(dictionaryType == null)
+            {
+                throw new NotSupportedException("IDictionary must implement generic interface, IDictionary<,>");
+            }
+            
+            var enumerator = dictionary.GetEnumerator();
+            while(enumerator.MoveNext())
+            {
+                    writer.WriteField(enumerator.Key, dictionaryType.GenericTypeArguments[0]);
+                    writer.WriteField(enumerator.Value, dictionaryType.GenericTypeArguments[1]);            
             }
         }
         else

@@ -1,5 +1,6 @@
 ﻿namespace Legends.Engine.Animation;
 
+/*
 public class AnimationMessageCallbackEventArgs : AnimationEventArgs
 {
     public string Message { get; private set; }
@@ -9,3 +10,4 @@ public class AnimationMessageCallbackEventArgs : AnimationEventArgs
         Message = message;
     }
 }
+*/

@@ -64,6 +64,25 @@ public static class ContentReaderExtensions
                 ContentLogger.LogEnd(" (BlockCopy)");
             }
         }
+        else if(instance is IDictionary dictionary)
+        {
+            var dictionaryType = dictionary.GetType().GetInterfaces().SingleOrDefault(x =>
+                x.IsGenericType &&
+                x.GetGenericTypeDefinition() == typeof(IDictionary<,>));
+                
+            if(dictionaryType == null)
+            {
+                throw new NotSupportedException("IDictionary must implement generic interface, IDictionary<,>");
+            }
+
+            for(var index = 0; index < count; index++)
+            {
+                var key = reader.ReadField(null, dictionaryType.GenericTypeArguments[0]);
+                var value = reader.ReadField(null, dictionaryType.GenericTypeArguments[1]);
+
+                dictionary[key] = value;
+            }
+        }
         else
         {
             for(var index = 0; index < count; index++)

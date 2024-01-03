@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Legends.Engine.Animation;
-
+/*
 public class AnimationEventArgs : EventArgs
 {
     public IAnimation Animation { get; private set; }
@@ -10,4 +10,4 @@ public class AnimationEventArgs : EventArgs
     {
         Animation = animation;
     }
-}
+}*/

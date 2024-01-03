@@ -26,8 +26,9 @@ public class ContentObjectImporter : ContentImporter<dynamic>
             settings.Converters.Add(new Size2JsonConverter());
                 
             var result = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
-            
-            context.Logger.LogMessage("{0}", JsonConvert.ToString(JsonConvert.SerializeObject(result, settings)));
+            string jsonOutput = JsonConvert.ToString(JsonConvert.SerializeObject(result, settings));
+
+            context.Logger.LogMessage("{0}", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\""));
             return result;
         }
         catch(Exception error)
