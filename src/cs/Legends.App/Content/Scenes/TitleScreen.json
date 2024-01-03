@@ -20,6 +20,20 @@
                     "to": "16, 16",
                     "duration": "1.0",
                     "loopType": "Reverse"
+                },
+                "grow": {
+                    "$type" : "Legends.Engine.Animation.ScaleAnimationData, Legends.Engine",
+                    "relative" : true,
+                    "to": "1.0, 1.0",
+                    "duration": "1.0",
+                    "loopType": "Reverse"
+                },
+                "spin": {
+                    "$type" : "Legends.Engine.Animation.RotateAnimationData, Legends.Engine",
+                    "relative" : true,
+                    "to": "0",
+                    "duration": "1.0",
+                    "loopType": "Loop"
                 }
             }
         }
