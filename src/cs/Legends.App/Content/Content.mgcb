@@ -86,3 +86,20 @@
 /processor:DynamicAssemblyProcessor
 /build:Maps\AutoGenerateMapBehavior.cs
 
+
+#begin Sprites/npc1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,255,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/npc1.png
+
+#begin Sprites\Actor.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Sprites\Actor.json

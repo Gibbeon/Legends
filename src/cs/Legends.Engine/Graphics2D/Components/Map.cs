@@ -5,6 +5,7 @@ using MonoGame.Extended;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -13,8 +14,11 @@ public class Map : Component<Map>, ISelfDrawable
     public Size2        TileCount { get; set; }
     public TileSet      TileSet { get; set; }
     public ushort[]     Tiles { get; set; }
+    
+    [JsonIgnore]
     public bool NeedUpdate { get; set; }
 
+    [JsonIgnore]
     public bool Visible => Parent.Visible;
 
     private VertexPositionColorTexture[] _vertices;
