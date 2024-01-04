@@ -4,7 +4,7 @@
     "components": [
         {
             "$type":    "Legends.Engine.Graphics2D.TextLabel, Legends.Engine",
-            "font":     "Sensation",
+            "font":     "Fonts/Sensation",
             "text":     "Press ESC to Exit or ENTER to start",
             "color":    "255, 255, 255, 255",
             "halign":   "Center",

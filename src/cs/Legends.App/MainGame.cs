@@ -8,12 +8,10 @@ namespace Legends.App;
 
 public class MainGame : Microsoft.Xna.Framework.Game
 {
-    private GraphicsDeviceManager   _graphicsDeviceManager;
-    private RenderService           _spriteRenderService;
-
+    private readonly GraphicsDeviceManager   _graphicsDeviceManager;
+    private readonly RenderService           _spriteRenderService;
     private readonly GameManagementService   _gameManagementService;
-
-    private InputHandlerService _inputService;
+    private readonly InputHandlerService _inputService;
     private readonly ScreenManager _screenManager;
     
     public MainGame()

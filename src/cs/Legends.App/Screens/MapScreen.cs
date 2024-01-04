@@ -9,7 +9,7 @@ namespace Legends.App.Screens;
 
 public class MapScreen : Screen
 {
-    private Scene _scene;
+    private Ref<Scene> _scene;
     private IServiceProvider _services;
     private InputManager _input;
 
@@ -23,16 +23,16 @@ public class MapScreen : Screen
             RepeatPress = true
         });
 
-        _scene = new Scene(services); 
+        _scene = _services.GetContentManager().GetRef<Scene>("Maps/WorldMap");
     }
 
     public override void Draw(GameTime gameTime)
     {        
-        _scene.Draw(gameTime);
+        (~_scene).Draw(gameTime);
     }
 
     public override void Update(GameTime gameTime)
     {   
-        _scene.Update(gameTime);
+        (~_scene).Update(gameTime);
     }
 }

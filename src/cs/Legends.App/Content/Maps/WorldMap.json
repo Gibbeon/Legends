@@ -6,17 +6,14 @@
             "name": "map",
             "components": [
                 {
-                    "$ref": "Scenes/map.json"
-                },
+                    "$ref": "Maps/Village.json"
+                }
+            ],
+            "behaviors": [
                 {
-                    "$ref": "Sprites/actor.json"
+                    "$compile": "Maps/AutoGenerateMapBehavior.cs"
                 }
             ]
-        }
-    ],
-    "behaviors": [
-        {
-            "$compile": "Screens/Scripts/WorldMapCameraInputBehavior.cs"
         }
     ]
 }

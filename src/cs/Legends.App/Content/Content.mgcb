@@ -15,7 +15,7 @@
 /reference:./../../Legends.App/bin/Debug/net6.0/Legends.App.dll
 #---------------------------------- Content ---------------------------------#
 
-#begin Sensation_0.png
+#begin Fonts\Sensation_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -25,7 +25,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sensation_0.png
+/build:Fonts/Sensation_0.png
 
 #begin desert.png
 /importer:TextureImporter
@@ -39,22 +39,10 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/desert.png
 
-#begin Maps/ville_0.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,255,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Maps/ville_0.png
-
-#begin Sensation.fnt
+#begin Fonts\Sensation.fnt
 /importer:BitmapFontImporter
 /processor:BitmapFontProcessor
-/build:Sensation.fnt
+/build:Fonts/Sensation.fnt
 
 #begin Scenes\TitleScreen\Interface.json
 /importer:ContentObjectImporter
@@ -70,4 +58,31 @@
 /importer:DynamicAssemblyImporter
 /processor:DynamicAssemblyProcessor
 /build:Scenes\TitleScreen\LaunchGameBehavior.cs
+
+#begin Maps/ville_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,255,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Maps/ville_0.png
+
+#begin Maps\WorldMap.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Maps\WorldMap.json
+
+#begin Maps\Village.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Maps\Village.json
+
+#begin Maps\AutoGenerateMapBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Maps\AutoGenerateMapBehavior.cs
 
