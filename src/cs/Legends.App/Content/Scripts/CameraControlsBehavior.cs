@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using Microsoft.Xna.Framework;
 using Legends.Engine;
 using Legends.Engine.Input;
@@ -29,7 +29,7 @@ public class CameraControlsBehavior : BaseBehavior
             _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down);
 
             _commands.Enabled = true;
-        }*/
+        }
     }
 
     public override void Dispose()
@@ -53,6 +53,6 @@ public class CameraControlsBehavior : BaseBehavior
                         Console.WriteLine("Unknown Command: {0}", command.Name); break;             
                 }
             }  
-        }*/
+        }
     }
-}
+}*/

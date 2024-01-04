@@ -3,29 +3,21 @@
     "bounce": {
         "$type" : "Legends.Engine.Animation.TranslateAnimationData, Legends.Engine",
         "relative" : true,
-        "from": "0, 0",
-        "to": "128, 0",
+        "to": "16, 0",
         "duration": "1.0",
         "loopType": "Reverse"
     },
     "grow": {
         "$type" : "Legends.Engine.Animation.ScaleAnimationData, Legends.Engine",
         "relative" : true,
-        "to": "1.0, 1.0",
+        "to": "1.25, 1.25",
         "duration": "1.0",
         "loopType": "Reverse"
-    },
-    "spin": {
-        "$type" : "Legends.Engine.Animation.RotateAnimationData, Legends.Engine",
-        "relative" : true,
-        "to": "6.28",
-        "duration": "1.0",
-        "loopType": "Loop"
     },
     "colorize": {
         "$type" : "Legends.Engine.Animation.SpriteColorAnimationData, Legends.Engine",
         "to": "255, 0, 0, 0",
-        "duration": "1.0",
+        "duration": "2.0",
         "loopType": "Reverse"
     }
 }

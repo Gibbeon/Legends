@@ -9,7 +9,7 @@ using Legends.App.Screens;
 
 namespace Legends.Scripts;
 
-public class LaunchGameBehavior : BaseBehavior
+public class LaunchGameBehavior : Behavior
 {
     public float ScrollSpeed { get; set; }
     private InputCommandSet _commands;

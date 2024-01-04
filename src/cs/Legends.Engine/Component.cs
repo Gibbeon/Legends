@@ -28,7 +28,7 @@ public abstract class Component<TType> : IComponent
     
     public virtual void Dispose()
     {
-        GC.SuppressFinalize(true);
+        GC.SuppressFinalize(this);
     }
 
     public virtual void AttachTo(SceneObject parent)

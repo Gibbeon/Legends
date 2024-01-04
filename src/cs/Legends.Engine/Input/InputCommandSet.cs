@@ -17,6 +17,10 @@ public class InputCommandSet
     public IList<EventListener> EventListeners  => _eventListeners;
     public bool Enabled { get; set; }
 
+    public InputCommandSet(IServiceProvider service): this (service, service.Get<IInputHandlerService>().Current)
+    {
+    }
+
     public InputCommandSet(IServiceProvider service, InputManager manager)
     {
         _services = service;

@@ -16,7 +16,7 @@ public class TitleScreen : Screen
         _services = services;
         _input = new InputManager(_services);
 
-        _scene = _services.GetContentManager().GetRef<Scene>("Scenes/TitleScreen");
+        _scene = _services.GetContentManager().GetRef<Scene>("Scenes/TitleScreen/Interface");
         //((Map)(~_scene).Children.First()).CreateMapFromTexture();
     }
 

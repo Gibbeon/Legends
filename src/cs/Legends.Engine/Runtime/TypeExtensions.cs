@@ -316,7 +316,7 @@ public static class TypeExtensions
             .SingleOrDefault() is ConstructorInfo ctor)
             return ctor.Invoke(parameters);
         
-        if(parameters != null && parameters.Length > 0) Console.Write("Constructor params supplied but not used");
+        //if(parameters != null && parameters.Length > 0) Console.Write("Constructor params supplied but not used");
         return Activator.CreateInstance(type);
     }
 }

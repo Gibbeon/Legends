@@ -4,11 +4,17 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using Legends.Engine;
 using Legends.Engine.Serialization;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
 public class RefJsonConverter : JsonConverter
 {
+    private static string WildCardToRegular(string value) {
+        return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$"; 
+    }
+
     public override bool CanConvert(Type objectType)
     {
         return objectType.IsAssignableTo(typeof(IRef));
@@ -20,7 +26,7 @@ public class RefJsonConverter : JsonConverter
         {
             if(reader.ValueType == typeof(string))
             {
-                var result = Activator.CreateInstance(objectType, reader.Value);
+                var result = Activator.CreateInstance(objectType, Path.ChangeExtension(reader.Value.ToString(), null));
                 return result;
             } 
             else 
@@ -36,8 +42,19 @@ public class RefJsonConverter : JsonConverter
                 
                 if(jSource != null)
                 {
-                    var assembly = DynamicClassLoader.Compile(jSource.Value.ToString(), File.ReadAllText(jSource.Value.ToString()));
-                    valueType = assembly.Assembly.GetType(jObject.Property("$type").Value.ToString());
+                    var assembly    = DynamicClassLoader.Compile(jSource.Value.ToString(), File.ReadAllText(jSource.Value.ToString()));
+                    var typeObject  = jObject.Property("$type");
+                    var typeName    = typeObject == null ? string.Empty : typeObject.Value.ToString();
+                    if(string.IsNullOrEmpty(typeName))
+                    {
+                        typeName = Path.GetFileNameWithoutExtension(jSource.Value.ToString());
+                        valueType = assembly.Assembly.GetTypes().Single(n => Regex.IsMatch(n.FullName, WildCardToRegular("*." + typeName)));
+                    }
+                    else
+                    {
+                        valueType = assembly.Assembly.GetType(typeName);
+                    }
+
                     name = Path.ChangeExtension(jObject.Property("$compile").Value.ToString(), null);
                     jObject.Remove("$compile");
                     jObject.Remove("$type");
@@ -65,7 +82,7 @@ public class RefJsonConverter : JsonConverter
                 }
 
                 var parsedValue = serializer.Deserialize(new StringReader(jObject.ToString()), valueType);
-                var result = Activator.CreateInstance(objectType, name, parsedValue, isExternal, isExtended);
+                var result = Activator.CreateInstance(objectType, Path.ChangeExtension(name, null), parsedValue, isExternal, isExtended);
                 return result;
             }
         }

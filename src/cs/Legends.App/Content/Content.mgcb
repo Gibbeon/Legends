@@ -51,41 +51,23 @@
 /processorParam:TextureFormat=Color
 /build:Maps/ville_0.png
 
-
 #begin Sensation.fnt
 /importer:BitmapFontImporter
 /processor:BitmapFontProcessor
 /build:Sensation.fnt
 
-#begin Scripts\CameraControlsBehavior.cs
-#/importer:DynamicAssemblyImporter
-#/processor:DynamicAssemblyProcessor
-#/build:Scripts\CameraControlsBehavior.cs
-
-#begin Scenes\TitleScreen.json
+#begin Scenes\TitleScreen\Interface.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
-/processorParam:debug=True
-/build:Scenes\TitleScreen.json
+/build:Scenes\TitleScreen\Interface.json
 
-#begin Scenes\Animations.json
+#begin Scenes\TitleScreen\Animations.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
-/processorParam:debug=True
-/build:Scenes\Animations.json
+/build:Scenes\TitleScreen\Animations.json
 
-#begin Scenes\Map.json
-#/importer:ContentObjectImporter
-#/processor:ContentObjectProcessor
-#/build:Scenes\Map.json
-
-#begin Scenes\test.json
-#/importer:ContentObjectImporter
-#/processor:ContentObjectProcessor
-#/build:Scenes\test.json
-
-#begin Sprites\fence.json
-#/importer:ContentObjectImporter
-#/processor:ContentObjectProcessor
-#/build:Sprites\fence.json
+#begin Scenes\TitleScreen\LaunchGameBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Scenes\TitleScreen\LaunchGameBehavior.cs
 
