@@ -30,7 +30,7 @@ public class TextureRegion : Spatial
     public TextureRegion(Texture2D texture, int x, int y, int width, int height) : base()
     {
         Texture = texture;
-        OffsetPosition = new Vector2(x, y);
+        Position = new Vector2(x, y);
         Size = new Size2(width, height);
     }
 
@@ -38,7 +38,7 @@ public class TextureRegion : Spatial
     {
         if((~Texture) == null) return;
         
-        Position = new Vector2(
+        OffsetPosition = new Vector2(
             (int)(index * Slice.Width) % (int)Size.Width, 
             (int)((index * Slice.Width) / (int)Size.Width) * Slice.Height
         );

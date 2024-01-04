@@ -5,19 +5,22 @@
         "relative" : true,
         "to": "16, 0",
         "duration": "1.0",
-        "loopType": "Reverse"
+        "loopType": "Reverse",
+        "enabled": true
     },
     "grow": {
         "$type" : "Legends.Engine.Animation.ScaleAnimationData, Legends.Engine",
         "relative" : true,
         "to": "1.25, 1.25",
         "duration": "1.0",
-        "loopType": "Reverse"
+        "loopType": "Reverse",
+        "enabled": true
     },
     "colorize": {
         "$type" : "Legends.Engine.Animation.SpriteColorAnimationData, Legends.Engine",
         "to": "255, 0, 0, 0",
         "duration": "2.0",
-        "loopType": "Reverse"
+        "loopType": "Reverse",
+        "enabled": true
     }
 }

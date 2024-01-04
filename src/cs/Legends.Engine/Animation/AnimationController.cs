@@ -20,6 +20,7 @@ public interface IAnimationData
     float Delay      { get; protected set; }
     int RepeatCount  { get; protected set; }
     float RepeatDelay{ get; protected set; }
+    bool Enabled { get; protected set; }
     void InitializeChannel(AnimationChannel channel);
     void UpdateChannel(AnimationChannel channel, GameTime gameTime);
 }
@@ -34,6 +35,8 @@ public abstract class AnimationData : IAnimationData
     public float Delay      { get; set; }
     public int RepeatCount  { get; set; }
     public float RepeatDelay{ get; set; }
+
+    public bool Enabled { get; set; }
 
     public abstract void InitializeChannel(AnimationChannel channel);
     public abstract void UpdateChannel(AnimationChannel channel, GameTime gameTime);
@@ -124,7 +127,7 @@ public class SpriteKeyframeAnimationData : AnimationData
     {
         public float    LastElapsedTime;
         public float    ElapsedTime;
-        public int      Direction;
+        public int      Direction = 1;
         public int      CurrentIndex;
     }
 
@@ -152,7 +155,7 @@ public class SpriteKeyframeAnimationData : AnimationData
 
             if(current != null)
             {
-                channel.Controller.Parent.GetComponent<Sprite>().TextureRegion.Get().SetFrame(current.Frame);
+                channel.Controller.Parent.GetComponent<Sprite>().TextureRegion.Get().Frame = current.Frame;
             }
         }
     }
@@ -326,6 +329,7 @@ public class AnimationChannel
         AnimationData = data;
         if(controller.Parent != null)
         {
+            Enabled = data.Enabled;
             data.InitializeChannel(this);
         }
     }
@@ -373,7 +377,7 @@ public class AnimationController : Component<IComponent>
     
     public override void Update(GameTime gameTime)
     {
-        foreach(var anim in Channels)//.Where(n => n.Enabled))
+        foreach(var anim in Channels.Where(n => n.Enabled))
         {
             anim.Update(gameTime);
         }

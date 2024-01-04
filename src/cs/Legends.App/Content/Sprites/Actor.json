@@ -8,8 +8,9 @@
             "textureRegion": {
                 "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
                 "texture": "Sprites/npc1.png",
-                "slice": "24, 32",
-                "size": "72, 96"
+                "slice": "24, 36",
+                "position": "0, 144",
+                "size": "72, 144"
             }
         },
         {
@@ -19,7 +20,8 @@
                     "$type": "Legends.Engine.Animation.SpriteColorAnimationData, Legends.Engine",
                     "to": "255, 0, 0, 0",
                     "duration": 0.5,
-                    "loopType": "Reverse"
+                    "loopType": "Reverse",
+                    "enabled": true
                 },
                 "idle_down": {
                     "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
@@ -95,7 +97,8 @@
                             "frame": 5,
                             "duration": 0.2
                         }
-                    ]
+                    ],
+                    "enabled": true
                 },
                 "walk_right": {
                     "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
