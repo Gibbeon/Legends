@@ -8,10 +8,132 @@
             "textureRegion": {
                 "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
                 "texture": "Sprites/npc1.png",
-                "frame": "0",
-                "size": "24, 32"
+                "slice": "24, 32",
+                "size": "72, 96"
+            }
+        },
+        {
+            "$type": "Legends.Engine.Animation.AnimationController, Legends.Engine",
+            "animations": {
+                "colorize": {
+                    "$type": "Legends.Engine.Animation.SpriteColorAnimationData, Legends.Engine",
+                    "to": "255, 0, 0, 0",
+                    "duration": 0.5,
+                    "loopType": "Reverse"
+                },
+                "idle_down": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
+                    "loopType": "Loop",
+                    "frames": [
+                        {
+                            "frame": 1,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "idle_left": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
+                    "loopType": "Loop",
+                    "frames": [
+                        {
+                            "frame": 4,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "idle_right": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
+                    "loopType": "Loop",
+                    "frames": [
+                        {
+                            "frame": 7,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "idle_up": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
+                    "loopType": "Loop",
+                    "frames": [
+                        {
+                            "frame": 10,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_down": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
+                    "loopType": "Reverse",
+                    "frames": [
+                        {
+                            "frame": 0,
+                            "duration": 0.2
+                        },
+                        {
+                            "frame": 1,
+                            "duration": 0.2
+                        },
+                        {
+                            "frame": 2,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_left": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
+                    "loopType": "Reverse",
+                    "frames": [
+                        {
+                            "frame": 3,
+                            "duration": 0.2
+                        },
+                        {
+                            "frame": 4,
+                            "duration": 0.2
+                        },
+                        {
+                            "frame": 5,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_right": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
+                    "loopType": "Reverse",
+                    "frames": [
+                        {
+                            "frame": 6,
+                            "duration": 0.2
+                        },
+                        {
+                            "frame": 7,
+                            "duration": 0.2
+                        },
+                        {
+                            "frame": 8,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_up": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
+                    "loopType": "Reverse",
+                    "frames": [
+                        {
+                            "frame": 9,
+                            "duration": 0.2
+                        },
+                        {
+                            "frame": 10,
+                            "duration": 0.2
+                        },
+                        {
+                            "frame": 11,
+                            "duration": 0.2
+                        }
+                    ]
+                }
             }
         }
     ]
 }
-

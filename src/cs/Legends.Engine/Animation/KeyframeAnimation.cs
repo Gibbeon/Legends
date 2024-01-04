@@ -25,10 +25,11 @@ public class KeyframeAnimation<TType> : IAnimation
     public event EventHandler<KeyframeEventArgs> FrameChanged;
     public string Name { get; private set; }
     protected List<Keyframe<TType>> _frames;
-    protected int _currentIndex;
+    
     public IReadOnlyList<Keyframe<TType>> Frames => _frames.AsReadOnly();
     public int CurrentIndex => _currentIndex;
     protected float _lastElapsedTime;
+    protected int _currentIndex;
     public float ElapsedTime  { get; private set; }
     public float Duration => _frames.Sum(n => n.Duration);
     public int Direction { get; private set; }
