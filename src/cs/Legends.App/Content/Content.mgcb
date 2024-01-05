@@ -86,6 +86,15 @@
 /processor:DynamicAssemblyProcessor
 /build:Maps\AutoGenerateMapBehavior.cs
 
+#begin Scripts\CameraControlsBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Scripts\CameraControlsBehavior.cs
+
+#begin Sprites\ActorControlBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Sprites\ActorControlBehavior.cs
 
 #begin Sprites/npc1.png
 /importer:TextureImporter

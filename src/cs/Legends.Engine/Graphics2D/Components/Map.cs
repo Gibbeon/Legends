@@ -37,7 +37,9 @@ public class Map : Component<Map>, ISelfDrawable
         var x_count = ((~TileSet.Texture).Width / TileSet.TileSize.Width);        
         var y_count = ((~TileSet.Texture).Height / TileSet.TileSize.Height);
 
-        Tiles = new ushort[(int)(TileCount.Height * TileCount.Width + 1)];
+        TileCount = new Size2(x_count, y_count);
+
+        Tiles = new ushort[(int)(TileCount.Height * TileCount.Width)];
         
         for(var y = 0; y < TileCount.Height; y++)
         {
@@ -102,13 +104,18 @@ public class Map : Component<Map>, ISelfDrawable
             Matrix.Multiply(
                 Matrix.CreateTranslation(-Parent.Origin.X, -Parent.Origin.Y, 0) * Parent.LocalMatrix, 
                 Parent.GetParentScene().Camera.World);
+
+        var rasterizerState = new RasterizerState() {
+            CullMode = CullMode.CullCounterClockwiseFace,
+            FillMode = FillMode.Solid
+        };
         
         Services.GetGraphicsDevice().SetVertexBuffer(_vertexBuffer);
         Services.GetGraphicsDevice().Indices = _indexBuffer;
         Services.GetGraphicsDevice().BlendState = BlendState.AlphaBlend;
         Services.GetGraphicsDevice().SamplerStates[0] = SamplerState.PointClamp;
         Services.GetGraphicsDevice().DepthStencilState = DepthStencilState.Default;
-        Services.GetGraphicsDevice().RasterizerState = RasterizerState.CullCounterClockwise;
+        Services.GetGraphicsDevice().RasterizerState = rasterizerState;
         
         foreach (EffectPass pass in _currentEffect.CurrentTechnique.Passes)
         {

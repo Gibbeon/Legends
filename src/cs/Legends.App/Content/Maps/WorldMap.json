@@ -18,5 +18,12 @@
         {
             "$ref": "Sprites/Actor.json"
         }
+    ],
+    "behaviors": [
+        {
+            "$compile": "Scripts/CameraControlsBehavior.cs",
+            "scrollSpeed": 1
+        }
+
     ]
 }

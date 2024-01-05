@@ -1,5 +1,6 @@
 ﻿using MonoGame.Extended;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -9,12 +10,12 @@ public class TileSet
     public Ref<Texture2D> Texture;
     public RectangleF GetUV(int tileIndex)
     {        
-        var x = tileIndex % ((~Texture).Width / TileSize.Width) * TileSize.Width;     
-        var y = tileIndex / ((~Texture).Width / TileSize.Height) * TileSize.Height;
+        var x = tileIndex % (int)((~Texture).Width / TileSize.Width);     
+        var y = tileIndex / (int)((~Texture).Width / TileSize.Width);
 
         var result =  new RectangleF(
-            (float)x / (float)(~Texture).Width,
-            (float)y / (float)(~Texture).Height,
+            (float)x * TileSize.Width / (float)(~Texture).Width,
+            (float)y * TileSize.Height / (float)(~Texture).Height,
             (float)(TileSize.Width) / (float)(~Texture).Width,
             (float)(TileSize.Height) / (float)(~Texture).Height);
 

@@ -6,17 +6,17 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Legends.Scripts;
 
-public class CameraControlsBehavior : Behavior
+public class ActorControlBehavior : Behavior
 {
-    public float ScrollSpeed { get; set; }
+    public float MoveSpeed { get; set; }
     private InputCommandSet _commands;
 
-    public CameraControlsBehavior(): this(null, null)
+    public ActorControlBehavior(): this(null, null)
     {
-        ScrollSpeed = 1;
+        MoveSpeed = 1;
     }
     
-    public CameraControlsBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
+    public ActorControlBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
 
         if(services != null)
@@ -45,10 +45,10 @@ public class CameraControlsBehavior : Behavior
             {
                 switch(command.Name)
                 {
-                    case "MOVE_LEFT":   Parent?.GetParentScene()?.Camera?.Move(-ScrollSpeed, 0); break;
-                    case "MOVE_RIGHT":  Parent?.GetParentScene()?.Camera?.Move( ScrollSpeed, 0); break;
-                    case "MOVE_UP":     Parent?.GetParentScene()?.Camera?.Move( 0,-ScrollSpeed); break;
-                    case "MOVE_DOWN":   Parent?.GetParentScene()?.Camera?.Move( 0, ScrollSpeed); break;
+                    case "MOVE_LEFT":   Parent?.Move(-MoveSpeed, 0); break;
+                    case "MOVE_RIGHT":  Parent?.Move( MoveSpeed, 0); break;
+                    case "MOVE_UP":     Parent?.Move( 0,-MoveSpeed); break;
+                    case "MOVE_DOWN":   Parent?.Move( 0, MoveSpeed); break;
                     default:
                         Console.WriteLine("Unknown Command: {0}", command.Name); break;             
                 }
