@@ -22,6 +22,10 @@
         {
             "$import": "Sprites/NonActor.json",
             "position": "128, 128"
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "-64, 64"
         }
     ],
     "behaviors": [

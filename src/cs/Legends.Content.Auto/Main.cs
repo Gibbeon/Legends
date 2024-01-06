@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using Microsoft.VisualBasic;
 
 namespace Legends.Content.Auto;
 
@@ -18,7 +19,7 @@ public class Main : IDisposable
 
     private string _header;
 
-    private bool _debug = true;
+    private bool _debug = false;
 
     public void DebugMessage(string message, params object[] args)
     {
@@ -67,25 +68,31 @@ public class Main : IDisposable
         throw new KeyNotFoundException(string.Format("No template found for asset: {0}", fileName));
     }
 
-    public void BuildSingle(string fileName)
+    public void BuildSingle(string fileName, bool force = false)
     {
+        Console.WriteLine("Building {0}.", fileName);
         string content = string.Format(GetAssetTemplate(fileName), Path.GetRelativePath(_watcher.Path, fileName));
         string contentFile = Path.GetFileName(Path.ChangeExtension(Path.GetRandomFileName(), "mgcb"));
 
-        DebugMessage("Building Single Asset [{0}]\n{1}", contentFile, content);
+        DebugMessage("Single Asset Template [{0}]\n{1}", contentFile, content);
 
         File.WriteAllText(Path.Combine(_watcher.Path, contentFile), _header + "\n\n" + content);
         try {
-            ExecuteCommand("dotnet", "mgcb", contentFile, "/c");
+            ExecuteCommand("dotnet", "mgcb", contentFile,force?"/c": "");
         }
         finally {
             File.Delete(Path.Combine(_watcher.Path, contentFile));
         }
     }
 
+    public void BuildAll(bool force = false)
+    {
+         ExecuteCommand("dotnet", "mgcb", contentDb,force?"/c": "");
+    }
+
     public void ExecuteCommand(string command, params string[] flags)
     {
-        DebugMessage("Execute Command {0} {1}", command, string.Join(' ', flags.Select(n => n.ToString())));
+        Console.WriteLine("[exec] {0} {1}", command, string.Join(' ', flags.Select(n => n.ToString())));
         var process = new Process
         {
             StartInfo = new ProcessStartInfo
@@ -100,21 +107,32 @@ public class Main : IDisposable
             }
         };
 
-        StringBuilder sb = new StringBuilder();
+        List<string> results = new();
 
         // hookup the eventhandlers to capture the data that is received
-        process.OutputDataReceived += (sender, args) => { sb.AppendLine(args.Data); DebugMessage("{0}", args.Data); };
-        process.ErrorDataReceived += (sender, args) => { sb.AppendLine(args.Data); DebugMessage("{0}", args.Data); };
-
+        process.OutputDataReceived += (sender, args) => { results.Add(args.Data); DebugMessage("{0}", args.Data); };
+        process.ErrorDataReceived += (sender, args) => { results.Add(args.Data); Console.WriteLine("{0}", args.Data); };
+       
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
         process.WaitForExit();
+        var result = string.Join('\n', results.Skip(results.Count - 5).Where(n => !string.IsNullOrEmpty(n)));
+        if(result.IndexOf("0 failed.") > 0)
+        {
+            Console.WriteLine("{0}", result);
+            Console.WriteLine();     
+        }
+        else
+        {
+            Console.WriteLine(string.Join('\n', results));
+            Console.WriteLine();     
+        }
     }
 
     public void BuildContentDb(string contentFile)
     {
-        DebugMessage("BuildContentDb for {0}/{1}", Path.GetFullPath(_watcher.Path), contentFile);
+        Console.WriteLine("BuildContentDb for {0}/{1}", Path.GetFullPath(_watcher.Path), contentFile);
         string[] results = Directory.GetFiles(
             Path.GetFullPath(_watcher.Path), 
             "*.*", 
@@ -172,11 +190,13 @@ public class Main : IDisposable
     }
 
     private Dictionary<string, DateTime> _changed = new();
+    string contentDb = @"content.mgcb";        
+    string templatePath = @"..\..\..\Templates";     
+        string contentPath = @"..\..\..\..\Legends.App\Content";
     public Main()
     {   
-        string templatePath = @"..\..\..\Templates";     
-        string contentPath = @"..\..\..\..\Legends.App\Content";
-        string contentDb = @"content.mgcb";
+
+        
 
         _ignore = new();
         _templates = new();
@@ -212,6 +232,7 @@ public class Main : IDisposable
 
         _watcher.Deleted += (sender, args) => { 
             DebugMessage("Deleted Event {0}", args.FullPath);
+            _changed.Remove(args.FullPath);
             if(!Ignore(args.FullPath, true))
             {
                 BuildContentDb(contentDb);
@@ -220,6 +241,7 @@ public class Main : IDisposable
 
         _watcher.Renamed += (sender, args) => { 
             DebugMessage("Renamed Event {0}", args.FullPath);
+            _changed.Remove(args.OldFullPath);
             if(!Ignore(args.FullPath, true))
             {
                 BuildContentDb(contentDb);
@@ -232,8 +254,17 @@ public class Main : IDisposable
     {
 
 
-        while(Console.ReadKey(true).Key == ConsoleKey.Escape) {
-            Environment.Exit(0);
+        while(true) {
+            var keyInfo = Console.ReadKey(true);
+
+            switch(keyInfo.Key)
+            {
+                case ConsoleKey.Escape: Environment.Exit(0); break;
+                case ConsoleKey.Enter: 
+                    BuildContentDb(contentDb); 
+                    BuildAll(keyInfo.Modifiers.HasFlag(ConsoleModifiers.Shift));
+                    break;
+            }            
         }
     }
 

@@ -4,42 +4,93 @@
     "size": "16, 16",
     "components": [
         {
+            "$type": "Legends.Engine.Collision.RigidBody, Legends.Engine"
+        },
+        {
             "$type": "Legends.Engine.Graphics2D.Sprite, Legends.Engine",
             "textureRegion": {
                 "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
-                "texture": "Sprites/desert",
-                "frame": "73",
-                "size": "16, 16"
+                "texture": "Sprites/desert.png",
+                "slice": "16, 16",
+                "position": "16, 64",
+                "size": "96, 48"
             }
         },
         {
-            "$type": "Legends.Engine.Physics.RigidBody, Legends.Engine"
-        }
-    ],
-    "behaviors": [       
-        {
-            "$type": "Legends.Engine.Graphics2D.AnimationBehavior, Legends.Engine",
+            "$type": "Legends.Engine.Animation.AnimationController, Legends.Engine",
             "animations": {
-                "walk_up": {
-                    "$type": "Legends.Engine.Graphics2D.KeyframeAnimation, Legends.Engine",
-                    "loop": "ReverseLoop",
-                    "keyframes": [
+                "idle_down": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData, Legends.Engine",
+                    "loopType": "Loop",
+                    "frames": [
                         {
-                            "duration": 0.2,
-                            "frame": "74"
-                        },                        
+                            "frame": 0,
+                            "duration": 0
+                        },
                         {
-                            "duration": 0.2,
-                            "frame": "75"
+                            "frame": 1,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 2,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 3,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 4,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 5,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 6,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 7,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 8,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 9,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 10,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 11,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 12,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 13,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 14,
+                            "duration": 0
+                        },
+                        {
+                            "frame": 15,
+                            "duration": 0
                         }
                     ]
                 }
             }
-        },
-        {
-            "$type": "Legends.Engine.Physics.RigidBodyBehavior, Legends.Engine",
-            "layer": "sprite_collission_layer"
-        }
+        }        
     ]
 }
 
