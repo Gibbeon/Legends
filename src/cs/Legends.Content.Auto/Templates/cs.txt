@@ -1,0 +1,4 @@
+#begin {0}
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:{0}

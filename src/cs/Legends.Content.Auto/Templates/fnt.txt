@@ -1,0 +1,4 @@
+#begin {0}
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:{0}

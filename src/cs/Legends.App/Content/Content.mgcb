@@ -15,6 +15,15 @@
 /reference:./../../Legends.App/bin/Debug/net6.0/Legends.App.dll
 #---------------------------------- Content ---------------------------------#
 
+
+
+
+#begin Fonts\Sensation.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:Fonts\Sensation.fnt
+
+
 #begin Fonts\Sensation_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -25,9 +34,22 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Fonts/Sensation_0.png
+/build:Fonts\Sensation_0.png
 
-#begin desert.png
+
+#begin Maps\AutoGenerateMapBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Maps\AutoGenerateMapBehavior.cs
+
+
+#begin Maps\Village.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Maps\Village.json
+
+
+#begin Maps\ville_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -37,83 +59,92 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/desert.png
+/build:Maps\ville_0.png
 
-#begin Fonts\Sensation.fnt
-/importer:BitmapFontImporter
-/processor:BitmapFontProcessor
-/build:Fonts/Sensation.fnt
-
-#begin Scenes\TitleScreen\Interface.json
-/importer:ContentObjectImporter
-/processor:ContentObjectProcessor
-/build:Scenes\TitleScreen\Interface.json
-
-#begin Scenes\TitleScreen\Animations.json
-/importer:ContentObjectImporter
-/processor:ContentObjectProcessor
-/build:Scenes\TitleScreen\Animations.json
-
-#begin Scenes\TitleScreen\LaunchGameBehavior.cs
-/importer:DynamicAssemblyImporter
-/processor:DynamicAssemblyProcessor
-/build:Scenes\TitleScreen\LaunchGameBehavior.cs
-
-#begin Maps/ville_0.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,255,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Maps/ville_0.png
 
 #begin Maps\WorldMap.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
 /build:Maps\WorldMap.json
 
-#begin Maps\Village.json
-/importer:ContentObjectImporter
-/processor:ContentObjectProcessor
-/build:Maps\Village.json
-
-#begin Maps\AutoGenerateMapBehavior.cs
-/importer:DynamicAssemblyImporter
-/processor:DynamicAssemblyProcessor
-/build:Maps\AutoGenerateMapBehavior.cs
 
 #begin Scripts\CameraControlsBehavior.cs
 /importer:DynamicAssemblyImporter
 /processor:DynamicAssemblyProcessor
 /build:Scripts\CameraControlsBehavior.cs
 
-#begin Sprites\ActorControlBehavior.cs
+
+#begin Scripts\RandomMovementBehavior.cs
 /importer:DynamicAssemblyImporter
 /processor:DynamicAssemblyProcessor
-/build:Sprites\ActorControlBehavior.cs
+/build:Scripts\RandomMovementBehavior.cs
 
-#begin Sprites/npc1.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,255,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Sprites/npc1.png
 
 #begin Sprites\Actor.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
 /build:Sprites\Actor.json
 
+
+#begin Sprites\ActorControlBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Sprites\ActorControlBehavior.cs
+
+
+#begin Sprites\desert.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites\desert.png
+
+
+#begin Sprites\Fence.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Sprites\Fence.json
+
+
 #begin Sprites\NonActor.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
 /build:Sprites\NonActor.json
+
+
+#begin Sprites\npc1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites\npc1.png
+
+
+#begin Scenes\TitleScreen\Animations.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Scenes\TitleScreen\Animations.json
+
+
+#begin Scenes\TitleScreen\Interface.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Scenes\TitleScreen\Interface.json
+
+
+#begin Scenes\TitleScreen\LaunchGameBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Scenes\TitleScreen\LaunchGameBehavior.cs
+
+
