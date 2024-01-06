@@ -16,7 +16,12 @@
             ]
         },
         {
-            "$ref": "Sprites/Actor.json"
+            "$import": "Sprites/Actor.json",
+            "position": "64, 64"
+        },
+        {
+            "$import": "Sprites/NonActor.json",
+            "position": "128, 128"
         }
     ],
     "behaviors": [

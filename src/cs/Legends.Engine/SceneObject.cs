@@ -256,15 +256,15 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
             (behavior).Update(gameTime);
         }
 
-        foreach(var component in Components)
-        {
-            (component).Update(gameTime);
-        }
-        
         foreach(var child in Children)
         {
             (child).Update(gameTime);
         }
+
+        foreach(var component in Components)
+        {
+            (component).Update(gameTime);
+        }        
     }
 
     public virtual void Draw(GameTime gameTime)

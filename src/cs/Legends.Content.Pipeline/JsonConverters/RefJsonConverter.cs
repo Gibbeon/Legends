@@ -66,7 +66,6 @@ public class RefJsonConverter : JsonConverter
                     var filename = jImport.Value.ToString();
                     name = Path.ChangeExtension(jObject.Property("$import").Value.ToString(), null);
                     var jImportValue = JObject.Parse(File.ReadAllText(filename));
-
     
                     jImportValue.Merge(jObject,
                         new JsonMergeSettings() {
@@ -88,7 +87,7 @@ public class RefJsonConverter : JsonConverter
         }
         catch(Exception error)
         {
-            Console.WriteLine("AssetJsonConverter.ReadJson Error:" + error.Message);
+            Console.WriteLine("RefJsonConverter.ReadJson Error:" + error.Message);
             throw;
         }
     }
@@ -118,7 +117,7 @@ public class RefJsonConverter : JsonConverter
         }
         catch(Exception error)
         {
-            Console.WriteLine("AssetJsonConverter.WriteJson Error:" + error.Message);
+            Console.WriteLine("RefJsonConverter.WriteJson Error:" + error.Message);
             throw;
         }
     }

@@ -1,0 +1,21 @@
+{
+    "$type": "Legends.Engine.SceneObject, Legends.Engine",
+    "name": "NonActor",
+    "size": "24, 32",
+    "components": [
+        {
+            "$type": "Legends.Engine.Collision.RigidBody, Legends.Engine",
+            "static": true
+        },
+        {
+            "$type": "Legends.Engine.Graphics2D.Sprite, Legends.Engine",
+            "textureRegion": {
+                "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
+                "texture": "Sprites/npc1.png",
+                "slice": "24, 36",
+                "position": "0, 144",
+                "size": "72, 144"
+            }
+        }
+    ]
+}

@@ -112,3 +112,8 @@
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
 /build:Sprites\Actor.json
+
+#begin Sprites\NonActor.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Sprites\NonActor.json

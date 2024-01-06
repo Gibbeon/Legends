@@ -1,5 +1,5 @@
 ﻿using Legends.Engine;
-using Legends.Engine.Content;
+using Legends.Engine.Collision;
 using Legends.Engine.Input;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Screens;
@@ -11,6 +11,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
     private readonly GraphicsDeviceManager   _graphicsDeviceManager;
     private readonly RenderService           _spriteRenderService;
     private readonly GameManagementService   _gameManagementService;
+    private readonly CollisionService _collisionService;
     private readonly InputHandlerService _inputService;
     private readonly ScreenManager _screenManager;
     
@@ -22,6 +23,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _graphicsDeviceManager  = new GraphicsDeviceManager(this);        
         _spriteRenderService    = new RenderService(Services);
         _inputService           = new InputHandlerService(Services);
+        _collisionService       = new CollisionService(Services);
 
         //ContentLogger.Enabled = true;
         Content.RootDirectory = "Content";
@@ -47,6 +49,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
         Content.DoReloads();
         _inputService.Update(gameTime);
         base.Update(gameTime);
+        _collisionService.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)

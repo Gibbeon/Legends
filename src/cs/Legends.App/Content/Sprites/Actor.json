@@ -10,6 +10,9 @@
     ],
     "components": [
         {
+            "$type": "Legends.Engine.Collision.RigidBody, Legends.Engine"
+        },
+        {
             "$type": "Legends.Engine.Graphics2D.Sprite, Legends.Engine",
             "textureRegion": {
                 "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
