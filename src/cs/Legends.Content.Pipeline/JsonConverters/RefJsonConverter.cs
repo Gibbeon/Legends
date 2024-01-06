@@ -69,11 +69,12 @@ public class RefJsonConverter : JsonConverter
     
                     jImportValue.Merge(jObject,
                         new JsonMergeSettings() {
-                            MergeArrayHandling = MergeArrayHandling.Union
+                            MergeArrayHandling = MergeArrayHandling.Merge                            
                         }
                     );
 
                     jObject = jImportValue;
+                    Console.WriteLine("{0}", jObject.ToString());
                     jObject.Remove("$import");
                     
                     isExternal = false;

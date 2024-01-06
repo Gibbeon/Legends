@@ -78,7 +78,7 @@ public class Main : IDisposable
 
         File.WriteAllText(Path.Combine(_watcher.Path, contentFile), _header + "\n\n" + content);
         try {
-            ExecuteCommand("dotnet", "mgcb", contentFile,force?"/c": "");
+            ExecuteCommand("dotnet", "mgcb", contentFile,force?"/c": "/I");
         }
         finally {
             File.Delete(Path.Combine(_watcher.Path, contentFile));

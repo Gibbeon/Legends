@@ -80,6 +80,12 @@
 /build:Scripts\RandomMovementBehavior.cs
 
 
+#begin Scripts\SetSpriteFrameBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Scripts\SetSpriteFrameBehavior.cs
+
+
 #begin Sprites\Actor.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor

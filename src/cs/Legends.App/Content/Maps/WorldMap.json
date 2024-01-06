@@ -25,7 +25,13 @@
         },
         {
             "$import": "Sprites/Fence.json",
-            "position": "-64, 64"
+            "position": "-64, 64",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 13
+                }
+            ]           
         }
     ],
     "behaviors": [
@@ -33,6 +39,5 @@
             "$compile": "Scripts/CameraControlsBehavior.cs",
             "scrollSpeed": 1
         }
-
     ]
 }
