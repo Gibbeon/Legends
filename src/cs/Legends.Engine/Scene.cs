@@ -18,7 +18,8 @@ public class Scene : SceneObject
     } 
 
     [JsonProperty("camera")]
-    protected Ref<Camera> CameraReference => _camera;
+    protected Ref<Camera> CameraReference
+    { get => _camera; set {_camera = value; SetCamera(value.Get()); }}
 
     protected Scene() : this(null)
     {

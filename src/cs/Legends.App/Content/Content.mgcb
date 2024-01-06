@@ -136,6 +136,12 @@
 /build:Sprites\npc1.png
 
 
+#begin Sprites\Plot.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Sprites\Plot.json
+
+
 #begin Scenes\TitleScreen\Animations.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor

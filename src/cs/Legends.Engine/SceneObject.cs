@@ -247,8 +247,21 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
         return (this is Scene scene) ? scene : (Parent).GetParentScene();
     } 
 
+    bool _init;
+
     public virtual void Update(GameTime gameTime)
     {
+        if(!_init)
+        {
+            foreach(var child in Children)
+            {
+                child.OffsetPosition   = this.Position;
+                child.OffsetRotation   = this.Rotation;
+                child.OffsetScale      = this.Scale;
+            }
+
+            _init = true;
+        }
         if(!Enabled) return;
         
         foreach(var behavior in Behaviors)

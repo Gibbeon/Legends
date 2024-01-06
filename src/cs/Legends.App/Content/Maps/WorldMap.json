@@ -1,123 +1,18 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "WorldMap",
+    "camnera": {
+        "scale": "2, 2"
+    },
     "children": [
-        {
-            "name": "map",
-            "components": [
-                {
-                    "$ref": "Maps/Village.json"
-                }
-            ],
-            "behaviors": [
-                {
-                    "$compile": "Maps/AutoGenerateMapBehavior.cs"
-                }
-            ]
-        },
         {
             "$import": "Sprites/Actor.json",
             "position": "0, 0"
         },
         {
-            "$import": "Sprites/Fence.json",
-            "position": "-64, 64",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 13
-                }
-            ]           
-        },
-        {
-            "$import": "Sprites/Fence.json",
-            "position": "-64, 48",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 13
-                }
-            ]           
-        },
-        {
-            "$import": "Sprites/Fence.json",
-            "position": "-64, 32",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 13
-                }
-            ]           
-        },
-        {
-            "$import": "Sprites/Fence.json",
-            "position": "-64, 16",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 13
-                }
-            ]           
-        },
-        {
-            "$import": "Sprites/Fence.json",
-            "position": "-64, 0",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 13
-                }
-            ]           
-        },
-        {
-            "$import": "Sprites/Fence.json",
-            "position": "64, 64",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 13
-                }
-            ]           
-        },
-        {
-            "$import": "Sprites/Fence.json",
-            "position": "64, 48",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 13
-                }
-            ]           
-        },
-        {
-            "$import": "Sprites/Fence.json",
-            "position": "64, 32",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 13
-                }
-            ]           
-        },
-        {
-            "$import": "Sprites/Fence.json",
-            "position": "64, 16",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 13
-                }
-            ]           
-        },
-        {
-            "$import": "Sprites/Fence.json",
-            "position": "64, 0",
-            "behaviors": [
-                {
-                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 14
-                }
-            ]           
+            "$import": "Sprites/Plot.json",            
+            "position": "128, 128"        
+             
         }
     ],
     "behaviors": [
