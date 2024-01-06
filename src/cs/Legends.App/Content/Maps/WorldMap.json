@@ -17,11 +17,7 @@
         },
         {
             "$import": "Sprites/Actor.json",
-            "position": "64, 64"
-        },
-        {
-            "$import": "Sprites/NonActor.json",
-            "position": "128, 128"
+            "position": "0, 0"
         },
         {
             "$import": "Sprites/Fence.json",
@@ -30,6 +26,96 @@
                 {
                     "$compile": "Scripts/SetSpriteFrameBehavior.cs",
                     "frame": 13
+                }
+            ]           
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "-64, 48",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 13
+                }
+            ]           
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "-64, 32",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 13
+                }
+            ]           
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "-64, 16",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 13
+                }
+            ]           
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "-64, 0",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 13
+                }
+            ]           
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "64, 64",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 13
+                }
+            ]           
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "64, 48",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 13
+                }
+            ]           
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "64, 32",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 13
+                }
+            ]           
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "64, 16",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 13
+                }
+            ]           
+        },
+        {
+            "$import": "Sprites/Fence.json",
+            "position": "64, 0",
+            "behaviors": [
+                {
+                    "$compile": "Scripts/SetSpriteFrameBehavior.cs",
+                    "frame": 14
                 }
             ]           
         }

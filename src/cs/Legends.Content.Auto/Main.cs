@@ -118,6 +118,7 @@ public class Main : IDisposable
         process.BeginErrorReadLine();
         process.WaitForExit();
         var result = string.Join('\n', results.Skip(results.Count - 5).Where(n => !string.IsNullOrEmpty(n)));
+        File.WriteAllText("auto-output.log", string.Join('\n', results));
         if(result.IndexOf("0 failed.") > 0)
         {
             Console.WriteLine("{0}", result);

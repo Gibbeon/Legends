@@ -35,9 +35,21 @@ public class RectangleBounds : IBounds
         _rectangle = rectangle;
     }
 
+    public static bool Intersects(ref BoundingRectangle first, ref BoundingRectangle second)
+    {
+        Vector2 vector = first.Center - second.Center;
+        Vector2 vector2 = first.HalfExtents + second.HalfExtents;
+        if (Math.Abs(vector.X) < vector2.X)
+        {
+            return Math.Abs(vector.Y) < vector2.Y;
+        }
+
+        return false;
+    }
+
     public bool Collide(RectangleBounds other)
     {
-        return BoundingRectangle.Intersects(_rectangle, other._rectangle);
+        return Intersects(ref _rectangle, ref other._rectangle);
     }
 
     public bool Equals(IBounds other)
@@ -86,7 +98,8 @@ public class RigidBody : Component<RigidBody>
 
     public void ResolveCollision(RigidBody other)
     {        
-        this.Parent.Position = _previousPosition;        
+        if(!this.Static)
+            this.Parent.Position = _previousPosition;        
     }
 
     public override void Update(GameTime gameTime)
