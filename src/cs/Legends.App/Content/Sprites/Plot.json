@@ -1,12 +1,6 @@
 {
     "$type":"Legends.Engine.SceneObject, Legends.Engine",
     "name": "Plot",
-    "behaviors": [
-        {
-            "$compile": "Scripts/CameraControlsBehavior.cs",
-            "scrollSpeed": 1
-        }
-    ],
     "children": [
         {
             "$import": "Sprites/Fence.json",

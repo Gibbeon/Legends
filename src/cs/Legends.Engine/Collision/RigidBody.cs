@@ -7,8 +7,7 @@ namespace Legends.Engine.Collision;
 
 public class RigidBody : Component
 {
-    public bool Static { get; set; }
-
+    public bool Dynamic { get; set; }
     private IBounds _bounds;
     private Vector2 _previousPosition;
     public IBounds Bounds
@@ -29,7 +28,7 @@ public class RigidBody : Component
 
     public void ResolveCollision(RigidBody other)
     {        
-        if(!this.Static)
+        if(this.Dynamic)
         {
             this.Parent.Position = _previousPosition;    
         }    
@@ -42,6 +41,7 @@ public class RigidBody : Component
 
     public override void Initialize()
     {
+        _previousPosition = this.Parent.Position;
         _bounds ??= new RectangleBounds(Vector2.Zero, Parent.Size);
         Services.Get<ICollisionService>().Add(this);
     }

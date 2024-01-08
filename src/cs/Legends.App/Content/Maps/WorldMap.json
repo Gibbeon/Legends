@@ -1,12 +1,14 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "WorldMap",
-    "camnera": {
-        "scale": "1, 1"
-    },
+    "scale": "2, 2",
     "children": [
         {
             "$import": "Sprites/Actor.json",
+            "position": "0, 0"
+        },
+        {
+            "$import": "Sprites/Plot.json",
             "position": "0, 0"
         }
     ],

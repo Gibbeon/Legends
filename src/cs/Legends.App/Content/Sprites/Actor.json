@@ -10,7 +10,8 @@
     ],
     "components": [
         {
-            "$type": "Legends.Engine.Collision.RigidBody, Legends.Engine"
+            "$type": "Legends.Engine.Collision.RigidBody, Legends.Engine",
+            "dynamic": true
         },
         {
             "$type": "Legends.Engine.Graphics2D.Components.Sprite, Legends.Engine",
