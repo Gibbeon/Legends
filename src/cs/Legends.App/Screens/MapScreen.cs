@@ -4,6 +4,7 @@ using Legends.Engine.Input;
 using MonoGame.Extended.Input.InputListeners;
 using Legends.Engine;
 using System;
+using Legends.Engine.Content;
 
 namespace Legends.App.Screens;
 
