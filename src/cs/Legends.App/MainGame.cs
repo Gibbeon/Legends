@@ -1,5 +1,6 @@
 ﻿using Legends.Engine;
 using Legends.Engine.Collision;
+using Legends.Engine.Graphics2D;
 using Legends.Engine.Input;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Screens;
