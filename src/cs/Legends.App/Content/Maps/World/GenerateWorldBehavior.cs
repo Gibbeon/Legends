@@ -1,13 +1,10 @@
 using Legends.Engine;
-using Legends.Engine.Graphics2D;
-using Microsoft.Xna.Framework;
-using System;
+using Legends.Engine.Graphics2D.Components;
 
 namespace Legends.Scripts;
 
 public class GenerateWorldBehavior : Behavior
 {
-    bool _init;
     public GenerateWorldBehavior(): this(null, null)
     {
 
@@ -17,11 +14,18 @@ public class GenerateWorldBehavior : Behavior
         
     }
 
-    public override void Update(GameTime gameTime)
+    public override void Dispose()
     {
-        if(!_init) {
-            Parent?.GetComponent<Map>().CreateMapFromTexture();
-            _init = true;
-        }
+        GC.SuppressFinalize(this);
+    }
+
+    public override void Initialize()
+    {
+        Parent?.GetComponent<Map>().CreateMapFromTexture();
+    }
+
+    public override void Reset()
+    {
+        
     }
 }

@@ -5,9 +5,12 @@ using MonoGame.Extended;
 
 namespace Legends.Engine;
 
-public interface IInitalizable : IDisposable
+public interface IResetable
+{
+    void Reset();
+}
+public interface IInitalizable : IResetable, IDisposable
 {
     void Initialize();
-    void Reset();
 }
 

@@ -3,13 +3,9 @@ using System.Linq;
 using System;
 using Legends.Engine.Animation;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using System.Runtime.CompilerServices;
-using System.Diagnostics.Tracing;
-using SharpFont.MultipleMasters;
 
-namespace Legends.Engine.Graphics2D;
+namespace Legends.Engine.Graphics2D.Components;
 
 public class TileSet
 {
@@ -74,7 +70,7 @@ public class TileSet
     }
 }
 
-public struct TileSetKeyframe : IKeyFrame
+public struct TileSetKeyframe : IKeyframe
 {
     public ushort[]     Index       { get; set; }
     public ushort[]     Tiles       { get; set; }

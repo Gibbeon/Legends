@@ -6,7 +6,7 @@ using System;
 using Microsoft.Xna.Framework.Content;
 using Legends.Engine.Content;
 
-namespace Legends.Engine.Graphics2D;
+namespace Legends.Engine.Graphics2D.Components;
 
 public enum HorizontalAlignment
 {

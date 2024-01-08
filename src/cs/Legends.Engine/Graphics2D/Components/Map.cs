@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Legends.Engine.Graphics2D;
+namespace Legends.Engine.Graphics2D.Components;
 
 public class Map : Component, ISelfRenderable
 {

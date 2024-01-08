@@ -1,6 +1,6 @@
 namespace Legends.Engine.Content;
 
-public sealed class ContentObject : INotifyReload
+public sealed class ContentObject : IResetable
 {
     public object Instance { get; set; }
 
@@ -8,8 +8,8 @@ public sealed class ContentObject : INotifyReload
 
     public static ContentObject Wrap<T>(T instance) { return new ContentObject(instance); }
 
-    public void OnReload()
+    public void Reset()
     {
-        if(Instance is INotifyReload notify) notify.OnReload();
+        if(Instance is IInitalizable notify) notify.Reset();
     }
 }

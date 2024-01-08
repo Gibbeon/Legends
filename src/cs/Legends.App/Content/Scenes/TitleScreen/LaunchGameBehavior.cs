@@ -18,11 +18,7 @@ public class LaunchGameBehavior : Behavior
     }
     public LaunchGameBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-        if(services != null)
-        {
-            _commands = new InputCommandSet(Services, services.Get<IInputHandlerService>().Current);
-            _commands.Add("START",    EventType.KeyPressed,    Keys.Enter);
-        }
+
     }
 
     public override void Update(GameTime gameTime)
@@ -46,5 +42,18 @@ public class LaunchGameBehavior : Behavior
     {
         GC.SuppressFinalize(this);
         _commands?.Dispose();
+    }
+
+    public override void Initialize()
+    {
+        _commands = new InputCommandSet(Services, Services.Get<IInputHandlerService>().Current);
+        _commands.Add("START",    EventType.KeyPressed,    Keys.Enter);
+    }
+
+    public override void Reset()
+    {
+        _commands?.Dispose();
+        _commands = default;
+        Initialize();
     }
 }

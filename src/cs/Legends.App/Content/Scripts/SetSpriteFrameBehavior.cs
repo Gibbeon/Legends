@@ -1,9 +1,6 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Legends.Engine;
-using Legends.Engine.Input;
-using Legends.Engine.Graphics2D;
-using Microsoft.Xna.Framework.Input;
+using Legends.Engine.Graphics2D.Components;
 
 namespace Legends.Scripts;
 
@@ -25,14 +22,13 @@ public class SetSpriteFrameBehavior : Behavior
         GC.SuppressFinalize(this);
     }
 
-    bool _init = false;
-    public override void Update(GameTime gameTime)
+    public override void Initialize()
     {
-        if(!_init)
-        {
-            (~Parent.GetComponent<Sprite>().TextureRegion).Frame = Frame;
-            _init = true;
-        }
+        Parent.GetComponent<Sprite>().TextureRegion.SetFrame(Frame);
+    }
 
+    public override void Reset()
+    {
+        
     }
 }
