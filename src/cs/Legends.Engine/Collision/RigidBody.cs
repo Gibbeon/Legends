@@ -18,8 +18,7 @@ public class RigidBody : Component
     }
     public RigidBody(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-        _bounds = new RectangleBounds(Vector2.Zero, Parent.Size);
-        services?.Get<ICollisionService>().Add(this);
+
     }
 
     public override void Dispose()
@@ -43,6 +42,8 @@ public class RigidBody : Component
 
     public override void Initialize()
     {
+        _bounds ??= new RectangleBounds(Vector2.Zero, Parent.Size);
+        Services.Get<ICollisionService>().Add(this);
     }
 
     public override void Reset()

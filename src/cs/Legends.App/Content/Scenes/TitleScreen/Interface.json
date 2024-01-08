@@ -4,21 +4,14 @@
     "children": [
         {
             "name": "child1",
-            "scale": "4, 4",
-            "children": [
+            "components": [
                 {
-                    "name": "child2",
-                    "position": "0, -40",
-                    "components": [
-                        {
-                            "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",
-                            "font":     "Fonts/Sensation",
-                            "text":     "Press ESC to Exit or ENTER to start",
-                            "color":    "255, 255, 255, 255",
-                            "halign":   "Center",
-                            "valign":   "Middle"
-                        }
-                    ]
+                    "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",
+                    "font":     "Fonts/Sensation",
+                    "text":     "Press ESC to Exit or ENTER to start",
+                    "color":    "255, 255, 255, 255",
+                    "halign":   "Center",
+                    "valign":   "Middle"
                 }
             ]
         }

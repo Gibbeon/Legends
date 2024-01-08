@@ -19,17 +19,6 @@ public class CameraControlsBehavior : Behavior
     public CameraControlsBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
 
-        if(services != null)
-        {
-            _commands = new InputCommandSet(Services, services.Get<IInputHandlerService>().Current);
-
-            _commands.Add("MOVE_LEFT",    EventType.KeyPressed,    Keys.Left);             
-            _commands.Add("MOVE_RIGHT",   EventType.KeyPressed,    Keys.Right);      
-            _commands.Add("MOVE_UP",      EventType.KeyPressed,    Keys.Up);             
-            _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down);
-
-            _commands.Enabled = true;
-        }
     }
 
     public override void Dispose()
@@ -39,20 +28,34 @@ public class CameraControlsBehavior : Behavior
     }
     public override void Update(GameTime gameTime)
     {
-        if(_commands != null)
+        foreach(var command in _commands.EventActions)
         {
-            foreach(var command in _commands.EventActions)
+            switch(command.Name)
             {
-                switch(command.Name)
-                {
-                    case "MOVE_LEFT":   Parent?.GetParentScene()?.Camera?.Move(-ScrollSpeed, 0); break;
-                    case "MOVE_RIGHT":  Parent?.GetParentScene()?.Camera?.Move( ScrollSpeed, 0); break;
-                    case "MOVE_UP":     Parent?.GetParentScene()?.Camera?.Move( 0,-ScrollSpeed); break;
-                    case "MOVE_DOWN":   Parent?.GetParentScene()?.Camera?.Move( 0, ScrollSpeed); break;
-                    default:
-                        Console.WriteLine("Unknown Command: {0}", command.Name); break;             
-                }
-            }  
-        }
+                case "MOVE_LEFT":   Parent.Scene.Camera.Move(-ScrollSpeed, 0); break;
+                case "MOVE_RIGHT":  Parent.Scene.Camera.Move( ScrollSpeed, 0); break;
+                case "MOVE_UP":     Parent.Scene.Camera.Move( 0,-ScrollSpeed); break;
+                case "MOVE_DOWN":   Parent.Scene.Camera.Move( 0, ScrollSpeed); break;
+                default:
+                    Console.WriteLine("Unknown Command: {0}", command.Name); break;             
+            }
+        }  
+    }
+
+    public override void Initialize()
+    {
+        _commands = new InputCommandSet(Services, Services.Get<IInputHandlerService>().Current);
+
+        _commands.Add("MOVE_LEFT",    EventType.KeyPressed,    Keys.Left);             
+        _commands.Add("MOVE_RIGHT",   EventType.KeyPressed,    Keys.Right);      
+        _commands.Add("MOVE_UP",      EventType.KeyPressed,    Keys.Up);             
+        _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down);
+
+        _commands.Enabled = true;
+    }
+
+    public override void Reset()
+    {
+        
     }
 }
