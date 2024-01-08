@@ -46,7 +46,7 @@ public class Sprite : Component, ITexturedSpriteRenderable
     public Rectangle SourceBounds{ get => (Rectangle)TextureRegion.BoundingRectangle; }
 
     [JsonIgnore]
-    public Rectangle DestinationBounds => (Rectangle)Parent.BoundingRectangle; 
+    public Rectangle? DestinationBounds => (Rectangle)Parent.BoundingRectangle; 
 
     public Sprite(): this (null, null)
     {

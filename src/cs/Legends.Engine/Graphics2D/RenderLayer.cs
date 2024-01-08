@@ -117,7 +117,7 @@ public class RenderLayer : IRenderLayer
                 {
                     _spriteBatch.Draw(
                         spriteBatchDrawable.SourceData.Texture,
-                        spriteBatchDrawable.DestinationBounds,
+                        spriteBatchDrawable.DestinationBounds.Value,
                         (Rectangle)spriteBatchDrawable.SourceData.BoundingRectangle,
                         spriteBatchDrawable.Color,
                         spriteBatchDrawable.Rotation,
@@ -141,11 +141,11 @@ public class RenderLayer : IRenderLayer
                             Vector2.Zero,
                             fontDrawable.Color,
                             fontDrawable.Rotation,
-                            -fontDrawable.Position,
+                            -(fontDrawable.Position / fontDrawable.Scale),
                             fontDrawable.Scale,
                             fontDrawable.Effect,
                             0,
-                            fontDrawable.DestinationBounds);
+                            null);//fontDrawable.DestinationBounds);
                     }
                     else
                     {

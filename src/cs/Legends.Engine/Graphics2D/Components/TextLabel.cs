@@ -59,7 +59,7 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
     public BitmapFont SourceData => (BitmapFont)Font;
     
     [JsonIgnore]
-    public Rectangle DestinationBounds => new(Position.ToPoint(), SourceData == null ? Point.Zero : (Point)SourceData.MeasureString(Text));
+    public Rectangle? DestinationBounds => new(Position.ToPoint(), (SourceData.MeasureString(Text) * Scale).ToPoint());
 
     public TextLabel() : this(null, null)
     {
@@ -89,7 +89,7 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
         {
             HorizontalAlignment.Left => 0,
             HorizontalAlignment.Right => -((BitmapFont)Font).MeasureString(Text).Width * Scale.X,
-            HorizontalAlignment.Center => -((BitmapFont)Font).MeasureString(Text).Width * Scale.Y / 2,
+            HorizontalAlignment.Center => -((BitmapFont)Font).MeasureString(Text).Width * Scale.X / 2,
             _ => 0,
         };
     }

@@ -4,11 +4,11 @@
     "children": [
         {
             "name": "child1",
-            "position": "0, 50",
+            "scale": "4, 4",
             "children": [
                 {
                     "name": "child2",
-                    "position": "0, -50",
+                    "position": "0, -40",
                     "components": [
                         {
                             "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",

@@ -7,7 +7,7 @@ namespace Legends.Engine.Graphics2D;
 
 public interface ISpriteRenderable: IRenderable
 {
-    Rectangle DestinationBounds { get; }
+    Rectangle? DestinationBounds { get; }
     Vector2 Position { get; }
     float Rotation { get; }
     Vector2 Scale { get; }
