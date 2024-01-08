@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Legends.Engine;
 
-public abstract class Script : INamedObject, INotifyReload
+public abstract class Script : INamedObject
 {    
     private readonly List<WeakReference> _references = new();
     private readonly object _lock = new();

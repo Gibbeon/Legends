@@ -7,7 +7,9 @@ using System;
 using System.Collections;
 using System.Linq;
 
-namespace Legends.Content.Pipline;
+
+
+namespace Legends.Engine.Content;
 
 public static class ContentPrimitivesExtensions
 {

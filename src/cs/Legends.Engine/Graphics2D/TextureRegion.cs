@@ -2,23 +2,27 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D;
 
-public class TextureRegion : Spatial
+public class TextureRegion : Spatial, IInitalizable
 {
     public Ref<Texture2D> Texture { get; set; }
     public Size2 Slice { get; set; }
     private int _frame;
-    public int Frame { get => _frame; set => _frame = value; }
+    public int Frame { get => _frame; set => SetFrame(value); }
 
-    public TextureRegion(Texture2D texture, Rectangle region)
-        : this(texture, region.X, region.Y, region.Width, region.Height)
-    {
-    }
+    [JsonIgnore]
+    public int TileCount => (int)(Texture.Get().Width / Slice.Width * (Texture.Get().Height / Slice.Height));
 
     public  TextureRegion()
         : this(null, 0, 0, 0, 0)
+    {
+    }
+
+    public TextureRegion(Texture2D texture, Rectangle region)
+        : this(texture, region.X, region.Y, region.Width, region.Height)
     {
     }
 
@@ -34,28 +38,13 @@ public class TextureRegion : Spatial
         Size = new Size2(width, height);
     }
 
-    public void SetFrame(int index)
-    {
-        if((~Texture) == null) return;
-        
+    public void SetFrame(int frame)
+    {        
+        _frame = frame;
         OffsetPosition = new Vector2(
-            (int)(index * Slice.Width) % (int)Size.Width, 
-            (int)((index * Slice.Width) / (int)Size.Width) * Slice.Height
+            (int)(_frame * Slice.Width) % (int)Size.Width, 
+            (int)(_frame * Slice.Width / (int)Size.Width) * Slice.Height
         );
-    }
-
-    public int GetFrame()
-    {
-        if(Slice.IsEmpty) return 0;
-        int x_offset = (int)(Position.X / Slice.Width);
-        int y_offset = (int)(Position.Y / Slice.Width);
-        if((~Texture) == null) return x_offset;
-        return x_offset + y_offset * ((int)Size.Width / (int)Slice.Width);
-    }
-
-    public void Update()
-    {
-        SetFrame(_frame);
     }
 
     public override string ToString()
@@ -66,5 +55,20 @@ public class TextureRegion : Spatial
     public override RectangleF GetBoundingRectangle()
     {
         return new RectangleF(Position - Origin, Slice);
+    }
+
+    public void Initialize()
+    {
+        if(Slice == Size2.Empty) Slice = Size;
+    }
+
+    public void Reset()
+    {
+        _frame = 0;
+    }
+
+    public void Dispose()
+    {
+
     }
 }

@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using System;
-namespace Legends.Engine;
 
+namespace Legends.Engine.Graphics2D;
 public interface IViewState
 {
     Matrix World { get; }

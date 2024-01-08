@@ -7,43 +7,46 @@ using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D;
 
-public class Sprite : Component<Sprite>, ISpriteBatchDrawable
+public class Sprite : Component, ITexturedSpriteRenderable
 {
-    public Ref<TextureRegion> TextureRegion { get; set; }
+    [JsonProperty(nameof(TextureRegion))]
+    protected Ref<TextureRegion> TextureRegionReference { get; set; }
 
     public Color Color { get; set; }
 
     public RenderState RenderState { get; set; }
 
-    [DefaultValue(SpriteEffects.None)]
     public SpriteEffects Effect  { get; set; }
 
     [JsonIgnore]
-    public Texture2D SourceData => (~TextureRegion).Texture;
+    public TextureRegion SourceData => TextureRegion;
 
     [JsonIgnore]
-    public bool Visible   => Parent != null && (Parent).Visible;
+    public bool Visible   => Parent.Visible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent != null ? (Parent).Position : Vector2.Zero;
+    public Vector2 Position => Parent.Position;
 
     [JsonIgnore]
-    public float Rotation   => Parent != null ? (Parent).Rotation : 0.0f;
+    public float Rotation   => Parent.Rotation;
     
     [JsonIgnore]
-    public Vector2 Scale    => Parent != null ? (Parent).Scale : Vector2.One;
+    public Vector2 Scale    => Parent.Scale;
     
     [JsonIgnore]
-    public Vector2 Origin   => Parent != null ? (Parent).Origin : Vector2.Zero;
+    public Vector2 Origin   =>Parent.Origin;
+
+    [JsonIgnore]
+    public TextureRegion TextureRegion => TextureRegionReference.Get();
     
     [JsonIgnore]
-    public IViewState ViewState => (Parent).GetParentScene().Camera;
+    public IViewState ViewState => Parent.Scene.Camera;
 
     [JsonIgnore]
-    public Rectangle SourceBounds{ get => TextureRegion == null ? Rectangle.Empty : (~TextureRegion).BoundingRectangle.ToRectangle(); set => SetTextureRegionBounnds(value); }
+    public Rectangle SourceBounds{ get => (Rectangle)TextureRegion.BoundingRectangle; }
 
     [JsonIgnore]
-    public Rectangle DestinationBounds => Parent == null ? Rectangle.Empty : (Rectangle)(Parent).BoundingRectangle; 
+    public Rectangle DestinationBounds => (Rectangle)Parent.BoundingRectangle; 
 
     public Sprite(): this (null, null)
     {
@@ -58,23 +61,27 @@ public class Sprite : Component<Sprite>, ISpriteBatchDrawable
     {
         if(Visible)
         {
-            (Parent).Services.Get<IRenderService>().DrawBatched(this);
+            Parent.Services.Get<IRenderService>().DrawBatched(this);
         }
-    }
-
-    public override void Update(GameTime gameTime)
-    {
-        (~TextureRegion).Update();
-    }
-
-
-    public void SetTextureRegionBounnds(Rectangle rect)
-    {
-        TextureRegion = new TextureRegion((~TextureRegion).Texture, rect);
     }
 
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
+    }
+
+    public override void Initialize()
+    {
+        
+    }
+
+    public override void Reset()
+    {
+        
+    }
+
+    public override void Update(GameTime gameTime)
+    {
+
     }
 }

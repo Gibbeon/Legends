@@ -8,7 +8,7 @@ using MonoGame.Extended;
 
 namespace Legends.Engine;
 
-public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyReload
+public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitalizable
 {   
     private static int              _globalObjId;
     private IList<string>           _tags;    
@@ -16,38 +16,32 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
     private IList<Ref<SceneObject>> _children;
     private IList<Ref<IComponent>>  _components;
 
+    private bool _enabled = true;
+    private bool _visible = true;
+
     [JsonIgnore]
     public IServiceProvider Services { get; protected set; }
     
     [JsonIgnore]
     public SceneObject Parent { get; protected set; }
+
+        
+    [JsonIgnore]
+    public Scene Scene => GetParentScene();
     
-    public string Name { get; protected set; }
-    
-    [DefaultValue(true)]
-    public bool Enabled { get; set; }
-    
-    [DefaultValue(true)]
-    public bool Visible { get; set; }
+    public string Name { get; protected set; }    
+    public bool Enabled { get => _enabled; set => _enabled = value; }
+    public bool Visible { get => _visible; set => _visible = value; }
     
     [JsonIgnore]
-    public IEnumerable<SceneObject> Children
-    {
-        get => ChildrenReferences.Select(n => n.Get());
-    }
+    public IEnumerable<SceneObject> Children => ChildrenReferences.Select(n => n.Get());
 
     [JsonIgnore]
-    public IEnumerable<IBehavior> Behaviors
-    {
-        get => BehaviorReferences.Select(n => n.Get());
-    }
+    public IEnumerable<IBehavior> Behaviors => BehaviorReferences.Select(n => n.Get());
 
     [JsonIgnore]
-    public IEnumerable<IComponent> Components
-    {
-        get => ComponentReferences.Select(n => n.Get());
-    }
-
+    public IEnumerable<IComponent> Components => ComponentReferences.Select(n => n.Get());
+    
     [JsonProperty(nameof(Children))]
     protected IList<Ref<SceneObject>>  ChildrenReferences
     {
@@ -90,15 +84,34 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
         _tags       = new List<string>();
 
         Parent = parent;
+    }
 
-        Enabled = true;
-        Visible = true;
+    public virtual void Initialize()
+    {
+        foreach(var component in Components)
+        {
+            component.Initialize();
+        } 
+
+        foreach(var behavior in Behaviors)
+        {
+            behavior.Initialize();
+        }
+
+        foreach(var child in Children)
+        {
+            child.OffsetPosition   = this.Position;
+            child.OffsetRotation   = this.Rotation;
+            child.OffsetScale      = this.Scale;
+
+            child.Initialize();
+        }
     }
 
     public TType GetBehavior<TType>()
         where TType: class
     {
-        return Behaviors.OfType<TType>().Single();
+        return Behaviors.OfType<TType>().SingleOrDefault();
     } 
 
     public TType GetComponent<TType>()
@@ -110,50 +123,38 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
     public override void SetPosition(Vector2 position)
     {
         base.SetPosition(position);
-
-        if(_children != null)
+        foreach(var child in Children)
         {
-            foreach(var child in Children)
-            {
-                (child).OffsetPosition = position;
-            }
-        }   
+            child.OffsetPosition = position;
+        }
     }
 
     public override void SetScale(Vector2 scale)
     {
         base.SetScale(scale);
-
-        if(_children != null)
+        foreach(var child in Children)
         {
-            foreach(var child in Children)
-            {
-                (child).OffsetScale = scale;
-            }
-        }   
+            child.OffsetScale = scale;
+        }
     }
 
     public override void SetRotation(float radians)
     {
         base.SetRotation(radians);
-
-        if(_children != null)
+        foreach(var child in Children)
         {
-            foreach(var child in Children)
-            {
-                (child).OffsetRotation = radians;
-            }
-        }   
+            child.OffsetRotation = radians;
+        }
     }
 
-    internal void AttachTo(SceneObject parent)
+    /*internal void AttachTo(SceneObject parent)
     {
         if(parent != null && Services == null)
         {
             Services = parent.Services;
         }
 
-        if((Parent) != parent)
+        if(Parent != parent)
         {
             Detach();
             Parent = parent;
@@ -165,7 +166,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
     {
         if(detachChildren && Parent != null)
         {
-            (Parent).DetachChild(this);
+            Parent.DetachChild(this);
         }
         Parent = null;
     }
@@ -240,43 +241,30 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
             node.Detach(false);
         }
-    }
+    }*/
 
-    public Scene GetParentScene() 
+    protected Scene GetParentScene() 
     {
-        return (this is Scene scene) ? scene : (Parent).GetParentScene();
+        return (this is Scene scene) ? scene : Parent?.GetParentScene();
     } 
-
-    bool _init;
 
     public virtual void Update(GameTime gameTime)
     {
-        if(!_init)
-        {
-            foreach(var child in Children)
-            {
-                child.OffsetPosition   = this.Position;
-                child.OffsetRotation   = this.Rotation;
-                child.OffsetScale      = this.Scale;
-            }
-
-            _init = true;
-        }
         if(!Enabled) return;
         
         foreach(var behavior in Behaviors)
         {
-            (behavior).Update(gameTime);
+            behavior.Update(gameTime);
         }
 
         foreach(var child in Children)
         {
-            (child).Update(gameTime);
+            child.Update(gameTime);
         }
 
         foreach(var component in Components)
         {
-            (component).Update(gameTime);
+            component.Update(gameTime);
         }        
     }
 
@@ -286,17 +274,17 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
         foreach(var behavior in Behaviors)
         {
-            (behavior).Draw(gameTime);
+            behavior.Draw(gameTime);
         }
 
         foreach(var component in Components)
         {
-            (component).Draw(gameTime);
+            component.Draw(gameTime);
         }
         
         foreach(var child in Children)
         {
-            (child).Draw(gameTime);
+            child.Draw(gameTime);
         }
     }
 
@@ -314,13 +302,24 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, INotifyR
 
         foreach(var child in Children)
         {
-            (child).Dispose();
+            child.Dispose();
         }
+
+        foreach(var component in Components)
+        {
+            component.Dispose();
+        }
+
+        _tags = null;    
+        _behaviors = null; 
+        _children = null;
+        _components = null;
     }
 
-    public void OnReload()
+    public void Reset()
     {
         Dispose();
+        Initialize();
     }
 }  
 

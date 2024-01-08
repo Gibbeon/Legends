@@ -7,7 +7,8 @@ using System.Reflection;
 using System.Threading;
 using Legends.Engine.Content;
 using Microsoft.Xna.Framework.Content;
-namespace Legends.Engine;
+
+namespace Legends.Engine.Content;
 
 public static class ContentManagerExtensions
 {
@@ -51,8 +52,8 @@ public static class ContentManagerExtensions
     {
         if(contentManager.GetLoadedAssets().TryGetValue(name.Replace("\\", "/"), out object result))
         {
-            if(result is INotifyReload reloaded) 
-                reloaded.OnReload();
+            if(result is IInitalizable reloaded) 
+                reloaded.Reset();
 
             while(true)
             {

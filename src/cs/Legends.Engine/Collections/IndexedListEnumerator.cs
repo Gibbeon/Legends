@@ -18,7 +18,7 @@ public struct IndexedListEnumerator<TType> : IEnumerator<TType>
     public bool MoveNext()
     {
         _current++;
-        return (_current < _list.Count);
+        return _current < _list.Count;
     }
 
     public void Reset()

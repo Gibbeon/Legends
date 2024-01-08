@@ -9,7 +9,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 {
     private float     _rotation;        
     private Vector2   _position;        
-    private Vector2   _scale;
+    private Vector2   _scale = Vector2.One;
     private float     _offsetRotation;        
     private Vector2   _offsetPosition;        
     private Vector2   _offsetScale;
@@ -18,7 +18,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     private Vector2   _originNormalized;
 
     public Vector2 Position             { get => OffsetPosition + _position; set => SetPosition(value); }
-    public Vector2 Scale                { get => OffsetScale    * (_scale + Vector2.One) ; set => SetScale(value); }
+    public Vector2 Scale                { get => OffsetScale    * _scale; set => SetScale(value); }
     public float   Rotation             { get => OffsetRotation + _rotation; set => SetRotation(value); }   
     public Size2   Size                 { get => _size * Scale; set => SetSize(value); }
     public Vector2 Origin               { get => _originNormalized * Size; set => _originNormalized = Size != Size2.Empty ? value / Size : Vector2.Zero; }
@@ -84,7 +84,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 
     public virtual void SetScale(Vector2 scale)
     {
-        _scale = (scale - Vector2.One);
+        _scale = scale;
         HasChanged = true;
     }
 
@@ -114,7 +114,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
                 * Matrix2.CreateTranslation(-(Origin / Scale))
                 * Matrix2.CreateRotationZ(Rotation)
                 * Matrix2.CreateScale(Scale)
-                * Matrix2.CreateTranslation((Origin / Scale));
+                * Matrix2.CreateTranslation(Origin / Scale);
 
             HasChanged = false;
         }
@@ -171,7 +171,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
             point += Position;
         }
 
-        var rect = new RectangleF((Position - ((Vector2)Origin) * Scale), (Vector2)Size);
+        var rect = new RectangleF(Position - ((Vector2)Origin) * Scale, (Vector2)Size);
 
         return  point.X     >= rect.Left
                 && point.X  <= rect.Right 

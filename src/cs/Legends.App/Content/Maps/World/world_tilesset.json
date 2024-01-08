@@ -1,0 +1,13 @@
+{
+    "$type": "Legends.Engine.Graphics2D.TileSet, Legends.Engine",
+    "textureRegion": {
+        "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
+        "texture": "Mapos/World/world.png",
+        "slice": "16, 16",
+        "position": "16, 16",
+        "size": "48, 128"
+    },
+    "tags": {
+        "tag": [0]
+    }
+}

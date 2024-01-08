@@ -110,18 +110,33 @@ public class ScaleAnimationData : AnimationData
     }
 }
 
-public class Keyframe
+public interface IKeyFrame
+{
+    public float    Duration    { get; }
+}
+
+public struct SpriteKeyframe : IKeyFrame
 {
     public int      Frame       { get; set; }
     public float    Duration    { get; set; }
-    
-    public Keyframe()
-    {
+}
 
+public class SpriteKeyframeAnimationData : KeyframeAnimationData<SpriteKeyframe>
+{
+    protected override void UpdateFrame(AnimationChannel channel, SpriteKeyframe current)
+    {
+        channel
+            .Controller
+            .Parent
+            .GetComponent<Sprite>()
+            .TextureRegion
+            .Get()
+            .Frame = current.Frame;
     }
 }
 
-public class SpriteKeyframeAnimationData : AnimationData
+public abstract class KeyframeAnimationData<TKeyframe> : AnimationData
+    where TKeyframe : IKeyFrame
 {
     protected class KeyState
     {
@@ -131,7 +146,7 @@ public class SpriteKeyframeAnimationData : AnimationData
         public int      CurrentIndex;
     }
 
-    public Keyframe[] Frames { get; set; }
+    public TKeyframe[] Frames { get; set; }
 
     public override void InitializeChannel(AnimationChannel channel) 
     {
@@ -155,14 +170,16 @@ public class SpriteKeyframeAnimationData : AnimationData
 
             if(current != null)
             {
-                channel.Controller.Parent.GetComponent<Sprite>().TextureRegion.Get().Frame = current.Frame;
+                UpdateFrame(channel, current);
             }
         }
     }
 
-    protected Keyframe GetFrame(int index)
+    protected abstract void UpdateFrame(AnimationChannel channel, TKeyframe current);
+
+    protected TKeyframe GetFrame(int index)
     {
-        if(index < 0 || index >= Frames.Length) return null;
+        if(index < 0 || index >= Frames.Length) return default;
         return Frames[index];
     }
 

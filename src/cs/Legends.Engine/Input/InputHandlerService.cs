@@ -5,7 +5,15 @@ using MonoGame.Extended;
 
 namespace Legends.Engine.Input;
 
-public class InputHandlerService : IUpdate, IInputHandlerService
+public interface IInputHandlerService : IUpdate
+{
+    InputManager Current { get; }
+    void Push(InputManager manager);
+    void Remove(InputManager manager);
+}
+
+
+public class InputHandlerService : IInputHandlerService
 {
     public IServiceProvider Services { get; private set; }
 

@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
-namespace Legends.Engine;
+namespace Legends.Engine.Graphics2D;
 
 public class RenderState : IComparable<RenderState>
 {

@@ -1,0 +1,14 @@
+{
+    "$type": "Legends.Engine.Graphics2D.Map, Legends.Engine",
+    "name": "WorldMap",
+    "tileSet": {
+        "texture": "Maps/World/world_tiles.png",
+        "tileSize": "32, 32"
+    },
+    "tileCount": "128, 128",
+    "behaviors": [
+        {
+            "$compile": "Maps/World/GenerateWorldBehavior.cs"            
+        }
+    ]
+}

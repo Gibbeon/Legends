@@ -19,51 +19,52 @@ public class Scene : SceneObject
 
     [JsonProperty("camera")]
     protected Ref<Camera> CameraReference
-    { get => _camera; set {_camera = value; SetCamera(value.Get()); }}
-
-    protected Scene() : this(null)
-    {
-
+    { 
+        get => _camera; 
+        set { _camera = value; SetCamera(value.Get()); }
     }
 
-    public Scene(IServiceProvider services) : this (services, null)
+    protected Scene() : this(null, null)
     {
 
     }
 
     public Scene(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-        _camera = new Camera(services, this);
+
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+
+        _camera ??= new Camera(Services, this);
         Camera.Initialize();
     }
 
     public virtual void SetCamera(Camera camera)
     {
-        if(Camera != camera)
-        {
-            if(Camera != null)
-            {
-                (Camera).Dispose();                    
-            }
-            _camera = camera;
-        }
+        if(Camera == camera) return;
+        Camera?.Dispose();                    
+        _camera = camera;
     }
 
     public override void Draw(GameTime gameTime)
     {        
         base.Draw(gameTime);
-        (Camera).Draw(gameTime);
+        Camera.Draw(gameTime);
     }
 
     public override void Update(GameTime gameTime)
     {
         base.Update(gameTime);
-        (Camera).Update(gameTime);
+        Camera.Update(gameTime);
     }
 
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
+        Camera?.Dispose();    
         base.Dispose();
     }
 }

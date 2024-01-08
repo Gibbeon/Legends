@@ -142,6 +142,37 @@
 /build:Sprites\Plot.json
 
 
+#begin Maps\World\GenerateWorldBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Maps\World\GenerateWorldBehavior.cs
+
+
+#begin Maps\World\map.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Maps\World\map.json
+
+
+#begin Maps\World\world.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Maps\World\world.png
+
+
+#begin Maps\World\world_tilesset.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Maps\World\world_tilesset.json
+
+
 #begin Scenes\TitleScreen\Animations.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor

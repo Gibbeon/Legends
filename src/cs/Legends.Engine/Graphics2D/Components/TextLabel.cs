@@ -21,7 +21,7 @@ public enum VerticalAlignment
     Middle,
     Bottom
 }
-public class TextLabel : Component<TextLabel>, IBitmapFontBatchDrawable
+public class TextLabel : Component, IBitmapFontBatchRenderable
 {
     public Color Color { get; set; }
 
@@ -40,28 +40,27 @@ public class TextLabel : Component<TextLabel>, IBitmapFontBatchDrawable
     public VerticalAlignment VerticalAlignment { get; set; }
     
     [JsonIgnore]
-    public bool Visible   => Parent != null && (Parent).Visible;
+    public bool Visible   => Parent.Visible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent != null ? (Parent).Position + new Vector2(GetHorizontalOffset(), GetVerticalOffset()) : Vector2.Zero;
+    public Vector2 Position => Parent.Position + new Vector2(GetHorizontalOffset(), GetVerticalOffset());
 
     [JsonIgnore]
-    public float Rotation   => Parent != null ? (Parent).Rotation : 0.0f;
+    public float Rotation   => Parent.Rotation;
     
     [JsonIgnore]
-    public Vector2 Scale    => Parent != null ? (Parent).Scale : Vector2.One;
+    public Vector2 Scale    => Parent.Scale;
     
     [JsonIgnore]
-    public Vector2 Origin   => Parent != null ? (Parent).Origin + new Vector2(GetHorizontalOffset(), GetVerticalOffset()) : Vector2.Zero;
+    public Vector2 Origin   => Parent.Origin + new Vector2(GetHorizontalOffset(), GetVerticalOffset());
     
     [JsonIgnore]
-    public IViewState ViewState => (Parent).GetParentScene().Camera;
-    
-    [JsonIgnore]
-    public Rectangle SourceBounds => new(Position.ToPoint(), SourceData == null ? Point.Zero : (Point)SourceData.MeasureString(Text));
+    public IViewState ViewState => Parent.Scene.Camera;
 
     [JsonIgnore]
     public BitmapFont SourceData => (BitmapFont)Font;
+
+    public Rectangle DestinationBounds => new(Position.ToPoint(), SourceData == null ? Point.Zero : (Point)SourceData.MeasureString(Text));
 
     public TextLabel() : this(null, null)
     {
@@ -114,5 +113,15 @@ public class TextLabel : Component<TextLabel>, IBitmapFontBatchDrawable
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
+    }
+
+    public override void Initialize()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Reset()
+    {
+        throw new NotImplementedException();
     }
 }

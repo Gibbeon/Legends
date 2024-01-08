@@ -1,5 +1,7 @@
 using System;
 
+namespace Legends.Engine.Resolvers;
+
 public struct BoundedValue<TType>
     where TType : IComparable<TType>
 {

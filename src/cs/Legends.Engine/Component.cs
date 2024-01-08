@@ -1,15 +1,19 @@
 ﻿using System;
-using Assimp;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using MonoGame.Extended;
 
 namespace Legends.Engine;
 
-public abstract class Component<TType> : IComponent
-    where TType : IComponent
+public interface IComponent: IUpdate, IInitalizable
 {
-    //public Type ComponentType => typeof(TType);
-    
+    [JsonIgnore]
+    SceneObject Parent { get; }
+    void Draw(GameTime gameTime);
+}
+
+public abstract class Component : IComponent
+{    
     [JsonIgnore]
     public IServiceProvider Services { get; private set; }
     
@@ -22,36 +26,11 @@ public abstract class Component<TType> : IComponent
         Parent = parent;
     }
     
-    public abstract void Update(GameTime gameTime);
+    public virtual void Update(GameTime gameTime) {}
 
     public virtual void Draw(GameTime gameTime) {}
     
-    public virtual void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
-
-    public virtual void AttachTo(SceneObject parent)
-    {
-        if(parent != null && Services == null)
-        {
-            Services = parent.Services;
-        }
-
-        if(Parent != parent)
-        {
-            Detach();
-            Parent = parent;
-            parent?.AttachComponent(this);
-        }
-    }
-
-    public virtual void Detach(bool detachChildren = true)
-    {
-        if(detachChildren)
-        {
-            (Parent).DetachComponent<TType>();
-        }
-        Parent = null;
-    }
+    public abstract void Dispose();
+    public abstract void Initialize();
+    public abstract void Reset();
 }

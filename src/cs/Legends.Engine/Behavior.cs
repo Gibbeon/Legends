@@ -8,7 +8,7 @@ public interface IBehavior : IComponent
     
 }
 
-public abstract class Behavior : Component<IBehavior>, IBehavior
+public abstract class Behavior : Component, IBehavior
 {
     protected Behavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {

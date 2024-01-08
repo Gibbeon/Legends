@@ -9,14 +9,14 @@ using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D;
 
-public class Map : Component<Map>, ISelfDrawable
+public class Map : Component, ISelfRenderable
 {
     public Size2        TileCount { get; set; }
     public TileSet      TileSet { get; set; }
     public ushort[]     Tiles { get; set; }
     
     [JsonIgnore]
-    public bool NeedUpdate { get; set; }
+    protected bool NeedUpdate { get; set; }
 
     [JsonIgnore]
     public bool Visible => Parent.Visible;
@@ -34,8 +34,8 @@ public class Map : Component<Map>, ISelfDrawable
 
     public void CreateMapFromTexture()
     {
-        var x_count = ((~TileSet.Texture).Width / TileSet.TileSize.Width);        
-        var y_count = ((~TileSet.Texture).Height / TileSet.TileSize.Height);
+        var x_count = TileSet.TextureRegion.Size.Width /    TileSet.TileSize.Width;        
+        var y_count = TileSet.TextureRegion.Size.Height /   TileSet.TileSize.Height;
 
         TileCount = new Size2(x_count, y_count);
 
@@ -45,14 +45,14 @@ public class Map : Component<Map>, ISelfDrawable
         {
             for(var x = 0; x < TileCount.Width; x++)
             {
-                Tiles[(int)(y * TileCount.Width) + x] = (ushort)(x % x_count + (y % y_count) * x_count);
+                Tiles[(int)(y * TileCount.Width) + x] = (ushort)(x % x_count + y % y_count * x_count);
             }
         }
 
         Initialize();
     }
 
-    public void Initialize()
+    public override void Initialize()
     {   
         Parent.Size = new Size2(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
         Parent.OriginNormalized = new Vector2(.5f, .5f);
@@ -76,7 +76,7 @@ public class Map : Component<Map>, ISelfDrawable
         
         if (_currentEffect is BasicEffect textureEffect)
         {
-            textureEffect.Texture = TileSet.Texture;
+            textureEffect.Texture = TileSet.TextureRegion.Texture;
         }
 
         NeedUpdate = false;
@@ -98,12 +98,12 @@ public class Map : Component<Map>, ISelfDrawable
 
     public void DrawImmediate(GameTime gameTime)
     {
-        (_currentEffect as IEffectMatrices).View        = Parent.GetParentScene().Camera.View;
-        (_currentEffect as IEffectMatrices).Projection  = Parent.GetParentScene().Camera.Projection;
+        (_currentEffect as IEffectMatrices).View        = Parent.Scene.Camera.View;
+        (_currentEffect as IEffectMatrices).Projection  = Parent.Scene.Camera.Projection;
         (_currentEffect as IEffectMatrices).World = 
             Matrix.Multiply(
                 Matrix.CreateTranslation(-Parent.Origin.X, -Parent.Origin.Y, 0) * Parent.LocalMatrix, 
-                Parent.GetParentScene().Camera.World);
+                Parent.Scene.Camera.World);
 
         var rasterizerState = new RasterizerState() {
             CullMode = CullMode.CullCounterClockwiseFace,
@@ -124,7 +124,7 @@ public class Map : Component<Map>, ISelfDrawable
         }
     }
 
-    public IEnumerable<uint> BuildIndicies()
+    protected IEnumerable<uint> BuildIndicies()
     {
         for(int y = 0; y < TileCount.Height; y++)
         {
@@ -140,7 +140,7 @@ public class Map : Component<Map>, ISelfDrawable
         }
     }
 
-    public IEnumerable<VertexPositionColorTexture> BuildVerticies()
+    protected IEnumerable<VertexPositionColorTexture> BuildVerticies()
     {
         for(int y = 0; y < TileCount.Height; y++)
         {
@@ -177,6 +177,10 @@ public class Map : Component<Map>, ISelfDrawable
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
-        base.Dispose();
+    }
+
+    public override void Reset()
+    {
+
     }
 }

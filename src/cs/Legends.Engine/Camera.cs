@@ -2,7 +2,8 @@ using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using System;
-using System.IO.Pipes;
+using Legends.Engine.Graphics2D;
+using Legends.Engine.Resolvers;
 
 namespace Legends.Engine;
 
@@ -11,19 +12,13 @@ public class Camera : SceneObject, IViewState
     protected BoundedValue<float> _zoomBounds;
     protected Matrix _projection;
     protected Matrix _world;
-    
-    [JsonIgnore]
-    public BoundedValue<float> ZoomBounds => _zoomBounds;
-    
+    public BoundedValue<float> ZoomBounds { get => _zoomBounds; set => _zoomBounds = value; }
     [JsonIgnore]
     public Matrix View => _world;
-    
     [JsonIgnore]
     public Matrix Projection => _projection;
-    
     [JsonIgnore]
     public Matrix World => LocalMatrix;
-    
     [JsonIgnore]
     public IViewState ViewState => new ViewState() { View = View, Projection = Projection, World = World };
 
@@ -35,39 +30,35 @@ public class Camera : SceneObject, IViewState
     public Camera(IServiceProvider services, Scene scene) : base(services, scene)
     {
         _zoomBounds = new BoundedValue<float>(float.Epsilon, float.MaxValue);
-        Detach();
     }
 
-    public void Initialize()
+    public override void Initialize()
     {
+        base.Initialize();
+
         OriginNormalized = new Vector2(.5f, .5f);
-        SetSize(0, 0);
+        SetViewportDefault();
     }
 
-    public void Setup(IServiceProvider services, Scene parent)
+    protected void SetViewportDefault()
     {
-        Services = services;
-        Parent = parent;
+        SetSize(new Size2() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
+    }
+
+    internal override void UpdateMatrix()
+    {
+        if(HasChanged) {
+            var adjustedSize = (Size2)(this.Size / Scale);
+
+            _world = Matrix.CreateTranslation(adjustedSize.Width / 2, adjustedSize.Height / 2, 0.0f);
+            _projection = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
+            base.UpdateMatrix();
+        }
     }
 
     public override void SetSize(Size2 size)
     {
-        if(size == Size2.Empty)
-        {
-            if(Services != null)
-            {
-                size = new Vector2(Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height);
-            }
-            else
-            {
-                return;
-            }
-        }
-
         base.SetSize(size);
-        
-        _world      = Matrix.CreateTranslation(Size.Width / 2, Size.Height / 2, 0.0f);
-        _projection = Matrix.CreateOrthographicOffCenter(0f, Size.Width, Size.Height, 0f, -1f, 0f);
         HasChanged = true;
     }
 
@@ -78,11 +69,6 @@ public class Camera : SceneObject, IViewState
             _zoomBounds.GetValue(scale.X),
             _zoomBounds.GetValue(scale.Y)
         ));
-
-        var adjustedSize = (Size2)(this.Size / (Scale));
-
-        _world = Matrix.CreateTranslation(adjustedSize.Width / 2, adjustedSize.Height / 2, 0.0f);
-        _projection = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
     }
 
     public void LookAt(Vector2 vector)

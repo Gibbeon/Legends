@@ -2,11 +2,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 
-namespace Legends.Engine;
+namespace Legends.Engine.Graphics2D;
 
-public interface IBatchDrawable : IDrawable
+
+public interface ISpriteRenderable: IRenderable
 {
-    Rectangle SourceBounds { get; }
+    Rectangle DestinationBounds { get; }
     Vector2 Position { get; }
     float Rotation { get; }
     Vector2 Scale { get; }
@@ -17,7 +18,7 @@ public interface IBatchDrawable : IDrawable
     IViewState ViewState { get; }
 }
 
-public interface IBatchDrawable<TType> : IBatchDrawable
+public interface ISpriteRenderable<TType> : ISpriteRenderable
 {
     TType SourceData { get; }
 }
