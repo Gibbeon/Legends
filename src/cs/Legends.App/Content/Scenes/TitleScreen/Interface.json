@@ -1,18 +1,26 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "TitleScreen",
-    "components": [
+    "children": [
         {
-            "$type":    "Legends.Engine.Graphics2D.TextLabel, Legends.Engine",
-            "font":     "Fonts/Sensation",
-            "text":     "Press ESC to Exit or ENTER to start",
-            "color":    "255, 255, 255, 255",
-            "halign":   "Center",
-            "valign":   "Middle"
-        },
-        {
-            "$type": "Legends.Engine.Animation.AnimationController, Legends.Engine",
-            "animations": "Scenes/TitleScreen/Animations.json"
+            "name": "child1",
+            "position": "0, 50",
+            "children": [
+                {
+                    "name": "child2",
+                    "position": "0, -50",
+                    "components": [
+                        {
+                            "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",
+                            "font":     "Fonts/Sensation",
+                            "text":     "Press ESC to Exit or ENTER to start",
+                            "color":    "255, 255, 255, 255",
+                            "halign":   "Center",
+                            "valign":   "Middle"
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "behaviors": [

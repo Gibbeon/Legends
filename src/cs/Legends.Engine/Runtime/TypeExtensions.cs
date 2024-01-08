@@ -304,8 +304,12 @@ public static class TypeExtensions
 
     public static IEnumerable<ConstructorInfo> MatchConstructorSignature(this IEnumerable<ConstructorInfo> methods, params Type[] parameterTypes)
     {
-        return methods.Where(n =>   n.GetParameters().Length == parameterTypes?.Length 
-                                &&  n.GetParameters().All( m => parameterTypes.Any(x => x != null && x.IsAssignableTo(m.ParameterType))));
+        return methods.Where(n =>   n.GetParameters().Length >= parameterTypes.Length
+                                &&  n.GetParameters().All( m => 
+                                        parameterTypes.Any(x => 
+                                                x != null 
+                                            &&  x.IsAssignableTo(m.ParameterType))
+                                            ||  m.Attributes.HasFlag(ParameterAttributes.Optional)));
 
     }
 
@@ -314,9 +318,10 @@ public static class TypeExtensions
         if(type.GetConstructors()
             .MatchConstructorSignature(parameters.Select(n => n == null ? typeof(void) : n.GetType()).ToArray())
             .SingleOrDefault() is ConstructorInfo ctor)
-            return ctor.Invoke(parameters);
-        
-        //if(parameters != null && parameters.Length > 0) Console.Write("Constructor params supplied but not used");
+        {
+            return ctor.Invoke(Enumerable.Concat(parameters, ctor.GetParameters().Skip(parameters.Length).Select(n => Type.Missing)).ToArray());
+        }
+            
         return Activator.CreateInstance(type);
     }
 }

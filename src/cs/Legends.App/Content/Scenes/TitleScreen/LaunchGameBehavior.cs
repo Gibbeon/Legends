@@ -18,24 +18,20 @@ public class LaunchGameBehavior : Behavior
     }
     public LaunchGameBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-
     }
 
     public override void Update(GameTime gameTime)
     {
-        if(_commands != null)
+        foreach(var command in _commands.EventActions)
         {
-            foreach(var command in _commands.EventActions)
+            switch(command.Name)
             {
-                switch(command.Name)
-                {
-                    case "START":   
-                        Services.Get<IGameManagementService>().ScreenManager.LoadScreen(new MapScreen(Services), new FadeTransition(Services.GetGraphicsDevice(), Color.Black));
-                        _commands.Enabled = false;
-                    break;    
-                }
-            }  
-        }
+                case "START":   
+                    Services.Get<IGameManagementService>().ScreenManager.LoadScreen(new MapScreen(Services), new FadeTransition(Services.GetGraphicsDevice(), Color.Black));
+                    _commands.Enabled = false;
+                break;    
+            }
+        }  
     }    
     
     public override void Dispose()
@@ -52,8 +48,7 @@ public class LaunchGameBehavior : Behavior
 
     public override void Reset()
     {
-        _commands?.Dispose();
-        _commands = default;
+        _commands.Reset();
         Initialize();
     }
 }

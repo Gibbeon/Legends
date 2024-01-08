@@ -21,7 +21,7 @@ public class Scene : SceneObject
     protected Ref<Camera> CameraReference
     { 
         get => _camera; 
-        set { _camera = value; SetCamera(value.Get()); }
+        set { _camera = value; SetCamera(value); }
     }
 
     protected Scene() : this(null, null)
@@ -29,7 +29,7 @@ public class Scene : SceneObject
 
     }
 
-    public Scene(IServiceProvider services, SceneObject parent) : base(services, parent)
+    public Scene(IServiceProvider services, SceneObject parent = default) : base(services, parent)
     {
 
     }
@@ -37,15 +37,17 @@ public class Scene : SceneObject
     public override void Initialize()
     {
         base.Initialize();
-
         _camera ??= new Camera(Services, this);
         Camera.Initialize();
     }
 
-    public virtual void SetCamera(Camera camera)
+    public virtual void SetCamera(Ref<Camera> camera)
     {
-        if(Camera == camera) return;
-        Camera?.Dispose();                    
+        if(_camera != null) 
+        {
+            (~_camera).Dispose(); 
+        }
+                          
         _camera = camera;
     }
 

@@ -47,6 +47,7 @@ public class RenderService : IRenderService
         }
 
         _layers.Add(new RenderLayer(this) { ClearColor = Color.Black });
+        _layers[0].Initialize();
     }
 
     public void Draw(GameTime gameTime)

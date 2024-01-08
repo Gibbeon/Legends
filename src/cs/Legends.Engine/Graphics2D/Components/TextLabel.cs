@@ -3,8 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System;
-using Microsoft.Xna.Framework.Content;
-using Legends.Engine.Content;
 
 namespace Legends.Engine.Graphics2D.Components;
 
@@ -59,7 +57,8 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
 
     [JsonIgnore]
     public BitmapFont SourceData => (BitmapFont)Font;
-
+    
+    [JsonIgnore]
     public Rectangle DestinationBounds => new(Position.ToPoint(), SourceData == null ? Point.Zero : (Point)SourceData.MeasureString(Text));
 
     public TextLabel() : this(null, null)
@@ -84,7 +83,7 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
         };
     }
 
-        public float GetHorizontalOffset()
+    public float GetHorizontalOffset()
     {
         return HorizontalAlignment switch
         {
@@ -93,11 +92,6 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
             HorizontalAlignment.Center => -((BitmapFont)Font).MeasureString(Text).Width * Scale.Y / 2,
             _ => 0,
         };
-    }
-
-    public override void Update(GameTime gameTime)
-    {
-
     }
 
     public override void Draw(GameTime gameTime)
@@ -116,12 +110,12 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
     }
 
     public override void Initialize()
-    {
-        throw new NotImplementedException();
+    { 
+
     }
 
     public override void Reset()
-    {
-        throw new NotImplementedException();
+    { 
+
     }
 }

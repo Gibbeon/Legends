@@ -48,7 +48,7 @@ public class AnimationController : Component
 
     public override void Initialize()
     {
-        GenerateChannels();
+        _channels = GenerateChannels();
     }
 
     public override void Reset()

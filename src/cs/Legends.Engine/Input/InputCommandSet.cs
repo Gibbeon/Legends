@@ -70,6 +70,13 @@ public class InputCommandSet
                             && _manager.KeyboardListener.IsPressed(modifers));
     }
 
+    public void Reset()
+    {
+        Enabled = false;
+        _eventActions.Clear();
+        _eventListeners.Clear();
+    }
+
     public void Dispose()
     {
         Enabled = false;

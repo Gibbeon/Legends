@@ -5,6 +5,7 @@ using MonoGame.Extended.Input.InputListeners;
 using Legends.Engine;
 using System;
 using Legends.Engine.Content;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Legends.App.Screens;
 
@@ -17,6 +18,13 @@ public class MapScreen : Screen
     public MapScreen(IServiceProvider services)
     {
         _services = services;
+        _scene = _services.GetContentManager().GetRef<Scene>("Maps/WorldMap");
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+
         _input = new InputManager(_services, new KeyboardListenerSettings()
         {
             InitialDelayMilliseconds = 0,
@@ -24,7 +32,7 @@ public class MapScreen : Screen
             RepeatPress = true
         });
 
-        _scene = _services.GetContentManager().GetRef<Scene>("Maps/WorldMap");
+        (~_scene).Initialize();
     }
 
     public override void Draw(GameTime gameTime)

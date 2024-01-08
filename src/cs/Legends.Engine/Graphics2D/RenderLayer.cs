@@ -188,5 +188,6 @@ public class RenderLayer : IRenderLayer
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
     }
 }
