@@ -5,14 +5,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
 using Legends.Engine.Runtime;
 using Legends.Engine.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using Newtonsoft.Json;
-using SharpFont.Bdf;
 
 namespace Legends.Engine.Content;
 
