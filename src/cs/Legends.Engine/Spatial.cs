@@ -24,11 +24,25 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public Vector2 Origin               { get => _originNormalized * Size; set => _originNormalized = Size != Size2.Empty ? value / Size : Vector2.Zero; }
 
     [JsonIgnore]
-    internal float OffsetRotation       { get => _offsetRotation; set => _offsetRotation = value;}     
+    internal float OffsetRotation       
+    { 
+        get => _offsetRotation; 
+        set { _offsetRotation = value; HasChanged = true; }
+    }      
+
     [JsonIgnore]
-    internal Vector2 OffsetPosition     { get => _offsetPosition; set => _offsetPosition = value;}             
+    internal Vector2 OffsetPosition     
+    { 
+        get => _offsetPosition; 
+        set { _offsetPosition = value; HasChanged = true; }
+    }
+
     [JsonIgnore]
-    internal Vector2 OffsetScale        { get => _offsetScale; set => _offsetScale = value; }     
+    internal Vector2 OffsetScale        
+    { 
+        get => _offsetScale; 
+        set { _offsetScale = value; HasChanged = true; }
+    }     
     [JsonIgnore]
     public Vector2 Center               { get => Position + (Vector2)Size / 2; }
     [JsonIgnore]
@@ -43,7 +57,8 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public Spatial()
     {     
         _offsetScale = Vector2.One;
-        UpdateMatrix();
+        HasChanged = true;
+        OnChanged();
     }
     
     public void Move(float x, float y)
@@ -106,7 +121,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         OriginNormalized = origin;
     }
 
-    internal virtual void UpdateMatrix()
+    protected virtual void OnChanged()
     {
         if (HasChanged)
         {
@@ -146,7 +161,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 
     protected virtual Matrix GetLocalMatrix()
     {
-        UpdateMatrix();
+        OnChanged();
         return _localMatrix;
     }
 

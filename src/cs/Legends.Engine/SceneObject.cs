@@ -16,6 +16,8 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
     private IList<Ref<SceneObject>> _children;
     private IList<Ref<IComponent>>  _components;
 
+    private Scene _scene;
+
     private bool _enabled = true;
     private bool _visible = true;
 
@@ -27,7 +29,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
 
         
     [JsonIgnore]
-    public Scene Scene => GetParentScene();
+    public Scene Scene => _scene ??= GetParentScene();
     
     public string Name { get; protected set; }  
 
@@ -151,101 +153,29 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
         }
     }
 
-    /*internal void AttachTo(SceneObject parent)
-    {
-        if(parent != null && Services == null)
-        {
-            Services = parent.Services;
-        }
+    protected virtual void Resize()
+    {        
+        var min_x = Children.Select(n => n.Position.X).Min();
+        var min_y = Children.Select(n => n.Position.Y).Min();
+        var max_x = Children.Select(n => n.Position.X + Size.Width).Max();
+        var max_y = Children.Select(n => n.Position.Y + Size.Height).Max();
 
-        if(Parent != parent)
+        var newSize = new Size2(min_x + max_x, min_y + max_y);
+        if(newSize != Size)
         {
-            Detach();
-            Parent = parent;
-            parent?.AttachChild(this);
-        }
-    }
-
-    internal void Detach(bool detachChildren = true)
-    {
-        if(detachChildren && Parent != null)
-        {
-            Parent.DetachChild(this);
-        }
-        Parent = null;
-    }
-
-    public void AttachBehavior(IBehavior behavior)
-    {
-        if(!Behaviors.Contains(behavior))
-        {
-            _behaviors.Add((Ref<IBehavior>)behavior);
+            Size = newSize;            
+            Parent?.Resize();
         }
     }
 
-    public void DetachBehavior<TType>(TType behavior)
-        where TType : IBehavior
+    protected override void OnChanged()
     {
-        if(behavior != null)
+        if(HasChanged)
         {
-            _behaviors.Remove(behavior);
+            base.OnChanged();
+            Parent?.Resize();
         }
     }
-
-    public void AttachComponent<TType>(TType component)
-        where TType : IComponent
-    {
-        if(!Components.Contains(component))
-        {
-            _components.Add(component);
-        }
-    }
-
-    public void DetachComponent<TType>()
-        where TType : IComponent
-    {
-        DetachComponent(_components.OfType<TType>().SingleOrDefault());
-    }
-
-    protected void DetachComponent<TType>(TType component)
-        where TType : IComponent
-    {
-        if(component != null)
-        {
-            _components.Remove(component);
-        }
-    }
-
-    public void AttachChild(SceneObject node, bool relative = false)
-    {
-        if(!Children.Contains(node))
-        {
-            _children.Add(node);
-            node.AttachTo(this);
-
-            if(relative)
-            {
-                node.OffsetPosition   = this.Position;
-                node.OffsetRotation   = this.Rotation;
-                node.OffsetScale      = this.Scale;
-            }
-        }
-    }
-
-    public void DetachChild(SceneObject node, bool relative = false)
-    {
-        if(_children.Remove(node))
-        {
-            if(relative)
-            {
-                node.OffsetPosition   = this.Position;
-                node.OffsetRotation   = this.Rotation;
-                node.OffsetScale      = this.Scale;
-            }
-
-            node.Detach(false);
-        }
-    }*/
 
     protected Scene GetParentScene() 
     {
@@ -269,7 +199,9 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
         foreach(var component in Components)
         {
             component.Update(gameTime);
-        }        
+        }   
+
+        if(HasChanged) OnChanged();   
     }
 
     public virtual void Draw(GameTime gameTime)

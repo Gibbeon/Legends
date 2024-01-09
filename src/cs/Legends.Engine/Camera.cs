@@ -45,14 +45,14 @@ public class Camera : SceneObject, IViewState
         SetSize(new Size2() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
     }
 
-    internal override void UpdateMatrix()
+    protected override void OnChanged()
     {
         if(HasChanged) {
             var adjustedSize = (Size2)(this.Size / Scale);
 
             _world = Matrix.CreateTranslation(adjustedSize.Width / 2, adjustedSize.Height / 2, 0.0f);
             _projection = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
-            base.UpdateMatrix();
+            base.OnChanged();
         }
     }
 

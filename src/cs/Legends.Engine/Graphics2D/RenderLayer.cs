@@ -5,6 +5,7 @@ using System.Linq;
 using MonoGame.Extended.BitmapFonts;
 using System;
 using MonoGame.Extended.Sprites;
+using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -124,7 +125,6 @@ public class RenderLayer : IRenderLayer
                         Vector2.Zero,//drawable.Origin,
                         spriteBatchDrawable.Effect,
                         0);
-
                 }
                 else if (drawable is IBitmapFontBatchRenderable fontDrawable)
                 {
