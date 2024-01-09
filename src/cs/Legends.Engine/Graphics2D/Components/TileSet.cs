@@ -9,15 +9,16 @@ namespace Legends.Engine.Graphics2D.Components;
 
 public class TileSet
 {
+    [JsonIgnore]
     public Size2            TileSize => TextureRegion.Slice;
+
+    [JsonIgnore]
     public TextureRegion    TextureRegion => TextureRegionReference.Get();
  
     [JsonProperty(nameof(TextureRegion))]
     protected Ref<TextureRegion> TextureRegionReference { get; set; }
  
     public IDictionary<string, ushort[]> Tags { get; set; }
-
-    public ushort[] Index { get; }
 
     private uint _stride;
     private float _uvwidth;

@@ -1,5 +1,5 @@
 {
-    "$type": "Legends.Engine.Graphics2D.Map, Legends.Engine",
+    "$type": "Legends.Engine.Graphics2D.Components.Map, Legends.Engine",
     "name": "Mappy the Map",
     "visible": false,
     "tileSet": {

@@ -1,5 +1,5 @@
 {
-    "$type": "Legends.Engine.Graphics2D.TileSet, Legends.Engine",
+    "$type": "Legends.Engine.Graphics2D.Components.TileSet, Legends.Engine",
     "textureRegion": {
         "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
         "texture": "Mapos/World/world.png",

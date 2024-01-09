@@ -195,18 +195,21 @@ public static class ContentReaderExtensions
                 try {
                     foreach(var member in ContentHelpers.GetContentMembers(derivedType))
                     {
-                        if(member is PropertyInfo property)
+                        if(reader.Read7BitEncodedInt() == 1)
                         {
-                            using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", property.Name))
+                            if(member is PropertyInfo property)
                             {
-                                property.SetValue(instance, reader.ReadField(property.GetValue(instance), property.PropertyType));
+                                using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", property.Name))
+                                {
+                                    property.SetValue(instance, reader.ReadField(property.GetValue(instance), property.PropertyType));
+                                }
                             }
-                        }
-                        if(member is FieldInfo field)
-                        {
-                            using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", field.Name))
+                            if(member is FieldInfo field)
                             {
-                                field.SetValue(instance, reader.ReadField(field.GetValue(instance), field.FieldType));
+                                using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", field.Name))
+                                {
+                                    field.SetValue(instance, reader.ReadField(field.GetValue(instance), field.FieldType));
+                                }
                             }
                         }
                     }  

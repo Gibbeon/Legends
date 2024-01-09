@@ -1,5 +1,6 @@
 using Legends.Engine;
 using Legends.Engine.Graphics2D.Components;
+using System;
 
 namespace Legends.Scripts;
 

@@ -183,9 +183,17 @@ public static class ContentWriterExtensions
                 using(ContentLogger.Log(writer.Seek(0, SeekOrigin.Current), "Object: {0} of type {1} ({2})", derivedType.Name, type.Name, instance == null ? "null" : "not null"))
                 {   
                     foreach(var member in ContentHelpers.GetContentMembers(derivedType))
-                    {
+                    {                        
                         if(member is PropertyInfo property)
                         {
+                            if(property.GetValue(instance) == (property.PropertyType.IsValueType ? Activator.CreateInstance(property.PropertyType) : null))
+                            {
+                                writer.Write7BitEncodedInt(0);
+                                continue;
+                            }
+
+                            writer.Write7BitEncodedInt(1);
+
                             Console.WriteLine(" property.Name = {0}",  property.Name );
                             using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance)))
                             {
@@ -194,6 +202,14 @@ public static class ContentWriterExtensions
                         }
                         if(member is FieldInfo field)
                         {
+                            if(field.GetValue(instance) == (field.FieldType.IsValueType ? Activator.CreateInstance(field.FieldType) : null))
+                            {
+                                writer.Write7BitEncodedInt(0);
+                                continue;
+                            }
+                            
+                            writer.Write7BitEncodedInt(1);
+
                             using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance)))
                             {
                                 writer.WriteField(field.GetValue(instance), field.FieldType);

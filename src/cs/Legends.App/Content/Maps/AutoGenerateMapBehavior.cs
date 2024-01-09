@@ -1,6 +1,7 @@
 using Legends.Engine;
 using Legends.Engine.Graphics2D.Components;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace Legends.Scripts;
 
