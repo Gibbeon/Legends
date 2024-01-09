@@ -29,8 +29,12 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
     [JsonIgnore]
     public Scene Scene => GetParentScene();
     
-    public string Name { get; protected set; }    
+    public string Name { get; protected set; }  
+
+    [DefaultValue(true)]  
     public bool Enabled { get => _enabled; set => _enabled = value; }
+    
+    [DefaultValue(true)]  
     public bool Visible { get => _visible; set => _visible = value; }
     
     [JsonIgnore]

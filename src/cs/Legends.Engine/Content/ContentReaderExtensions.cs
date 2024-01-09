@@ -108,9 +108,9 @@ public static class ContentReaderExtensions
         var native = typeof(ContentReader).GetAnyMethod(derivedType, "Read?*");
         object result = default;
 
-        var isNull = reader.Read7BitEncodedInt() == 0;
+        var isNullOfDefault = reader.Read7BitEncodedInt() == 0;
 
-        if(isNull)
+        if(isNullOfDefault)
         {
             ContentLogger.LogEnd("value is (null)", result);
             return null;
@@ -195,21 +195,18 @@ public static class ContentReaderExtensions
                 try {
                     foreach(var member in ContentHelpers.GetContentMembers(derivedType))
                     {
-                        if(reader.Read7BitEncodedInt() == 1)
+                        if(member is PropertyInfo property)
                         {
-                            if(member is PropertyInfo property)
+                            using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", property.Name))
                             {
-                                using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", property.Name))
-                                {
-                                    property.SetValue(instance, reader.ReadField(property.GetValue(instance), property.PropertyType));
-                                }
+                                property.SetValue(instance, reader.ReadField(property.GetValue(instance), property.PropertyType));
                             }
-                            if(member is FieldInfo field)
+                        }
+                        if(member is FieldInfo field)
+                        {
+                            using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", field.Name))
                             {
-                                using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), ".{0} = ", field.Name))
-                                {
-                                    field.SetValue(instance, reader.ReadField(field.GetValue(instance), field.FieldType));
-                                }
+                                field.SetValue(instance, reader.ReadField(field.GetValue(instance), field.FieldType));
                             }
                         }
                     }  

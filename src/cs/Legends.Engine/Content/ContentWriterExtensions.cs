@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,7 @@ using Legends.Engine.Runtime;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using Newtonsoft.Json;
+using SharpFont.Bdf;
 
 namespace Legends.Engine.Content;
 
@@ -102,13 +104,15 @@ public static class ContentWriterExtensions
         }
     }
 
-    public static void WriteField(this ContentWriter writer, object instance, Type type)
+    public static void WriteField(this ContentWriter writer, object instance, Type type, DefaultValueAttribute? defaultValueAttribute = null)
     {
         var derivedType = instance != null ? instance.GetType() : type;
 
-        if(instance == null)
+        var defaultValue = !derivedType.IsValueType ? null : defaultValueAttribute?.Value ?? Activator.CreateInstance(derivedType);
+
+        if(Equals(instance, defaultValue))
         {
-            ContentLogger.LogEnd("value was (null)");
+            ContentLogger.LogEnd("value was default {0}", defaultValue ?? "null");
             writer.Write7BitEncodedInt(0);
             return;
         } 
@@ -183,34 +187,18 @@ public static class ContentWriterExtensions
                 using(ContentLogger.Log(writer.Seek(0, SeekOrigin.Current), "Object: {0} of type {1} ({2})", derivedType.Name, type.Name, instance == null ? "null" : "not null"))
                 {   
                     foreach(var member in ContentHelpers.GetContentMembers(derivedType))
-                    {                        
+                    {    
                         if(member is PropertyInfo property)
                         {
-                            if(property.GetValue(instance) == (property.PropertyType.IsValueType ? Activator.CreateInstance(property.PropertyType) : null))
-                            {
-                                writer.Write7BitEncodedInt(0);
-                                continue;
-                            }
-
-                            writer.Write7BitEncodedInt(1);
-
                             Console.WriteLine(" property.Name = {0}",  property.Name );
-                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance)))
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance), property.GetCustomAttribute<DefaultValueAttribute>()))
                             {
                                 writer.WriteField(property.GetValue(instance), property.PropertyType);
                             }
                         }
                         if(member is FieldInfo field)
                         {
-                            if(field.GetValue(instance) == (field.FieldType.IsValueType ? Activator.CreateInstance(field.FieldType) : null))
-                            {
-                                writer.Write7BitEncodedInt(0);
-                                continue;
-                            }
-                            
-                            writer.Write7BitEncodedInt(1);
-
-                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance)))
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance), field.GetCustomAttribute<DefaultValueAttribute>()))
                             {
                                 writer.WriteField(field.GetValue(instance), field.FieldType);
                             }
