@@ -52,13 +52,12 @@ public static class ContentPrimitivesExtensions
 
         var result = (IRef)Activator.CreateInstance(typeof(Ref<>).MakeGenericType(type), srcName, null, isExternal, isExtended);
 
-        if(isExternal)
+        if(isExternal && !isExtended)
         {
             //result load not working with dybamicassembly
             result.Load(input.ContentManager);
         }
-        
-        if(!isExternal || isExtended)
+        else if(!isExternal || isExtended)
         {
             result.Set(input.ReadComplexObject(result.Get(), type));
         }

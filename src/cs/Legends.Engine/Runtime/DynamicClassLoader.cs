@@ -86,12 +86,25 @@ public static class DynamicClassLoader
         }
     }
 
+    public static bool Contains(Assembly assembly)
+    {
+        return _assemblyCache.Values.Select(n => n.Assembly).Contains(assembly);
+    }
+
     public static Type GetType(string typeName)
     {
         return _assemblyCache
                     .Values
                     .Select(n => n.Assembly.GetType(typeName))
                     .FirstOrDefault(n => n != null);
+    }
+
+    public static string GetAssetName(Assembly assembly)
+    {
+        return _assemblyCache
+                    .Where(n => Equals(n.Value.Assembly, assembly))
+                    .Select(n => n.Key)
+                    .SingleOrDefault();
     }
 
     public static void Register(DynamicAssembly dynamicAssembly)

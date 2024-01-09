@@ -160,6 +160,8 @@ public static class ContentReaderExtensions
         return reader.ReadComplexObject(instance, derivedType);
     }
 
+    private static readonly Dictionary<string, Type> _typeCache = new();
+
     public static object ReadComplexObject(this ContentReader reader, object instance, Type type)
     {
         using(ContentLogger.LogBegin(reader.BaseStream.Seek(0, SeekOrigin.Current), "Reading Object of type {0}", type == null ? "(unknown type)" : type?.Name))
@@ -173,8 +175,22 @@ public static class ContentReaderExtensions
         }
         ContentLogger.LogEnd("");
 
+        var isDynamic = reader.Read7BitEncodedInt() == 1;
         var typeName = reader.ReadString();
-        var derivedType = Type.GetType(typeName) ?? DynamicClassLoader.GetType(typeName) ?? type;
+        var assetName = isDynamic ? Path.ChangeExtension(reader.ReadString(), null) : string.Empty;
+
+        if(!_typeCache.TryGetValue(typeName, out Type derivedType))
+        {
+            if(!isDynamic) {
+                derivedType = Type.GetType(typeName);
+            } else {
+                derivedType = reader.ContentManager.Load<DynamicAssembly>(assetName).Assembly.GetType(typeName);
+            }
+
+            if(derivedType != null) _typeCache[typeName] = derivedType;
+        }
+
+        derivedType ??= type;
 
         using(ContentLogger.Log(reader.BaseStream.Seek(0, SeekOrigin.Current), "Object found of type {0}, existing instance is ({1})", derivedType.Name, instance == null ? "null" : "not null"))
         {

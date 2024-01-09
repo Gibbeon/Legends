@@ -49,7 +49,7 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
     {
         var result = manager.Load<object>(_name);
         if(result is ContentObject co) _value = (TType)co.Instance;
-        if(result is DynamicAssembly) return;
+        else if(result is DynamicAssembly) return;
         else _value = (TType)result;
     }
 

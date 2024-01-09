@@ -43,6 +43,7 @@ public class RefJsonConverter : JsonConverter
                 if(jSource != null)
                 {
                     var assembly    = DynamicClassLoader.Compile(jSource.Value.ToString(), File.ReadAllText(jSource.Value.ToString()));
+                    
                     var typeObject  = jObject.Property("$type");
                     var typeName    = typeObject == null ? string.Empty : typeObject.Value.ToString();
                     if(string.IsNullOrEmpty(typeName))

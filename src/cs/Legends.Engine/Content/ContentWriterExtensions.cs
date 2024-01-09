@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using Legends.Engine.Runtime;
+using Legends.Engine.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using Newtonsoft.Json;
@@ -174,8 +175,14 @@ public static class ContentWriterExtensions
 
             writer.Write7BitEncodedInt(instance == null ? 0 : 1);
             if(instance == null) return;
+
+            bool isDynamic = DynamicClassLoader.Contains(derivedType.Assembly);
                     
+            writer.Write7BitEncodedInt(isDynamic ? 1 : 0);
             writer.Write(derivedType.FullName);
+            if(isDynamic) {
+                writer.Write(DynamicClassLoader.GetAssetName(derivedType.Assembly));
+            }
 
             if(derivedType.IsArray ||
                 derivedType.GetInterfaces().Any(n => n == typeof(IEnumerable)))
@@ -190,7 +197,6 @@ public static class ContentWriterExtensions
                     {    
                         if(member is PropertyInfo property)
                         {
-                            Console.WriteLine(" property.Name = {0}",  property.Name );
                             using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance), property.GetCustomAttribute<DefaultValueAttribute>()))
                             {
                                 writer.WriteField(property.GetValue(instance), property.PropertyType);
