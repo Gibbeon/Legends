@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Legends.Engine.Content;
+using Legends.Engine.Serialization;
 using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Engine;
@@ -48,6 +49,7 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
     {
         var result = manager.Load<object>(_name);
         if(result is ContentObject co) _value = (TType)co.Instance;
+        if(result is DynamicAssembly) return;
         else _value = (TType)result;
     }
 

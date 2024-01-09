@@ -34,7 +34,7 @@ public class RefJsonConverter : JsonConverter
                 var jObject = JObject.Load(reader);
                 var valueType = objectType.IsGenericType ? objectType.GetGenericArguments()[0] : objectType;
                 var jSource = jObject.Property("$compile");
-                var jRef = jObject.Property("$ref");
+                var jRef = jObject.Property("$ref") ?? jObject.Property("$asset");
                 var jImport = jObject.Property("$import");
                 var name = jRef == null ? "" : jRef.Value.ToString();
                 bool isExternal = !string.IsNullOrEmpty(name);
@@ -74,11 +74,32 @@ public class RefJsonConverter : JsonConverter
                     );
 
                     jObject = jImportValue;
-                    Console.WriteLine("{0}", jObject.ToString());
                     jObject.Remove("$import");
                     
                     isExternal = false;
                     isExtended = true;
+                } 
+                else if (jRef != null)
+                {
+                    jObject.Remove("$ref");
+                    jObject.Remove("$asset");
+
+                    isExtended = true;
+
+                    if(String.Compare(Path.GetExtension(name), ".json", true) == 0 && jObject.Count > 0)
+                    {
+                        isExternal = true;
+                        var filename = jRef.Value.ToString();
+                        var jImportValue = JObject.Parse(File.ReadAllText(filename));
+        
+                        jImportValue.Merge(jObject,
+                            new JsonMergeSettings() {
+                                MergeArrayHandling = MergeArrayHandling.Merge                            
+                            }
+                        );
+
+                        jObject = jImportValue;
+                    }
                 }
 
                 var parsedValue = serializer.Deserialize(new StringReader(jObject.ToString()), valueType);
