@@ -12,6 +12,7 @@
                 "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
                 "texture": "Sprites/desert.png",
                 "slice": "16, 16",
+                "frame": 0,
                 "position": "16, 64",
                 "size": "96, 48"
             }

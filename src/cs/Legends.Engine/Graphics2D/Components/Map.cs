@@ -21,9 +21,10 @@ public class Map : Component, IRenderable
     [JsonIgnore]
     public bool Visible => Parent.Visible;
 
-    public RenderState RenderState => throw new NotImplementedException();
+    public RenderState RenderState { get; set; }
 
-    public IViewState ViewState => throw new NotImplementedException();
+    [JsonIgnore]
+    public IViewState ViewState => Parent.Scene.Camera;
 
     private VertexPositionColorTexture[] _vertices;
     private uint[] _indicies;

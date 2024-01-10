@@ -104,7 +104,6 @@ public static class ContentWriterExtensions
     public static void WriteField(this ContentWriter writer, object instance, Type type, DefaultValueAttribute defaultValueAttribute = null)
     {
         var derivedType = instance != null ? instance.GetType() : type;
-
         var defaultValue = !derivedType.IsValueType ? null : defaultValueAttribute?.Value ?? Activator.CreateInstance(derivedType);
 
         if(Equals(instance, defaultValue))
@@ -193,16 +192,16 @@ public static class ContentWriterExtensions
                     {    
                         if(member is PropertyInfo property)
                         {
-                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance), property.GetCustomAttribute<DefaultValueAttribute>()))
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance)))
                             {
-                                writer.WriteField(property.GetValue(instance), property.PropertyType);
+                                writer.WriteField(property.GetValue(instance), property.PropertyType, property.GetCustomAttribute<DefaultValueAttribute>());
                             }
                         }
                         if(member is FieldInfo field)
                         {
-                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance), field.GetCustomAttribute<DefaultValueAttribute>()))
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance)))
                             {
-                                writer.WriteField(field.GetValue(instance), field.FieldType);
+                                writer.WriteField(field.GetValue(instance), field.FieldType, field.GetCustomAttribute<DefaultValueAttribute>());
                             }
                         }
                     }   
