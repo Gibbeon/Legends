@@ -8,7 +8,7 @@ using Legends.Engine.Resolvers;
 namespace Legends.Engine;
 
 public class Camera : SceneObject, IViewState
-{
+{    
     protected BoundedValue<float> _zoomBounds;
     protected Matrix _projection;
     protected Matrix _world;
@@ -50,7 +50,7 @@ public class Camera : SceneObject, IViewState
         if(HasChanged) {
             var adjustedSize = (Size2)(this.Size / Scale);
 
-            _world          = Matrix.CreateTranslation(adjustedSize.Width / 2, adjustedSize.Height / 2, 0.0f);
+            _world          = Matrix.CreateTranslation(Origin.X / Scale.X, Origin.Y / Scale.Y, 0.0f);
             _projection     = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
             base.OnChanged();
         }

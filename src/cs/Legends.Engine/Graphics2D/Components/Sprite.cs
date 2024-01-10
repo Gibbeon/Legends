@@ -44,7 +44,7 @@ public class Sprite : Component, ISpriteRenderable
     {
         if(Visible)
         {
-            Parent.Services.Get<IRenderService>().DrawBatched(this);
+            Services.Get<IRenderService>().DrawBatched(this);
         }
     }
 

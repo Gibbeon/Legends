@@ -21,7 +21,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public Vector2 Scale                { get => OffsetScale    * _scale; set => SetScale(value); }
     public float   Rotation             { get => OffsetRotation + _rotation; set => SetRotation(value); }   
     public Size2   Size                 { get => _size * Scale; set => SetSize(value); }
-    public Vector2 Origin               { get => _originNormalized * Size; set => _originNormalized = Size != Size2.Empty ? value / Size : Vector2.Zero; }
+    public Vector2 Origin               { get => _originNormalized * Size; set { _originNormalized = Size != Size2.Empty ? value / Size : Vector2.Zero; HasChanged = true; } }
 
     [JsonIgnore]
     internal float OffsetRotation       

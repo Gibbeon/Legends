@@ -5,6 +5,12 @@
     "camera": {
         "scale": "2, 2"
     },
+    "components": [
+        {
+            "$type": "Legends.Engine.Graphics2D.Components.FrameRateCounter, Legends.Engine",
+            "font":     "Fonts/Sensation"
+        }
+    ],
     "children": [
         {
             "$asset": "Sprites/Actor.json",
@@ -12,7 +18,7 @@
         },
         {
             "$import": "Sprites/Plot.json",
-            "position": "0, 0"
+            "position": "-64, -64"
         }
     ],
     "behaviors": [

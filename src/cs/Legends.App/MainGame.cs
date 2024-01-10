@@ -1,5 +1,4 @@
-﻿using CollisionSample;
-using Legends.Engine;
+﻿using Legends.Engine;
 using Legends.Engine.Collision;
 using Legends.Engine.Content;
 using Legends.Engine.Graphics2D;
@@ -18,7 +17,6 @@ public class MainGame : Microsoft.Xna.Framework.Game
     private readonly InputHandlerService _inputService;
     private readonly ScreenManager _screenManager;
 
-    private FrameRateCounter _frameRateCounter;
     
     public MainGame()
     {
@@ -47,9 +45,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
         base.Initialize();   
 
         _spriteRenderService.Initialize();
-        Components.Add(_screenManager);     
-        Components.Add(_frameRateCounter = new FrameRateCounter(this, "Fonts/Sansation"));   
-        _frameRateCounter.Initialize();
+        Components.Add(_screenManager);
     }
 
     protected override void LoadContent()
@@ -71,6 +67,5 @@ public class MainGame : Microsoft.Xna.Framework.Game
     {
         base.Draw(gameTime);
         _spriteRenderService.Draw(gameTime);
-        _frameRateCounter.Draw(gameTime);
     }
 }
