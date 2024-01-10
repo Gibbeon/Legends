@@ -120,27 +120,7 @@ public class TextLabel : Component, ISpriteRenderable
             return;
         }
 
-        if(target is not SpriteBatch spriteBatch)
-        {
-            spriteBatch = new SpriteBatch(Services.GetGraphicsDevice());
-            
-            if (RenderState?.Effect is IEffectMatrices mtxEffect)
-            {
-                mtxEffect.View = ViewState.View;
-                mtxEffect.Projection = ViewState.Projection;
-                mtxEffect.World = ViewState.World;
-            }
-
-            spriteBatch.Begin(
-                SpriteSortMode.Immediate,
-                RenderState?.BlendState,
-                RenderState?.SamplerState,
-                RenderState?.DepthStencilState,
-                RenderState?.RasterizerState,
-                RenderState?.Effect,
-                null
-            );
-        }
+        var spriteBatch = this.GetSpriteBatch(target);
 
         if (Parent.Rotation > 0 || Parent.Scale != Vector2.One)
         {
@@ -166,10 +146,10 @@ public class TextLabel : Component, ISpriteRenderable
                 null); // DestinationBounds
         }
 
-        if(target == null && spriteBatch != null)
-            spriteBatch.End();
+        if(target is not SpriteBatch)
+            spriteBatch?.End();
     }
-
+    
     public override void Dispose()
     {
         GC.SuppressFinalize(this);

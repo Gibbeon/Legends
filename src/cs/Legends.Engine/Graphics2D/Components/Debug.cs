@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using Legends.Engine.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
 using Newtonsoft.Json;
 
@@ -60,6 +62,7 @@ public class Debug : Component, ISpriteRenderable
         _commands = new InputCommandSet(Services);
 
         _commands.Add("SELECT", EventType.MouseClicked, MonoGame.Extended.Input.MouseButton.Left, Microsoft.Xna.Framework.Input.Keys.LeftShift);
+        _commands.Add("DESELECT", EventType.KeyReleased, Microsoft.Xna.Framework.Input.Keys.Escape, Microsoft.Xna.Framework.Input.Keys.LeftShift);
         _commands.Add("SELECT_NEXT", EventType.KeyReleased, Microsoft.Xna.Framework.Input.Keys.Right, Microsoft.Xna.Framework.Input.Keys.LeftShift);
         _commands.Add("SELECT_PREV", EventType.KeyReleased, Microsoft.Xna.Framework.Input.Keys.Left, Microsoft.Xna.Framework.Input.Keys.LeftShift);
         _commands.Enabled = true;
@@ -84,6 +87,7 @@ public class Debug : Component, ISpriteRenderable
             switch(command.Name)
             {
                 case "SELECT":   SetFocus(Parent.Scene.GetObjectsAt(command.MouseEventArgs.Position.ToVector2()).ToList()); break;
+                case "DESELECT": ClearFocus(); break;
                 case "SELECT_NEXT": ObjectIndex = Math.Min(_objects.Count - 1, ObjectIndex + 1); break;
                 case "SELECT_PREV": ObjectIndex = Math.Max(0, ObjectIndex - 1); break;
                 default:
@@ -99,6 +103,12 @@ public class Debug : Component, ISpriteRenderable
             _objects = objects;
             ObjectIndex = 0;
         }
+    }
+
+    public void ClearFocus()
+    {
+        _objects.Clear();
+        ObjectIndex = 0;
     }
 
     public override void Draw(GameTime gameTime)
@@ -119,27 +129,7 @@ public class Debug : Component, ISpriteRenderable
 
     public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {
-        if(target is not SpriteBatch spriteBatch)
-        {
-            spriteBatch = new SpriteBatch(Services.GetGraphicsDevice());
-            
-            if (RenderState?.Effect is IEffectMatrices mtxEffect)
-            {
-                mtxEffect.View = ViewState.View;
-                mtxEffect.Projection = ViewState.Projection;
-                mtxEffect.World = ViewState.World;
-            }
-
-            spriteBatch.Begin(
-                SpriteSortMode.Immediate,
-                RenderState?.BlendState,
-                RenderState?.SamplerState,
-                RenderState?.DepthStencilState,
-                RenderState?.RasterizerState,
-                RenderState?.Effect,
-                null
-            );
-        }
+        var spriteBatch = this.GetSpriteBatch(target);
 
         _frameCounter++;
 
@@ -152,7 +142,7 @@ public class Debug : Component, ISpriteRenderable
             spriteBatch.DrawString(Font, sb, Position + new Vector2(0, 20), Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
         }
 
-        if(target == null && spriteBatch != null)
-            spriteBatch.End();
+        if(target is not SpriteBatch)
+            spriteBatch?.End();
     }
 }

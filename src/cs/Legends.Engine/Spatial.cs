@@ -2,6 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Legends.Engine;
 
@@ -135,7 +136,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         }
     }
 
-    public Vector2 TransformLocalToWorld(Vector2 point)
+    /*public Vector2 TransformLocalToWorld(Vector2 point)
     {
         Vector2.Transform(ref point, ref _localMatrix, out point);
         return point;
@@ -151,7 +152,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         Matrix inverse = Matrix.Invert(LocalMatrix);
         Vector2.Transform(ref point, ref inverse, out point);
         return point;
-    }
+    }*/
 
     protected virtual Matrix GetLocalMatrix()
     {

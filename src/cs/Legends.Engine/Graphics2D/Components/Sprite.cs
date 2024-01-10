@@ -55,7 +55,7 @@ public class Sprite : Component, ISpriteRenderable
 
     public override void Initialize()
     {
-        
+        Parent.SetSize(TextureRegion.Slice);
     }
 
     public override void Reset()
@@ -65,27 +65,7 @@ public class Sprite : Component, ISpriteRenderable
 
     public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {
-        if(target is not SpriteBatch spriteBatch)
-        {
-            spriteBatch = new SpriteBatch(Services.GetGraphicsDevice());
-            
-            if (RenderState?.Effect is IEffectMatrices mtxEffect)
-            {
-                mtxEffect.View = ViewState.View;
-                mtxEffect.Projection = ViewState.Projection;
-                mtxEffect.World = ViewState.World;
-            }
-
-            spriteBatch.Begin(
-                SpriteSortMode.Immediate,
-                RenderState?.BlendState,
-                RenderState?.SamplerState,
-                RenderState?.DepthStencilState,
-                RenderState?.RasterizerState,
-                RenderState?.Effect,
-                null
-            );
-        }
+        var spriteBatch = this.GetSpriteBatch(target);
 
         spriteBatch.Draw(
             TextureRegion.Texture,
@@ -97,7 +77,7 @@ public class Sprite : Component, ISpriteRenderable
             SpriteEffect,
             0);
 
-        if(target == null && spriteBatch != null)
-            spriteBatch.End();
+        if(target is not SpriteBatch)
+            spriteBatch?.End();
     }
 }
