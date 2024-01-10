@@ -47,7 +47,7 @@ public class Camera : SceneObject, IViewState
 
     protected override void OnChanged()
     {
-        if(HasChanged) {
+        if(IsDirty) {
             var adjustedSize = (Size2)(this.Size / Scale);
 
             _world          = Matrix.CreateTranslation(Origin.X / Scale.X, Origin.Y / Scale.Y, 0.0f);
@@ -59,7 +59,7 @@ public class Camera : SceneObject, IViewState
     public override void SetSize(Size2 size)
     {
         base.SetSize(size);
-        HasChanged = true;
+        IsDirty = true;
     }
 
     public override void SetScale(Vector2 scale)
@@ -81,7 +81,7 @@ public class Camera : SceneObject, IViewState
         return new RectangleF(Position -(Origin / (Scale * Scale)), Size / (Scale * Scale));
     }
 
-    public override Vector2 TransformWorldToLocal(Vector2 point)
+    public virtual Vector2 TransformWorldToLocal(Vector2 point)
     {
         Matrix inverse = Matrix.Invert(LocalMatrix * _world);
         Vector2.Transform(ref point, ref inverse, out point);

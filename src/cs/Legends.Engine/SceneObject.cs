@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using Microsoft.Xna.Framework.Content.Pipeline;
 
 namespace Legends.Engine;
 
@@ -15,22 +16,15 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
     private IList<Ref<IBehavior>>   _behaviors;
     private IList<Ref<SceneObject>> _children;
     private IList<Ref<IComponent>>  _components;
-
     private Scene _scene;
-
     private bool _enabled = true;
     private bool _visible = true;
-
     [JsonIgnore]
     public IServiceProvider Services { get; protected set; }
-    
     [JsonIgnore]
-    public SceneObject Parent { get; protected set; }
-
-        
+    public SceneObject Parent { get; protected set; } 
     [JsonIgnore]
     public Scene Scene => _scene ??= GetParentScene();
-    
     public string Name { get; protected set; }  
 
     [DefaultValue(true)]  
@@ -113,7 +107,21 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
             child.Initialize();
         }
 
-        Resize();
+        EnsureBounds();
+    }
+
+    protected void EnsureBounds()
+    {
+        foreach(var child in Children)
+        {
+            EnsureBounds(child);
+        }
+    }
+
+    protected void EnsureBounds(Spatial child)
+    {
+        TopLeft         = new Vector2(Math.Min(TopLeft.X, child.TopLeft.X), Math.Min(TopLeft.Y, child.TopLeft.Y));
+        BottomRight     = new Vector2(Math.Min(BottomRight.X, child.BottomRight.X), Math.Min(BottomRight.Y, child.BottomRight.Y));
     }
 
     public TType GetBehavior<TType>()
@@ -155,30 +163,6 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
         }
     }
 
-    protected virtual void Resize()
-    {        
-        if(_children.Count == 0) return;
-        var min_x = Children.Select(n => n.Position.X).Min();
-        var min_y = Children.Select(n => n.Position.Y).Min();
-        var max_x = Children.Select(n => n.Position.X + Size.Width).Max();
-        var max_y = Children.Select(n => n.Position.Y + Size.Height).Max();
-
-        var newSize = new Size2(min_x + max_x, min_y + max_y);
-        if(newSize != Size)
-        {
-            Size = newSize;            
-            Parent?.Resize();
-        }
-    }
-
-    protected override void OnChanged()
-    {
-        if(HasChanged)
-        {
-            base.OnChanged();
-            Parent?.Resize();
-        }
-    }
 
     public virtual IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
     {
@@ -217,7 +201,13 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
             component.Update(gameTime);
         }   
 
-        if(HasChanged) OnChanged();   
+        OnChanged();  
+    }
+
+    protected override void OnChanged()
+    {
+        EnsureBounds();
+        base.OnChanged();
     }
 
     public virtual void Draw(GameTime gameTime)
@@ -262,10 +252,10 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
             component.Dispose();
         }
 
-        _tags = null;    
-        _behaviors = null; 
-        _children = null;
-        _components = null;
+        _tags.Clear();   
+        _behaviors.Clear(); 
+        _children.Clear(); 
+        _components.Clear(); 
     }
 
     public void Reset()

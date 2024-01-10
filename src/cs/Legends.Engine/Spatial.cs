@@ -22,44 +22,50 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public Vector2 Scale                { get => OffsetScale    * _scale; set => SetScale(value); }
     public float   Rotation             { get => OffsetRotation + _rotation; set => SetRotation(value); }   
     public Size2   Size                 { get => _size * Scale; set => SetSize(value); }
-    public Vector2 Origin               { get => _originNormalized * Size; set { _originNormalized = Size != Size2.Empty ? value / Size : Vector2.Zero; HasChanged = true; } }
+    public Vector2 Origin               { get => _originNormalized * Size; set => SetOrigin(value); }
+
+    [JsonIgnore]
+    public Vector2 TopLeft              { get => Position - Origin; set => Position = value + Origin; }
+    
+    [JsonIgnore]
+    public Vector2 BottomRight          { get => TopLeft + (Vector2)Size; set=> Size = value - TopLeft; }
 
     [JsonIgnore]
     internal float OffsetRotation       
     { 
         get => _offsetRotation; 
-        set { _offsetRotation = value; HasChanged = true; }
+        set { _offsetRotation = value; IsDirty = true; }
     }      
 
     [JsonIgnore]
     internal Vector2 OffsetPosition     
     { 
         get => _offsetPosition; 
-        set { _offsetPosition = value; HasChanged = true; }
+        set { _offsetPosition = value; IsDirty = true; }
     }
 
     [JsonIgnore]
     internal Vector2 OffsetScale        
     { 
         get => _offsetScale; 
-        set { _offsetScale = value; HasChanged = true; }
+        set { _offsetScale = value; IsDirty = true; }
     }     
+
     [JsonIgnore]
     public Vector2 Center               { get => Position + (Vector2)Size / 2; }
     [JsonIgnore]
-    public Vector2 OriginNormalized     { get => _originNormalized; set => _originNormalized = value; }
+    public Vector2 OriginNormalized     { get => _originNormalized; set => SetOriginNormalized(value); }
     [JsonIgnore]
     public RectangleF BoundingRectangle => GetBoundingRectangle();
     [JsonIgnore]
     public Matrix LocalMatrix           => GetLocalMatrix();
     [JsonIgnore]
-    public bool HasChanged              { get; protected set; }
+    public bool IsDirty              { get; protected set; }
     
     public Spatial()
     {     
         _offsetScale = Vector2.One;
-        HasChanged = true;
-        OnChanged();
+        IsDirty = true;
     }
     
     public void Move(float x, float y)
@@ -90,7 +96,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public virtual void SetPosition(Vector2 position)
     {
         _position = position;
-        HasChanged = true;
+        IsDirty = true;
     }
 
     public void SetScale(float scale)
@@ -101,13 +107,13 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public virtual void SetScale(Vector2 scale)
     {
         _scale = scale;
-        HasChanged = true;
+        IsDirty = true;
     }
 
     public virtual void SetRotation(float radians)
     {
         _rotation = radians;
-        HasChanged = true;
+        IsDirty = true;
     }
 
     public virtual void SetSize(float width, float height)
@@ -115,16 +121,28 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         SetSize(new Size2(width, height));
     }
 
+    public virtual void SetOriginNormalized(Vector2 origin)
+    {
+        _originNormalized = origin;
+        IsDirty = true;
+    }
+
+    public virtual void SetOrigin(Vector2 origin)
+    {
+        SetOriginNormalized(Size != Size2.Empty ? origin / Size : Vector2.Zero);
+    }
+
     public virtual void SetSize(Size2 size)
     {
         var origin = OriginNormalized;
         _size = size;
         OriginNormalized = origin;
+        IsDirty = true;
     }
 
     protected virtual void OnChanged()
     {
-        if (HasChanged)
+        if (IsDirty)
         {
             _localMatrix = Matrix2.CreateTranslation(-Position)
                 * Matrix2.CreateTranslation(-(Origin / Scale))
@@ -132,7 +150,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
                 * Matrix2.CreateScale(Scale)
                 * Matrix2.CreateTranslation(Origin); // for the camera I removed the scale; should make sure that' correct for all use cases
 
-            HasChanged = false;
+            IsDirty = false;
         }
     }
 
