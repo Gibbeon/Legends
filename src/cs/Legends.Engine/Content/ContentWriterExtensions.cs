@@ -101,7 +101,7 @@ public static class ContentWriterExtensions
         }
     }
 
-    public static void WriteField(this ContentWriter writer, object instance, Type type, DefaultValueAttribute? defaultValueAttribute = null)
+    public static void WriteField(this ContentWriter writer, object instance, Type type, DefaultValueAttribute defaultValueAttribute = null)
     {
         var derivedType = instance != null ? instance.GetType() : type;
 

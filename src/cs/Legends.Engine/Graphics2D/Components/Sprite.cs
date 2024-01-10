@@ -7,7 +7,7 @@ using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public class Sprite : Component, ITexturedSpriteRenderable
+public class Sprite : Component, ISpriteRenderable
 {
     [JsonProperty(nameof(TextureRegion))]
     protected Ref<TextureRegion> TextureRegionReference { get; set; }
@@ -16,37 +16,20 @@ public class Sprite : Component, ITexturedSpriteRenderable
 
     public RenderState RenderState { get; set; }
 
-    public SpriteEffects Effect  { get; set; }
-
-    [JsonIgnore]
-    public TextureRegion SourceData => TextureRegion;
+    public SpriteEffects SpriteEffect  { get; set; }
 
     [JsonIgnore]
     public bool Visible   => Parent.Visible;
 
     [JsonIgnore]
     public Vector2 Position => Parent.Position;
-
-    [JsonIgnore]
-    public float Rotation   => Parent.Rotation;
     
-    [JsonIgnore]
-    public Vector2 Scale    => Parent.Scale;
-    
-    [JsonIgnore]
-    public Vector2 Origin   =>Parent.Origin;
-
     [JsonIgnore]
     public TextureRegion TextureRegion => TextureRegionReference.Get();
     
     [JsonIgnore]
     public IViewState ViewState => Parent.Scene.Camera;
 
-    [JsonIgnore]
-    public Rectangle SourceBounds{ get => (Rectangle)TextureRegion.BoundingRectangle; }
-
-    [JsonIgnore]
-    public Rectangle? DestinationBounds => (Rectangle)Parent.BoundingRectangle; 
 
     public Sprite(): this (null, null)
     {
@@ -65,7 +48,7 @@ public class Sprite : Component, ITexturedSpriteRenderable
         }
     }
 
-    public override void Dispose()
+     public override void Dispose()
     {
         GC.SuppressFinalize(this);
     }
@@ -80,8 +63,41 @@ public class Sprite : Component, ITexturedSpriteRenderable
         
     }
 
-    public override void Update(GameTime gameTime)
+    public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {
+        if(target is not SpriteBatch spriteBatch)
+        {
+            spriteBatch = new SpriteBatch(Services.GetGraphicsDevice());
+            
+            if (RenderState?.Effect is IEffectMatrices mtxEffect)
+            {
+                mtxEffect.View = ViewState.View;
+                mtxEffect.Projection = ViewState.Projection;
+                mtxEffect.World = ViewState.World;
+            }
 
+            spriteBatch.Begin(
+                SpriteSortMode.Immediate,
+                RenderState?.BlendState,
+                RenderState?.SamplerState,
+                RenderState?.DepthStencilState,
+                RenderState?.RasterizerState,
+                RenderState?.Effect,
+                null
+            );
+        }
+
+        spriteBatch.Draw(
+            TextureRegion.Texture,
+            (Rectangle)Parent.BoundingRectangle,
+            (Rectangle)TextureRegion.BoundingRectangle,
+            Color,
+            Parent.Rotation,
+            Vector2.Zero,//drawable.Origin,
+            SpriteEffect,
+            0);
+
+        if(target == null && spriteBatch != null)
+            spriteBatch.End();
     }
 }

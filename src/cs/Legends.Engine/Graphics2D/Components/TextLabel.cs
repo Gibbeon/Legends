@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System;
+using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D.Components;
 
@@ -19,15 +20,20 @@ public enum VerticalAlignment
     Middle,
     Bottom
 }
-public class TextLabel : Component, IBitmapFontBatchRenderable
+
+public class TextLabel : Component, ISpriteRenderable
 {
     public Color Color { get; set; }
 
-    public SpriteEffects Effect  { get; set; }
+    public SpriteEffects SpriteEffects  { get; set; }
 
     public string Text {get; set; }
 
-    public Ref<BitmapFont> Font { get; set; }
+    [JsonProperty(nameof(Font))]
+    public Ref<BitmapFont> FontReference { get; set; }
+
+    [JsonIgnore]
+    public BitmapFont Font => FontReference.Get();
 
     public RenderState RenderState { get; set; }
     
@@ -41,25 +47,18 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
     public bool Visible   => Parent.Visible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent.Position + new Vector2(GetHorizontalOffset(), GetVerticalOffset());
+    public Vector2 Position => Parent.Position + new Vector2(_horizontalOffset, _verticalOffset);
 
-    [JsonIgnore]
-    public float Rotation   => Parent.Rotation;
-    
-    [JsonIgnore]
-    public Vector2 Scale    => Parent.Scale;
-    
-    [JsonIgnore]
-    public Vector2 Origin   => Parent.Origin + new Vector2(GetHorizontalOffset(), GetVerticalOffset());
-    
     [JsonIgnore]
     public IViewState ViewState => Parent.Scene.Camera;
-
-    [JsonIgnore]
-    public BitmapFont SourceData => (BitmapFont)Font;
     
     [JsonIgnore]
-    public Rectangle? DestinationBounds => new(Position.ToPoint(), (SourceData.MeasureString(Text) * Scale).ToPoint());
+    public Rectangle DestinationBounds => _bounds; 
+
+    private float _verticalOffset;
+    private float _horizontalOffset;
+    private Size2 _textSize;
+    private Rectangle _bounds;
 
     public TextLabel() : this(null, null)
     {
@@ -72,13 +71,21 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
         Text    = string.Empty;
     }
 
+    public void Resize()
+    {
+        _textSize = Font.MeasureString(Text);
+        _verticalOffset = GetVerticalOffset();
+        _horizontalOffset = GetHorizontalOffset();
+        _bounds = new(Position.ToPoint(), (_textSize * Parent.Scale).ToPoint());
+    }
+
     public float GetVerticalOffset()
     {
         return VerticalAlignment switch
         {
             VerticalAlignment.Top => 0,
-            VerticalAlignment.Bottom => -((BitmapFont)Font).MeasureString(Text).Height * Scale.Y,
-            VerticalAlignment.Middle => -((BitmapFont)Font).MeasureString(Text).Height * Scale.Y / 2,
+            VerticalAlignment.Bottom => -_textSize.Height * Parent.Scale.Y,
+            VerticalAlignment.Middle => -_textSize.Height * Parent.Scale.Y / 2,
             _ => 0,
         };
     }
@@ -88,8 +95,8 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
         return HorizontalAlignment switch
         {
             HorizontalAlignment.Left => 0,
-            HorizontalAlignment.Right => -((BitmapFont)Font).MeasureString(Text).Width * Scale.X,
-            HorizontalAlignment.Center => -((BitmapFont)Font).MeasureString(Text).Width * Scale.X / 2,
+            HorizontalAlignment.Right => -_textSize.Width * Parent.Scale.X,
+            HorizontalAlignment.Center => -_textSize.Width * Parent.Scale.X / 2,
             _ => 0,
         };
     }
@@ -104,6 +111,63 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
         }      
     }
 
+    public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    {
+        if (string.IsNullOrEmpty(Text))
+        {
+            return;
+        }
+
+        if(target is not SpriteBatch spriteBatch)
+        {
+            spriteBatch = new SpriteBatch(Services.GetGraphicsDevice());
+            
+            if (RenderState?.Effect is IEffectMatrices mtxEffect)
+            {
+                mtxEffect.View = ViewState.View;
+                mtxEffect.Projection = ViewState.Projection;
+                mtxEffect.World = ViewState.World;
+            }
+
+            spriteBatch.Begin(
+                SpriteSortMode.Immediate,
+                RenderState?.BlendState,
+                RenderState?.SamplerState,
+                RenderState?.DepthStencilState,
+                RenderState?.RasterizerState,
+                RenderState?.Effect,
+                null
+            );
+        }
+
+        if (Parent.Rotation > 0 || Parent.Scale != Vector2.One)
+        {
+            spriteBatch.DrawString(
+                Font,
+                Text,
+                Vector2.Zero,
+                Color,
+                Parent.Rotation,
+                -(Position / Parent.Scale),
+                Parent.Scale,
+                SpriteEffects,
+                0,
+                null);//fontDrawable.DestinationBounds);
+        }
+        else
+        {
+            spriteBatch.DrawString(
+                Font,
+                Text,
+                Position,
+                Color,
+                null); // DestinationBounds
+        }
+
+        if(target == null && spriteBatch != null)
+            spriteBatch.End();
+    }
+
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
@@ -111,7 +175,7 @@ public class TextLabel : Component, IBitmapFontBatchRenderable
 
     public override void Initialize()
     { 
-
+        Resize();
     }
 
     public override void Reset()

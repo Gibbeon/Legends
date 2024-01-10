@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.BitmapFonts;
 #endregion
 
 namespace CollisionSample
@@ -25,20 +26,29 @@ namespace CollisionSample
     {
         ContentManager  content;
         SpriteBatch     spriteBatch;
-        SpriteFont      spriteFont;
+        BitmapFont      spriteFont;
 
         int frameRate = 0;
         int frameCounter = 0;
         TimeSpan elapsedTime = TimeSpan.Zero;
 
+        string _font;
+
         /// <summary>
         /// Constructor which initializes the Content Manager which is used later for loading the font for display.
         /// </summary>
         /// <param name="game"></param>
-        public FrameRateCounter(Game game)
+        public FrameRateCounter(Game game, string font)
             : base(game)
         {
-            content = new ContentManager(game.Services);
+            content = game.Content;
+            _font = font;
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            LoadContent();
         }
 
         /// <summary>
@@ -47,7 +57,7 @@ namespace CollisionSample
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteFont = content.Load<SpriteFont>("content\\Font");
+            spriteFont = content.Load<BitmapFont>(@"Fonts\Sensation");
         }
 
         /// <summary>

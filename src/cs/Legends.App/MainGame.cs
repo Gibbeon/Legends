@@ -1,4 +1,5 @@
-﻿using Legends.Engine;
+﻿using CollisionSample;
+using Legends.Engine;
 using Legends.Engine.Collision;
 using Legends.Engine.Content;
 using Legends.Engine.Graphics2D;
@@ -16,6 +17,8 @@ public class MainGame : Microsoft.Xna.Framework.Game
     private readonly CollisionService _collisionService;
     private readonly InputHandlerService _inputService;
     private readonly ScreenManager _screenManager;
+
+    private FrameRateCounter _frameRateCounter;
     
     public MainGame()
     {
@@ -26,6 +29,12 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _spriteRenderService    = new RenderService(Services);
         _inputService           = new InputHandlerService(Services);
         _collisionService       = new CollisionService(Services);
+
+        
+        _graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+        _graphicsDeviceManager.PreferredBackBufferWidth = 1280;
+        _graphicsDeviceManager.PreferredBackBufferHeight = 1024;
+        _gameManagementService.Game.IsFixedTimeStep = false;
 
         //ContentLogger.Enabled = true;
         Content.RootDirectory = "Content";
@@ -38,12 +47,16 @@ public class MainGame : Microsoft.Xna.Framework.Game
         base.Initialize();   
 
         _spriteRenderService.Initialize();
-        Components.Add(_screenManager);        
+        Components.Add(_screenManager);     
+        Components.Add(_frameRateCounter = new FrameRateCounter(this, "Fonts/Sansation"));   
+        _frameRateCounter.Initialize();
     }
 
     protected override void LoadContent()
     {        
         _screenManager.LoadScreen(new Screens.TitleScreen(Services));
+        base.LoadContent();
+        
     }
 
     protected override void Update(GameTime gameTime)
@@ -58,5 +71,6 @@ public class MainGame : Microsoft.Xna.Framework.Game
     {
         base.Draw(gameTime);
         _spriteRenderService.Draw(gameTime);
+        _frameRateCounter.Draw(gameTime);
     }
 }

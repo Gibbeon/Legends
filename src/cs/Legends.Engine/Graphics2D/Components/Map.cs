@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public class Map : Component, ISelfRenderable
+public class Map : Component, IRenderable
 {
     public Size2        TileCount { get; set; }
     public TileSet      TileSet { get; set; }
@@ -20,6 +20,10 @@ public class Map : Component, ISelfRenderable
 
     [JsonIgnore]
     public bool Visible => Parent.Visible;
+
+    public RenderState RenderState => throw new NotImplementedException();
+
+    public IViewState ViewState => throw new NotImplementedException();
 
     private VertexPositionColorTexture[] _vertices;
     private uint[] _indicies;
@@ -96,7 +100,7 @@ public class Map : Component, ISelfRenderable
         Services.Get<IRenderService>().DrawBatched(this);
     }
 
-    public void DrawImmediate(GameTime gameTime)
+    public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {
         (_currentEffect as IEffectMatrices).View        = Parent.Scene.Camera.View;
         (_currentEffect as IEffectMatrices).Projection  = Parent.Scene.Camera.Projection;

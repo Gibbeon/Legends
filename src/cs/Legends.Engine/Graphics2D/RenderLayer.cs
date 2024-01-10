@@ -67,103 +67,47 @@ public class RenderLayer : IRenderLayer
         }
 
         bool batchStarted = false;
-
         foreach (IRenderable drawable in OrderedVisibleDrawables)
-        {
-            if (drawable is ISelfRenderable selfDrawable)
+        {            
+            if (!batchStarted ||
+                ((drawable.RenderState ?? _renderService.DefaultRenderState) != _renderState) ||
+                _viewState != drawable.ViewState)
             {
                 if (batchStarted)
                 {
                     _spriteBatch.End();
                     batchStarted = false;
                 }
-                selfDrawable.DrawImmediate(gameTime);
-            }
-            else if (drawable is ISpriteRenderable batchDrawable)
-            {
-                if (!batchStarted ||
-                    ((batchDrawable.RenderState ?? _renderService.DefaultRenderState) != _renderState) ||
-                    _viewState != batchDrawable.ViewState)
+
+                _renderState.CopyFrom(drawable.RenderState ?? _renderService.DefaultRenderState);
+                _viewState.CopyFrom(drawable.ViewState);
+
+                if (_renderState.Effect is IEffectMatrices mtxEffect)
                 {
-                    if (batchStarted)
-                    {
-                        _spriteBatch.End();
-                        batchStarted = false;
-                    }
-
-                    _renderState.CopyFrom(batchDrawable.RenderState ?? _renderService.DefaultRenderState);
-                    _viewState.CopyFrom(batchDrawable.ViewState);
-
-                    if (_renderState.Effect is IEffectMatrices mtxEffect)
-                    {
-                        mtxEffect.View = _viewState.View;
-                        mtxEffect.Projection = _viewState.Projection;
-                        mtxEffect.World = _viewState.World;
-                    }
-
-                    _spriteBatch.Begin(
-                        _renderState.SpriteSortMode,
-                        _renderState.BlendState,
-                        _renderState.SamplerState,
-                        _renderState.DepthStencilState,
-                        _renderState.RasterizerState,
-                        _renderState.Effect,
-                        null
-                    );
-
-                    batchStarted = true;
+                    mtxEffect.View = _viewState.View;
+                    mtxEffect.Projection = _viewState.Projection;
+                    mtxEffect.World = _viewState.World;
                 }
 
-                if (drawable is ITexturedSpriteRenderable spriteBatchDrawable)
-                {
-                    _spriteBatch.Draw(
-                        spriteBatchDrawable.SourceData.Texture,
-                        spriteBatchDrawable.DestinationBounds.Value,
-                        (Rectangle)spriteBatchDrawable.SourceData.BoundingRectangle,
-                        spriteBatchDrawable.Color,
-                        spriteBatchDrawable.Rotation,
-                        Vector2.Zero,//drawable.Origin,
-                        spriteBatchDrawable.Effect,
-                        0);
-                }
-                else if (drawable is IBitmapFontBatchRenderable fontDrawable)
-                {
-                    if (String.IsNullOrEmpty(fontDrawable.Text))
-                    {
-                        continue;
-                    }
+                _spriteBatch.Begin(
+                    _renderState.SpriteSortMode,
+                    _renderState.BlendState,
+                    _renderState.SamplerState,
+                    _renderState.DepthStencilState,
+                    _renderState.RasterizerState,
+                    _renderState.Effect,
+                    null
+                );
 
-                    if (fontDrawable.Rotation > 0 || fontDrawable.Scale != Vector2.One)
-                    {
-                        _spriteBatch.DrawString(
-                            fontDrawable.SourceData,
-                            fontDrawable.Text,
-                            Vector2.Zero,
-                            fontDrawable.Color,
-                            fontDrawable.Rotation,
-                            -(fontDrawable.Position / fontDrawable.Scale),
-                            fontDrawable.Scale,
-                            fontDrawable.Effect,
-                            0,
-                            null);//fontDrawable.DestinationBounds);
-                    }
-                    else
-                    {
-                        _spriteBatch.DrawString(
-                            fontDrawable.SourceData,
-                            fontDrawable.Text,
-                            fontDrawable.Position,
-                            fontDrawable.Color,
-                            fontDrawable.DestinationBounds);
-                    }
-                }
+                batchStarted = true;
             }
+            
+            drawable.DrawImmediate(gameTime, _spriteBatch);
+        }
 
-            if (batchStarted)
-            {
-                _spriteBatch.End();
-                batchStarted = false;
-            }
+        if (batchStarted)
+        {
+            _spriteBatch.End();
         }
     }
 
