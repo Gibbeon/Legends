@@ -45,9 +45,9 @@ public class InputManager
         _keyboardListener.KeyReleased += (sender, args)     => ProcessEvent(EventType.KeyReleased, args);
         _keyboardListener.KeyTyped += (sender, args)        => ProcessEvent(EventType.KeyTyped, args);
 
-        //_mouseListener.MouseClicked += (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
-        //_mouseListener.MouseDoubleClicked += (sender, args) => ProcessEvent(EventType.MouseClicked, args);
-        //_mouseListener.MouseWheelMoved+= (sender, args)     => ProcessEvent(EventType.MouseScroll, args);
+        _mouseListener.MouseClicked += (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
+        _mouseListener.MouseDoubleClicked += (sender, args) => ProcessEvent(EventType.MouseClicked, args);
+        _mouseListener.MouseWheelMoved+= (sender, args)     => ProcessEvent(EventType.MouseScroll, args);
         //_mouseListener.MouseMoved += (sender, args)         => ProcessEvent(EventType.MouseMove, args);
 
         Enabled = true;
@@ -65,9 +65,9 @@ public class InputManager
         _keyboardListener.KeyReleased -= (sender, args)     => ProcessEvent(EventType.KeyReleased, args);
         _keyboardListener.KeyTyped -= (sender, args)        => ProcessEvent(EventType.KeyTyped, args);
 
-        //_mouseListener.MouseClicked -= (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
-        //_mouseListener.MouseDoubleClicked -= (sender, args) => ProcessEvent(EventType.MouseClicked, args);
-        //_mouseListener.MouseWheelMoved -= (sender, args)    => ProcessEvent(EventType.MouseScroll, args);
+        _mouseListener.MouseClicked -= (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
+        _mouseListener.MouseDoubleClicked -= (sender, args) => ProcessEvent(EventType.MouseClicked, args);
+        _mouseListener.MouseWheelMoved -= (sender, args)    => ProcessEvent(EventType.MouseScroll, args);
         //_mouseListener.MouseMoved -= (sender, args)         => ProcessEvent(EventType.MouseMove, args);
     }
 

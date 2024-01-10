@@ -1,9 +1,12 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "TitleScreen",
-    "camera": {
-        "scale": "2, 2"
-    },
+    "components": [
+        {
+            "$type": "Legends.Engine.Graphics2D.Components.Debug, Legends.Engine",
+            "font":  "Fonts/Sensation"
+        }
+    ],
     "children": [
         {
             "name": "child1",

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Legends.Engine.Content;
 using Microsoft.Xna.Framework;
@@ -61,6 +62,14 @@ public class Scene : SceneObject
     {
         base.Update(gameTime);
         Camera.Update(gameTime);
+    }
+
+    public override IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
+    {
+        foreach(var child in Children.SelectMany(n => n.GetObjectsAt(Camera.TransformWorldToLocal(position))))
+        {
+            yield return child;
+        }
     }
 
     public override void Dispose()

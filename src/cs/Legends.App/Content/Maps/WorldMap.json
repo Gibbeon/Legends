@@ -7,7 +7,7 @@
     },
     "components": [
         {
-            "$type": "Legends.Engine.Graphics2D.Components.FrameRateCounter, Legends.Engine",
+            "$type": "Legends.Engine.Graphics2D.Components.Debug, Legends.Engine",
             "font":     "Fonts/Sensation"
         }
     ],

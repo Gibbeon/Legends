@@ -112,6 +112,8 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
 
             child.Initialize();
         }
+
+        Resize();
     }
 
     public TType GetBehavior<TType>()
@@ -155,6 +157,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
 
     protected virtual void Resize()
     {        
+        if(_children.Count == 0) return;
         var min_x = Children.Select(n => n.Position.X).Min();
         var min_y = Children.Select(n => n.Position.Y).Min();
         var max_x = Children.Select(n => n.Position.X + Size.Width).Max();
@@ -174,6 +177,19 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
         {
             base.OnChanged();
             Parent?.Resize();
+        }
+    }
+
+    public virtual IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
+    {
+        if(GetBoundingRectangle().Contains(position.ToPoint()))
+        {
+            yield return this;
+
+            foreach(var child in Children.SelectMany(n => n.GetObjectsAt(position)))
+            {
+                yield return child;
+            }
         }
     }
 
@@ -256,6 +272,16 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
     {
         Dispose();
         Initialize();
+    }
+
+    public override string ToString()
+    {
+        return  $"{GetType().Name}: {Name}\n" +
+                $"Pos: {Position} Scale: {Scale} Rotation: {Rotation}\n" +
+                $"Size: {Size} Origin: {Origin} Enabled: {Enabled} Visible: {Visible}\n" +
+                $"Tags: {string.Join(',', Tags)}\n" +
+                string.Join('\n', Components.Select(n => n.ToString())) + "\n" +
+                string.Join('\n', Behaviors.Select(n => n.ToString()));
     }
 }  
 

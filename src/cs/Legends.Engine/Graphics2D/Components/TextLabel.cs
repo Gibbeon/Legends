@@ -76,6 +76,8 @@ public class TextLabel : Component, ISpriteRenderable
         _textSize = Font.MeasureString(Text);
         _verticalOffset = GetVerticalOffset();
         _horizontalOffset = GetHorizontalOffset();
+        Parent.SetSize(_textSize);
+        Parent.OriginNormalized = new Vector2(.5f, .5f);
         _bounds = new(Position.ToPoint(), (_textSize * Parent.Scale).ToPoint());
     }
 
@@ -181,5 +183,13 @@ public class TextLabel : Component, ISpriteRenderable
     public override void Reset()
     { 
 
+    }
+
+    public override string ToString()
+    {
+        return  $"Component: {GetType().Name}\n" + 
+        $"\tColor: {Color} Font: {FontReference}\n" + 
+        $"\tHAlign: {HorizontalAlignment} VAlign: {VerticalAlignment}\n" + 
+        $"\tSpriteEffects: {SpriteEffects} RenderState: {RenderState}";
     }
 }

@@ -146,17 +146,11 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         Vector2.Transform(ref localPoint, ref _localMatrix, out worldPoint);
     }
 
-    public Vector2 TransformWorldToLocal(Vector2 point)
+    public virtual Vector2 TransformWorldToLocal(Vector2 point)
     {
         Matrix inverse = Matrix.Invert(LocalMatrix);
         Vector2.Transform(ref point, ref inverse, out point);
         return point;
-    }
-
-    public void TransformWorldToLocal(ref Vector2 worldPoint, out Vector2 localPoint)
-    {
-        Matrix inverse = Matrix.Invert(LocalMatrix);
-        Vector2.Transform(ref worldPoint, ref inverse, out localPoint);
     }
 
     protected virtual Matrix GetLocalMatrix()

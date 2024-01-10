@@ -80,6 +80,13 @@ public class Camera : SceneObject, IViewState
     {
         return new RectangleF(Position -(Origin / (Scale * Scale)), Size / (Scale * Scale));
     }
+
+    public override Vector2 TransformWorldToLocal(Vector2 point)
+    {
+        Matrix inverse = Matrix.Invert(LocalMatrix * _world);
+        Vector2.Transform(ref point, ref inverse, out point);
+        return point;
+    }
 }
 
     /*public class Camera2D : Camera<Vector2>, IMovable, IRotatable

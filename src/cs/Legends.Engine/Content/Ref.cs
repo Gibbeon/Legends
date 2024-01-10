@@ -86,10 +86,9 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
         _extended = extended;
     }
   
-  
     public override string ToString()
     {
-        return string.Format("ref '{0}' {1} IsExternal:{2} IsExtended:{3}", _name, IsExternal ? _name : _value == null ? "(null)" : _value.ToString(), IsExternal, IsExtended);
+        return string.Format("ref '{0}' {1} {2}", _name, (IsExternal ? "E" : "") + (IsExtended ? "+A" : ""), $"{_value}");
     }
 
     public bool Equals(Ref<TType> other)
