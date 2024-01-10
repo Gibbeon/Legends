@@ -1,6 +1,9 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "TitleScreen",
+    "camera": {
+        "scale": "2, 2"
+    },
     "children": [
         {
             "name": "child1",

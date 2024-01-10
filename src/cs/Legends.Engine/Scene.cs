@@ -43,7 +43,7 @@ public class Scene : SceneObject
 
     public virtual void SetCamera(Ref<Camera> camera)
     {
-        if(_camera != null) 
+        if(_camera != null && _camera != camera) 
         {
             (~_camera).Dispose(); 
         }

@@ -113,7 +113,7 @@ public static class ContentReaderExtensions
         if(isNullOfDefault)
         {
             ContentLogger.LogEnd("value is (null)", result);
-            return null;
+            return instance;
         }
 
         if(native != null)

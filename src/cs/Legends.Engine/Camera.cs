@@ -22,7 +22,7 @@ public class Camera : SceneObject, IViewState
     [JsonIgnore]
     public IViewState ViewState => new ViewState() { View = View, Projection = Projection, World = World };
 
-    public Camera() : base(null, null)
+    public Camera() : this(null, null)
     {
 
     }
@@ -36,8 +36,8 @@ public class Camera : SceneObject, IViewState
     {
         base.Initialize();
 
-        OriginNormalized = new Vector2(.5f, .5f);
         SetViewportDefault();
+        OriginNormalized = new Vector2(.5f, .5f);
     }
 
     protected void SetViewportDefault()
@@ -50,8 +50,8 @@ public class Camera : SceneObject, IViewState
         if(HasChanged) {
             var adjustedSize = (Size2)(this.Size / Scale);
 
-            _world = Matrix.CreateTranslation(adjustedSize.Width / 2, adjustedSize.Height / 2, 0.0f);
-            _projection = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
+            _world          = Matrix.CreateTranslation(adjustedSize.Width / 2, adjustedSize.Height / 2, 0.0f);
+            _projection     = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
             base.OnChanged();
         }
     }

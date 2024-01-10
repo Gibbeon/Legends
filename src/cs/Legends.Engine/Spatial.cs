@@ -129,7 +129,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
                 * Matrix2.CreateTranslation(-(Origin / Scale))
                 * Matrix2.CreateRotationZ(Rotation)
                 * Matrix2.CreateScale(Scale)
-                * Matrix2.CreateTranslation(Origin / Scale);
+                * Matrix2.CreateTranslation(Origin); // for the camera I removed the scale; should make sure that' correct for all use cases
 
             HasChanged = false;
         }

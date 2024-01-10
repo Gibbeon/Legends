@@ -2,6 +2,9 @@
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "WorldMap",
     "scale": "1, 1",
+    "camera": {
+        "scale": "2, 2"
+    },
     "children": [
         {
             "$asset": "Sprites/Actor.json",
