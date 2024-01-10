@@ -39,7 +39,7 @@ public class Debug : Component, ISpriteRenderable
     public Dictionary<string, int> Options { get; set; }
 
     [JsonIgnore]
-    public IList<SceneObject> _objects;
+    public List<SceneObject> _objects = new();
 
     public int ObjectIndex { get; set; }
 
@@ -59,7 +59,9 @@ public class Debug : Component, ISpriteRenderable
         _camera.OriginNormalized = Vector2.Zero;
         _commands = new InputCommandSet(Services);
 
-        _commands.Add("SELECT", EventType.MouseClicked, MonoGame.Extended.Input.MouseButton.Left);
+        _commands.Add("SELECT", EventType.MouseClicked, MonoGame.Extended.Input.MouseButton.Left, Microsoft.Xna.Framework.Input.Keys.LeftShift);
+        _commands.Add("SELECT_NEXT", EventType.KeyReleased, Microsoft.Xna.Framework.Input.Keys.Right, Microsoft.Xna.Framework.Input.Keys.LeftShift);
+        _commands.Add("SELECT_PREV", EventType.KeyReleased, Microsoft.Xna.Framework.Input.Keys.Left, Microsoft.Xna.Framework.Input.Keys.LeftShift);
         _commands.Enabled = true;
     }
 
@@ -82,17 +84,20 @@ public class Debug : Component, ISpriteRenderable
             switch(command.Name)
             {
                 case "SELECT":   SetFocus(Parent.Scene.GetObjectsAt(command.MouseEventArgs.Position.ToVector2()).ToList()); break;
+                case "SELECT_NEXT": ObjectIndex = Math.Min(_objects.Count - 1, ObjectIndex + 1); break;
+                case "SELECT_PREV": ObjectIndex = Math.Max(0, ObjectIndex - 1); break;
                 default:
                     Console.WriteLine("Unknown Command: {0}", command.Name); break;             
             }
         }  
     }
 
-    public void SetFocus(IList<SceneObject> objects)
+    public void SetFocus(List<SceneObject> objects)
     {
         if(objects.Count > 0)
         {
             _objects = objects;
+            ObjectIndex = 0;
         }
     }
 
@@ -140,7 +145,7 @@ public class Debug : Component, ISpriteRenderable
 
         spriteBatch.DrawString(Font, string.Format("fps: {0}", _frameRate), Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
         StringBuilder sb = new ();
-        if(_objects != null) {
+        if(_objects.Count > 0) {
             sb.AppendLine(_objects[ObjectIndex].ToString());
             sb.AppendLine(string.Format("{0} out of {1}", ObjectIndex + 1, _objects.Count));
             
