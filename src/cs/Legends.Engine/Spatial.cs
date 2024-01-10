@@ -154,24 +154,6 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         }
     }
 
-    /*public Vector2 TransformLocalToWorld(Vector2 point)
-    {
-        Vector2.Transform(ref point, ref _localMatrix, out point);
-        return point;
-    }
-
-    public void TransformLocalToWorld(ref Vector2 localPoint, out Vector2 worldPoint)
-    {
-        Vector2.Transform(ref localPoint, ref _localMatrix, out worldPoint);
-    }
-
-    public virtual Vector2 TransformWorldToLocal(Vector2 point)
-    {
-        Matrix inverse = Matrix.Invert(LocalMatrix);
-        Vector2.Transform(ref point, ref inverse, out point);
-        return point;
-    }*/
-
     protected virtual Matrix GetLocalMatrix()
     {
         OnChanged();

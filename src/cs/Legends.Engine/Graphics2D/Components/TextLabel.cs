@@ -96,11 +96,11 @@ public class TextLabel : Component, ISpriteRenderable
     {
         if(IsDirty) {
             _textSize = Font.MeasureString(Text);
-            _verticalOffset = GetVerticalOffset();
-            _horizontalOffset = GetHorizontalOffset();
+            _horizontalOffset = GetVerticalOffset();
+            _verticalOffset = GetHorizontalOffset();
 
             Parent.SetSize(_textSize);
-            Parent.Origin = new Vector2(_verticalOffset, _horizontalOffset);
+            Parent.Origin = new Vector2(-_verticalOffset, -_horizontalOffset);
             IsDirty = false;
         }
     }
