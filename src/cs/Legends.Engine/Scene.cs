@@ -66,7 +66,7 @@ public class Scene : SceneObject
 
     public override IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
     {
-        foreach(var child in Children.SelectMany(n => n.GetObjectsAt(Camera.TransformWorldToLocal(position))))
+        foreach(var child in Children.SelectMany(n => n.GetObjectsAt(position)))
         {
             yield return child;
         }

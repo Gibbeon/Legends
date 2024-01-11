@@ -86,7 +86,7 @@ public class Debug : Component, ISpriteRenderable
         {
             switch(command.Name)
             {
-                case "SELECT":   SetFocus(Parent.Scene.GetObjectsAt(command.MouseEventArgs.Position.ToVector2()).ToList()); break;
+                case "SELECT":   SetFocus(Parent.Scene.GetObjectsAt(Parent.Scene.Camera.TransformWorldToLocal(command.MouseEventArgs.Position.ToVector2())).ToList()); break;
                 case "DESELECT": ClearFocus(); break;
                 case "SELECT_NEXT": ObjectIndex = Math.Min(_objects.Count - 1, ObjectIndex + 1); break;
                 case "SELECT_PREV": ObjectIndex = Math.Max(0, ObjectIndex - 1); break;
@@ -136,6 +136,9 @@ public class Debug : Component, ISpriteRenderable
         spriteBatch.DrawString(Font, string.Format("fps: {0}", _frameRate), Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
         StringBuilder sb = new ();
         if(_objects.Count > 0) {
+
+            spriteBatch.DrawRectangle(_objects[ObjectIndex].Scene.Camera.TransformLocalToWorld(_objects[ObjectIndex].BoundingRectangle), Color.Red);
+
             sb.AppendLine(_objects[ObjectIndex].ToString());
             sb.AppendLine(string.Format("{0} out of {1}", ObjectIndex + 1, _objects.Count));
             

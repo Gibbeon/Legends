@@ -4,6 +4,8 @@ using MonoGame.Extended;
 using System;
 using Legends.Engine.Graphics2D;
 using Legends.Engine.Resolvers;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Legends.Engine;
 
@@ -86,6 +88,39 @@ public class Camera : SceneObject, IViewState
         Matrix inverse = Matrix.Invert(LocalMatrix * _world);
         Vector2.Transform(ref point, ref inverse, out point);
         return point;
+    }
+
+    public virtual IEnumerable<Vector2> TransformWorldToLocal(params Vector2[] points)
+    {
+        Matrix inverse = Matrix.Invert(LocalMatrix * _world);
+        return points.Select(n => Vector2.Transform(n, inverse));
+    }
+
+    public virtual RectangleF TransformWorldToLocal(RectangleF rectangleF)
+    {
+        var topLeft = TransformWorldToLocal(rectangleF.TopLeft);
+        var bottomRight = TransformWorldToLocal(rectangleF.BottomRight);
+        return new RectangleF(topLeft, bottomRight - topLeft);
+    }
+
+    public virtual Vector2 TransformLocalToWorld(Vector2 point)
+    {
+        Matrix inverse = LocalMatrix * _world;
+        Vector2.Transform(ref point, ref inverse, out point);
+        return point;
+    }
+
+    public virtual IEnumerable<Vector2> TransformLocalToWorld(params Vector2[] points)
+    {
+        Matrix inverse = LocalMatrix * _world;        
+        return points.Select(n => Vector2.Transform(n, inverse));
+    }
+
+    public virtual RectangleF TransformLocalToWorld(RectangleF rectangleF)
+    {
+        var topLeft = TransformLocalToWorld(rectangleF.TopLeft);
+        var bottomRight = TransformLocalToWorld(rectangleF.BottomRight);
+        return new RectangleF(topLeft, bottomRight - topLeft);
     }
 }
 
