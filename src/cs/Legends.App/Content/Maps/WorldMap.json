@@ -9,12 +9,7 @@
     ],
     "children": [
         {
-            "$asset": "Sprites/Actor.json",
-            "position": "0, 0"
-        },
-        {
-            "$import": "Sprites/Plot.json",
-            "position": "0, 0"
+            "$import": "Maps/World/map.json"
         }
     ],
     "behaviors": [

@@ -1,14 +1,23 @@
 {
-    "$type": "Legends.Engine.Graphics2D.Components.Map, Legends.Engine",
-    "name": "WorldMap",
-    "tileSet": {
-        "texture": "Maps/World/world_tiles.png",
-        "tileSize": "32, 32"
-    },
-    "tileCount": "128, 128",
+    "$type": "Legends.Engine.SceneObject, Legends.Engine",
+    "name": "MainActor",
     "behaviors": [
         {
-            "$compile": "Maps/World/GenerateWorldBehavior.cs"            
+            "$compile": "Maps/GenerateWorldBehavior.cs"
+        }
+    ],
+    "components": [
+        {
+            "$type": "Legends.Engine.Graphics2D.Components.Map, Legends.Engine",
+            "tileSet": {
+                "textureRegion": {
+                    "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
+                    "resourceType": "Dynamic",
+                    "color": "128, 128, 128, 128",
+                    "slice": "16, 16",
+                    "size": "1024, 1024"
+                }
+            }
         }
     ]
 }

@@ -6,6 +6,7 @@ using Legends.Engine;
 using Legends.Engine.Serialization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace Legends.Content.Pipline.JsonConverters;
 

@@ -7,7 +7,6 @@ namespace Legends.Scripts;
 
 public class AutoGenerateMapBehavior : Behavior
 {
-    bool _init;
     public AutoGenerateMapBehavior(): this(null, null)
     {
 

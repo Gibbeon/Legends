@@ -12,11 +12,16 @@ namespace Legends.Engine.Graphics2D.Components;
 public class Map : Component, IRenderable
 {
     public Size2        TileCount { get; set; }
-    public TileSet      TileSet { get; set; }
+
+    [JsonIgnore]
+    public TileSet      TileSet => TileSetReference.Get();
+
+    [JsonProperty(nameof(TileSet))]
+    protected Ref<TileSet> TileSetReference { get; set; }
     public ushort[]     Tiles { get; set; }
     
     [JsonIgnore]
-    protected bool NeedUpdate { get; set; }
+    protected bool IsDirty { get; set; }
 
     [JsonIgnore]
     public bool Visible => Parent.Visible;
@@ -34,7 +39,7 @@ public class Map : Component, IRenderable
     public Map(): this(null, null) {}
     public Map(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-        NeedUpdate = true;
+        IsDirty = true;
     }
 
     public void CreateMapFromTexture()
@@ -59,6 +64,8 @@ public class Map : Component, IRenderable
 
     public override void Initialize()
     {   
+        TileSet.Initialize();
+
         Parent.Size = new Size2(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
         Parent.OriginNormalized = new Vector2(.5f, .5f);
 
@@ -66,10 +73,10 @@ public class Map : Component, IRenderable
         _indicies = BuildIndicies().ToArray();
         
         _vertexBuffer = new DynamicVertexBuffer(Services.GetGraphicsDevice(), VertexPositionColorTexture.VertexDeclaration, _vertices.Length, BufferUsage.WriteOnly);
-        _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
+        if(_vertices.Length > 0) _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
 
         _indexBuffer = new DynamicIndexBuffer(Services.GetGraphicsDevice(), IndexElementSize.ThirtyTwoBits, _indicies.Length, BufferUsage.WriteOnly);
-        _indexBuffer.SetData(_indicies);
+        if(_indicies.Length > 0) _indexBuffer.SetData(_indicies);
 
         _currentEffect = new BasicEffect(Services.GetGraphicsDevice()) {
             TextureEnabled = true,
@@ -84,7 +91,7 @@ public class Map : Component, IRenderable
             textureEffect.Texture = TileSet.TextureRegion.Texture;
         }
 
-        NeedUpdate = false;
+        IsDirty = false;
     }
 
     public override void Update(GameTime gameTime)
@@ -94,7 +101,7 @@ public class Map : Component, IRenderable
 
     public override void Draw(GameTime gameTime)
     {
-        if(NeedUpdate) Initialize();
+        if(IsDirty) Initialize();
 
         base.Draw(gameTime);
 
@@ -122,10 +129,13 @@ public class Map : Component, IRenderable
         Services.GetGraphicsDevice().DepthStencilState = DepthStencilState.Default;
         Services.GetGraphicsDevice().RasterizerState = rasterizerState;
         
-        foreach (EffectPass pass in _currentEffect.CurrentTechnique.Passes)
+        if(_indicies.Length > 0)
         {
-            pass.Apply();
-            Services.GetGraphicsDevice().DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _indicies.Length / 3);
+            foreach (EffectPass pass in _currentEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                Services.GetGraphicsDevice().DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _indicies.Length / 3);
+            }
         }
     }
 

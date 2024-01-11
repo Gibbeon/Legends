@@ -30,6 +30,8 @@ public class TileSet
 
     public void Initialize()
     {
+        TextureRegion.Initialize();
+        
         _stride     = (uint)(TextureRegion.Size.Width / TileSize.Width);
         _uvwidth    = TileSize.Width / TextureRegion.Size.Width;
         _uvheight   = TileSize.Height / TextureRegion.Size.Height; 

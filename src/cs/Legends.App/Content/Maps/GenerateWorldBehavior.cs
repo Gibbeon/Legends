@@ -22,7 +22,7 @@ public class GenerateWorldBehavior : Behavior
 
     public override void Initialize()
     {
-        Parent?.GetComponent<Map>().CreateMapFromTexture();
+
     }
 
     public override void Reset()
