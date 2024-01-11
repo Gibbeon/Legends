@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Input.InputListeners;
+using System.Reflection.Metadata;
 
 namespace Legends.Engine.Input;
 
@@ -67,7 +68,11 @@ public class InputCommandSet
             (type, args) => type == eventType
                             && (args as KeyboardEventArgs)?.Key == key
                             && _manager != null
-                            && _manager.KeyboardListener.IsPressed(modifers));
+                            && (
+                                    (modifers.All(n => n == Keys.None) 
+                                    && _manager.KeyboardListener.KeyboardState.GetPressedKeys().All(n=> n == key))
+                                    || _manager.KeyboardListener.IsPressed(modifers)
+                            ));  
     }
 
     public void Reset()

@@ -95,12 +95,12 @@ public class Debug : Component, ISpriteRenderable
         {
             switch(command.Name)
             {
-                case "SELECT":   SetFocus(Parent.Scene.GetObjectsAt(Parent.Scene.Camera.TransformWorldToLocal(command.MouseEventArgs.Position.ToVector2())).ToList()); break;
-                case "DESELECT": ClearFocus(); break;
-                case "SELECT_NEXT": SetObjectFocus(Math.Min(_objects.Count - 1, _objectIndex + 1)); break;
-                case "SELECT_PREV": SetObjectFocus( Math.Max(0, _objectIndex - 1)); break;
-                case "SELECT_UP":   _componentIndex = Math.Min(_components.Count, _componentIndex + 1); break;
-                case "SELECT_DOWN": _componentIndex = Math.Max(0, _componentIndex - 1); break;
+                case "SELECT":          SetFocus(Parent.Scene.GetObjectsAt(Parent.Scene.Camera.TransformWorldToLocal(command.MouseEventArgs.Position.ToVector2())).ToList()); break;
+                case "DESELECT":        ClearFocus(); break;
+                case "SELECT_NEXT":     SetObjectFocus(Math.Min(_objects.Count - 1, _objectIndex + 1)); break;
+                case "SELECT_PREV":     SetObjectFocus( Math.Max(0, _objectIndex - 1)); break;
+                case "SELECT_DOWN":     _componentIndex = Math.Min(_components.Count, _componentIndex + 1); break;
+                case "SELECT_UP":       _componentIndex = Math.Max(0, _componentIndex - 1); break;
                 default:
                     Console.WriteLine("Unknown Command: {0}", command.Name); break;             
             }
@@ -118,6 +118,8 @@ public class Debug : Component, ISpriteRenderable
 
     protected void SetObjectFocus(int index)
     {
+        if(_objects.Count <= index || index < 0) return;
+
         _objectIndex = index;
         _componentIndex = 0;
         _components = Enumerable.Concat(_objects[_objectIndex].Components,  _objects[_objectIndex].Behaviors).ToList(); 
