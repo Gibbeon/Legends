@@ -8,15 +8,15 @@ namespace Legends.Engine;
 
 public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 {
-    private float     _rotation;        
-    private Vector2   _position;        
-    private Vector2   _scale = Vector2.One;
-    private float     _offsetRotation;        
-    private Vector2   _offsetPosition;        
-    private Vector2   _offsetScale;
-    private Size2     _size;
-    private Matrix    _localMatrix;
-    private Vector2   _originNormalized;
+    protected float     _rotation;        
+    protected Vector2   _position;        
+    protected Vector2   _scale = Vector2.One;
+    protected float     _offsetRotation;        
+    protected Vector2   _offsetPosition;        
+    protected Vector2   _offsetScale;
+    protected Size2     _size;
+    protected Matrix    _localMatrix;
+    protected Vector2   _originNormalized;
 
     public Vector2 Position             { get => (OffsetPosition + _position) * OffsetScale; set => SetPosition(value); }
     public Vector2 Scale                { get => OffsetScale    * _scale; set => SetScale(value); }
@@ -25,10 +25,10 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public Vector2 Origin               { get => _originNormalized * Size; set => SetOrigin(value); }
 
     [JsonIgnore]
-    public Vector2 TopLeft              { get => Position - Origin; set => Position = value + Origin; }
+    public Vector2 TopLeft              { get => Position - Origin; }
     
     [JsonIgnore]
-    public Vector2 BottomRight          { get => TopLeft + (Vector2)Size; set=> Size = value - TopLeft; }
+    public Vector2 BottomRight          { get => TopLeft + (Vector2)Size; }
 
     [JsonIgnore]
     internal float OffsetRotation       

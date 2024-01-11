@@ -83,11 +83,14 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
         _components = new List<Ref<IComponent>>();
         _tags       = new List<string>();
 
+        OriginNormalized = new Vector2(.5f, .5f);
         Parent = parent;
     }
 
     public virtual void Initialize()
     {
+        IsDirty = true;
+        
         foreach(var component in Components)
         {
             component.Initialize();
@@ -118,10 +121,20 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
         }
     }
 
+    //public Vector2 TopLeft              { get => Position - Origin; set => Position = value + Origin; }
+    //public Vector2 BottomRight          { get => TopLeft + (Vector2)Size; set=> Size = value - TopLeft; }
+
     protected void EnsureBounds(Spatial child)
     {
-        TopLeft         = new Vector2(Math.Min(TopLeft.X, child.TopLeft.X), Math.Min(TopLeft.Y, child.TopLeft.Y));
-        BottomRight     = new Vector2(Math.Min(BottomRight.X, child.BottomRight.X), Math.Min(BottomRight.Y, child.BottomRight.Y));
+        if(!IsDirty) return;
+
+        var topLeft         = new Vector2(Math.Min(TopLeft.X, child.TopLeft.X), Math.Min(TopLeft.Y, child.TopLeft.Y));
+        var bottomRight     = new Vector2(Math.Max(BottomRight.X, child.BottomRight.X), Math.Max(BottomRight.Y, child.BottomRight.Y));
+        
+        _position = topLeft + Origin;
+        _size = bottomRight - topLeft;
+
+        return;
     }
 
     public TType GetBehavior<TType>()

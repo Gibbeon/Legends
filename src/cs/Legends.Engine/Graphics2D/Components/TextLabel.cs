@@ -57,7 +57,7 @@ public class TextLabel : Component, ISpriteRenderable
     public bool Visible => Parent.Visible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent.Position;
+    public Vector2 Position => Parent.Position - Parent.Origin;
 
     [JsonIgnore]
     public IViewState ViewState => Parent.Scene.Camera;
