@@ -18,6 +18,11 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     protected Matrix    _localMatrix;
     protected Vector2   _originNormalized;
 
+
+    public Vector2 LocalPosition        { get => _position; }   
+    public Vector2 LocalScale           { get => _scale; }
+    public float LocalRotation          { get => _rotation; }
+
     public Vector2 Position             { get => (OffsetPosition + _position) * OffsetScale; set => SetPosition(value); }
     public Vector2 Scale                { get => OffsetScale    * _scale; set => SetScale(value); }
     public float   Rotation             { get => OffsetRotation + _rotation; set => SetRotation(value); }   

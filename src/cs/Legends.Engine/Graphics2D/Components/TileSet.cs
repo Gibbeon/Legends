@@ -34,9 +34,9 @@ public class TileSet
         _uvwidth    = TileSize.Width / TextureRegion.Size.Width;
         _uvheight   = TileSize.Height / TextureRegion.Size.Height; 
         _tags = Tags.Keys.ToArray();
-        _tagIndex = new ushort[TextureRegion.TileCount][];
+        _tagIndex = new ushort[(int)TextureRegion.TileCount.Height * (int)TextureRegion.TileCount.Width][];
         ushort tempIndex = 0;
-        _index = Enumerable.Repeat(tempIndex++, TextureRegion.TileCount).ToArray();
+        _index = Enumerable.Repeat(tempIndex++, (int)TextureRegion.TileCount.Height * (int)TextureRegion.TileCount.Width).ToArray();
 
         for(ushort tagIndex = 0; tagIndex < _tags.Length; tagIndex++)
         {

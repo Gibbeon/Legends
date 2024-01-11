@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -8,13 +8,17 @@ namespace Legends.Engine.Graphics2D;
 
 public class TextureRegion : Spatial, IInitalizable
 {
-    public Ref<Texture2D> Texture { get; set; }
+    [JsonProperty(nameof(Texture))]
+    protected Ref<Texture2D> TextureReference { get; set; }
+
+    [JsonIgnore]
+    public Texture2D Texture => TextureReference.Get();
     public Size2 Slice { get; set; }
     private int _frame;
     public int Frame { get => _frame; protected set => _frame = value; }
 
     [JsonIgnore]
-    public int TileCount => (int)(Texture.Get().Width / Slice.Width * (Texture.Get().Height / Slice.Height));
+    public Size TileCount => new ((int)Size.Width / (int)Slice.Width,((int)Size.Height / (int)Slice.Height));
 
     public  TextureRegion()
         : this(null, 0, 0, 0, 0)
@@ -33,7 +37,7 @@ public class TextureRegion : Spatial, IInitalizable
 
     public TextureRegion(Texture2D texture, int x, int y, int width, int height) : base()
     {
-        Texture = texture;
+        TextureReference = texture;
         Position = new Vector2(x, y);
         Size = new Size2(width, height);
     }
@@ -75,6 +79,6 @@ public class TextureRegion : Spatial, IInitalizable
 
     public void Dispose()
     {
-
+        GC.SuppressFinalize(this);
     }
 }
