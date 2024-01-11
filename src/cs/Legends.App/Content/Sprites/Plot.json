@@ -98,7 +98,7 @@
             "behaviors": [
                 {
                     "$compile": "Scripts/SetSpriteFrameBehavior.cs",
-                    "frame": 7
+                    "frame": 5
                 }
             ]           
         },

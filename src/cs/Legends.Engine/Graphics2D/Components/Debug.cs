@@ -169,7 +169,7 @@ public class Debug : Component, ISpriteRenderable
 
             if(_componentIndex == 0)
             {
-                sb.AppendLine(_objects[_objectIndex].ToString());
+                DrawObject<SceneObject>(spriteBatch, _objects[_objectIndex]);
                 sb.AppendLine(string.Format("{0} out of {1}", _objectIndex + 1, _objects.Count));  
                 stringDisplay = sb.ToString();
                 spriteBatch.DrawString(Font, stringDisplay, Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
@@ -197,26 +197,10 @@ public class Debug : Component, ISpriteRenderable
         sb.AppendLine($"{name} of type {value.GetType().Name}");
         foreach(var item in enumerable)
         {
-            sb.AppendLine($"[{index}] {item}");
+            sb.AppendLine($"[{index++}] {item}");
         }
 
         return sb.ToString();
-    }
-
-    public static IEnumerable<MemberInfo> GetMembers(Type derivedType)
-    {
-        return Enumerable.Concat<MemberInfo>(
-                    derivedType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty)
-                        .Where(n => 
-                            n.CanRead && 
-                            (
-                                n.GetAccessors().Any(n => n.IsPublic) ||
-                                n.IsDefined(typeof(JsonPropertyAttribute))
-                            )
-                    ),
-                    derivedType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                        .Where(n => n.IsPublic ||
-                                    n.IsDefined(typeof(JsonPropertyAttribute))));
     }
 
     public void DrawObject<TType>(SpriteBatch spriteBatch, object instance)
@@ -225,20 +209,20 @@ public class Debug : Component, ISpriteRenderable
         var derivedType = instance?.GetType() ?? typeof(TType);
         sb.AppendLine($"Type: {derivedType.Name}");
             
-        TextureRegion region = null;
+        IRef<TextureRegion> region = null;
         if(instance == null)
         {
             sb.AppendLine("instance is null");
         }
         else
         {
-            foreach(var member in GetMembers(derivedType))
+            foreach(var member in ContentHelpers.GetContentMembers(derivedType))
             {
                 if(member is PropertyInfo pi)    
                 {   
-                    if(pi.PropertyType.IsAssignableTo(typeof(TextureRegion)))
+                    if(pi.PropertyType.IsAssignableTo(typeof(IRef<TextureRegion>)))
                     {
-                        region = pi.GetValue(instance) as TextureRegion;
+                        region = pi.GetValue(instance) as IRef<TextureRegion>;
                     } 
                     else
                     {
@@ -249,7 +233,7 @@ public class Debug : Component, ISpriteRenderable
                 { 
                     if(fi.FieldType.IsAssignableTo(typeof(TextureRegion)))
                     {
-                        region = fi.GetValue(instance) as TextureRegion;
+                        region = fi.GetValue(instance) as IRef<TextureRegion>;
                     } 
                     else
                     {
@@ -263,9 +247,9 @@ public class Debug : Component, ISpriteRenderable
         spriteBatch.DrawString(Font, stringDisplay, Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
         _position.Y += Font.MeasureString(stringDisplay).Height;
 
-        if(region != null)
+        if(region != null && region.Get() != null)
         {
-            DrawTextureRegion(spriteBatch, region);
+            DrawTextureRegion(spriteBatch, region.Get());
         }
     }
 

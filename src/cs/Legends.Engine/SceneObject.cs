@@ -279,12 +279,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
 
     public override string ToString()
     {
-        return  $"{GetType().Name}: {Name}\n" +
-                $"Pos: {Position} Scale: {Scale} Rotation: {Rotation}\n" +
-                $"Size: {Size} Origin: {Origin} Enabled: {Enabled} Visible: {Visible}\n" +
-                $"Tags: {string.Join(',', Tags)}\n" +
-                string.Join('\n', Components.Select(n => n.ToString())) + "\n" +
-                string.Join('\n', Behaviors.Select(n => n.ToString()));
+        return  $"{Name} Pos:{Position} S:{Scale} Rot:{Rotation} E:{Enabled} Vis:{Visible}";
     }
 }  
 

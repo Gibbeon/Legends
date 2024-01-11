@@ -5,7 +5,7 @@
     "behaviors": [
         {
             "$compile": "Sprites/ActorControlBehavior.cs",
-            "moveSpeed": 2
+            "moveSpeed": 1
         }
     ],
     "components": [

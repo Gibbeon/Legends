@@ -10,11 +10,11 @@
     "children": [
         {
             "$asset": "Sprites/Actor.json",
-            "position": "128, 128"
+            "position": "0, 0"
         },
         {
             "$import": "Sprites/Plot.json",
-            "position": "-64, -64"
+            "position": "0, 0"
         }
     ],
     "behaviors": [
