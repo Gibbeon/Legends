@@ -50,6 +50,8 @@ public class TileSet
             var indicies = Tags[_tags[tagIndex]];
             foreach(var index in indicies)
             {
+                if(_tagIndex[index] == null) _tagIndex[index] = new ushort[0];
+                
                 var array = new ushort[_tagIndex[index].Length + 1];
                 _tagIndex[index].CopyTo(array, 0);
                 array[array.Length - 1] = tagIndex;
@@ -64,6 +66,11 @@ public class TileSet
         {
             yield return _tags[index];
         }
+    }
+
+    public IEnumerable<ushort> GetByTag(string tag)
+    {
+        return Tags.TryGetValue(tag, out ushort[] array) ? array : Enumerable.Empty<ushort>();
     }
 
     public RectangleF GetUV(ushort tileIndex)

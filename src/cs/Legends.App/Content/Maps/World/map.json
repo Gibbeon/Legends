@@ -9,13 +9,26 @@
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Map, Legends.Engine",
+            "tileCount": "128, 128",
             "tileSet": {
                 "textureRegion": {
                     "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
-                    "resourceType": "Dynamic",
-                    "color": "128, 255, 128, 128",
-                    "slice": "1, 1",
-                    "size": "128, 128"
+                    "texture": "maps/world/water.png",
+                    "slice": "16, 16",
+                    "position": "16, 112",
+                    "size": "128, 144"
+                },
+                "tags": {
+                    "10000000" : [18],
+                    "01000000" : [19],
+                    "00100000" : [20],
+                    "00010000" : [27],
+                    "11111111" : [28],
+                    "00001000" : [29],
+                    "00000100" : [36],
+                    "00000010" : [37],
+                    "01000001" : [38],
+                    "00000000" : [0]
                 }
             }
         }

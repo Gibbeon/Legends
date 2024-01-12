@@ -69,6 +69,8 @@ public class Map : Component, IRenderable
         Parent.Size = new Size2(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
         Parent.OriginNormalized = new Vector2(.5f, .5f);
 
+        if(Tiles == null) Tiles = new ushort[(int)TileCount.Width * (int)TileCount.Height];
+
         _vertices = BuildVerticies().ToArray();
         _indicies = BuildIndicies().ToArray();
         

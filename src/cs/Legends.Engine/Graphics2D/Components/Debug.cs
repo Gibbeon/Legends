@@ -195,10 +195,15 @@ public class Debug : Component, ISpriteRenderable
         var index = 0;
         StringBuilder sb = new();
         sb.AppendLine($"{name} of type {value.GetType().Name}");
+        int maxShow = 0;
         foreach(var item in enumerable)
         {
+            if(maxShow++ > 10) break;
+
             sb.AppendLine($"[{index++}] {item}");
         }
+
+        if(maxShow > 10) sb.AppendLine("... more");
 
         return sb.ToString();
     }
