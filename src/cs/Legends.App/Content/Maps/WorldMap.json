@@ -9,7 +9,7 @@
     ],
     "children": [
         {
-            "$import": "Maps/World/map.json"
+            "$asset": "Maps/World/map.json"
         }
     ],
     "behaviors": [

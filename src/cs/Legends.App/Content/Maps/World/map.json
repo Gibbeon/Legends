@@ -13,9 +13,9 @@
                 "textureRegion": {
                     "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
                     "resourceType": "Dynamic",
-                    "color": "128, 128, 128, 128",
-                    "slice": "16, 16",
-                    "size": "1024, 1024"
+                    "color": "128, 255, 128, 128",
+                    "slice": "1, 1",
+                    "size": "128, 128"
                 }
             }
         }

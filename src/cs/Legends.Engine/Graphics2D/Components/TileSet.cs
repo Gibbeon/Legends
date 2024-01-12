@@ -18,7 +18,7 @@ public class TileSet
     [JsonProperty(nameof(TextureRegion))]
     protected Ref<TextureRegion> TextureRegionReference { get; set; }
  
-    public IDictionary<string, ushort[]> Tags { get; set; }
+    public Dictionary<string, ushort[]> Tags { get; set; }
 
     private uint _stride;
     private float _uvwidth;
@@ -27,6 +27,11 @@ public class TileSet
     private string[] _tags;
 
     private ushort[] _index;
+
+    public TileSet()
+    {
+        Tags = new();
+    }
 
     public void Initialize()
     {

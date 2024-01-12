@@ -43,6 +43,12 @@
 /build:Maps\AutoGenerateMapBehavior.cs
 
 
+#begin Maps\GenerateWorldBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Maps\GenerateWorldBehavior.cs
+
+
 #begin Maps\Village.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
@@ -117,6 +123,12 @@
 /build:Sprites\Fence.json
 
 
+#begin Sprites\NonActor.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Sprites\NonActor.json
+
+
 #begin Sprites\npc1.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -134,12 +146,6 @@
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
 /build:Sprites\Plot.json
-
-
-#begin Maps\GenerateWorldBehavior.cs
-/importer:DynamicAssemblyImporter
-/processor:DynamicAssemblyProcessor
-/build:Maps\GenerateWorldBehavior.cs
 
 
 #begin Maps\World\map.json

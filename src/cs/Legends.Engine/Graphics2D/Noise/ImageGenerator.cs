@@ -20,7 +20,7 @@ public class ImageGenerator
             SimplexNoise.Seed = seed.Value;
         }
     }
-    public float[,] GenerateHeightMap(int width, int height, float min = 0f, float max = 1.0f)
+    public float[,] GenerateHeightMap(int width, int height)
     {
         return SimplexNoise.Calc2D(width, height, .03f);
     }

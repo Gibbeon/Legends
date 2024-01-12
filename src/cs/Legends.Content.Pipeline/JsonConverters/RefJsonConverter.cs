@@ -86,11 +86,11 @@ public class RefJsonConverter : JsonConverter
                     jObject.Remove("$ref");
                     jObject.Remove("$asset");
 
-                    isExtended = true;
+                    isExternal = true;
 
                     if(String.Compare(Path.GetExtension(name), ".json", true) == 0 && jObject.Count > 0)
                     {
-                        isExternal = true;
+                        isExtended = true;
                         var filename = jRef.Value.ToString();
                         var jImportValue = JObject.Parse(File.ReadAllText(filename));
         
