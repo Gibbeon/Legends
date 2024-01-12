@@ -23,6 +23,9 @@ public class TileSet
     private uint _stride;
     private float _uvwidth;
     private float _uvheight;
+    private uint _localstride;
+    private uint _xofs;
+    private uint _yofs;
     private ushort[][] _tagIndex;
     private string[] _tags;
 
@@ -37,9 +40,15 @@ public class TileSet
     {
         TextureRegion.Initialize();
         
-        _stride     = (uint)(TextureRegion.Size.Width / TileSize.Width);
-        _uvwidth    = TileSize.Width / TextureRegion.Size.Width;
-        _uvheight   = TileSize.Height / TextureRegion.Size.Height; 
+        _stride     = (uint)(TextureRegion.Texture.Width / TileSize.Width);
+        _uvwidth    = TileSize.Width /  TextureRegion.Texture.Width;
+        _uvheight   = TileSize.Height / TextureRegion.Texture.Height; 
+
+        _localstride = (uint)(TextureRegion.Size.Width / TileSize.Width);
+
+        _xofs = (uint)(TextureRegion.Position.X / TileSize.Width);
+        _yofs = (uint)(TextureRegion.Position.Y / TileSize.Height);
+
         _tags = Tags.Keys.ToArray();
         _tagIndex = new ushort[(int)TextureRegion.TileCount.Height * (int)TextureRegion.TileCount.Width][];
         ushort tempIndex = 0;
@@ -74,10 +83,10 @@ public class TileSet
     }
 
     public RectangleF GetUV(ushort tileIndex)
-    {        
+    {  
         var result =  new RectangleF(
-            tileIndex % _stride * _uvwidth,
-            tileIndex / _stride * _uvheight,
+            (_xofs + (tileIndex % _localstride)) * _uvwidth,
+            (_yofs + (tileIndex / _localstride)) * _uvheight,
             _uvwidth,
             _uvheight);
 

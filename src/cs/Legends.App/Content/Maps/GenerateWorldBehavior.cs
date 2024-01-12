@@ -27,24 +27,20 @@ public class GenerateWorldBehavior : Behavior
 
     public override void Initialize()
     {
-        //Parent.GetComponent<Map>().CreateMapFromTexture();
         var map = Parent.GetComponent<Map>();
         var size = map.TileCount;
-        //var texture = Parent.GetComponent<Map>().TileSet.TextureRegion.Texture;
-        //var color = Parent.GetComponent<Map>().TileSet.TextureRegion.Color;
         var array = new ImageGenerator((new Random()).Next()).GenerateHeightMap((int)size.Width, (int)size.Height);
 
-        for(int col = 0; col < array.GetLength(1); col++)
-            for(int row = 0; row < array.GetLength(0); row++)
-                map.Tiles[row * array.GetLength(1) + col] = GetTileIndex(array, row, col);
-
-
-        //texture.SetData<Color>(GetColors(color, map).ToArray());
+        for(int row = 0; row < array.GetLength(0); row++)
+            for(int col = 0; col < array.GetLength(1); col++)
+                map.Tiles[row * array.GetLength(0) + col] = GetTileIndex(array, row, col);
+        
+        map.Initialize();
     }
 
     public ushort GetTileIndex(float[,] array, int row, int col)
     {
-        StringBuilder tag = new StringBuilder("00000000");
+        StringBuilder tag = new ("00000000");
         int index = -1;
 
         for(int x = row - 1; x < row + 1; x++)
@@ -64,7 +60,9 @@ public class GenerateWorldBehavior : Behavior
             }
         }
 
-        return Parent.GetComponent<Map>().TileSet.GetByTag(tag.ToString()).FirstOrDefault();   
+        var newTag = array[row, col] < 88 ? "00000000" : "11111111";
+
+        return Parent.GetComponent<Map>().TileSet.GetByTag(newTag).FirstOrDefault();   
     }
 
     public IEnumerable<Color> GetColors(Color color, float[,] array)
