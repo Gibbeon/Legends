@@ -11,6 +11,9 @@ namespace Legends.Engine.Graphics2D.Components;
 
 public class Map : Component, IRenderable
 {
+    [JsonIgnore]
+    public int RenderLayerID => 0;
+
     public Size2        TileCount { get; set; }
 
     [JsonIgnore]
@@ -62,15 +65,8 @@ public class Map : Component, IRenderable
         Initialize();
     }
 
-    public override void Initialize()
-    {   
-        TileSet.Initialize();
-
-        Parent.Size = new Size2(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
-        Parent.OriginNormalized = new Vector2(.5f, .5f);
-
-        if(Tiles == null) Tiles = new ushort[(int)TileCount.Width * (int)TileCount.Height];
-
+    public void BuildMap()
+    {
         _vertices = BuildVerticies().ToArray();
         _indicies = BuildIndicies().ToArray();
         
@@ -80,13 +76,44 @@ public class Map : Component, IRenderable
         _indexBuffer = new DynamicIndexBuffer(Services.GetGraphicsDevice(), IndexElementSize.ThirtyTwoBits, _indicies.Length, BufferUsage.WriteOnly);
         if(_indicies.Length > 0) _indexBuffer.SetData(_indicies);
 
+    }
+
+    public int SelectTileAt(Vector2 position)
+    {
+        position = Vector2.Transform(position, Matrix.Invert(Parent.LocalMatrix * Matrix2.CreateTranslation(-Parent.Origin)));
+
+        int x_ofs = (int)position.X / (int)TileSet.TileSize.Width;
+        int y_ofs = (int)position.Y / (int)TileSet.TileSize.Height;
+
+        return y_ofs * (int)TileCount.Width + x_ofs;
+    }
+
+    public void ChangeTile(int tile, int tileSetId)
+    {
+        
+        Console.WriteLine ("{0}", tileSetId);
+        Tiles[tile] = (ushort)tileSetId;
+        BuildMap();
+    }
+
+    public override void Initialize()
+    {   
+        TileSet.Initialize();
+
+        Parent.Size = new Size2(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
+        Parent.OriginNormalized = new Vector2(.5f, .5f);
+
+        if(Tiles == null) Tiles = new ushort[(int)TileCount.Width * (int)TileCount.Height];
+        
+        BuildMap();
+ 
         _currentEffect = new BasicEffect(Services.GetGraphicsDevice()) {
             TextureEnabled = true,
             VertexColorEnabled = true
         };
 
-        (_currentEffect as IEffectMatrices).Projection = Matrix.CreateOrthographicOffCenter(0f, Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height, 0f, 0f, -1f);
-        (_currentEffect as IEffectMatrices).View = Matrix.Identity;
+        //(_currentEffect as IEffectMatrices).Projection = Matrix.CreateOrthographicOffCenter(0f, Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height, 0f, 0f, -1f);
+        //(_currentEffect as IEffectMatrices).View = Matrix.Identity;
         
         if (_currentEffect is BasicEffect textureEffect)
         {
@@ -112,12 +139,9 @@ public class Map : Component, IRenderable
 
     public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {
-        (_currentEffect as IEffectMatrices).View        = Parent.Scene.Camera.View;
-        (_currentEffect as IEffectMatrices).Projection  = Parent.Scene.Camera.Projection;
-        (_currentEffect as IEffectMatrices).World = 
-            Matrix.Multiply(
-                Matrix.CreateTranslation(-Parent.Origin.X, -Parent.Origin.Y, 0) * Parent.LocalMatrix, 
-                Parent.Scene.Camera.World);
+        (_currentEffect as IEffectMatrices).View        = ViewState.View;
+        (_currentEffect as IEffectMatrices).Projection  = ViewState.Projection;
+        (_currentEffect as IEffectMatrices).World       = ViewState.World * Parent.LocalMatrix * Matrix2.CreateTranslation(-Parent.Origin);
 
         var rasterizerState = new RasterizerState() {
             CullMode = CullMode.CullCounterClockwiseFace,

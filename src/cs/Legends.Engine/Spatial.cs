@@ -13,7 +13,7 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     protected Vector2   _scale = Vector2.One;
     protected float     _offsetRotation;        
     protected Vector2   _offsetPosition;        
-    protected Vector2   _offsetScale;
+    protected Vector2   _offsetScale = Vector2.One;
     protected Size2     _size;
     protected Matrix    _localMatrix;
     protected Vector2   _originNormalized;
@@ -28,10 +28,10 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     public float LocalRotation          { get => _rotation; }
 
     public Vector2 Position             { get => (OffsetPosition + _position) * OffsetScale; set => SetPosition(value); }
-    public Vector2 Scale                { get => OffsetScale    * _scale; set => SetScale(value); }
-    public float   Rotation             { get => OffsetRotation + _rotation; set => SetRotation(value); }   
-    public Size2   Size                 { get => _size * Scale; set => SetSize(value); }
-    public Vector2 Origin               { get => _originNormalized * Size; set => SetOrigin(value); }
+    public Vector2 Scale                { get => OffsetScale    * _scale;       set => SetScale(value); }
+    public float   Rotation             { get => OffsetRotation + _rotation;    set => SetRotation(value); }   
+    public Size2   Size                 { get => _size * Scale;                 set => SetSize(value); }
+    public Vector2 Origin               { get => _originNormalized * Size;      set => SetOrigin(value); }
 
     [JsonIgnore]
     public Vector2 TopLeft              { get => Position - Origin; }
@@ -153,11 +153,11 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
     {
         if (IsDirty)
         {
-            _localMatrix = Matrix2.CreateTranslation(-Position)
-                * Matrix2.CreateTranslation(-(Origin / Scale))
-                * Matrix2.CreateRotationZ(Rotation)
-                * Matrix2.CreateScale(Scale)
-                * Matrix2.CreateTranslation(Origin); // for the camera I removed the scale; should make sure that' correct for all use cases
+            _localMatrix = 
+                    Matrix2.CreateTranslation(-(Position + Origin))
+                *   Matrix2.CreateRotationZ(Rotation)
+                *   Matrix2.CreateScale(Scale)
+                *   Matrix2.CreateTranslation(Origin);
 
             IsDirty = false;
         }

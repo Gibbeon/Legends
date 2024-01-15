@@ -29,11 +29,12 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _collisionService       = new CollisionService(Services);
 
         
-        _graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+        //_graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+        //_gameManagementService.Game.IsFixedTimeStep = false;
+
         _graphicsDeviceManager.PreferredBackBufferWidth = 1280;
         _graphicsDeviceManager.PreferredBackBufferHeight = 1024;
-        _gameManagementService.Game.IsFixedTimeStep = false;
-
+        
         //ContentLogger.Enabled = true;
         Content.RootDirectory = "Content";
         Content.EnableAssetWatching();

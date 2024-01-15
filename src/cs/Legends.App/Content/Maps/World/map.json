@@ -16,19 +16,43 @@
                     "texture": "maps/world/water.png",
                     "slice": "16, 16",
                     "position": "16, 112",
-                    "size": "128, 144"
+                    "size": "144, 80"
                 },
                 "tags": {
-                    "10000000" : [18],
-                    "01000000" : [19],
-                    "00100000" : [20],
-                    "00010000" : [27],
-                    "11111111" : [28],
-                    "00001000" : [29],
-                    "00000100" : [36],
-                    "00000010" : [37],
-                    "01000001" : [38],
-                    "00000000" : [0]
+
+                    "ggggggggg": [3],
+                    "wwwwwwwww": [28],
+                    "gggggwgww": [18],
+                    "gggwgwwww": [19],
+                    "gggwggwwg": [20],
+                    "gwwggwgww": [27],
+                    "wwgwggwwg": [29],
+                    "gwwggwggg": [36],
+                    "wwwwgwggg": [37],
+                    "wwgwggggg": [38],
+
+                    "wwwwggwgg": [11],
+                    "wwwgggggg": [37],
+                    "wwwggwggw": [10],
+                    "wggwggwgg": [29],
+                    "ggwggwggw": [27],
+                    "wggwggwww": [2],
+                    "ggggggwww": [19],
+                    "ggwggwwww": [1],
+
+                    "ggggggwgg": [3],
+                    "ggwgggggg": [3],
+                    "wwwwggggg": [11],
+                    "wwggggggg": [28],
+                    "wgggggggg": [38],
+                    "ggwggwggg": [17],
+                    "gggwggwww": [2],
+                    "gggggwwww": [1],
+                    "gggwggwgg": [20],
+                    "gwwgggggg": [3],
+                    "gwwggwggw": [37],
+                    "ggggggwwg": [28]
+
                 }
             }
         }

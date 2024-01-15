@@ -50,17 +50,34 @@ public class RenderService : IRenderService
         _layers[0].Initialize();
     }
 
+    public IRenderLayer GetLayer(int layerId)
+    {
+        if(_layers.Count <= layerId)
+        {
+            foreach(var layer in Enumerable.Repeat(new RenderLayer(this), layerId - _layers.Count + 1))
+            {
+                _layers.Add(layer);
+                layer.Initialize();
+            }
+        }
+
+        return _layers[layerId];
+    }
+
     public void Draw(GameTime gameTime)
     {
-        _layers[0].BeginDraw();
-        _layers[0].DrawImmediate(gameTime);
-        _layers[0].EndDraw();
+        foreach(var layer in _layers)
+        {
+            layer.BeginDraw();
+            layer.DrawImmediate(gameTime);
+            layer.EndDraw();
+        }
     }
 
 
     public void DrawBatched(IRenderable drawable)
     {
-        _layers[0].Enqueue(drawable);
+        GetLayer(drawable.RenderLayerID).Enqueue(drawable);
     }
 
     public void Reset()

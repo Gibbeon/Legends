@@ -6,6 +6,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Legends.Engine.Input;
 
 namespace Legends.Scripts;
 
@@ -29,40 +30,105 @@ public class GenerateWorldBehavior : Behavior
     {
         var map = Parent.GetComponent<Map>();
         var size = map.TileCount;
-        var array = new ImageGenerator((new Random()).Next()).GenerateHeightMap((int)size.Width, (int)size.Height);
+        var array = new ImageGenerator((new Random()).Next()).GenerateHeightMap((int)size.Width + 2, (int)size.Height + 2);
 
-        for(int row = 0; row < array.GetLength(0); row++)
-            for(int col = 0; col < array.GetLength(1); col++)
-                map.Tiles[row * array.GetLength(0) + col] = GetTileIndex(array, row, col);
+        for(int row = 0; row < array.GetLength(0) - 2; row++)
+            for(int col = 0; col < array.GetLength(1) - 2; col++)
+                map.Tiles[row * (array.GetLength(0) - 2) + col] = GetTileIndex(map, array, row + 1, col + 1);
+ 
         
-        map.Initialize();
+        //foreach(var group in _list.GroupBy(n => n.Item1))
+        //{
+        //    foreach(var tuple in group)
+        //    {
+        //        Console.WriteLine("{0}, {1} = {2}", tuple.Item2, tuple.Item3, tuple.Item1);
+       //         break;
+        //    }
+        //}
+
+        map.BuildMap();
+        InputInitialize();
     }
 
-    public ushort GetTileIndex(float[,] array, int row, int col)
+    public override void Update(GameTime gameTime)
     {
-        StringBuilder tag = new ("00000000");
+        foreach(var command in _commands.EventActions)
+        {
+            switch(command.Name)
+            {
+                case "SELECT":              _tile = Parent.GetComponent<Map>()
+                                    .SelectTileAt(Parent.Scene.Camera.TransformWorldToLocal(command.GetPosition())); 
+                                            
+        Console.WriteLine ("tile: {0}", _tile);
+                                    break;
+                case "CHANGE_TILE":         ChangeTile(_tile, command.GetScrollDelta()); break;
+                default:
+                    Console.WriteLine("Unknown Command: {0}", command.Name); break;             
+            }
+        }  
+    }
+
+    public void ChangeTile(int tile, float delta)
+    {
+        _delta += delta * 8;
+
+        if(Math.Abs((int)_delta) > 0)
+        {
+            Parent.GetComponent<Map>().ChangeTile(tile, Parent.GetComponent<Map>().Tiles[tile] + (int)_delta);
+            _delta -= (int)_delta;
+        }
+    }
+
+private InputCommandSet _commands;
+private int _tile;
+private float _delta;
+    public void InputInitialize()
+    {
+        _commands = new InputCommandSet(Services, Services.Get<IInputHandlerService>().Current);
+
+        _commands.Add("SELECT", EventType.MouseClicked, MonoGame.Extended.Input.MouseButton.Left, Microsoft.Xna.Framework.Input.Keys.LeftShift);
+        _commands.Add("CHANGE_TILE", EventType.MouseScroll, MonoGame.Extended.Input.MouseButton.None);
+
+        _commands.Enabled = true;
+    }
+
+    public string GetTag(float[,] array, int row, int col)
+    {
+        if(array[row, col] <= 128) return "wwwwwwwww";
+
+        StringBuilder tag = new ("wwwwwwwww");
         int index = -1;
 
-        for(int x = row - 1; x < row + 1; x++)
+        for(int x = row - 1; x <= (row + 1); x++)
         {
-            for(int y = col - 1; y < col + 1; y++)
+            for(int y = col - 1; y <= (col + 1); y++)
             {
-                if(x == row && y == col) continue;
                 
                 index++;
-
-                if(x < 0 || x >= array.GetLength(0) || y < 0 || y > array.GetLength(1)) continue;
                 
-                if(array[x, y] < 80)
+                if(array[x, y] > 128)
                 {
-                    tag[index] = '1';
+                    tag[index] = 'g';
                 }
             }
         }
 
-        var newTag = array[row, col] < 88 ? "00000000" : "11111111";
+        return tag.ToString();
+    }
 
-        return Parent.GetComponent<Map>().TileSet.GetByTag(newTag).FirstOrDefault();   
+    List<Tuple<string, int, int>> _list = new();
+
+    public ushort GetTileIndex(Map map, float[,] array, int row, int col)
+    {
+        var tag = GetTag(array, row, col);
+
+        var tile = map.TileSet.GetByTag(tag).FirstOrDefault();   
+        if(tile == 0)
+        {        
+            _list.Add(Tuple.Create(tag, row, col));
+            return 9;//map.TileSet.GetByTag(grass).FirstOrDefault();   
+        }
+        return tile;
     }
 
     public IEnumerable<Color> GetColors(Color color, float[,] array)
@@ -74,6 +140,6 @@ public class GenerateWorldBehavior : Behavior
 
     public override void Reset()
     {
-        
+
     }
 }

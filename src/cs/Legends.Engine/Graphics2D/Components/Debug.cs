@@ -16,6 +16,9 @@ namespace Legends.Engine.Graphics2D.Components;
 
 public class Debug : Component, ISpriteRenderable
 {        
+    [JsonIgnore]
+    public int RenderLayerID => 8;
+
     [JsonProperty(nameof(Font))]
     protected Ref<BitmapFont> FontReference { get; set; }
 
@@ -214,7 +217,7 @@ public class Debug : Component, ISpriteRenderable
         var derivedType = instance?.GetType() ?? typeof(TType);
         sb.AppendLine($"Type: {derivedType.Name}");
             
-        IRef<TextureRegion> region = null;
+        Ref<TextureRegion> region = null;
         if(instance == null)
         {
             sb.AppendLine("instance is null");
@@ -225,10 +228,14 @@ public class Debug : Component, ISpriteRenderable
             {
                 if(member is PropertyInfo pi)    
                 {   
-                    if(pi.PropertyType.IsAssignableTo(typeof(IRef<TextureRegion>)))
+                    if(pi.PropertyType.IsAssignableTo(typeof(Ref<TextureRegion>)))
                     {
-                        region = pi.GetValue(instance) as IRef<TextureRegion>;
+                        region = pi.GetValue(instance) as Ref<TextureRegion>;
                     } 
+                    else if(pi.PropertyType.IsAssignableTo(typeof(Ref<TileSet>)))
+                    {
+                        DrawObject<TileSet>(spriteBatch, ((Ref<TileSet>)pi.GetValue(instance)).Get());
+                    }
                     else
                     {
                         sb.AppendLine(MemberToString(pi.Name, pi.GetValue(instance)));
@@ -238,8 +245,12 @@ public class Debug : Component, ISpriteRenderable
                 { 
                     if(fi.FieldType.IsAssignableTo(typeof(TextureRegion)))
                     {
-                        region = fi.GetValue(instance) as IRef<TextureRegion>;
+                        region = fi.GetValue(instance) as Ref<TextureRegion>;
                     } 
+                    else if(fi.FieldType.IsAssignableTo(typeof(Ref<TileSet>)))
+                    {
+                        DrawObject<TileSet>(spriteBatch, ((Ref<TileSet>)fi.GetValue(instance)).Get());
+                    }
                     else
                     {
                         sb.AppendLine(MemberToString(fi.Name, fi.GetValue(instance)));
@@ -295,6 +306,6 @@ public class Debug : Component, ISpriteRenderable
             }
         }
 
-        _position.Y += textureRegion.Size.Height;
+        _position.Y += textureRegion.Size.Height * scale;
     }
 }

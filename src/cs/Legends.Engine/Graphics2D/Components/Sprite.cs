@@ -9,6 +9,9 @@ namespace Legends.Engine.Graphics2D.Components;
 
 public class Sprite : Component, ISpriteRenderable
 {
+    [JsonIgnore]
+    public int RenderLayerID => 1;
+
     [JsonProperty(nameof(TextureRegion))]
     protected Ref<TextureRegion> TextureRegionReference { get; set; }
 

@@ -46,10 +46,10 @@ public class CameraControlsBehavior : Behavior
     {
         _commands = new InputCommandSet(Services, Services.Get<IInputHandlerService>().Current);
 
-        _commands.Add("MOVE_LEFT",    EventType.KeyPressed,    Keys.Left,   Keys.None);             
-        _commands.Add("MOVE_RIGHT",   EventType.KeyPressed,    Keys.Right,  Keys.None);      
-        _commands.Add("MOVE_UP",      EventType.KeyPressed,    Keys.Up,     Keys.None);             
-        _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down,   Keys.None);
+        _commands.Add("MOVE_LEFT",    EventType.KeyPressed,    Keys.Left);             
+        _commands.Add("MOVE_RIGHT",   EventType.KeyPressed,    Keys.Right);      
+        _commands.Add("MOVE_UP",      EventType.KeyPressed,    Keys.Up);             
+        _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down);
 
         _commands.Enabled = true;
     }

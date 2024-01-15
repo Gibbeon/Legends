@@ -33,6 +33,9 @@ public class TextLabel : Component, ISpriteRenderable
     private float _horizontalOffset;
     private Size2 _textSize;
 
+    [JsonIgnore]
+    public int RenderLayerID => 1;
+
     public Color Color { get; set; }
 
     public SpriteEffects SpriteEffects  { get; set; }

@@ -10,5 +10,6 @@ public interface IRenderable
     bool Visible { get; }
     RenderState RenderState { get; }
     IViewState ViewState { get; }
+    int RenderLayerID { get; }
     void DrawImmediate(GameTime gameTime, GraphicsResource target = null);
 }

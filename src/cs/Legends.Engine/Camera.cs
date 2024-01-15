@@ -50,11 +50,14 @@ public class Camera : SceneObject, IViewState
     protected override void OnChanged()
     {
         if(IsDirty) {
+            base.OnChanged();
+
             var adjustedSize = (Size2)(this.Size / Scale);
 
-            _world          = Matrix.CreateTranslation(Origin.X / Scale.X, Origin.Y / Scale.Y, 0.0f);
+            //MonoGame.Extended.OrthographicCamera
+
+            _world          = Matrix.Invert(Matrix2.CreateTranslation(Position - Origin));
             _projection     = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
-            base.OnChanged();
         }
     }
 
