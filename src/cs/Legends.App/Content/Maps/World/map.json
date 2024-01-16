@@ -1,6 +1,7 @@
 {
     "$type": "Legends.Engine.SceneObject, Legends.Engine",
     "name": "MainActor",
+    "scale": "2, 2",
     "behaviors": [
         {
             "$compile": "Maps/GenerateWorldBehavior.cs"
@@ -52,7 +53,6 @@
                     "gwwgggggg": [3],
                     "gwwggwggw": [37],
                     "ggggggwwg": [28]
-
                 }
             }
         }

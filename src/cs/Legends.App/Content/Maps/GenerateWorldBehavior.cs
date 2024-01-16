@@ -26,26 +26,18 @@ public class GenerateWorldBehavior : Behavior
         GC.SuppressFinalize(this);
     }
 
+    float[,] _array;
+
     public override void Initialize()
     {
         var map = Parent.GetComponent<Map>();
         var size = map.TileCount;
-        var array = new ImageGenerator((new Random()).Next()).GenerateHeightMap((int)size.Width + 2, (int)size.Height + 2);
+        _array = new ImageGenerator((new Random()).Next()).GenerateHeightMap((int)size.Width + 2, (int)size.Height + 2);
 
-        for(int row = 0; row < array.GetLength(0) - 2; row++)
-            for(int col = 0; col < array.GetLength(1) - 2; col++)
-                map.Tiles[row * (array.GetLength(0) - 2) + col] = GetTileIndex(map, array, row + 1, col + 1);
+        for(int row = 0; row < _array.GetLength(0) - 2; row++)
+            for(int col = 0; col < _array.GetLength(1) - 2; col++)
+                map.Tiles[row * (_array.GetLength(0) - 2) + col] = GetTileIndex(map, _array, row + 1, col + 1);
  
-        
-        //foreach(var group in _list.GroupBy(n => n.Item1))
-        //{
-        //    foreach(var tuple in group)
-        //    {
-        //        Console.WriteLine("{0}, {1} = {2}", tuple.Item2, tuple.Item3, tuple.Item1);
-       //         break;
-        //    }
-        //}
-
         map.BuildMap();
         InputInitialize();
     }
@@ -56,16 +48,53 @@ public class GenerateWorldBehavior : Behavior
         {
             switch(command.Name)
             {
-                case "SELECT":              _tile = Parent.GetComponent<Map>()
-                                    .SelectTileAt(Parent.Scene.Camera.TransformWorldToLocal(command.GetPosition())); 
-                                            
-        Console.WriteLine ("tile: {0}", _tile);
+                case "SELECT":
+                    _tile = Parent.GetComponent<Map>().SelectTileAt(Parent.Scene.Camera.TransformWorldToLocal(command.GetPosition()));                        
+                    
+                            var map = Parent.GetComponent<Map>();
+                    var size = map.TileCount;
+                    var tileId = map.Tiles[_tile];
+
+                    int row1 = _tile / (int)size.Width;
+                    int col1 = _tile % (int)size.Width;
+                    
+                    var tag = GetTag(_array, row1 + 1, col1 + 1);
+
+                    Console.WriteLine ("tile: {0} {1}", _tile, tag);
                                     break;
                 case "CHANGE_TILE":         ChangeTile(_tile, command.GetScrollDelta()); break;
+                case "SET_TILE":         SetTile(); break;
                 default:
                     Console.WriteLine("Unknown Command: {0}", command.Name); break;             
             }
         }  
+    }
+
+    public void SetTile()
+    {
+        
+        var map = Parent.GetComponent<Map>();
+        var size = map.TileCount;
+        var tileId = map.Tiles[_tile];
+
+        int row1 = _tile / (int)size.Width;
+        int col1 = _tile % (int)size.Width;
+
+        Console.WriteLine("Getting Tag For {0}, {1} tileIndex={2}", row1 + 1, col1 + 1, GetTileIndex(map, _array, row1 + 1, col1 + 1));
+        
+        var tag = GetTag(_array, row1 + 1, col1 + 1);
+
+        map.TileSet.AddTag(tag, tileId);
+
+        Console.WriteLine("\"" + tag + "\": [" + tileId + "],");
+
+        for(int row = 0; row < _array.GetLength(0) - 2; row++)
+            for(int col = 0; col < _array.GetLength(1) - 2; col++)
+                map.Tiles[row * (_array.GetLength(0) - 2) + col] = GetTileIndex(map, _array, row + 1, col + 1);
+
+
+        map.BuildMap();
+        
     }
 
     public void ChangeTile(int tile, float delta)
@@ -88,6 +117,7 @@ private float _delta;
 
         _commands.Add("SELECT", EventType.MouseClicked, MonoGame.Extended.Input.MouseButton.Left, Microsoft.Xna.Framework.Input.Keys.LeftShift);
         _commands.Add("CHANGE_TILE", EventType.MouseScroll, MonoGame.Extended.Input.MouseButton.None);
+        _commands.Add("SET_TILE", EventType.MouseClicked, MonoGame.Extended.Input.MouseButton.Middle, Microsoft.Xna.Framework.Input.Keys.LeftShift);
 
         _commands.Enabled = true;
     }

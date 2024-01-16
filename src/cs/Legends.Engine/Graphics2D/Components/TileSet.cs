@@ -4,6 +4,7 @@ using System;
 using Legends.Engine.Animation;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Buffers;
 
 namespace Legends.Engine.Graphics2D.Components;
 
@@ -80,6 +81,22 @@ public class TileSet
     public IEnumerable<ushort> GetByTag(string tag)
     {
         return Tags.TryGetValue(tag, out ushort[] array) ? array : Enumerable.Empty<ushort>();
+    }
+
+    public void AddTag(string tag, ushort tileIndex)
+    {
+        if(!Tags.TryGetValue(tag, out ushort[] array))
+        {
+            array = new ushort[] { tileIndex };
+            Tags[tag] = array;
+        } 
+        else
+        {
+            var newArray = new ushort[ array.Length + 1 ];
+            Array.Copy(array, newArray, array.Length);
+            newArray[ array.Length ] = tileIndex;
+            Tags[tag] = newArray;
+        }
     }
 
     public RectangleF GetUV(ushort tileIndex)

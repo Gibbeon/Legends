@@ -80,7 +80,8 @@ public class Map : Component, IRenderable
 
     public int SelectTileAt(Vector2 position)
     {
-        position = Vector2.Transform(position, Matrix.Invert(Parent.LocalMatrix * Matrix2.CreateTranslation(-Parent.Origin)));
+        position = Vector2.Transform(position, 
+            Matrix.Invert(Matrix2.CreateTranslation(Parent.Origin / Parent.Scale)) * Matrix.Invert(Parent.LocalMatrix));
 
         int x_ofs = (int)position.X / (int)TileSet.TileSize.Width;
         int y_ofs = (int)position.Y / (int)TileSet.TileSize.Height;
@@ -90,7 +91,6 @@ public class Map : Component, IRenderable
 
     public void ChangeTile(int tile, int tileSetId)
     {
-        
         Console.WriteLine ("{0}", tileSetId);
         Tiles[tile] = (ushort)tileSetId;
         BuildMap();
@@ -141,7 +141,7 @@ public class Map : Component, IRenderable
     {
         (_currentEffect as IEffectMatrices).View        = ViewState.View;
         (_currentEffect as IEffectMatrices).Projection  = ViewState.Projection;
-        (_currentEffect as IEffectMatrices).World       = ViewState.World * Parent.LocalMatrix * Matrix2.CreateTranslation(-Parent.Origin);
+        (_currentEffect as IEffectMatrices).World       = ViewState.World * Parent.LocalMatrix * Matrix2.CreateTranslation(-Parent.Origin / Parent.Scale);
 
         var rasterizerState = new RasterizerState() {
             CullMode = CullMode.CullCounterClockwiseFace,
