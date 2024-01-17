@@ -14,6 +14,8 @@ public class Camera : SceneObject, IViewState
     protected BoundedValue<float> _zoomBounds;
     protected Matrix _projection;
     protected Matrix _view;
+    protected Matrix _modelView;
+    protected Matrix _invModelView;
 
     public BoundedValue<float> ZoomBounds { get => _zoomBounds; set => _zoomBounds = value; }
     [JsonIgnore] public Matrix View =>       LocalMatrix;
@@ -50,6 +52,8 @@ public class Camera : SceneObject, IViewState
 
             _view           = Matrix2.CreateTranslation(Origin);
             _projection     = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
+            _modelView      = _view * base.GetLocalMatrix();
+            _invModelView   = Matrix.Invert(_modelView);
         }
 
         return base.GetLocalMatrix();
@@ -62,6 +66,16 @@ public class Camera : SceneObject, IViewState
             _zoomBounds.GetValue(scale.X),
             _zoomBounds.GetValue(scale.Y)
         ));
+    }
+
+    public override void WorldToLocal(ref Vector2 point)
+    {
+        Vector2.Transform(ref point, ref _invModelView, out point);
+    }
+
+    public override void LocalToWorld(ref Vector2 point)
+    {
+        Vector2.Transform(ref point, ref _modelView, out point);
     }
 
     /*public virtual Vector2 TransformWorldToLocal(Vector2 point)

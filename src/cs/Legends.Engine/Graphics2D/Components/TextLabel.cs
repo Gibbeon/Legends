@@ -60,7 +60,7 @@ public class TextLabel : Component, ISpriteRenderable
     public bool Visible => Parent.Visible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent.Position - Parent.Origin;
+    public Vector2 Position => Parent.AbsolutePosition - Parent.AbsoluteOrigin;
 
     [JsonIgnore]
     public IViewState ViewState => Parent.Scene.Camera;
@@ -98,12 +98,12 @@ public class TextLabel : Component, ISpriteRenderable
     public void Resize()
     {
         if(IsDirty) {
-            _textSize = Font.MeasureString(Text);
-            _horizontalOffset = GetVerticalOffset();
-            _verticalOffset = GetHorizontalOffset();
+            _textSize           = Font.MeasureString(Text);
+            _horizontalOffset   = GetVerticalOffset();
+            _verticalOffset     = GetHorizontalOffset();
 
             Parent.SetSize(_textSize);
-            Parent.Origin = new Vector2(-_verticalOffset, -_horizontalOffset);
+            //Parent.Position = new Vector2(-_verticalOffset, -_horizontalOffset);
             IsDirty = false;
         }
     }
@@ -149,16 +149,16 @@ public class TextLabel : Component, ISpriteRenderable
 
         var spriteBatch = this.GetSpriteBatch(target);
 
-        if (Parent.Rotation > 0 || Parent.Scale != Vector2.One)
+        if (Parent.AbsoluteRotation > 0 || Parent.AbsoluteScale != Vector2.One)
         {
             spriteBatch.DrawString(
                 Font,
                 Text,
                 Vector2.Zero,
                 Color,
-                Parent.Rotation,
-                -(Position / Parent.Scale),
-                Parent.Scale,
+                Parent.AbsoluteRotation,
+                -(Position / Parent.AbsoluteScale),
+                Parent.AbsoluteScale,
                 SpriteEffects,
                 0,
                 null);//fontDrawable.DestinationBounds);

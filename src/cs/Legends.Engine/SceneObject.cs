@@ -190,6 +190,11 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         return  $"{Name} Pos:{Position} S:{Scale} Rot:{Rotation} E:{Enabled} Vis:{Visible}";
     }
 
+    protected override Matrix GetLocalMatrix()
+    {
+        EnsureBounds();
+        return base.GetLocalMatrix();
+    }
 
     protected void EnsureBounds()
     {
@@ -208,7 +213,8 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         var origin              = Origin;
         
         Size                    = (absBottomRight - absTopLeft) / AbsoluteScale;
-        Origin                  = origin; // adjustd the size, reset the origin back to the origional value
+        Position                = AbsoluteOrigin + absTopLeft / AbsoluteScale - (Parent?.AbsolutePosition ?? Vector2.Zero);
+        //Origin                  = origin - (absTopLeft / AbsoluteScale); // adjustd the size, reset the origin back to the origional value
     }
 }  
 

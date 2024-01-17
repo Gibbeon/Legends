@@ -9,15 +9,20 @@
     ],
     "children": [
         {
-            "name": "child1",
-            "components": [
+            "name": "parent1",
+            "children": [
                 {
-                    "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",
-                    "font":     "Fonts/Sensation",
-                    "text":     "Press ESC to Exit or ENTER to start",
-                    "color":    "255, 255, 255, 255",
-                    "halign":   "Center",
-                    "valign":   "Middle"
+                    "name": "child1",
+                    "components": [
+                        {
+                            "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",
+                            "font":     "Fonts/Sensation",
+                            "text":     "Press ESC to Exit or ENTER to start",
+                            "color":    "255, 255, 255, 255",
+                            "halign":   "Center",
+                            "valign":   "Middle"
+                        }
+                    ]
                 }
             ],
             "behaviors": [

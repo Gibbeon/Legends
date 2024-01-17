@@ -174,7 +174,32 @@ public class Debug : Component, ISpriteRenderable
         StringBuilder sb = new ();
         if(_objects.Count > 0) {
 
-            spriteBatch.DrawRectangle(_objects[_objectIndex].Scene.Camera.LocalToWorld(_objects[_objectIndex].BoundingRectangle), Color.Red);
+
+            var rect = _objects[_objectIndex].Scene.Camera.LocalToWorld(_objects[_objectIndex].AbsoluteBoundingRectangle);
+
+            var matrix =  (Matrix)Matrix2.CreateTranslation(-(Vector2)rect.Center)
+                                * Matrix2.CreateRotationZ(_objects[_objectIndex].AbsoluteRotation)
+                                * Matrix2.CreateScale(Vector2.One / _objects[_objectIndex].AbsoluteScale)
+                                * Matrix2.CreateTranslation((Vector2)rect.Center);
+
+            Vector2[] points = {
+                rect.TopLeft,
+                rect.TopRight,
+                rect.BottomLeft,
+                rect.BottomRight
+            };
+
+            for(int i = 0; i < points.Length; i++) 
+                Vector2.Transform(ref points[i], ref matrix, out points[i]);
+
+            spriteBatch.DrawLine(points[0], points[1], Color.Red);
+            spriteBatch.DrawLine(points[0], points[2], Color.Red);
+            spriteBatch.DrawLine(points[1], points[3], Color.Red);
+            spriteBatch.DrawLine(points[2], points[3], Color.Red);
+
+            //spriteBatch.DrawRectangle(
+            //    _objects[_objectIndex].Scene.Camera.LocalToWorld(_objects[_objectIndex].AbsoluteBoundingRectangle), 
+            //    Color.Red);
 
             if(_componentIndex == 0)
             {

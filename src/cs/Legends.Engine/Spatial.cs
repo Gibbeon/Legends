@@ -31,7 +31,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     private Size2     _size;
     private Matrix    _localMatrix;
     private Matrix    _invLocalMatrix;
-    private Vector2   _originNormalized;
+    private Vector2   _originNormalized = new (.5f, .5f);
 
     public Vector2 Position { get => _position;                set => SetPosition(value); }
     public Vector2 Scale    { get => _scale;                   set => SetScale(value); }
@@ -45,7 +45,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     [JsonIgnore] public Vector2 Center                      { get => Position + (Vector2)Size / 2; }
     [JsonIgnore] public Vector2 OriginNormalized            { get => _originNormalized; set => SetOriginNormalized(value); }
     [JsonIgnore] public Vector2 AbsolutePosition            { get => Position   + _parent?.AbsolutePosition ?? Vector2.Zero; }
-    [JsonIgnore] public Vector2 AbsoluteScale               { get => Scale      + _parent?.AbsoluteScale    ?? Vector2.One; }
+    [JsonIgnore] public Vector2 AbsoluteScale               { get => Scale      * _parent?.AbsoluteScale    ?? Vector2.One; }
     [JsonIgnore] public float   AbsoluteRotation            { get => Rotation   + _parent?.AbsoluteRotation ?? 0.0f; }
     [JsonIgnore] public Size2   AbsoluteSize                { get => Size       * AbsoluteScale; }
     [JsonIgnore] public Vector2 AbsoluteOrigin              { get => _originNormalized * AbsoluteSize; }
@@ -76,7 +76,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     public void Rotate(float deltaRadians) => Rotation += deltaRadians;
     public void SetScale(float scale) => SetScale(new Vector2(scale, scale));
     public void SetSize(float width, float height) =>  SetSize(new Size2(width, height));
-    public void SetOrigin(Vector2 origin) => SetOriginNormalized(Size != Size2.Empty ? origin / Size : Vector2.Zero);
+    public void SetOrigin(Vector2 origin) => SetOriginNormalized(Size != Size2.Empty ? origin / Size : new Vector2(.5f, .5f));
     
     public virtual void SetPosition(Vector2 position)
     {
@@ -104,9 +104,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     
     public virtual void SetSize(Size2 size)
     {
-        var origin = OriginNormalized;
         _size = size / Scale;
-        OriginNormalized = origin;
         IsDirty = true;
     }
 
@@ -150,12 +148,12 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
                 && point.Y  <= rect.Bottom;
     }
 
-    public void WorldToLocal(ref Vector2 point)
+    public virtual void WorldToLocal(ref Vector2 point)
     {
         Vector2.Transform(ref point, ref _invLocalMatrix, out point);
     }
 
-    public void LocalToWorld(ref Vector2 point)
+    public virtual void LocalToWorld(ref Vector2 point)
     {
         Vector2.Transform(ref point, ref _localMatrix, out point);
     }
