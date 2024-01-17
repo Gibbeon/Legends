@@ -8,6 +8,7 @@ using Legends.Engine.Content;
 using Legends.Engine.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
 using Newtonsoft.Json;
@@ -57,6 +58,9 @@ public class Debug : Component, ISpriteRenderable
     private Vector2 _position;
     private Vector2 _positionStart = new (32, 32);
 
+
+    private Dictionary<Type, Action<SpriteBatch, object>> _drawOverrides = new();
+
     public Debug(IServiceProvider services, 
         SceneObject parent) : base (services, parent)
     {
@@ -78,6 +82,8 @@ public class Debug : Component, ISpriteRenderable
         _commands.Add("SELECT_UP", EventType.KeyReleased, Microsoft.Xna.Framework.Input.Keys.Up, Microsoft.Xna.Framework.Input.Keys.LeftShift);
         _commands.Add("SELECT_DOWN", EventType.KeyReleased, Microsoft.Xna.Framework.Input.Keys.Down, Microsoft.Xna.Framework.Input.Keys.LeftShift);
         _commands.Enabled = true;
+
+        _drawOverrides.Add(typeof(TextureRegion), DrawTextureRegion);
     }
 
 
@@ -98,7 +104,7 @@ public class Debug : Component, ISpriteRenderable
         {
             switch(command.Name)
             {
-                case "SELECT":          SetFocus(Parent.Scene.GetObjectsAt(Parent.Scene.Camera.TransformWorldToLocal(command.MouseEventArgs.Position.ToVector2())).ToList()); break;
+                case "SELECT":          SetFocus(Parent.Scene.GetObjectsAt(Parent.Scene.Camera.WorldToLocal(command.MouseEventArgs.Position.ToVector2())).ToList()); break;
                 case "DESELECT":        ClearFocus(); break;
                 case "SELECT_NEXT":     SetObjectFocus(Math.Min(_objects.Count - 1, _objectIndex + 1)); break;
                 case "SELECT_PREV":     SetObjectFocus( Math.Max(0, _objectIndex - 1)); break;
@@ -159,7 +165,7 @@ public class Debug : Component, ISpriteRenderable
         _position = _positionStart;
 
         _frameCounter++;
-        var stringDisplay = string.Format("fps: {0}", _frameRate);
+        var stringDisplay = string.Format("fps: {0} cur: {1} cur w_2_l: {2} cam: {3}", _frameRate, Mouse.GetState().Position, Parent.Scene.Camera.WorldToLocal(Mouse.GetState().Position.ToVector2()), Parent.Scene.Camera.Position);
 
         spriteBatch.DrawString(Font, stringDisplay, Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
         
@@ -168,7 +174,7 @@ public class Debug : Component, ISpriteRenderable
         StringBuilder sb = new ();
         if(_objects.Count > 0) {
 
-            spriteBatch.DrawRectangle(_objects[_objectIndex].Scene.Camera.TransformLocalToWorld(_objects[_objectIndex].BoundingRectangle), Color.Red);
+            spriteBatch.DrawRectangle(_objects[_objectIndex].Scene.Camera.LocalToWorld(_objects[_objectIndex].BoundingRectangle), Color.Red);
 
             if(_componentIndex == 0)
             {
@@ -269,14 +275,15 @@ public class Debug : Component, ISpriteRenderable
         }
     }
 
-    protected void DrawTextureRegion(SpriteBatch spriteBatch, TextureRegion textureRegion)
+    protected void DrawTextureRegion(SpriteBatch spriteBatch, object instance)
     {
+        TextureRegion textureRegion = instance as TextureRegion;
         var scale = 3;
 
         spriteBatch.Draw(
             textureRegion.Texture,
             Position,
-            new Rectangle(textureRegion.LocalPosition.ToPoint(), (Size)textureRegion.Size),
+            new Rectangle(textureRegion.Position.ToPoint(), (Size)textureRegion.Size),
             Color.White,
             0,
             Vector2.Zero,

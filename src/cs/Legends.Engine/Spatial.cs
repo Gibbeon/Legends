@@ -2,145 +2,106 @@ using System;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Generic;
 
 namespace Legends.Engine;
 
-public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
+public class Spatial<TParent>: Spatial
+    where TParent: Spatial
 {
-    protected float     _rotation;        
-    protected Vector2   _position;        
-    protected Vector2   _scale = Vector2.One;
-    protected float     _offsetRotation;        
-    protected Vector2   _offsetPosition;        
-    protected Vector2   _offsetScale = Vector2.One;
-    protected Size2     _size;
-    protected Matrix    _localMatrix;
-    protected Vector2   _originNormalized;
+    public TParent Parent => (TParent)_parent;
 
-    [JsonIgnore]
-    public Vector2 LocalPosition        { get => _position; }   
+    public Spatial() : this(null)
+    {     
 
-    [JsonIgnore]
-    public Vector2 LocalScale           { get => _scale; }
-
-    [JsonIgnore]
-    public float LocalRotation          { get => _rotation; }
-
-    public Vector2 Position             { get => (OffsetPosition + _position) * OffsetScale; set => SetPosition(value); }
-    public Vector2 Scale                { get => OffsetScale    * _scale;       set => SetScale(value); }
-    public float   Rotation             { get => OffsetRotation + _rotation;    set => SetRotation(value); }   
-    public Size2   Size                 { get => _size * Scale;                 set => SetSize(value); }
-    public Vector2 Origin               { get => _originNormalized * Size;      set => SetOrigin(value); }
-
-    [JsonIgnore]
-    public Vector2 TopLeft              { get => Position - Origin; }
-    
-    [JsonIgnore]
-    public Vector2 BottomRight          { get => TopLeft + (Vector2)Size; }
-
-    [JsonIgnore]
-    internal float OffsetRotation       
-    { 
-        get => _offsetRotation; 
-        set { _offsetRotation = value; IsDirty = true; }
-    }      
-
-    [JsonIgnore]
-    internal Vector2 OffsetPosition     
-    { 
-        get => _offsetPosition; 
-        set { _offsetPosition = value; IsDirty = true; }
     }
 
-    [JsonIgnore]
-    internal Vector2 OffsetScale        
-    { 
-        get => _offsetScale; 
-        set { _offsetScale = value; IsDirty = true; }
-    }     
+    public Spatial(Spatial parent): base(parent)
+    {
 
-    [JsonIgnore]
-    public Vector2 Center               { get => Position + (Vector2)Size / 2; }
-    [JsonIgnore]
-    public Vector2 OriginNormalized     { get => _originNormalized; set => SetOriginNormalized(value); }
-    [JsonIgnore]
-    public RectangleF BoundingRectangle => GetBoundingRectangle();
-    [JsonIgnore]
-    public Matrix LocalMatrix           => GetLocalMatrix();
-    [JsonIgnore]
-    public bool IsDirty              { get; protected set; }
+    }
+}
+
+public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
+{
+    protected Spatial _parent;
+    private float     _rotation;        
+    private Vector2   _position;        
+    private Vector2   _scale = Vector2.One;
+    private Size2     _size;
+    private Matrix    _localMatrix;
+    private Matrix    _invLocalMatrix;
+    private Vector2   _originNormalized;
+
+    public Vector2 Position { get => _position;                set => SetPosition(value); }
+    public Vector2 Scale    { get => _scale;                   set => SetScale(value); }
+    public float   Rotation { get => _rotation;                set => SetRotation(value); }   
+    public Size2   Size     { get => _size;                    set => SetSize(value); }
+    public Vector2 Origin   { get => _originNormalized * Size; set => SetOrigin(value); }
+
+    [JsonIgnore] public RectangleF BoundingRectangle        => new(TopLeft, Size);
+    [JsonIgnore] public Vector2 TopLeft                     { get => Position - Origin; }
+    [JsonIgnore] public Vector2 BottomRight                 { get => TopLeft  + (Vector2)Size; }
+    [JsonIgnore] public Vector2 Center                      { get => Position + (Vector2)Size / 2; }
+    [JsonIgnore] public Vector2 OriginNormalized            { get => _originNormalized; set => SetOriginNormalized(value); }
+    [JsonIgnore] public Vector2 AbsolutePosition            { get => Position   + _parent?.AbsolutePosition ?? Vector2.Zero; }
+    [JsonIgnore] public Vector2 AbsoluteScale               { get => Scale      + _parent?.AbsoluteScale    ?? Vector2.One; }
+    [JsonIgnore] public float   AbsoluteRotation            { get => Rotation   + _parent?.AbsoluteRotation ?? 0.0f; }
+    [JsonIgnore] public Size2   AbsoluteSize                { get => Size       * AbsoluteScale; }
+    [JsonIgnore] public Vector2 AbsoluteOrigin              { get => _originNormalized * AbsoluteSize; }
+    [JsonIgnore] public Matrix  AbsoluteMatrix              { get => _parent?.AbsoluteMatrix ?? Matrix2.Identity * LocalMatrix; }
+    [JsonIgnore] public Vector2 AbsoluteTopLeft             { get => AbsolutePosition - AbsoluteOrigin; }
+    [JsonIgnore] public Vector2 AbsoluteBottomRight         { get => AbsoluteTopLeft + (Vector2)AbsoluteSize; }
+    [JsonIgnore] public Vector2 AbsoluteCenter              { get => AbsolutePosition + (Vector2)AbsoluteSize / 2; }
+    [JsonIgnore] public RectangleF AbsoluteBoundingRectangle=> new(AbsoluteTopLeft, AbsoluteSize);
+    [JsonIgnore] public Matrix  LocalMatrix                 => GetLocalMatrix();
+    [JsonIgnore] public bool IsDirty                        { get; protected set; }
     
-    public Spatial()
+    public Spatial() : this(null)
     {     
-        _offsetScale = Vector2.One;
+
+    }
+
+    public Spatial(Spatial parent)
+    {
+        _parent = parent;
         IsDirty = true;
     }
     
-    public void Move(float x, float y)
-    {
-        Move(new Vector2(x, y));
-    }  
-
-    public virtual void Move(Vector2 direction)
-    {
-        Position += direction;//Vector2.Transform(direction, Matrix.CreateRotationZ(0f - Rotation));
-    }
-
-    public virtual void Rotate(float deltaRadians)
-    {
-        Rotation += deltaRadians;
-    }
-
-    public void Zoom(float value)
-    {
-        Zoom(new Vector2(value, value));
-    }
-
-    public void Zoom(Vector2 zoom)
-    {
-        Scale *= zoom;
-    }
-
+    public void Move(float x, float y) => Move(new Vector2(x, y));
+    public void Move(Vector2 delta) => Position += Vector2.Transform(delta, Matrix.CreateRotationZ(0f - Rotation));
+    public void RotateByDegrees(float degrees) => Rotate(MathF.PI/180 * degrees);
+    public void Zoom(float value) => Zoom(new Vector2(value, value));
+    public void Zoom(Vector2 zoom) => Scale *= zoom;
+    public void Rotate(float deltaRadians) => Rotation += deltaRadians;
+    public void SetScale(float scale) => SetScale(new Vector2(scale, scale));
+    public void SetSize(float width, float height) =>  SetSize(new Size2(width, height));
+    public void SetOrigin(Vector2 origin) => SetOriginNormalized(Size != Size2.Empty ? origin / Size : Vector2.Zero);
+    
     public virtual void SetPosition(Vector2 position)
     {
         _position = position;
         IsDirty = true;
     }
-
-    public void SetScale(float scale)
-    {
-        SetScale(new Vector2(scale, scale));
-    }
-
+    
     public virtual void SetScale(Vector2 scale)
     {
         _scale = scale;
         IsDirty = true;
     }
-
+    
     public virtual void SetRotation(float radians)
     {
         _rotation = radians;
         IsDirty = true;
     }
-
-    public virtual void SetSize(float width, float height)
-    {
-        SetSize(new Size2(width, height));
-    }
-
+    
     public virtual void SetOriginNormalized(Vector2 origin)
     {
         _originNormalized = origin;
         IsDirty = true;
     }
-
-    public virtual void SetOrigin(Vector2 origin)
-    {
-        SetOriginNormalized(Size != Size2.Empty ? origin / Size : Vector2.Zero);
-    }
-
+    
     public virtual void SetSize(Size2 size)
     {
         var origin = OriginNormalized;
@@ -149,36 +110,27 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
         IsDirty = true;
     }
 
-    protected virtual void OnChanged()
+    protected virtual Matrix GetLocalMatrix()
     {
-        if (IsDirty)
-        {
+        if (IsDirty) {
             _localMatrix = 
                     Matrix2.CreateTranslation(-(Position + Origin))
                 *   Matrix2.CreateRotationZ(Rotation)
                 *   Matrix2.CreateScale(Scale)
                 *   Matrix2.CreateTranslation(Origin);
 
+            _invLocalMatrix = Matrix.Invert(_localMatrix);
+
             IsDirty = false;
         }
-    }
 
-    protected virtual Matrix GetLocalMatrix()
-    {
-        OnChanged();
         return _localMatrix;
-    }
-
-    public virtual RectangleF GetBoundingRectangle()
-    {
-        return new RectangleF(Position - Origin, Size);
     }
 
     public bool Contains(Point2 point)
     {
         // rotate around rectangle center by -rectAngle
-        if(Rotation * Rotation > float.Epsilon)
-        {
+        if(Rotation * Rotation > float.Epsilon) {
             var sin = MathF.Sin(-_rotation);
             var cos = MathF.Cos(-_rotation);
 
@@ -196,5 +148,51 @@ public class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
                 && point.X  <= rect.Right 
                 && point.Y  >= rect.Top 
                 && point.Y  <= rect.Bottom;
+    }
+
+    public void WorldToLocal(ref Vector2 point)
+    {
+        Vector2.Transform(ref point, ref _invLocalMatrix, out point);
+    }
+
+    public void LocalToWorld(ref Vector2 point)
+    {
+        Vector2.Transform(ref point, ref _localMatrix, out point);
+    }
+}
+
+public static class SpatialExtensions
+{
+    public static Vector2 WorldToLocal(this Spatial spatial, Vector2 point)
+    {
+        spatial.WorldToLocal(ref point);
+        return point;
+    }
+
+    public static Vector2 LocalToWorld(this Spatial spatial, Vector2 point)
+    {
+        spatial.LocalToWorld(ref point);
+        return point;
+    }
+    public static RectangleF WorldToLocal(this Spatial spatial, RectangleF rectangle)
+    {
+        Vector2 topLeft = rectangle.TopLeft;
+        Vector2 bottomRight = rectangle.BottomRight;
+
+        spatial.WorldToLocal(ref topLeft);
+        spatial.WorldToLocal(ref bottomRight);
+
+        return RectangleF.CreateFrom(topLeft, bottomRight);
+    }
+
+    public static RectangleF LocalToWorld(this Spatial spatial, RectangleF rectangle)
+    {
+        Vector2 topLeft = rectangle.TopLeft;
+        Vector2 bottomRight = rectangle.BottomRight;
+
+        spatial.LocalToWorld(ref topLeft);
+        spatial.LocalToWorld(ref bottomRight);
+
+        return RectangleF.CreateFrom(topLeft, bottomRight);
     }
 }

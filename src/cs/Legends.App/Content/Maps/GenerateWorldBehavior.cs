@@ -49,7 +49,7 @@ public class GenerateWorldBehavior : Behavior
             switch(command.Name)
             {
                 case "SELECT":
-                    _tile = Parent.GetComponent<Map>().SelectTileAt(Parent.Scene.Camera.TransformWorldToLocal(command.GetPosition()));                        
+                    _tile = Parent.GetComponent<Map>().SelectTileAt(Parent.Scene.Camera.WorldToLocal(command.GetPosition()));                        
                     
                             var map = Parent.GetComponent<Map>();
                     var size = map.TileCount;

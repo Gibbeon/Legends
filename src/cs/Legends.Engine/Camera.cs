@@ -13,16 +13,12 @@ public class Camera : SceneObject, IViewState
 {    
     protected BoundedValue<float> _zoomBounds;
     protected Matrix _projection;
-    protected Matrix _world;
+    protected Matrix _view;
+
     public BoundedValue<float> ZoomBounds { get => _zoomBounds; set => _zoomBounds = value; }
-    [JsonIgnore]
-    public Matrix View => _world;
-    [JsonIgnore]
-    public Matrix Projection => _projection;
-    [JsonIgnore]
-    public Matrix World => LocalMatrix;
-    [JsonIgnore]
-    public IViewState ViewState => new ViewState() { View = View, Projection = Projection, World = World };
+    [JsonIgnore] public Matrix View =>       LocalMatrix;
+    [JsonIgnore] public Matrix Projection => _projection;
+    [JsonIgnore] public Matrix World =>      _view;
 
     public Camera() : this(null, null)
     {
@@ -31,7 +27,7 @@ public class Camera : SceneObject, IViewState
 
     public Camera(IServiceProvider services, Scene scene) : base(services, scene)
     {
-        _zoomBounds = new BoundedValue<float>(float.Epsilon, float.MaxValue);
+        _zoomBounds = new(float.Epsilon, float.MaxValue);
     }
 
     public override void Initialize()
@@ -47,24 +43,16 @@ public class Camera : SceneObject, IViewState
         SetSize(new Size2() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
     }
 
-    protected override void OnChanged()
+    protected override Matrix GetLocalMatrix()
     {
         if(IsDirty) {
-            base.OnChanged();
+            var adjustedSize = this.Size;//(Size2)(this.Size / Scale);
 
-            var adjustedSize = (Size2)(this.Size / Scale);
-
-            //MonoGame.Extended.OrthographicCamera
-
-            _world          = Matrix.Invert(Matrix2.CreateTranslation(Position - Origin));
+            _view           = Matrix2.CreateTranslation(Origin);
             _projection     = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
         }
-    }
 
-    public override void SetSize(Size2 size)
-    {
-        base.SetSize(size);
-        IsDirty = true;
+        return base.GetLocalMatrix();
     }
 
     public override void SetScale(Vector2 scale)
@@ -76,26 +64,16 @@ public class Camera : SceneObject, IViewState
         ));
     }
 
-    public void LookAt(Vector2 vector)
+    /*public virtual Vector2 TransformWorldToLocal(Vector2 point)
     {
-        Position = vector;
-    }
-
-    public override RectangleF GetBoundingRectangle()
-    {
-        return new RectangleF(Position -(Origin / (Scale * Scale)), Size / (Scale * Scale));
-    }
-
-    public virtual Vector2 TransformWorldToLocal(Vector2 point)
-    {
-        Matrix inverse = Matrix.Invert(LocalMatrix * _world);
+        Matrix inverse = Matrix.Invert(_world * LocalMatrix);
         Vector2.Transform(ref point, ref inverse, out point);
         return point;
     }
 
     public virtual IEnumerable<Vector2> TransformWorldToLocal(params Vector2[] points)
     {
-        Matrix inverse = Matrix.Invert(LocalMatrix * _world);
+        Matrix inverse = Matrix.Invert(_world * LocalMatrix);
         return points.Select(n => Vector2.Transform(n, inverse));
     }
 
@@ -108,14 +86,14 @@ public class Camera : SceneObject, IViewState
 
     public virtual Vector2 TransformLocalToWorld(Vector2 point)
     {
-        Matrix inverse = LocalMatrix * _world;
+        Matrix inverse = _world * LocalMatrix;
         Vector2.Transform(ref point, ref inverse, out point);
         return point;
     }
 
     public virtual IEnumerable<Vector2> TransformLocalToWorld(params Vector2[] points)
     {
-        Matrix inverse = LocalMatrix * _world;        
+        Matrix inverse = _world * LocalMatrix;        
         return points.Select(n => Vector2.Transform(n, inverse));
     }
 
@@ -125,6 +103,7 @@ public class Camera : SceneObject, IViewState
         var bottomRight = TransformLocalToWorld(rectangleF.BottomRight);
         return new RectangleF(topLeft, bottomRight - topLeft);
     }
+    */
 }
 
     /*public class Camera2D : Camera<Vector2>, IMovable, IRotatable

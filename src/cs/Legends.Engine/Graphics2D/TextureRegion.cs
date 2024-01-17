@@ -65,20 +65,15 @@ public class TextureRegion : Spatial, IInitalizable
     {        
         Frame = frame;
 
-        OffsetPosition = new Vector2(
-            (int)(Frame * Slice.Width) % (int)Size.Width, 
-            (int)(Frame * Slice.Width / (int)Size.Width) * Slice.Height
-        );
+        //OffsetPosition = new Vector2(
+        //    (int)(Frame * Slice.Width) % (int)Size.Width, 
+        //    (int)(Frame * Slice.Width / (int)Size.Width) * Slice.Height
+        //);
     }
 
     public override string ToString()
     {
         return $"{string.Empty} {BoundingRectangle}";
-    }
-
-    public override RectangleF GetBoundingRectangle()
-    {
-        return new RectangleF(Position - Origin, Slice);
     }
 
     public void Initialize()
@@ -91,10 +86,10 @@ public class TextureRegion : Spatial, IInitalizable
         
         if(Slice == Size2.Empty) Slice = Size;
 
-        OffsetPosition = new Vector2(
-            (int)(Frame * Slice.Width) % (int)Size.Width, 
-            (int)(Frame * Slice.Width / (int)Size.Width) * Slice.Height
-        );
+        //OffsetPosition = new Vector2(
+        //    (int)(Frame * Slice.Width) % (int)Size.Width, 
+        //    (int)(Frame * Slice.Width / (int)Size.Width) * Slice.Height
+        //);
     }
 
     public void Reset()

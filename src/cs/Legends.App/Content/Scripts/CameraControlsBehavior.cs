@@ -9,16 +9,19 @@ namespace Legends.Scripts;
 public class CameraControlsBehavior : Behavior
 {
     public float ScrollSpeed { get; set; }
+    public float ZoomFactor { get; set; }
+    public float RotateFactor { get; set; }
     private InputCommandSet _commands;
 
     public CameraControlsBehavior(): this(null, null)
     {
-        ScrollSpeed = 1;
     }
     
     public CameraControlsBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-
+        ScrollSpeed = 1;
+        ZoomFactor = 2;
+        RotateFactor = MathF.PI / 12;
     }
 
     public override void Dispose()
@@ -36,6 +39,9 @@ public class CameraControlsBehavior : Behavior
                 case "MOVE_RIGHT":  Parent.Scene.Camera.Move( ScrollSpeed, 0); break;
                 case "MOVE_UP":     Parent.Scene.Camera.Move( 0,-ScrollSpeed); break;
                 case "MOVE_DOWN":   Parent.Scene.Camera.Move( 0, ScrollSpeed); break;
+                case "ZOOM_IN":     Parent.Scene.Camera.Zoom(1 / ZoomFactor); break;
+                case "ZOOM_OUT":    Parent.Scene.Camera.Zoom(    ZoomFactor); break;
+                case "ROTATE":      Parent.Scene.Camera.RotateByDegrees(RotateFactor); break;
                 default:
                     Console.WriteLine("Unknown Command: {0}", command.Name); break;             
             }
@@ -50,7 +56,11 @@ public class CameraControlsBehavior : Behavior
         _commands.Add("MOVE_RIGHT",   EventType.KeyPressed,    Keys.Right);      
         _commands.Add("MOVE_UP",      EventType.KeyPressed,    Keys.Up);             
         _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down);
-
+        
+        _commands.Add("ZOOM_IN",      EventType.KeyPressed,     Keys.T);           
+        _commands.Add("ZOOM_OUT",     EventType.KeyPressed,    Keys.Y);             
+        _commands.Add("ROTATE",       EventType.KeyPressed,        Keys.R);
+        
         _commands.Enabled = true;
     }
 

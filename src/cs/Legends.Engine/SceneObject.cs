@@ -5,11 +5,10 @@ using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using Microsoft.Xna.Framework.Content.Pipeline;
 
 namespace Legends.Engine;
 
-public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitalizable
+public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObject, IInitalizable
 {   
     private static int              _globalObjId;
     private IList<string>           _tags;    
@@ -19,28 +18,16 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
     private Scene _scene;
     private bool _enabled = true;
     private bool _visible = true;
-    [JsonIgnore]
-    public IServiceProvider Services { get; protected set; }
-    [JsonIgnore]
-    public SceneObject Parent { get; protected set; } 
-    [JsonIgnore]
-    public Scene Scene => _scene ??= GetParentScene();
+
     public string Name { get; protected set; }  
+    [DefaultValue(true)] public bool Enabled { get => _enabled; set => _enabled = value; }
+    [DefaultValue(true)] public bool Visible { get => _visible; set => _visible = value; }
 
-    [DefaultValue(true)]  
-    public bool Enabled { get => _enabled; set => _enabled = value; }
-    
-    [DefaultValue(true)]  
-    public bool Visible { get => _visible; set => _visible = value; }
-    
-    [JsonIgnore]
-    public IEnumerable<SceneObject> Children => ChildrenReferences.Select(n => n.Get());
-
-    [JsonIgnore]
-    public IEnumerable<IBehavior> Behaviors => BehaviorReferences.Select(n => n.Get());
-
-    [JsonIgnore]
-    public IEnumerable<IComponent> Components => ComponentReferences.Select(n => n.Get());
+    [JsonIgnore] public IServiceProvider Services { get; protected set; }
+    [JsonIgnore] public Scene Scene => _scene ??= GetParentScene();
+    [JsonIgnore] public IEnumerable<SceneObject> Children  => ChildrenReferences.Select(n => n.Get());
+    [JsonIgnore] public IEnumerable<IBehavior> Behaviors   => BehaviorReferences.Select(n => n.Get());
+    [JsonIgnore] public IEnumerable<IComponent> Components => ComponentReferences.Select(n => n.Get());
     
     [JsonProperty(nameof(Children))]
     protected IList<Ref<SceneObject>>  ChildrenReferences
@@ -73,7 +60,7 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
 
     }
 
-    public SceneObject(IServiceProvider systems, SceneObject parent = default) : base()
+    public SceneObject(IServiceProvider systems, SceneObject parent = default) : base(parent)
     {
         Services    = systems;
         Name        = string.Format("{0}#{1}", typeof(SceneObject).Name, _globalObjId++);
@@ -84,61 +71,27 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
         _tags       = new List<string>();
 
         OriginNormalized = new Vector2(.5f, .5f);
-        Parent = parent;
     }
 
     public virtual void Initialize()
     {
-        IsDirty = true;
-        
-        foreach(var component in Components)
-        {
+        foreach(var component in Components) {
             component.Initialize();
-        } 
+        }  
 
-        foreach(var behavior in Behaviors)
-        {
+        foreach(var behavior in Behaviors) {
             behavior.Initialize();
         }
 
-        foreach(var child in Children)
-        {
-            child.OffsetPosition   = this.Position;
-            child.OffsetRotation   = this.Rotation;
-            child.OffsetScale      = this.Scale;
-
+        foreach(var child in Children) {
             child.Initialize();
         }
 
         EnsureBounds();
     }
 
-    protected void EnsureBounds()
-    {
-        foreach(var child in Children)
-        {
-            EnsureBounds(child);
-        }
-    }
-
-    //public Vector2 TopLeft              { get => Position - Origin; set => Position = value + Origin; }
-    //public Vector2 BottomRight          { get => TopLeft + (Vector2)Size; set=> Size = value - TopLeft; }
-
-    protected void EnsureBounds(Spatial child)
-    {
-        if(!IsDirty) return;
-
-        var topLeft         = new Vector2(Math.Min(TopLeft.X, child.TopLeft.X), Math.Min(TopLeft.Y, child.TopLeft.Y));
-        var bottomRight     = new Vector2(Math.Max(BottomRight.X, child.BottomRight.X), Math.Max(BottomRight.Y, child.BottomRight.Y));
-        
-        _position = topLeft + Origin;
-        _size = bottomRight - topLeft;
-
-        return;
-    }
-
     public TType GetBehavior<TType>()
-        where TType: class
+        where TType: IBehavior
     {
         return Behaviors.OfType<TType>().SingleOrDefault();
     } 
@@ -149,37 +102,9 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
         return Components.OfType<TType>().SingleOrDefault();
     } 
 
-    public override void SetPosition(Vector2 position)
-    {
-        base.SetPosition(position);
-        foreach(var child in Children)
-        {
-            child.OffsetPosition = position;
-        }
-    }
-
-    public override void SetScale(Vector2 scale)
-    {
-        base.SetScale(scale);
-        foreach(var child in Children)
-        {
-            child.OffsetScale = scale;
-        }
-    }
-
-    public override void SetRotation(float radians)
-    {
-        base.SetRotation(radians);
-        foreach(var child in Children)
-        {
-            child.OffsetRotation = radians;
-        }
-    }
-
-
     public virtual IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
     {
-        if(GetBoundingRectangle().Contains(position.ToPoint()))
+        if(Contains(position.ToPoint()))
         {
             yield return this;
 
@@ -199,46 +124,32 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
     {
         if(!Enabled) return;
         
-        foreach(var behavior in Behaviors)
-        {
+        foreach(var behavior in Behaviors) {
             behavior.Update(gameTime);
         }
 
-        foreach(var child in Children)
-        {
+        foreach(var child in Children) {
             child.Update(gameTime);
         }
 
-        foreach(var component in Components)
-        {
+        foreach(var component in Components) {
             component.Update(gameTime);
         }   
-
-        OnChanged();  
-    }
-
-    protected override void OnChanged()
-    {
-        EnsureBounds();
-        base.OnChanged();
     }
 
     public virtual void Draw(GameTime gameTime)
     {
         if(!Visible) return;
 
-        foreach(var behavior in Behaviors)
-        {
+        foreach(var behavior in Behaviors) {
             behavior.Draw(gameTime);
         }
 
-        foreach(var component in Components)
-        {
+        foreach(var component in Components) {
             component.Draw(gameTime);
         }
         
-        foreach(var child in Children)
-        {
+        foreach(var child in Children) {
             child.Draw(gameTime);
         }
     }
@@ -250,18 +161,15 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
         Enabled = false;
         Visible = false;
 
-        foreach(var behavior in Behaviors)
-        {
+        foreach(var behavior in Behaviors) {
             behavior.Dispose();
         }
 
-        foreach(var child in Children)
-        {
+        foreach(var child in Children) {
             child.Dispose();
         }
 
-        foreach(var component in Components)
-        {
+        foreach(var component in Components) {
             component.Dispose();
         }
 
@@ -280,6 +188,27 @@ public class SceneObject : Spatial, IDisposable, IUpdate, INamedObject, IInitali
     public override string ToString()
     {
         return  $"{Name} Pos:{Position} S:{Scale} Rot:{Rotation} E:{Enabled} Vis:{Visible}";
+    }
+
+
+    protected void EnsureBounds()
+    {
+        foreach(var child in Children) {
+            EnsureBounds(child);
+        }
+    }
+
+    protected void EnsureBounds(Spatial child)
+    {
+        if(!IsDirty) return;
+
+        var absTopLeft          = new Vector2(Math.Min(AbsoluteTopLeft.X, child.AbsoluteTopLeft.X), Math.Min(AbsoluteTopLeft.Y, child.AbsoluteTopLeft.Y));
+        var absBottomRight      = new Vector2(Math.Max(AbsoluteBottomRight.X, child.AbsoluteBottomRight.X), Math.Max(AbsoluteBottomRight.Y, child.AbsoluteBottomRight.Y));
+        
+        var origin              = Origin;
+        
+        Size                    = (absBottomRight - absTopLeft) / AbsoluteScale;
+        Origin                  = origin; // adjustd the size, reset the origin back to the origional value
     }
 }  
 
