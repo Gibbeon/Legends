@@ -19,16 +19,18 @@
                     "halign":   "Center",
                     "valign":   "Middle"
                 }
+            ],
+            "behaviors": [
+                {
+                    "$compile": "Scripts/ChildControlsBehavior.cs",
+                    "scrollSpeed": 8
+                }
             ]
         }
     ],
     "behaviors": [
         {
             "$compile": "Scenes/TitleScreen/LaunchGameBehavior.cs"
-        },
-        {
-            "$compile": "Scripts/CameraControlsBehavior.cs",
-            "scrollSpeed": 8
         }
     ]
 }

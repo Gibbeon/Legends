@@ -36,7 +36,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     public Vector2 Position { get => _position;                set => SetPosition(value); }
     public Vector2 Scale    { get => _scale;                   set => SetScale(value); }
     public float   Rotation { get => _rotation;                set => SetRotation(value); }   
-    public Size2   Size     { get => _size;                    set => SetSize(value); }
+    public Size2   Size     { get => _size * Scale;            set => SetSize(value); }
     public Vector2 Origin   { get => _originNormalized * Size; set => SetOrigin(value); }
 
     [JsonIgnore] public RectangleF BoundingRectangle        => new(TopLeft, Size);
@@ -105,7 +105,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     public virtual void SetSize(Size2 size)
     {
         var origin = OriginNormalized;
-        _size = size;
+        _size = size / Scale;
         OriginNormalized = origin;
         IsDirty = true;
     }
