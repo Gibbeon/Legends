@@ -108,20 +108,24 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
         IsDirty = true;
     }
 
-    protected virtual Matrix GetLocalMatrix()
+    protected virtual void UpdateMatricies()
     {
         if (IsDirty) {
             _localMatrix = 
-                    Matrix2.CreateTranslation(-(Position + Origin))
+                    Matrix2.CreateTranslation(-(Position + Origin / Scale))
                 *   Matrix2.CreateRotationZ(Rotation)
                 *   Matrix2.CreateScale(Scale)
-                *   Matrix2.CreateTranslation(Origin);
+                *   Matrix2.CreateTranslation(Origin / Scale);
 
             _invLocalMatrix = Matrix.Invert(_localMatrix);
 
             IsDirty = false;
         }
+    }
 
+    protected virtual Matrix GetLocalMatrix()
+    {
+        UpdateMatricies();
         return _localMatrix;
     }
 

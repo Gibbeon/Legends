@@ -18,9 +18,10 @@ public class Camera : SceneObject, IViewState
     protected Matrix _invModelView;
 
     public BoundedValue<float> ZoomBounds { get => _zoomBounds; set => _zoomBounds = value; }
-    [JsonIgnore] public Matrix View =>       LocalMatrix;
+
+    [JsonIgnore] public Matrix View =>       GetViewMatrix();
     [JsonIgnore] public Matrix Projection => _projection;
-    [JsonIgnore] public Matrix World =>      _view;
+    [JsonIgnore] public Matrix World =>      LocalMatrix;
 
     public Camera() : this(null, null)
     {
@@ -43,21 +44,26 @@ public class Camera : SceneObject, IViewState
     protected void SetViewportDefault()
     {
         SetSize(new Size2() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
+        _projection     = Matrix.CreateOrthographicOffCenter(0f, Size.Width, Size.Height, 0f, -1f, 0f);
+
+        OriginNormalized = new Vector2(.5f, .5f);
+        _view           = Matrix.Identity;//Matrix2.CreateTranslation(Origin);
     }
 
-    protected override Matrix GetLocalMatrix()
+    protected override void UpdateMatricies()
     {
-        // got this out of order
         if(IsDirty) {
-            var adjustedSize = (Size2)(this.Size / Scale);
+            base.UpdateMatricies();
 
-            _view           = Matrix2.CreateTranslation(Origin);
-            _projection     = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);
-            _modelView      = _view * base.GetLocalMatrix();
+            _modelView      = _view * World;
             _invModelView   = Matrix.Invert(_modelView);
         }
+    }
 
-        return base.GetLocalMatrix();
+    protected virtual Matrix GetViewMatrix()
+    {
+        UpdateMatricies();
+        return _view;
     }
 
     public override void SetScale(Vector2 scale)
