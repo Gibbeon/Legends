@@ -79,6 +79,7 @@
 /processor:DynamicAssemblyProcessor
 /build:Scripts\CameraControlsBehavior.cs
 
+
 #begin Scripts\ChildControlsBehavior.cs
 /importer:DynamicAssemblyImporter
 /processor:DynamicAssemblyProcessor

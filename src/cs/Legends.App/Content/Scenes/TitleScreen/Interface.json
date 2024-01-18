@@ -1,6 +1,15 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "TitleScreen",
+    "camera": {
+        "name": "Camera",
+        "behaviors": [
+            {
+                "$compile": "Scripts/ChildControlsBehavior.cs",
+                "scrollSpeed": 8
+            }
+        ]
+    },
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Debug, Legends.Engine",
@@ -23,12 +32,6 @@
                             "valign":   "Middle"
                         }
                     ]
-                }
-            ],
-            "behaviors": [
-                {
-                    "$compile": "Scripts/ChildControlsBehavior.cs",
-                    "scrollSpeed": 8
                 }
             ]
         }

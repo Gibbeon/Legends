@@ -40,7 +40,7 @@ public class ImageGenerator
     }
 
     public float[,] GenerateHorizontalGradient(int width, int height, float min = 0f, float max = 1.0f, 
-        float[,]? array = null, int offsetX = 0, int offsetY = 0, PixelBlendOperation blendOperation = PixelBlendOperation.Overwrite)
+        float[,] array = null, int offsetX = 0, int offsetY = 0, PixelBlendOperation blendOperation = PixelBlendOperation.Overwrite)
     {
         var blendFunc = GetBlendOperation2D(blendOperation);
         float[,] result = array ?? new float[width, height];
@@ -60,7 +60,7 @@ public class ImageGenerator
     }
     
     public float[,] GenerateVertialGradient(int width, int height, float min = 0f, float max = 1.0f, 
-        float[,]? array = null, int offsetX = 0, int offsetY = 0, PixelBlendOperation blendOperation = PixelBlendOperation.Overwrite)
+        float[,] array = null, int offsetX = 0, int offsetY = 0, PixelBlendOperation blendOperation = PixelBlendOperation.Overwrite)
     {
         var blendFunc = GetBlendOperation2D(blendOperation);
         float[,] result = array ?? new float[width, height];
