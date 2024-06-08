@@ -13,7 +13,7 @@ public class AnimationChannel
     {
         Controller = controller;
         AnimationData = data;
-        if(controller.Parent != null)
+        if(controller != null && controller.Parent != null)
         {
             Enabled = data.Enabled;
             data.InitializeChannel(this);

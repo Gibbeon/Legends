@@ -102,7 +102,17 @@ public class Map : Component, IRenderable
         Parent.Size = new Size2(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
         Parent.OriginNormalized = new Vector2(.5f, .5f);
 
-        if(Tiles == null) Tiles = new ushort[(int)TileCount.Width * (int)TileCount.Height];
+        ushort[] tiles = new ushort[(int)TileCount.Width * (int)TileCount.Height]; 
+
+        if(Tiles != null) {
+            for(int y = 0; y < TileCount.Height; y++) {
+                for(int x = 0; x < TileCount.Width; x++) { //no multi dimentianal array
+                    tiles[(int)(y * TileCount.Width) + x] = Tiles[((int)(y * TileCount.Width) + x) % Tiles.Length];
+                }
+            }
+        }
+
+        Tiles = tiles;
         
         BuildMap();
  
@@ -124,7 +134,8 @@ public class Map : Component, IRenderable
 
     public override void Update(GameTime gameTime)
     {
-        
+        TileSet.Update(gameTime);     
+        BuildMap();   
     }
 
     public override void Draw(GameTime gameTime)

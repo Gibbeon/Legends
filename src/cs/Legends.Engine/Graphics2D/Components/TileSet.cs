@@ -5,10 +5,13 @@ using Legends.Engine.Animation;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Buffers;
+using Microsoft.Xna.Framework;
+using System.Data;
+using SharpFont;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public class TileSet
+public class TileSet : IUpdate
 {
     [JsonIgnore]
     public Size2            TileSize => TextureRegion.Slice;
@@ -21,6 +24,8 @@ public class TileSet
  
     public Dictionary<string, ushort[]> Tags { get; set; }
 
+    public Dictionary<ushort, IAnimationData> Animations { get; set; }
+
     private uint _stride;
     private float _uvwidth;
     private float _uvheight;
@@ -31,6 +36,8 @@ public class TileSet
     private string[] _tags;
 
     private ushort[] _index;
+
+    public ushort[] Index => _index;
 
     public TileSet()
     {
@@ -101,6 +108,8 @@ public class TileSet
 
     public RectangleF GetUV(ushort tileIndex)
     {  
+        tileIndex = _index[tileIndex];
+
         var result =  new RectangleF(
             (_xofs + (tileIndex % _localstride)) * _uvwidth,
             (_yofs + (tileIndex / _localstride)) * _uvheight,
@@ -109,19 +118,31 @@ public class TileSet
 
         return result;
     }
-}
 
-public struct TileSetKeyframe : IKeyframe
-{
-    public ushort[]     Index       { get; set; }
-    public ushort[]     Tiles       { get; set; }
-    public float        Duration    { get; set; }
-}
+    TileAnimationChannel channel;
 
-public class TileSetAnimationData : KeyframeAnimationData<TileSetKeyframe>
-{
-    protected override void UpdateFrame(AnimationChannel channel, TileSetKeyframe current)
+    public void Update(GameTime gameTime)
     {
-        throw new NotImplementedException();
+
+        foreach(var kvp in Animations)
+        {
+            if(channel== null)
+            {
+                channel= new TileAnimationChannel(this, kvp.Key, kvp.Value);
+                kvp.Value.InitializeChannel(channel);
+            
+            }channel.Update(gameTime);
+        }        
+    }
+}
+
+class TileAnimationChannel : AnimationChannel
+{
+    public TileSet Parent { get; set; }
+    public int TileIndex { get; set; }
+    public TileAnimationChannel(TileSet set, ushort tile, IAnimationData data) : base(null, data)
+    {
+        TileIndex = tile;
+        Parent = set;
     }
 }

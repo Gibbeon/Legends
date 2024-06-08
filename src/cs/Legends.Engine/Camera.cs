@@ -49,7 +49,7 @@ public class Camera : SceneObject, IViewState
     {
         // got this out of order
         if(IsDirty) {
-            var adjustedSize = (Size2)(this.Size / Scale);
+            var adjustedSize = this.Size;//(Size2)(this.Size / Scale);
 
             _view           = Matrix2.CreateTranslation(Origin);
             _projection     = Matrix.CreateOrthographicOffCenter(0f, adjustedSize.Width, adjustedSize.Height, 0f, -1f, 0f);

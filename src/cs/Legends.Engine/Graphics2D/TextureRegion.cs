@@ -83,7 +83,8 @@ public class TextureRegion : Spatial, IInitalizable
             TextureReference = new Texture2D(Services.GetGraphicsDevice(), (int)Size.Width, (int)Size.Height);
             Texture.SetData<Color>(Enumerable.Repeat(Color, (int)(Size.Width * Size.Height)).ToArray());
         }
-        
+
+        if(Size == Size2.Empty) Size = new Size2(Texture.Width, Texture.Height);        
         if(Slice == Size2.Empty) Slice = Size;
 
         //OffsetPosition = new Vector2(

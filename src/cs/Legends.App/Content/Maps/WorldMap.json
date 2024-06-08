@@ -1,6 +1,9 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "WorldMap",
+    "camera": {
+        "scale": "8, 8"
+    },
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Debug, Legends.Engine",

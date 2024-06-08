@@ -9,6 +9,7 @@ using Legends.Engine.Runtime;
 using Legends.Engine.Serialization;
 using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
+using SharpDX.D3DCompiler;
 
 namespace Legends.Engine.Content;
 
@@ -60,7 +61,8 @@ public static class ContentReaderExtensions
             int elementSize = Marshal.SizeOf(elementType);
             using(ContentLogger.LogBegin(reader.BaseStream.Position, "Read elementSize: {0} bytesSize: {1}", elementSize, count * elementSize))
             {
-                Buffer.BlockCopy(reader.ReadBytes(count * elementSize), 0, (Array)instance, 0, count);
+                byte[] buffer = reader.ReadBytes(count * elementSize);
+                Buffer.BlockCopy(buffer, 0, (Array)instance, 0, count * elementSize);
                 ContentLogger.LogEnd(" (BlockCopy)");
             }
         }
@@ -113,7 +115,7 @@ public static class ContentReaderExtensions
         if(isNullOfDefault)
         {
             ContentLogger.LogEnd("value is (null)", result);
-            return instance;
+            return instance ?? (type.IsValueType ? Activator.CreateInstance(derivedType) : null);
         }
 
         if(native != null)
