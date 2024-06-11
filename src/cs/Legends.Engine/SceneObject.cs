@@ -87,7 +87,7 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
             child.Initialize();
         }
 
-        EnsureBounds();
+        UpdateMatricies();
     }
 
     public TType GetBehavior<TType>()
@@ -190,17 +190,13 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         return  $"{Name} Pos:{Position} S:{Scale} Rot:{Rotation} E:{Enabled} Vis:{Visible}";
     }
 
-    protected override Matrix GetLocalMatrix()
-    {
-        EnsureBounds();
-        return base.GetLocalMatrix();
-    }
-
-    protected void EnsureBounds()
+    protected override void UpdateMatricies()
     {
         foreach(var child in Children) {
             EnsureBounds(child);
         }
+
+        base.UpdateMatricies();
     }
 
     protected void EnsureBounds(Spatial child)
@@ -209,8 +205,6 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
 
         var absTopLeft          = new Vector2(Math.Min(AbsoluteTopLeft.X, child.AbsoluteTopLeft.X), Math.Min(AbsoluteTopLeft.Y, child.AbsoluteTopLeft.Y));
         var absBottomRight      = new Vector2(Math.Max(AbsoluteBottomRight.X, child.AbsoluteBottomRight.X), Math.Max(AbsoluteBottomRight.Y, child.AbsoluteBottomRight.Y));
-        
-        var origin              = Origin;
         
         Size                    = (absBottomRight - absTopLeft) / AbsoluteScale;
         Position                = AbsoluteOrigin + absTopLeft / AbsoluteScale - (Parent?.AbsolutePosition ?? Vector2.Zero);
