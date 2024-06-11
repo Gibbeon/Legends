@@ -69,6 +69,9 @@ public class Map : Component, IRenderable
     {
         _vertices = BuildVerticies().ToArray();
         _indicies = BuildIndicies().ToArray();
+
+        //_vertices = BuildVerticiesForTileMap().ToArray();
+        //_indicies = BuildIndiciesForTileMap().ToArray();
         
         _vertexBuffer = new DynamicVertexBuffer(Services.GetGraphicsDevice(), VertexPositionColorTexture.VertexDeclaration, _vertices.Length, BufferUsage.WriteOnly);
         if(_vertices.Length > 0) _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
