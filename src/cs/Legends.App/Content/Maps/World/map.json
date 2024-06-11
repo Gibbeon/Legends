@@ -5,7 +5,7 @@
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Map, Legends.Engine",
-            "tileCount": "128, 128",
+            "tileCount": "128 128",
             "tiles": [ 0 ],
             "tileSet": {
                 "textureRegion": {

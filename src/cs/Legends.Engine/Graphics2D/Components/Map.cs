@@ -14,7 +14,7 @@ public class Map : Component, IRenderable
     [JsonIgnore]
     public int RenderLayerID => 0;
 
-    public Size2        TileCount { get; set; }
+    public Size        TileCount { get; set; }
 
     [JsonIgnore]
     public TileSet      TileSet => TileSetReference.Get();
@@ -50,9 +50,9 @@ public class Map : Component, IRenderable
         var x_count = TileSet.TextureRegion.Size.Width /    TileSet.TileSize.Width;        
         var y_count = TileSet.TextureRegion.Size.Height /   TileSet.TileSize.Height;
 
-        TileCount = new Size2(x_count, y_count);
+        TileCount = new Size((int)x_count, (int)y_count);
 
-        Tiles = new ushort[(int)(TileCount.Height * TileCount.Width)];
+        Tiles = new ushort[TileCount.Height * TileCount.Width];
         
         for(var y = 0; y < TileCount.Height; y++)
         {
@@ -65,7 +65,7 @@ public class Map : Component, IRenderable
         Initialize();
     }
 
-    public void BuildMap()
+    public void   BuildMap()
     {
         _vertices = BuildVerticies().ToArray();
         _indicies = BuildIndicies().ToArray();
@@ -151,7 +151,7 @@ public class Map : Component, IRenderable
     {
         (_currentEffect as IEffectMatrices).View        = ViewState.View;
         (_currentEffect as IEffectMatrices).Projection  = ViewState.Projection;
-        (_currentEffect as IEffectMatrices).World       = ViewState.World * Parent.LocalMatrix;//* Matrix2.CreateTranslation(-Parent.Origin * Parent.Scale);
+        (_currentEffect as IEffectMatrices).World       = ViewState.World;// * Parent.LocalMatrix;//* Matrix2.CreateTranslation(-Parent.Origin * Parent.Scale);
 
         var rasterizerState = new RasterizerState() {
             CullMode = CullMode.CullCounterClockwiseFace,
@@ -181,12 +181,66 @@ public class Map : Component, IRenderable
         {
             for(int x = 0; x < TileCount.Width; x++)
             {
-                yield return (uint)((y * TileCount.Width + x) * 4 + 0);
-                yield return (uint)((y * TileCount.Width + x) * 4 + 1);
-                yield return (uint)((y * TileCount.Width + x) * 4 + 2);
-                yield return (uint)((y * TileCount.Width + x) * 4 + 1);
-                yield return (uint)((y * TileCount.Width + x) * 4 + 3);
-                yield return (uint)((y * TileCount.Width + x) * 4 + 2);
+                int offset = y * TileCount.Width + x;
+
+                yield return (uint)(offset * 4 + 0);
+                yield return (uint)(offset * 4 + 1);
+                yield return (uint)(offset * 4 + 2);
+                yield return (uint)(offset * 4 + 1);
+                yield return (uint)(offset * 4 + 3);
+                yield return (uint)(offset * 4 + 2);
+            }
+        }
+    }
+
+    protected IEnumerable<uint> BuildIndiciesForTileMap()
+    {
+        for(int y = 0; y < TileCount.Height; y++)
+        {
+            for(int x = 0; x < TileCount.Width; x++)
+            {
+                int offset = Tiles[TileCount.Height * y + x];
+
+                yield return (uint)(offset * 4 + 0);
+                yield return (uint)(offset * 4 + 1);
+                yield return (uint)(offset * 4 + 2);
+                yield return (uint)(offset * 4 + 1);
+                yield return (uint)(offset * 4 + 3);
+                yield return (uint)(offset * 4 + 2);
+            }
+        }
+    }
+
+    protected IEnumerable<VertexPositionColorTexture> BuildVerticiesForTileMap()
+    {
+        for(int y = 0; y < TileSet.TileCount.Height; y++)
+        {
+            for(int x = 0; x < TileSet.TileCount.Width; x++)
+            {
+                var uvCoords = TileSet.GetUV(x, y);
+                yield return new VertexPositionColorTexture(
+                    new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
+                    Color.White,
+                    uvCoords.TopLeft
+                );
+
+                yield return new VertexPositionColorTexture(
+                    new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
+                    Color.White,
+                    uvCoords.TopRight
+                );
+
+                yield return new VertexPositionColorTexture(
+                    new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
+                    Color.White,
+                    uvCoords.BottomLeft
+                );
+
+                yield return new VertexPositionColorTexture(
+                    new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
+                    Color.White,
+                    uvCoords.BottomRight
+                );
             }
         }
     }

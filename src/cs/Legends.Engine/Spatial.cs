@@ -114,8 +114,8 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
             _localMatrix = 
                     Matrix2.CreateTranslation(-(Position + Origin / Scale))
                 *   Matrix2.CreateRotationZ(Rotation)
-                *   Matrix2.CreateScale(Scale)
-                *   Matrix2.CreateTranslation(Origin / Scale);
+                *   Matrix2.CreateTranslation(Origin / Scale)
+                *   Matrix2.CreateScale(Scale);
 
             _invLocalMatrix = Matrix.Invert(_localMatrix);
 

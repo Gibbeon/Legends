@@ -17,6 +17,9 @@ public class TileSet : IUpdate
     public Size2            TileSize => TextureRegion.Slice;
 
     [JsonIgnore]
+    public Size             TileCount => TextureRegion.TileCount;
+
+    [JsonIgnore]
     public TextureRegion    TextureRegion => TextureRegionReference.Get();
  
     [JsonProperty(nameof(TextureRegion))]
@@ -104,6 +107,11 @@ public class TileSet : IUpdate
             newArray[ array.Length ] = tileIndex;
             Tags[tag] = newArray;
         }
+    }
+
+    public RectangleF GetUV(int x, int y)
+    {
+        return GetUV((ushort)(y * _localstride + x));
     }
 
     public RectangleF GetUV(ushort tileIndex)

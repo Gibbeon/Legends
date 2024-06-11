@@ -24,6 +24,7 @@ public class ContentObjectImporter : ContentImporter<dynamic>
             
             settings.Converters.Add(new RefJsonConverter());
             settings.Converters.Add(new Size2JsonConverter());
+            settings.Converters.Add(new SizeJsonConverter());   
                 
             var result = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
             string jsonOutput = JsonConvert.ToString(JsonConvert.SerializeObject(result, settings));
@@ -54,6 +55,7 @@ public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
                 
             settings.Converters.Add(new RefJsonConverter());  
             settings.Converters.Add(new Size2JsonConverter());   
+            settings.Converters.Add(new SizeJsonConverter());   
                     
             return ContentObject.Wrap((object)input);
         }

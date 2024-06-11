@@ -35,26 +35,24 @@ public class Camera : SceneObject, IViewState
 
     public override void Initialize()
     {
-        base.Initialize();
-
         SetViewportDefault();
-        OriginNormalized = new Vector2(.5f, .5f);
+        //OriginNormalized = new Vector2(.5f, .5f);
+
+        base.Initialize();
     }
 
     protected void SetViewportDefault()
     {
         SetSize(new Size2() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
         _projection     = Matrix.CreateOrthographicOffCenter(0f, Size.Width, Size.Height, 0f, -1f, 0f);
-
-        OriginNormalized = new Vector2(.5f, .5f);
-        _view           = Matrix.Identity;//Matrix2.CreateTranslation(Origin);
+        
     }
 
     protected override void UpdateMatricies()
     {
         if(IsDirty) {
-            var adjustedSize = this.Size;//(Size2)(this.Size / Scale);
-
+            base.UpdateMatricies();
+            _view           = Matrix2.CreateTranslation(Origin); // why double scaling
             _modelView      = _view * World;
             _invModelView   = Matrix.Invert(_modelView);
         }

@@ -7,6 +7,7 @@ using Legends.Engine.Serialization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Text;
+using MonoGame.Extended.Serialization;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
@@ -120,6 +121,7 @@ public class RefJsonConverter : JsonConverter
     {       
         try
         {
+
             if(value is IRef refValue)
             {
                 if(refValue.IsExternal && !refValue.IsExtended)
