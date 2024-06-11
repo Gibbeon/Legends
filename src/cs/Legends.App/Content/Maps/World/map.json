@@ -1,7 +1,7 @@
 {
     "$type": "Legends.Engine.SceneObject, Legends.Engine",
-    "name": "MainActor",
     "scale": "1, 1",
+    "visible": false,
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Map, Legends.Engine",

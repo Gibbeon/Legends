@@ -13,6 +13,9 @@
     "children": [
         {
             "$asset": "Maps/World/map.json"
+        },
+        {   
+            "$asset": "Maps/World/map2.json"
         }
     ],
     "behaviors": [

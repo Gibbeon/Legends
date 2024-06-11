@@ -45,6 +45,7 @@ public class TileSet : IUpdate
     public TileSet()
     {
         Tags = new();
+        Animations = new();
     }
 
     public void Initialize()
@@ -62,8 +63,7 @@ public class TileSet : IUpdate
 
         _tags = Tags.Keys.ToArray();
         _tagIndex = new ushort[(int)TextureRegion.TileCount.Height * (int)TextureRegion.TileCount.Width][];
-        ushort tempIndex = 0;
-        _index = Enumerable.Repeat(tempIndex++, (int)TextureRegion.TileCount.Height * (int)TextureRegion.TileCount.Width).ToArray();
+        _index = Enumerable.Range(0, (int)TextureRegion.TileCount.Height * (int)TextureRegion.TileCount.Width).Select(n => (ushort)(n)).ToArray();
 
         for(ushort tagIndex = 0; tagIndex < _tags.Length; tagIndex++)
         {
@@ -116,7 +116,7 @@ public class TileSet : IUpdate
 
     public RectangleF GetUV(ushort tileIndex)
     {  
-        tileIndex = _index[tileIndex];
+        tileIndex = _index[tileIndex % _index.Length];
 
         var result =  new RectangleF(
             (_xofs + (tileIndex % _localstride)) * _uvwidth,
@@ -131,7 +131,6 @@ public class TileSet : IUpdate
 
     public void Update(GameTime gameTime)
     {
-
         foreach(var kvp in Animations)
         {
             if(channel== null)

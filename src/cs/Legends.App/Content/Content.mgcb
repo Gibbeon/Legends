@@ -37,12 +37,6 @@
 /build:Fonts\Sensation_0.png
 
 
-#begin Maps\AutoGenerateMapBehavior.cs
-/importer:DynamicAssemblyImporter
-/processor:DynamicAssemblyProcessor
-/build:Maps\AutoGenerateMapBehavior.cs
-
-
 #begin Maps\GenerateWorldBehavior.cs
 /importer:DynamicAssemblyImporter
 /processor:DynamicAssemblyProcessor
@@ -72,6 +66,12 @@
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
 /build:Maps\WorldMap.json
+
+
+#begin Scripts\AutoGenerateMapBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Scripts\AutoGenerateMapBehavior.cs
 
 
 #begin Scripts\CameraControlsBehavior.cs
@@ -158,6 +158,12 @@
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
 /build:Maps\World\map.json
+
+
+#begin Maps\World\map2.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Maps\World\map2.json
 
 
 #begin Maps\World\water.png

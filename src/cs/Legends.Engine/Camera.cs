@@ -6,6 +6,8 @@ using Legends.Engine.Graphics2D;
 using Legends.Engine.Resolvers;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
+using System.Runtime.InteropServices;
 
 namespace Legends.Engine;
 
@@ -15,13 +17,18 @@ public class Camera : SceneObject, IViewState
     protected Matrix _projection;
     protected Matrix _view;
     protected Matrix _modelView;
-    protected Matrix _invModelView;
+    protected Matrix _invModelView; 
+    protected Vector2   _offset;  
 
     public BoundedValue<float> ZoomBounds { get => _zoomBounds; set => _zoomBounds = value; }
+
+    public Vector2 Offset { get => _offset; set => SetOffset(value); }
 
     [JsonIgnore] public Matrix View =>       GetViewMatrix();
     [JsonIgnore] public Matrix Projection => _projection;
     [JsonIgnore] public Matrix World =>      LocalMatrix;
+
+    [JsonIgnore] public Viewport Viewport => new Viewport((int)_offset.X, (int)_offset.Y, (int)Size.Width, (int)Size.Height);
 
     public Camera() : this(null, null)
     {
@@ -41,9 +48,18 @@ public class Camera : SceneObject, IViewState
         base.Initialize();
     }
 
+    public virtual void SetOffset(Vector2 offset)
+    {
+        _offset = offset;
+    }
+
     protected void SetViewportDefault()
     {
-        SetSize(new Size2() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
+        if(Size2.Empty == Size)
+        {
+            SetSize(new Size2() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
+        } 
+
         _projection     = Matrix.CreateOrthographicOffCenter(0f, Size.Width, Size.Height, 0f, -1f, 0f);
         
     }
@@ -71,6 +87,13 @@ public class Camera : SceneObject, IViewState
             _zoomBounds.GetValue(scale.X),
             _zoomBounds.GetValue(scale.Y)
         ));
+    }
+
+    public override void Draw(GameTime gameTime)
+    {
+        Services.GetGraphicsDevice().Viewport = Viewport;
+
+        base.Draw(gameTime);
     }
 
     public override void WorldToLocal(ref Vector2 point)
