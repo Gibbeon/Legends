@@ -69,9 +69,6 @@ public class Map : Component, IRenderable
     {
         _vertices = BuildVerticies().ToArray();
         _indicies = BuildIndicies().ToArray();
-
-        //_vertices = BuildVerticiesForTileMap().ToArray();
-        //_indicies = BuildIndiciesForTileMap().ToArray();
         
         _vertexBuffer = new DynamicVertexBuffer(Services.GetGraphicsDevice(), VertexPositionColorTexture.VertexDeclaration, _vertices.Length, BufferUsage.WriteOnly);
         if(_vertices.Length > 0) _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
@@ -192,58 +189,6 @@ public class Map : Component, IRenderable
                 yield return (uint)(offset * 4 + 1);
                 yield return (uint)(offset * 4 + 3);
                 yield return (uint)(offset * 4 + 2);
-            }
-        }
-    }
-
-    protected IEnumerable<uint> BuildIndiciesForTileMap()
-    {
-        for(int y = 0; y < TileCount.Height; y++)
-        {
-            for(int x = 0; x < TileCount.Width; x++)
-            {
-                int offset = Tiles[TileCount.Height * y + x];
-
-                yield return (uint)(offset * 4 + 0);
-                yield return (uint)(offset * 4 + 1);
-                yield return (uint)(offset * 4 + 2);
-                yield return (uint)(offset * 4 + 1);
-                yield return (uint)(offset * 4 + 3);
-                yield return (uint)(offset * 4 + 2);
-            }
-        }
-    }
-
-    protected IEnumerable<VertexPositionColorTexture> BuildVerticiesForTileMap()
-    {
-        for(int y = 0; y < TileSet.TileCount.Height; y++)
-        {
-            for(int x = 0; x < TileSet.TileCount.Width; x++)
-            {
-                var uvCoords = TileSet.GetUV(x, y);
-                yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
-                    Color.White,
-                    uvCoords.TopLeft
-                );
-
-                yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
-                    Color.White,
-                    uvCoords.TopRight
-                );
-
-                yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
-                    Color.White,
-                    uvCoords.BottomLeft
-                );
-
-                yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
-                    Color.White,
-                    uvCoords.BottomRight
-                );
             }
         }
     }
