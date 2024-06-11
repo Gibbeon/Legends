@@ -4,6 +4,17 @@
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Map, Legends.Engine",
+            "color": "255, 255, 255, 255",
+            "renderState": {
+                "blendState": 
+                {
+                    "colorSourceBlend": "One",
+                    "alphaSourceBlend": "One",                    
+                    "colorDestinationBlend": "InverseSourceAlpha",
+                    "alphaDestinationBlend": "InverseSourceAlpha"
+
+                }
+            },
             "tileCount": "128 128",
             "tileSet": {
                 "textureRegion": {

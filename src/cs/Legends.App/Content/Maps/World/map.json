@@ -1,10 +1,10 @@
 {
     "$type": "Legends.Engine.SceneObject, Legends.Engine",
     "scale": "1, 1",
-    "visible": false,
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Map, Legends.Engine",
+            "color": "255, 255, 255, 128",
             "tileCount": "128 128",
             "tiles": [ 0 ],
             "tileSet": {
@@ -20,35 +20,35 @@
                         "frames": [
                             {
                                 "frame": 0,
-                                "duration": 0.2
+                                "duration": 0.1
                             },                                
                             {
                                 "frame": 1,
-                                "duration": 0.2
+                                "duration": 0.1
                             },                                
                             {
                                 "frame": 2,
-                                "duration": 0.2
+                                "duration": 0.1
                             },                                
                             {
                                 "frame": 3,
-                                "duration": 0.2
+                                "duration": 0.1
                             },                                
                             {
                                 "frame": 4,
-                                "duration": 0.2
+                                "duration": 0.1
                             },                                
                             {
                                 "frame": 5,
-                                "duration": 0.2
+                                "duration": 0.1
                             },                                
                             {
                                 "frame": 6,
-                                "duration": 0.2
+                                "duration": 0.1
                             },                                
                             {
                                 "frame": 7,
-                                "duration": 0.2
+                                "duration": 0.1
                             }
                         ]
                     }

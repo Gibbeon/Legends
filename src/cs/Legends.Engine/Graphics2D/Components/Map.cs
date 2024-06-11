@@ -16,6 +16,8 @@ public class Map : Component, IRenderable
 
     public Size        TileCount { get; set; }
 
+    public Color Color { get; set; } = Color.White;
+
     [JsonIgnore]
     public TileSet      TileSet => TileSetReference.Get();
 
@@ -149,22 +151,28 @@ public class Map : Component, IRenderable
 
     public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {
+        var graphicsDevice = target != null ? target.GraphicsDevice : Services.GetGraphicsDevice();
+
         (_currentEffect as IEffectMatrices).View        = ViewState.View;
         (_currentEffect as IEffectMatrices).Projection  = ViewState.Projection;
         (_currentEffect as IEffectMatrices).World       = ViewState.World;// * Parent.LocalMatrix;//* Matrix2.CreateTranslation(-Parent.Origin * Parent.Scale);
 
-        var rasterizerState = new RasterizerState() {
-            CullMode = CullMode.CullCounterClockwiseFace,
-            FillMode = FillMode.Solid
-        };
-        
-        Services.GetGraphicsDevice().SetVertexBuffer(_vertexBuffer);
-        Services.GetGraphicsDevice().Indices = _indexBuffer;
-        Services.GetGraphicsDevice().BlendState = BlendState.AlphaBlend;
-        Services.GetGraphicsDevice().SamplerStates[0] = SamplerState.PointClamp;
-        Services.GetGraphicsDevice().DepthStencilState = DepthStencilState.Default;
-        Services.GetGraphicsDevice().RasterizerState = rasterizerState;
-        
+
+        graphicsDevice.SetVertexBuffer(_vertexBuffer);
+        graphicsDevice.Indices = _indexBuffer;
+        graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+
+        var renderState = RenderState ?? new RenderState();
+
+
+        graphicsDevice.BlendState             = renderState.BlendState ?? BlendState.AlphaBlend;
+        graphicsDevice.DepthStencilState      = renderState.DepthStencilState ?? DepthStencilState.Default;
+        graphicsDevice.RasterizerState        = renderState.RasterizerState ?? new RasterizerState() {
+                                                    CullMode = CullMode.CullCounterClockwiseFace,
+                                                    FillMode = FillMode.Solid
+                                                };
+   
+            
         if(_indicies.Length > 0)
         {
             foreach (EffectPass pass in _currentEffect.CurrentTechnique.Passes)
@@ -202,25 +210,25 @@ public class Map : Component, IRenderable
                 var uvCoords = TileSet.GetUV(Tiles[(int)(y * TileCount.Width) + x]);
                 yield return new VertexPositionColorTexture(
                     new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
-                    Color.White,
+                    Color,
                     uvCoords.TopLeft
                 );
 
                 yield return new VertexPositionColorTexture(
                     new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
-                    Color.White,
+                    Color,
                     uvCoords.TopRight
                 );
 
                 yield return new VertexPositionColorTexture(
                     new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
-                    Color.White,
+                    Color,
                     uvCoords.BottomLeft
                 );
 
                 yield return new VertexPositionColorTexture(
                     new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
-                    Color.White,
+                    Color,
                     uvCoords.BottomRight
                 );
             }
