@@ -12,6 +12,9 @@
     ],
     "children": [
         {
+            "$asset": "Maps/World/map2.json"
+        },
+        {
             "$asset": "Maps/World/map.json"
         }
     ],

@@ -253,15 +253,20 @@ public class Map : Component, IRenderable
     {       
         int vertex_offset = 0;
 
-        int x_abs = (int)(((int)position.X / (int)TileSet.TileSize.Width) * TileSet.TileSize.Width);
-        int y_abs = (int)(((int)position.Y / (int)TileSet.TileSize.Height) * TileSet.TileSize.Height);
+        int x_abs_tile = (int)((int)position.X / (int)TileSet.TileSize.Width);
+        int y_abs_tile = (int)((int)position.Y / (int)TileSet.TileSize.Height);
+        int x_abs      = x_abs_tile * (int)TileSet.TileSize.Width;
+        int y_abs      = y_abs_tile * (int)TileSet.TileSize.Height;
 
         for(int y = -1; y < height + 1; y++)
         {
             for(int x = -1; x < width + 1; x++)
-            {            
-                var y_tile = y >= 0 ? y % TileCount.Height : TileCount.Height + y;
-                var x_tile = x >= 0 ? x % TileCount.Width  : TileCount.Width  + x;
+            {    
+                var y_tile_ofs = y_abs_tile + y;
+                var x_tile_ofs = x_abs_tile + x;
+
+                var y_tile = y_tile_ofs >= 0 ? y_tile_ofs % TileCount.Height : TileCount.Height + y_tile_ofs;
+                var x_tile = x_tile_ofs >= 0 ? x_tile_ofs % TileCount.Width  : TileCount.Width  + x_tile_ofs;
 
                 var tileIndex = (int)(y_tile * TileCount.Width) + x_tile;
 
