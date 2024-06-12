@@ -18,16 +18,15 @@ public class Camera : SceneObject, IViewState
     protected Matrix _view;
     protected Matrix _modelView;
     protected Matrix _invModelView; 
-    protected Vector2   _offset;  
+    protected Vector2 _offset;  
 
     public BoundedValue<float> ZoomBounds { get => _zoomBounds; set => _zoomBounds = value; }
 
     public Vector2 Offset { get => _offset; set => SetOffset(value); }
 
-    [JsonIgnore] public Matrix View =>       GetViewMatrix();
+    [JsonIgnore] public Matrix View =>       _view;
     [JsonIgnore] public Matrix Projection => _projection;
     [JsonIgnore] public Matrix World =>      LocalMatrix;
-
     [JsonIgnore] public Viewport Viewport => new Viewport((int)_offset.X, (int)_offset.Y, (int)Size.Width, (int)Size.Height);
 
     public Camera() : this(null, null)
@@ -74,12 +73,6 @@ public class Camera : SceneObject, IViewState
         }
     }
 
-    protected virtual Matrix GetViewMatrix()
-    {
-        UpdateMatricies();
-        return _view;
-    }
-
     public override void SetScale(Vector2 scale)
     {
         // apply bounds
@@ -87,6 +80,23 @@ public class Camera : SceneObject, IViewState
             _zoomBounds.GetValue(scale.X),
             _zoomBounds.GetValue(scale.Y)
         ));
+    }
+
+    public override void Update(GameTime gameTime)
+    {
+        base.Update(gameTime);
+
+        bool bounded = true;
+        if(bounded)
+        {
+            var ofs_x = Position.X % Size.Width;
+            var ofs_y = Position.Y % Size.Height;
+
+            if(ofs_x < 0) ofs_x += Size.Width;
+            if(ofs_y < 0) ofs_y += Size.Height;
+
+            SetPosition( ofs_x, ofs_y);
+        }
     }
 
     public override void Draw(GameTime gameTime)

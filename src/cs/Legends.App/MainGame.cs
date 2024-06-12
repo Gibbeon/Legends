@@ -61,7 +61,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
         Content.DoReloads();
         _inputService.Update(gameTime);
         base.Update(gameTime);
-        _collisionService.Update(gameTime);
+        _collisionService.Update(gameTime);      
     }
 
     protected override void Draw(GameTime gameTime)

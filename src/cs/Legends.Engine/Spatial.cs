@@ -74,6 +74,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     public void Zoom(float value) => Zoom(new Vector2(value, value));
     public void Zoom(Vector2 zoom) => Scale *= zoom;
     public void Rotate(float deltaRadians) => Rotation += deltaRadians;
+    public void SetPosition(float x, float y) => SetPosition(new Vector2(x, y));
     public void SetScale(float scale) => SetScale(new Vector2(scale, scale));
     public void SetSize(float width, float height) =>  SetSize(new Size2(width, height));
     public void SetOrigin(Vector2 origin) => SetOriginNormalized(Size != Size2.Empty ? origin / Size : new Vector2(.5f, .5f));

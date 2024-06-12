@@ -30,6 +30,8 @@ public class GenerateWorldBehavior : Behavior
 
     public override void Initialize()
     {
+        /*
+        
         var map = Parent.GetComponent<Map>();
         var size = map.TileCount;
         _array = new ImageGenerator((new Random()).Next()).GenerateHeightMap((int)size.Width + 2, (int)size.Height + 2);
@@ -40,10 +42,13 @@ public class GenerateWorldBehavior : Behavior
  
         map.BuildMap();
         InputInitialize();
+
+        */
     }
 
     public override void Update(GameTime gameTime)
     {
+        /*
         foreach(var command in _commands.EventActions)
         {
             switch(command.Name)
@@ -68,7 +73,10 @@ public class GenerateWorldBehavior : Behavior
                     Console.WriteLine("Unknown Command: {0}", command.Name); break;             
             }
         }  
+        */
     }
+
+    /*
 
     public void SetTile()
     {
@@ -167,6 +175,8 @@ private float _delta;
             for(int row = 0; row < array.GetLength(0); row++)
                 yield return array[col, row] < 80 ? color : Color.Black;
     }
+
+    */
 
     public override void Reset()
     {

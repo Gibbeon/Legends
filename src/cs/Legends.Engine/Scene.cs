@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legends.Engine.Content;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
@@ -16,7 +15,7 @@ public class Scene : SceneObject
     {
         get => CameraReference.Get();
         set => SetCamera(value);
-    } 
+    }
 
     [JsonProperty("camera")]
     protected Ref<Camera> CameraReference
@@ -51,6 +50,12 @@ public class Scene : SceneObject
                           
         _camera = camera;
     }
+    
+    public override void Update(GameTime gameTime)
+    {
+        base.Update(gameTime);
+        Camera.Update(gameTime);
+    }
 
     public override void Draw(GameTime gameTime)
     {        
@@ -58,11 +63,6 @@ public class Scene : SceneObject
         Camera.Draw(gameTime);
     }
 
-    public override void Update(GameTime gameTime)
-    {
-        base.Update(gameTime);
-        Camera.Update(gameTime);
-    }
 
     public override IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
     {

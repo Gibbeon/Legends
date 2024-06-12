@@ -138,7 +138,8 @@ public class TileSet : IUpdate
                 channel= new TileAnimationChannel(this, kvp.Key, kvp.Value);
                 kvp.Value.InitializeChannel(channel);
             
-            }channel.Update(gameTime);
+            }
+            channel.Update(gameTime);
         }        
     }
 }

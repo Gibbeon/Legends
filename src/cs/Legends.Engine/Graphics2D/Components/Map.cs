@@ -67,20 +67,68 @@ public class Map : Component, IRenderable
         Initialize();
     }
 
-    public void   BuildMap()
-    {
-        _vertices = BuildVerticies().ToArray();
-        _indicies = BuildIndicies().ToArray();
-        
-        _vertexBuffer = new DynamicVertexBuffer(Services.GetGraphicsDevice(), VertexPositionColorTexture.VertexDeclaration, _vertices.Length, BufferUsage.WriteOnly);
-        if(_vertices.Length > 0) _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
+    public void BuildMap(Camera camera)
+    {        
+        var size_x  = (int)(camera.AbsoluteBoundingRectangle.Width    / TileSet.TileSize.Width) ;
+        var size_y  = (int)(camera.AbsoluteBoundingRectangle.Height   / TileSet.TileSize.Height);
 
-        _indexBuffer = new DynamicIndexBuffer(Services.GetGraphicsDevice(), IndexElementSize.ThirtyTwoBits, _indicies.Length, BufferUsage.WriteOnly);
-        if(_indicies.Length > 0) _indexBuffer.SetData(_indicies);
+        int max_vertex_count    = (int)(size_x * (size_y + 4) + 1) * 4;
+        int max_index_count     = (int)(size_x * (size_y + 4) + 1) * 6;
 
+        if(_vertices == null || _vertices.Length < max_vertex_count)
+        {
+            _vertices = new VertexPositionColorTexture[max_vertex_count];
+            _vertexBuffer = new DynamicVertexBuffer(Services.GetGraphicsDevice(), VertexPositionColorTexture.VertexDeclaration, _vertices.Length, BufferUsage.WriteOnly);
+        }
+
+        if(_indicies == null || _indicies.Length < max_index_count)
+        {            
+            _indicies = new uint[max_index_count];
+            _indexBuffer = new DynamicIndexBuffer(Services.GetGraphicsDevice(), IndexElementSize.ThirtyTwoBits, _indicies.Length, BufferUsage.WriteOnly);
+        }
+
+        if(_indicies.Length > 16)
+        {
+            BuildIndicies(_indicies, size_x, size_y);
+            BuildVerticies(_vertices, camera.TopLeft, size_x, size_y);
+        }
+
+        if(_vertices.Length > 0 && _vertexBuffer != null) _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
+        if(_indicies.Length > 0 && _indexBuffer != null) _indexBuffer.SetData(_indicies);
+
+        /*
+
+        // bottom right
+        index_offset  = BuildIndicies (_indicies, index_offset, vertex_offset, (int)(size_x + ofs_x) + 1, (int)(size_y + ofs_y) + 1);
+        vertex_offset = BuildVerticies(_vertices, vertex_offset, (int)0, (int)0, (int)0, (int)0, (int)(size_x + ofs_x) + 1, (int)(size_y + ofs_y) + 1);
+
+
+
+        // top left
+        index_offset  = BuildIndicies (_indicies, index_offset, vertex_offset, (int)(-ofs_x)    , (int)(-ofs_y));
+        vertex_offset = BuildVerticies(_vertices, vertex_offset, (int)camera.AbsoluteBoundingRectangle.X, (int)camera.AbsoluteBoundingRectangle.Y,
+                                  (int)0, (int)0, (int)(-ofs_x)    , (int)(-ofs_y));
+
+        // bottom left
+        index_offset  = BuildIndicies (_indicies, index_offset, vertex_offset, (int)(-ofs_x)    , (int)(-ofs_y));
+        vertex_offset = BuildVerticies(_vertices, vertex_offset, (int)camera.AbsoluteBoundingRectangle.X, 0,
+                                  (int)0, (int)0, (int)(size_x + ofs_x) + 1 , (int)(-ofs_y));
+
+                // top left
+        index_offset  = BuildIndicies (_indicies, index_offset, vertex_offset, (int)(-ofs_x)    , (int)(-ofs_y));
+        vertex_offset = BuildVerticies(_vertices, vertex_offset, 0, (int)camera.AbsoluteBoundingRectangle.Y,
+                                  (int)0, (int)0, (int)(-ofs_x)    , (int)(size_y + ofs_y) + 1);
+
+*/
+
+
+
+       
+
+        IsDirty = false;
     }
 
-    public int SelectTileAt(Vector2 position)
+    public int GetTileIndexAt(Vector2 position)
     {
         position = Vector2.Transform(position, Matrix.Invert(Parent.LocalMatrix));
 
@@ -90,11 +138,10 @@ public class Map : Component, IRenderable
         return y_ofs * (int)TileCount.Width + x_ofs;
     }
 
-    public void ChangeTile(int tile, int tileSetId)
+    public void SetTile(int tile, int tileSetId)
     {
         Console.WriteLine ("{0}", tileSetId);
         Tiles[tile] = (ushort)tileSetId;
-        BuildMap();
     }
 
     public override void Initialize()
@@ -115,9 +162,7 @@ public class Map : Component, IRenderable
         }
 
         Tiles = tiles;
-        
-        BuildMap();
- 
+     
         _currentEffect = new BasicEffect(Services.GetGraphicsDevice()) {
             TextureEnabled = true,
             VertexColorEnabled = true
@@ -131,21 +176,19 @@ public class Map : Component, IRenderable
             textureEffect.Texture = TileSet.TextureRegion.Texture;
         }
 
-        IsDirty = false;
+        BuildMap(Parent.Scene.Camera);
     }
 
     public override void Update(GameTime gameTime)
-    {
-        TileSet.Update(gameTime);     
-        BuildMap();   
+    {        
+        base.Update(gameTime);
+        TileSet.Update(gameTime); 
     }
 
     public override void Draw(GameTime gameTime)
     {
-        if(IsDirty) Initialize();
-
         base.Draw(gameTime);
-
+        BuildMap(Parent.Scene.Camera); 
         Services.Get<IRenderService>().DrawBatched(this);
     }
 
@@ -183,51 +226,67 @@ public class Map : Component, IRenderable
         }
     }
 
-    protected IEnumerable<uint> BuildIndicies()
+    protected void BuildIndicies(uint[] indicies, int width, int height)
     {
-        for(int y = 0; y < TileCount.Height; y++)
-        {
-            for(int x = 0; x < TileCount.Width; x++)
-            {
-                int offset = y * TileCount.Width + x;
+        //height =    height >= 0 ? height : TileCount.Height;
+        //width =     width >= 0 ? width : TileCount.Width;
 
-                yield return (uint)(offset * 4 + 0);
-                yield return (uint)(offset * 4 + 1);
-                yield return (uint)(offset * 4 + 2);
-                yield return (uint)(offset * 4 + 1);
-                yield return (uint)(offset * 4 + 3);
-                yield return (uint)(offset * 4 + 2);
+        int index_offset = 0;
+
+        for(int y = 0; y < height + 2; y++)
+        {
+            for(int x = 0; x < width + 2; x++)
+            {
+                int offset = y * (width + 2) + x;
+
+                indicies[index_offset++] = (uint)(offset * 4 + 0);
+                indicies[index_offset++] = (uint)(offset * 4 + 1);
+                indicies[index_offset++] = (uint)(offset * 4 + 2);
+                indicies[index_offset++] = (uint)(offset * 4 + 1);
+                indicies[index_offset++] = (uint)(offset * 4 + 3);
+                indicies[index_offset++] = (uint)(offset * 4 + 2);
             }
         }
     }
 
-    protected IEnumerable<VertexPositionColorTexture> BuildVerticies()
-    {
-        for(int y = 0; y < TileCount.Height; y++)
+    protected void BuildVerticies(VertexPositionColorTexture[] vertices, Vector2 position, int width, int height)
+    {       
+        int vertex_offset = 0;
+
+        int x_abs = (int)(((int)position.X / (int)TileSet.TileSize.Width) * TileSet.TileSize.Width);
+        int y_abs = (int)(((int)position.Y / (int)TileSet.TileSize.Height) * TileSet.TileSize.Height);
+
+        for(int y = -1; y < height + 1; y++)
         {
-            for(int x = 0; x < TileCount.Width; x++)
-            {
-                var uvCoords = TileSet.GetUV(Tiles[(int)(y * TileCount.Width) + x]);
-                yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
+            for(int x = -1; x < width + 1; x++)
+            {            
+                var y_tile = y >= 0 ? y % TileCount.Height : TileCount.Height + y;
+                var x_tile = x >= 0 ? x % TileCount.Width  : TileCount.Width  + x;
+
+                var tileIndex = (int)(y_tile * TileCount.Width) + x_tile;
+
+                var uvCoords = TileSet.GetUV(Tiles[tileIndex]);
+
+                vertices[vertex_offset++] = new VertexPositionColorTexture(
+                    new Vector3(x_abs + x * TileSet.TileSize.Width, y_abs + y * TileSet.TileSize.Height, 0),
                     Color,
                     uvCoords.TopLeft
                 );
 
-                yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height, 0),
+                vertices[vertex_offset++] = new VertexPositionColorTexture(
+                    new Vector3(x_abs + x * TileSet.TileSize.Width + TileSet.TileSize.Width,  y_abs + y * TileSet.TileSize.Height, 0),
                     Color,
                     uvCoords.TopRight
                 );
 
-                yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
+                vertices[vertex_offset++] = new VertexPositionColorTexture(
+                    new Vector3(x_abs + x * TileSet.TileSize.Width,  y_abs + y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
                     Color,
                     uvCoords.BottomLeft
                 );
 
-                yield return new VertexPositionColorTexture(
-                    new Vector3(x * TileSet.TileSize.Width + TileSet.TileSize.Width, y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
+                vertices[vertex_offset++] =  new VertexPositionColorTexture(
+                    new Vector3(x_abs + x * TileSet.TileSize.Width + TileSet.TileSize.Width,  y_abs + y * TileSet.TileSize.Height + TileSet.TileSize.Height, 0),
                     Color,
                     uvCoords.BottomRight
                 );
