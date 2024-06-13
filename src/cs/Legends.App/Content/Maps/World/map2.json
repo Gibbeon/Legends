@@ -15,12 +15,11 @@
 
                 }
             },
-            "tileCount": "128 128",
             "tileSet": {
                 "textureRegion": {
                     "$type": "Legends.Engine.Graphics2D.TextureRegion, Legends.Engine",
                     "texture": "maps/world/water.png",
-                    "slice": "32, 32"
+                    "slice": "16, 16"
                 }                  
             }
         }               

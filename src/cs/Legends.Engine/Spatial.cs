@@ -190,7 +190,7 @@ public static class SpatialExtensions
 
     public static RectangleF LocalToWorld(this Spatial spatial, RectangleF rectangle)
     {
-        Vector2 topLeft = rectangle.TopLeft;
+        Vector2 topLeft     = rectangle.TopLeft;
         Vector2 bottomRight = rectangle.BottomRight;
 
         spatial.LocalToWorld(ref topLeft);

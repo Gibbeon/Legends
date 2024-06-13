@@ -4,10 +4,7 @@ using MonoGame.Extended;
 using System;
 using Legends.Engine.Graphics2D;
 using Legends.Engine.Resolvers;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
-using System.Runtime.InteropServices;
 
 namespace Legends.Engine;
 
@@ -86,7 +83,7 @@ public class Camera : SceneObject, IViewState
     {
         base.Update(gameTime);
 
-        bool bounded = true;
+        bool bounded = false;
         if(bounded)
         {
             var ofs_x = Position.X % Size.Width;
