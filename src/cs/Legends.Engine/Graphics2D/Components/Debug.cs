@@ -159,6 +159,24 @@ public class Debug : Component, ISpriteRenderable
     {
     }
 
+    public void DrawRectangle(RectangleF rect, Matrix matrix, SpriteBatch spriteBatch, Color color)
+    {
+        Vector2[] points = {
+            rect.TopLeft,
+            rect.TopRight,
+            rect.BottomLeft,
+            rect.BottomRight
+        };
+
+        for(int i = 0; i < points.Length; i++) 
+            Vector2.Transform(ref points[i], ref matrix, out points[i]);
+
+        spriteBatch.DrawLine(points[0], points[1], color);
+        spriteBatch.DrawLine(points[0], points[2], color);
+        spriteBatch.DrawLine(points[1], points[3], color);
+        spriteBatch.DrawLine(points[2], points[3], color);
+    }
+
     public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {
         var spriteBatch = this.GetSpriteBatch(target);
@@ -171,31 +189,21 @@ public class Debug : Component, ISpriteRenderable
         
         _position.Y += Font.MeasureString(stringDisplay).Height;
 
+        var camera_rect = Parent.Scene.Camera.LocalToWorld(this.Parent.Scene.Camera.AbsoluteBoundingRectangle);
+
+        //DrawRectangle(this.Parent.Scene.Camera.AbsoluteBoundingRectangle, Matrix2.CreateTranslation(Parent.Scene.Camera.Origin), spriteBatch, Color.Green);
+        DrawRectangle(camera_rect, Matrix2.Identity, spriteBatch, Color.Green);
+
         StringBuilder sb = new ();
         if(_objects.Count > 0) {
-
-
-            var rect = _objects[_objectIndex].Scene.Camera.LocalToWorld(_objects[_objectIndex].AbsoluteBoundingRectangle);
+            var rect = Parent.Scene.Camera.LocalToWorld(_objects[_objectIndex].AbsoluteBoundingRectangle);
 
             var matrix =  (Matrix)Matrix2.CreateTranslation(-(Vector2)rect.Center)
                                 * Matrix2.CreateRotationZ(_objects[_objectIndex].AbsoluteRotation)
                                 * Matrix2.CreateScale(Vector2.One / _objects[_objectIndex].AbsoluteScale)
                                 * Matrix2.CreateTranslation((Vector2)rect.Center);
 
-            Vector2[] points = {
-                rect.TopLeft,
-                rect.TopRight,
-                rect.BottomLeft,
-                rect.BottomRight
-            };
-
-            for(int i = 0; i < points.Length; i++) 
-                Vector2.Transform(ref points[i], ref matrix, out points[i]);
-
-            spriteBatch.DrawLine(points[0], points[1], Color.Red);
-            spriteBatch.DrawLine(points[0], points[2], Color.Red);
-            spriteBatch.DrawLine(points[1], points[3], Color.Red);
-            spriteBatch.DrawLine(points[2], points[3], Color.Red);
+            DrawRectangle(rect, Matrix.Identity, spriteBatch, Color.Red);
 
             //spriteBatch.DrawRectangle(
             //    _objects[_objectIndex].Scene.Camera.LocalToWorld(_objects[_objectIndex].AbsoluteBoundingRectangle), 

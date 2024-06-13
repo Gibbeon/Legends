@@ -105,7 +105,7 @@ public class Map : Component, IRenderable
             //int tile_offset_x           = (int)((Parent.Position.X - camera.AbsoluteTopLeft.X) / TileSet.TileSize.Width);
             //int tile_offset_y           = (int)((Parent.Position.Y - camera.AbsoluteTopLeft.Y) / TileSet.TileSize.Height);
 
-            BuildBuffers(_vertices, _indicies, Parent.AbsoluteTopLeft - (Vector2)camera.AbsoluteBoundingRectangle.Center, TileCount.Width, TileCount.Height);
+            BuildBuffers(_vertices, _indicies, Parent.AbsoluteTopLeft, TileCount.Width, TileCount.Height);
         }
         
         if(_vertices.Length > 0 && _vertexBuffer != null) _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
@@ -119,8 +119,8 @@ public class Map : Component, IRenderable
         
         int x_abs_tile = (int)((int)position.X / (int)TileSet.TileSize.Width);
         int y_abs_tile = (int)((int)position.Y / (int)TileSet.TileSize.Height);
-        int x_abs      = x_abs_tile * (int)TileSet.TileSize.Width;
-        int y_abs      = y_abs_tile * (int)TileSet.TileSize.Height;
+        int x_abs      = x_abs_tile * (int)TileSet.TileSize.Width   - (int)TileSet.TileSize.Width / 2;
+        int y_abs      = y_abs_tile * (int)TileSet.TileSize.Height  - (int)TileSet.TileSize.Height / 2;
 
         for(int y = 0; y < tile_height; y++)
         {
