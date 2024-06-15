@@ -179,6 +179,8 @@ public class Debug : Component, ISpriteRenderable
 
     public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {
+        _camera.Draw(gameTime);
+
         var spriteBatch = this.GetSpriteBatch(target);
         _position = _positionStart;
 

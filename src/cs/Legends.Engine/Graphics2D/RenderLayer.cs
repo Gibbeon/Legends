@@ -81,6 +81,8 @@ public class RenderLayer : IRenderLayer
 
                 _renderState.CopyFrom(drawable.RenderState ?? _renderService.DefaultRenderState);
                 _viewState.CopyFrom(drawable.ViewState);
+                
+                _renderService.GraphicsDevice.Viewport = _viewState.Viewport;
 
                 if (_renderState.Effect is IEffectMatrices mtxEffect)
                 {

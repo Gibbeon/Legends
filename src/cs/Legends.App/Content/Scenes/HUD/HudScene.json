@@ -2,14 +2,22 @@
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "HudScene",
     "camera": {
-        "originFixed": "0, 0"
+        "originRelative": ".5, 0"
     },
+    "components": [
+        {
+            "$type": "Legends.Engine.Graphics2D.Components.Debug, Legends.Engine",
+            "font":  "Fonts/Sensation"
+        }
+    ],
     "children": [
         {
             "name": "clock",
+            "position": "400, 0",
             "children": [
                 {
                     "name": "date",
+                    "position": "0, 0",
                     "components": [
                         {
                             "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",

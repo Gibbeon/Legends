@@ -96,13 +96,6 @@ public class Camera : SceneObject, IViewState
         }
     }
 
-    public override void Draw(GameTime gameTime)
-    {
-        Services.GetGraphicsDevice().Viewport = Viewport;
-
-        base.Draw(gameTime);
-    }
-
     public override void WorldToLocal(ref Vector2 point)
     {
         Vector2.Transform(ref point, ref _invModelView, out point);
