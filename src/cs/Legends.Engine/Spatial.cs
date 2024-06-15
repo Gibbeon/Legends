@@ -24,6 +24,8 @@ public class Spatial<TParent>: Spatial
 
 public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
 {
+    static Vector2 default_origin_normalized = new (.5f, .5f);
+
     protected Spatial _parent;
     private float     _rotation;        
     private Vector2   _position;        
@@ -31,24 +33,26 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     private Size2     _size;
     private Matrix    _localMatrix;
     private Matrix    _invLocalMatrix;
-    private Vector2   _originNormalized = new (.5f, .5f);
+    private Vector2?  _originFixed;
+    private Vector2?  _originNormalized;
 
     public Vector2 Position { get => _position;                set => SetPosition(value); }
     public Vector2 Scale    { get => _scale;                   set => SetScale(value); }
     public float   Rotation { get => _rotation;                set => SetRotation(value); }   
     public Size2   Size     { get => _size * Scale;            set => SetSize(value); }
-    public Vector2 Origin   { get => _originNormalized * Size; set => SetOrigin(value); }
+    public Vector2? OriginFixed     { get => _originFixed;          set => SetOriginFixed(value); }
+    public Vector2? OriginRelative  { get => _originNormalized;     set => SetOriginNormalized(value); }
 
+    [JsonIgnore] public Vector2 Origin { get => OriginFixed ?? (OriginRelative ?? default_origin_normalized) * Size; }
     [JsonIgnore] public RectangleF BoundingRectangle        => new(TopLeft, Size);
     [JsonIgnore] public Vector2 TopLeft                     { get => Position - Origin; }
     [JsonIgnore] public Vector2 BottomRight                 { get => TopLeft  + (Vector2)Size; }
     [JsonIgnore] public Vector2 Center                      { get => Position + (Vector2)Size / 2; }
-    [JsonIgnore] public Vector2 OriginNormalized            { get => _originNormalized; set => SetOriginNormalized(value); }
     [JsonIgnore] public Vector2 AbsolutePosition            { get => Position   + _parent?.AbsolutePosition ?? Vector2.Zero; }
     [JsonIgnore] public Vector2 AbsoluteScale               { get => Scale      * _parent?.AbsoluteScale    ?? Vector2.One; }
     [JsonIgnore] public float   AbsoluteRotation            { get => Rotation   + _parent?.AbsoluteRotation ?? 0.0f; }
     [JsonIgnore] public Size2   AbsoluteSize                { get => Size       * AbsoluteScale; }
-    [JsonIgnore] public Vector2 AbsoluteOrigin              { get => _originNormalized * AbsoluteSize; }
+    [JsonIgnore] public Vector2 AbsoluteOrigin              { get => OriginFixed ?? (OriginRelative ?? default_origin_normalized) * AbsoluteSize; }
     [JsonIgnore] public Matrix  AbsoluteMatrix              { get => _parent?.AbsoluteMatrix ?? Matrix2.Identity * LocalMatrix; }
     [JsonIgnore] public Vector2 AbsoluteTopLeft             { get => AbsolutePosition - AbsoluteOrigin; }
     [JsonIgnore] public Vector2 AbsoluteBottomRight         { get => AbsoluteTopLeft + (Vector2)AbsoluteSize; }
@@ -77,7 +81,8 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     public void SetPosition(float x, float y) => SetPosition(new Vector2(x, y));
     public void SetScale(float scale) => SetScale(new Vector2(scale, scale));
     public void SetSize(float width, float height) =>  SetSize(new Size2(width, height));
-    public void SetOrigin(Vector2 origin) => SetOriginNormalized(Size != Size2.Empty ? origin / Size : new Vector2(.5f, .5f));
+    public void SetOriginFixed(Vector2? origin) { _originFixed = origin; IsDirty = true; }
+    public void SetOriginNormalized(Vector2? origin) { _originNormalized = origin; IsDirty = true; }
     
     public virtual void SetPosition(Vector2 position)
     {
@@ -96,13 +101,6 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
         _rotation = radians;
         IsDirty = true;
     }
-    
-    public virtual void SetOriginNormalized(Vector2 origin)
-    {
-        _originNormalized = origin;
-        IsDirty = true;
-    }
-    
     public virtual void SetSize(Size2 size)
     {
         _size = size / Scale;

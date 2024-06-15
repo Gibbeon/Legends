@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using Legends.Engine.Runtime;
 using Legends.Engine.Serialization;
@@ -103,12 +104,23 @@ public static class ContentWriterExtensions
 
     public static void WriteField(this ContentWriter writer, object instance, Type type, DefaultValueAttribute defaultValueAttribute = null)
     {
-        var derivedType = instance != null ? instance.GetType() : type;
-        var defaultValue = !derivedType.IsValueType ? null : defaultValueAttribute?.Value ?? Activator.CreateInstance(derivedType);
+        // for nullable<T> types, when there's an underlying value GetType() does not return Nullable<T> but instead typeof(T)
+        // when it is null, it returns Nullable<T>
 
-        if(Equals(instance, defaultValue))
+        var derivedType = instance != null ? instance.GetType() : type;
+        var defaultValue = (!derivedType.IsValueType || (derivedType.IsGenericType && derivedType.GetGenericTypeDefinition() == typeof(Nullable<>))) ? null : defaultValueAttribute?.Value ?? Activator.CreateInstance(derivedType);
+
+        if(derivedType.IsGenericType && derivedType.GetGenericTypeDefinition() == typeof(Nullable<>))
+        {            
+            ContentLogger.LogEnd("Nullable<{0}> value was default {1}", Nullable.GetUnderlyingType(derivedType).Name, defaultValue ?? "null");
+            writer.Write7BitEncodedInt(0);
+            return;
+        } 
+
+        // if it the underlying type is nullable don't test for equality, always write the value        
+        if(!(type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) && Equals(instance, defaultValue))
         {
-            ContentLogger.LogEnd("value was default {0}", defaultValue ?? "null");
+            ContentLogger.LogEnd("value was default {0} of type {1}", defaultValue ?? "null", derivedType.Name);
             writer.Write7BitEncodedInt(0);
             return;
         } 
@@ -117,8 +129,7 @@ public static class ContentWriterExtensions
 
         //using(LogEntry ("Field: {0} of type {1}", derivedType.Name, type.Name))
         {
-            var native = writer.GetType()
-                            .GetAnyMethod("Write", derivedType);
+            var native = writer.GetType().GetAnyMethod("Write", derivedType);
 
             if(instance is IContentReadWrite readWrite)
             {
@@ -192,14 +203,14 @@ public static class ContentWriterExtensions
                     {    
                         if(member is PropertyInfo property)
                         {
-                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", property.Name, property.GetValue(instance)))
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property) [{2}]\t", property.Name, property.GetValue(instance), property.PropertyType))
                             {
                                 writer.WriteField(property.GetValue(instance), property.PropertyType, property.GetCustomAttribute<DefaultValueAttribute>());
                             }
                         }
                         if(member is FieldInfo field)
                         {
-                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property)\t", field.Name, field.GetValue(instance)))
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (field) [{2}]\t", field.Name, field.GetValue(instance), field.FieldType))
                             {
                                 writer.WriteField(field.GetValue(instance), field.FieldType, field.GetCustomAttribute<DefaultValueAttribute>());
                             }

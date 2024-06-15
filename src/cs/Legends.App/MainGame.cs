@@ -28,6 +28,8 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _inputService           = new InputHandlerService(Services);
         _collisionService       = new CollisionService(Services);
 
+        ContentLogger.Enabled = true;
+
         
         //_graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
         //_gameManagementService.Game.IsFixedTimeStep = false;

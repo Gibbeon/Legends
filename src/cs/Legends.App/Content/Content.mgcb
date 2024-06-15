@@ -205,6 +205,12 @@
 /build:Maps\World\world.png
 
 
+#begin Scenes\HUD\HudScene.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Scenes\HUD\HudScene.json
+
+
 #begin Scenes\TitleScreen\Animations.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor

@@ -69,8 +69,6 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         _behaviors  = new List<Ref<IBehavior>>();
         _components = new List<Ref<IComponent>>();
         _tags       = new List<string>();
-
-        OriginNormalized = new Vector2(.5f, .5f);
     }
 
     public virtual void Initialize()

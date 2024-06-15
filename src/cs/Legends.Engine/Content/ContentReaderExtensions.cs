@@ -104,17 +104,21 @@ public static class ContentReaderExtensions
         return instance;
     }
 
-    public static object ReadField(this ContentReader reader, object instance, Type type)
+    public static object ReadField(this ContentReader reader, object instance, Type type, bool ignoreNullBitCheck = false)
     {
         var derivedType = instance != null ? instance.GetType() : type;
         var native = typeof(ContentReader).GetAnyMethod(derivedType, "Read?*");
         object result = default;
 
-        var isNullOfDefault = reader.Read7BitEncodedInt() == 0;
+        var isNullOfDefault = false;
+        if(!ignoreNullBitCheck) isNullOfDefault = reader.Read7BitEncodedInt() == 0;
 
         if(isNullOfDefault)
         {
             ContentLogger.LogEnd("value is (null)", result);
+
+            if(instance != null) return instance;
+            if(derivedType.IsGenericType && derivedType.GetGenericTypeDefinition() == typeof(Nullable<>)) return null;            
             return instance ?? (type.IsValueType ? Activator.CreateInstance(derivedType) : null);
         }
 
@@ -158,6 +162,17 @@ public static class ContentReaderExtensions
             ContentLogger.LogEnd("{0}", result);
             return result;
         }
+        else if(derivedType.IsGenericType && derivedType.GetGenericTypeDefinition() == typeof(Nullable<>))
+        {            
+            ContentLogger.LogAppend("Nullable<{0}>", Nullable.GetUnderlyingType(derivedType));
+
+            // special case -- if there is a value then you cannot use the bit check on null or default again  
+            result = reader.ReadField(result, Nullable.GetUnderlyingType(derivedType), true);
+            ContentLogger.LogEnd("{0}", result);
+
+            return result;
+        }
+
         ContentLogger.LogEnd("(object)", derivedType.Name); 
         return reader.ReadComplexObject(instance, derivedType);
     }

@@ -72,7 +72,7 @@ public class Debug : Component, ISpriteRenderable
     {
         _camera = new Camera(Services, null);
         _camera.Initialize();        
-        _camera.OriginNormalized = Vector2.Zero;
+        _camera.OriginRelative = Vector2.Zero;
         _commands = new InputCommandSet(Services);
 
         _commands.Add("SELECT", EventType.MouseClicked, MonoGame.Extended.Input.MouseButton.Left, Microsoft.Xna.Framework.Input.Keys.LeftShift);
