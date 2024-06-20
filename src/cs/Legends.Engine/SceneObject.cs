@@ -113,6 +113,16 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         }
     }
 
+    public IEnumerable<SceneObject> GetObjectByName(string name)
+    {
+        if(Equals(name, Name)) yield return this;
+
+        foreach(var child in Children.SelectMany(n => n.GetObjectByName(name)))
+        {
+            yield return child;
+        }
+    }
+
     protected Scene GetParentScene() 
     {
         return (this is Scene scene) ? scene : Parent?.GetParentScene();
