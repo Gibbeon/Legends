@@ -4,9 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.BitmapFonts;
 using System;
 using MonoGame.Extended;
-using System.Net.Sockets;
-using System.Collections.Immutable;
-using System.Runtime.CompilerServices;
 
 namespace Legends.Engine.Graphics2D.Components;
 
@@ -66,7 +63,7 @@ public class TextLabel : Component, ISpriteRenderable
     public IViewState ViewState => Parent.Scene.Camera;
     
     [JsonIgnore]
-    public Rectangle DestinationBounds => (Rectangle)Parent.BoundingRectangle;
+    public Microsoft.Xna.Framework.Rectangle DestinationBounds => (Microsoft.Xna.Framework.Rectangle)Parent.BoundingRectangle;
 
     [JsonIgnore]
     protected bool IsDirty { get; set; }

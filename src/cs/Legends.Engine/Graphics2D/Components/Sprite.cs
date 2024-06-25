@@ -72,8 +72,8 @@ public class Sprite : Component, ISpriteRenderable
 
         spriteBatch.Draw(
             TextureRegion.Texture,
-            (Rectangle)Parent.BoundingRectangle,
-            (Rectangle)TextureRegion.BoundingRectangle,
+            (Microsoft.Xna.Framework.Rectangle)Parent.BoundingRectangle,
+            (Microsoft.Xna.Framework.Rectangle)TextureRegion.BoundingRectangle,
             Color,
             Parent.Rotation,
             Vector2.Zero,//drawable.Origin,

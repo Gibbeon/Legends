@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 using System.Data;
 using SharpFont;
 
-namespace Legends.Engine.Graphics2D.Components;
+namespace Legends.Engine.Graphics2D;
 
 public class TileSet : IUpdate
 {

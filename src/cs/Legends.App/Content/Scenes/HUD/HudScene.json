@@ -13,6 +13,17 @@
     ],
     "children": [
         {
+            "name": "actionbar",
+            "position": "0, 0",                    
+            "size": "64, 64",
+            "components": [
+                {
+                    "$type": "Legends.Engine.Graphics2D.Components.Rectangle, Legends.Engine",
+                    "thickness": "10"
+                }
+            ]
+        },
+        {
             "name": "clock",
             "position": "400, 0",
             "children": [

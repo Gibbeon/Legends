@@ -1,4 +1,4 @@
-﻿using Legends.Engine.Graphics2D.Components;
+﻿using Legends.Engine.Graphics2D;
 
 namespace Legends.Engine.Animation;
 

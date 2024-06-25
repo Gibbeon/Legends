@@ -318,7 +318,7 @@ public class Debug : Component, ISpriteRenderable
         spriteBatch.Draw(
             textureRegion.Texture,
             Position,
-            new Rectangle(textureRegion.Position.ToPoint(), (Size)textureRegion.Size),
+            new Microsoft.Xna.Framework.Rectangle(textureRegion.Position.ToPoint(), (Size)textureRegion.Size),
             Color.White,
             0,
             Vector2.Zero,
