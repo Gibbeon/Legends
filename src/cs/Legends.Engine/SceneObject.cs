@@ -10,7 +10,6 @@ namespace Legends.Engine;
 
 public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObject, IInitalizable
 {   
-    private static int              _globalObjId;
     private IList<string>           _tags;    
     private IList<Ref<IBehavior>>   _behaviors;
     private IList<Ref<SceneObject>> _children;
@@ -19,7 +18,10 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
     private bool _enabled = true;
     private bool _visible = true;
 
-    public string Name { get; protected set; }  
+    private string _name;
+
+    [DefaultValue("")] public string Name { get => _name; set => _name = value; }
+
     [DefaultValue(true)] public bool Enabled { get => _enabled; set => _enabled = value; }
     [DefaultValue(true)] public bool Visible { get => _visible; set => _visible = value; }
 
@@ -63,7 +65,6 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
     public SceneObject(IServiceProvider systems, SceneObject parent = default) : base(parent)
     {
         Services    = systems;
-        Name        = string.Format("{0}#{1}", typeof(SceneObject).Name, _globalObjId++);
         
         _children   = new List<Ref<SceneObject>>();
         _behaviors  = new List<Ref<IBehavior>>();

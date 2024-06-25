@@ -118,7 +118,7 @@ public static class ContentWriterExtensions
         } 
 
         // if it the underlying type is nullable don't test for equality, always write the value        
-        if(!(type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) && Equals(instance, defaultValue))
+        if(!(derivedType.IsGenericType && derivedType.GetGenericTypeDefinition() == typeof(Nullable<>)) && Equals(instance, defaultValue))
         {
             ContentLogger.LogEnd("value was default {0} of type {1}", defaultValue ?? "null", derivedType.Name);
             writer.Write7BitEncodedInt(0);

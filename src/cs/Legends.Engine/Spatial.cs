@@ -2,14 +2,13 @@ using System;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System.Collections.Generic;
 
 namespace Legends.Engine;
 
 public class Spatial<TParent>: Spatial
     where TParent: Spatial
 {
-    public TParent Parent => (TParent)_parent;
+    [JsonIgnore] public TParent Parent => (TParent)_parent;
 
     public Spatial() : this(null)
     {     

@@ -47,7 +47,7 @@ public class GameDateTime
 
     public string ToTimeString()
     {
-        return string.Format("{0:2}:{1:2}", Hours,Minutes);
+        return string.Format("{0,2}:{1,2}", Hours.ToString("D2"),Minutes.ToString("D2"));
     }
 
     public string ToDateString()
@@ -108,8 +108,8 @@ public class MapScreen : Screen
         _scenes[0] = _services.GetContentManager().GetRef<Scene>("Maps/WorldMap");
         _scenes[1] = _services.GetContentManager().GetRef<Scene>("Scenes/HUD/HudScene");
 
-        //_soTime = (~_scenes[1]).GetObjectByName("time").Single();
-        //_soDate = (~_scenes[1]).GetObjectByName("date").Single();
+        _soTime = (~_scenes[1]).GetObjectByName("time").Single();
+        _soDate = (~_scenes[1]).GetObjectByName("date").Single();
     }
 
     public override void Initialize()
@@ -125,6 +125,8 @@ public class MapScreen : Screen
 
         (~_scenes[0]).Initialize();
         (~_scenes[1]).Initialize();
+
+        _gameDateTime.Initialize();
     }
 
     public override void Draw(GameTime gameTime)

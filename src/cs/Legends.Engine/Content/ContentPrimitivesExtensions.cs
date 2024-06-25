@@ -31,7 +31,7 @@ public static class ContentPrimitivesExtensions
         output.Write(result.IsExtended);
         
         output.Write(result.RefType.AssemblyQualifiedName);
-        output.Write(result.Name);
+        output.Write(result.Name ?? "");
         
         if(!result.IsExternal || result.IsExtended)
         {

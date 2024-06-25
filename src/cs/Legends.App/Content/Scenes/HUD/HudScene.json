@@ -1,7 +1,8 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
-    "name": "HudScene",
+    "Name": "HudScene",
     "camera": {
+        "name": "IOCamera2",
         "originRelative": ".5, 0"
     },
     "components": [

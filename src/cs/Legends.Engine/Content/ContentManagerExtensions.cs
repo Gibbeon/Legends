@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
-using Legends.Engine.Content;
 using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Engine.Content;
