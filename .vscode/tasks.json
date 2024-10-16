@@ -50,7 +50,6 @@
             "options": {
                 "cwd": "${workspaceFolder}/src/cs/Legends.App/Content"
             }
-        },
-        
+        }
     ]
 }
