@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/cs/Legends.App/bin/Debug/net6.0/Legends.App.dll",
+            "program": "${workspaceFolder}/src/cs/Legends.App/bin/Debug/net8.0/Legends.App.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/cs/Legends.App",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
@@ -40,7 +40,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/cs/Legends.Editor/bin/Debug/net6.0/Legends.Editor.dll",
+            "program": "${workspaceFolder}/src/cs/Legends.Editor/bin/Debug/net8.0/Legends.Editor.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/cs/Legends.Editor",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

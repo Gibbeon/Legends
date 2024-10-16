@@ -129,6 +129,12 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         return (this is Scene scene) ? scene : Parent?.GetParentScene();
     } 
 
+    public void AttachChild(Ref<SceneObject> child)
+    {
+        ChildrenReferences.Add(child);
+        (~child).SetParent(this);
+    }
+
     public virtual void Update(GameTime gameTime)
     {
         if(!Enabled) return;
@@ -220,70 +226,3 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         //Origin                  = origin - (absTopLeft / AbsoluteScale); // adjustd the size, reset the origin back to the origional value
     }
 }  
-
-/*
-SceneObject obj = Scene.GetObjectByName("Fency the Fence");
-
-obj.SetState("facing", FacingDirection.Up);
-obj.SetState("action", "walk");
-obj.SetState("ghosted", true);
-obj.SetState("imp", true);
-
-obj.SetAnimation("walk_up", true);
-
-controller: [
-    {
-        "name": "ghosted_imp_walk_up",
-        "conditions": {
-            "ghosted": true,
-            "imp": true,
-            "action": "walk",
-            "facing": "Up"
-        },
-        "animations": [
-            "walk_up", 
-            "ghosted_imp", 
-            "move_left", 
-            "fade_in_out"
-        ]
-    }
-]
-
-animations: [
-    {
-        "$type": "KeyframeAnimation",
-        "name": "walk_up"
-    },
-    {
-        "$type": "SpriteSwapAnimation",
-        "name": "ghosted_imp"
-    },
-    {
-        "$type": "SRTAnimation",
-        "name": "move_left"
-    },
-    {
-        "$type": "ColorKeyAnimation",
-        "name": "fade_in_out"
-    }
-]
-
-void OnStateChanged()
-{
-    if(Controllers.TryFindMatch(out string[] animations))
-    {
-        // disable old
-        foreach(var anim in Aniumations.Where(n => n.Enabled 
-            && !animations.Any(n.Name)))
-        {
-            SetAnimation(anim, false);
-        }
-
-        // enable new
-        foreach(var anim in Aniumations.Where(n => !n.Enabled 
-            && animations.Any(n.Name)))
-        {
-            SetAnimation(anim, true);
-        }
-    }
-}*/

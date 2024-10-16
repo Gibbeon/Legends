@@ -38,7 +38,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _graphicsDeviceManager.PreferredBackBufferHeight = 1024;
         
         //ContentLogger.Enabled = true;
-        Content.RootDirectory = "../../../../Legends.App/Content";
+        Content.RootDirectory = "/Users/riwoods/dev/Legends/src/cs/Legends.App/bin/Debug/net8.0/Content";
         Content.EnableAssetWatching();
         IsMouseVisible = true;
     }
@@ -53,7 +53,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
 
     protected override void LoadContent()
     {        
-        //_screenManager.LoadScreen(new Screens.TitleScreen(Services));
+        _screenManager.LoadScreen(new Screens.ViewerScreen(Services));
         base.LoadContent();
         
     }

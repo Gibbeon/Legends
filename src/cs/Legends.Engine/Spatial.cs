@@ -70,6 +70,20 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
         _parent = parent;
         IsDirty = true;
     }
+
+    public void SetParent(Spatial parent)
+    {
+        if(_parent != null)
+        {
+            _parent.DetatchChild(this);
+        }
+        _parent = parent;
+    }
+
+    protected virtual void DetatchChild(Spatial child)
+    {
+
+    }
     
     public void Move(float x, float y) => Move(new Vector2(x, y));
     public void Move(Vector2 delta) => Position += Vector2.Transform(delta, Matrix.CreateRotationZ(0f - Rotation));

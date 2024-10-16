@@ -1,0 +1,34 @@
+Build started 10/16/2024 10:57:58 AM
+
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Maps/GenerateWorldBehavior.cs
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Maps/WorldMap.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Maps/ville_0.png
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Maps/Village.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Scripts/SetSpriteFrameBehavior.cs
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Scripts/RandomMovementBehavior.cs
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Scripts/CameraControlsBehavior.cs
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Scripts/ChildControlsBehavior.cs
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Scripts/AutoGenerateMapBehavior.cs
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Sprites/desert.png
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Sprites/Plot.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Sprites/Actor.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Sprites/Fence.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Sprites/ActorControlBehavior.cs
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Sprites/NonActor.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Sprites/npc1.png
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Fonts/Sensation_0.png
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Fonts/Sensation.fnt
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Maps/World/world.png
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Maps/World/map2.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Maps/World/water2.png
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Maps/World/water.png
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Maps/World/map.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Scenes/TitleScreen/LaunchGameBehavior.cs
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Scenes/TitleScreen/Animations.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Scenes/TitleScreen/Interface.json
+Skipping /Users/riwoods/dev/Legends/src/cs/Legends.App/Content/Scenes/HUD/HudScene.json
+
+Build 27 succeeded, 0 failed.
+
+Time elapsed 00:00:00.86.
+

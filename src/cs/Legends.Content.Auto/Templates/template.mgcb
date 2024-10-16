@@ -1,8 +1,8 @@
 
 #----------------------------- Global Properties ----------------------------#
 
-/outputDir:./../bin/Debug/net6.0/Content
-/intermediateDir:./../obj/Debug/net6.0/Content
+/outputDir:./../bin/Debug/net8.0/Content
+/intermediateDir:./../obj/Debug/net8.0/Content
 /platform:DesktopGL
 /config:
 /profile:Reach
@@ -11,8 +11,8 @@
 #-------------------------------- References --------------------------------#
 
 /reference:/Users/riwoods/Documents/dev/.nuget/packages/monogame.extended.content.pipeline/3.8.0/tools/MonoGame.Extended.Content.Pipeline.dll
-/reference:./../../Legends.Content.Pipeline/bin/Debug/net6.0/Legends.Content.Pipeline.dll
-/reference:./../../Legends.App/bin/Debug/net6.0/Legends.App.dll
+/reference:./../../Legends.Content.Pipeline/bin/Debug/net8.0/Legends.Content.Pipeline.dll
+/reference:./../../Legends.App/bin/Debug/net8.0/Legends.App.dll
 #---------------------------------- Content ---------------------------------#
 
 

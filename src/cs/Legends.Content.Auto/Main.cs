@@ -192,8 +192,8 @@ public class Main : IDisposable
 
     private Dictionary<string, DateTime> _changed = new();
     string contentDb = @"content.mgcb";        
-    string templatePath = @"..\..\..\Templates";     
-        string contentPath = @"..\..\..\..\Legends.App\Content";
+    string templatePath = @"Templates";     
+    string contentPath = @"../../../../Legends.App/Content";
     public Main()
     {   
 
