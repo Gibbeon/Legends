@@ -51,9 +51,9 @@ public class Camera : SceneObject, IViewState
 
     protected void SetViewportDefault()
     {
-        if(Size2.Empty == Size)
+        if(SizeF.Empty == Size)
         {
-            SetSize(new Size2() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
+            SetSize(new SizeF() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
         } 
 
         _projection     = Matrix.CreateOrthographicOffCenter(0f, Size.Width, Size.Height, 0f, -1f, 0f);
@@ -64,7 +64,7 @@ public class Camera : SceneObject, IViewState
     {
         if(IsDirty) {
             base.UpdateMatricies();
-            _view           = Matrix2.CreateTranslation(Origin); // why double scaling
+            _view           = Matrix3x2.CreateTranslation(Origin); // why double scaling
             _modelView      = _view * World;
             _invModelView   = Matrix.Invert(_modelView);
         }

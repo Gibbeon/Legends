@@ -29,7 +29,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     private float     _rotation;        
     private Vector2   _position;        
     private Vector2   _scale = Vector2.One;
-    private Size2     _size;
+    private SizeF     _size;
     private Matrix    _localMatrix;
     private Matrix    _invLocalMatrix;
     private Vector2?  _originFixed;
@@ -38,7 +38,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     public Vector2 Position { get => _position;                set => SetPosition(value); }
     public Vector2 Scale    { get => _scale;                   set => SetScale(value); }
     public float   Rotation { get => _rotation;                set => SetRotation(value); }   
-    public Size2   Size     { get => _size * Scale;            set => SetSize(value); }
+    public SizeF   Size     { get => _size * Scale;            set => SetSize(value); }
     public Vector2? OriginFixed     { get => _originFixed;          set => SetOriginFixed(value); }
     public Vector2? OriginRelative  { get => _originNormalized;     set => SetOriginNormalized(value); }
 
@@ -50,9 +50,9 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     [JsonIgnore] public Vector2 AbsolutePosition            { get => Position   + _parent?.AbsolutePosition ?? Vector2.Zero; }
     [JsonIgnore] public Vector2 AbsoluteScale               { get => Scale      * _parent?.AbsoluteScale    ?? Vector2.One; }
     [JsonIgnore] public float   AbsoluteRotation            { get => Rotation   + _parent?.AbsoluteRotation ?? 0.0f; }
-    [JsonIgnore] public Size2   AbsoluteSize                { get => Size       * AbsoluteScale; }
+    [JsonIgnore] public Vector2   AbsoluteSize                { get => Size       * AbsoluteScale; }
     [JsonIgnore] public Vector2 AbsoluteOrigin              { get => OriginFixed ?? (OriginRelative ?? default_origin_normalized) * AbsoluteSize; }
-    [JsonIgnore] public Matrix  AbsoluteMatrix              { get => _parent?.AbsoluteMatrix ?? Matrix2.Identity * LocalMatrix; }
+    [JsonIgnore] public Matrix  AbsoluteMatrix              { get => _parent?.AbsoluteMatrix ?? Matrix3x2.Identity * LocalMatrix; }
     [JsonIgnore] public Vector2 AbsoluteTopLeft             { get => AbsolutePosition - AbsoluteOrigin; }
     [JsonIgnore] public Vector2 AbsoluteBottomRight         { get => AbsoluteTopLeft + (Vector2)AbsoluteSize; }
     [JsonIgnore] public Vector2 AbsoluteCenter              { get => AbsolutePosition + (Vector2)AbsoluteSize / 2; }
@@ -93,7 +93,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     public void Rotate(float deltaRadians) => Rotation += deltaRadians;
     public void SetPosition(float x, float y) => SetPosition(new Vector2(x, y));
     public void SetScale(float scale) => SetScale(new Vector2(scale, scale));
-    public void SetSize(float width, float height) =>  SetSize(new Size2(width, height));
+    public void SetSize(float width, float height) =>  SetSize(new Vector2(width, height));
     public void SetOriginFixed(Vector2? origin) { _originFixed = origin; IsDirty = true; }
     public void SetOriginNormalized(Vector2? origin) { _originNormalized = origin; IsDirty = true; }
     
@@ -114,7 +114,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
         _rotation = radians;
         IsDirty = true;
     }
-    public virtual void SetSize(Size2 size)
+    public virtual void SetSize(SizeF size)
     {
         _size = size / Scale;
         IsDirty = true;
@@ -124,10 +124,10 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     {
         if (IsDirty) {
             _localMatrix = 
-                    Matrix2.CreateTranslation(-(Position + Origin / Scale))
-                *   Matrix2.CreateRotationZ(Rotation)
-                *   Matrix2.CreateTranslation(Origin / Scale)
-                *   Matrix2.CreateScale(Scale);
+                    Matrix3x2.CreateTranslation(-(Position + Origin / Scale))
+                *   Matrix3x2.CreateRotationZ(Rotation)
+                *   Matrix3x2.CreateTranslation(Origin / Scale)
+                *   Matrix3x2.CreateScale(Scale);
 
             _invLocalMatrix = Matrix.Invert(_localMatrix);
 
@@ -141,7 +141,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
         return _localMatrix;
     }
 
-    public bool Contains(Point2 point)
+    public bool Contains(Vector2 point)
     {
         // rotate around rectangle center by -rectAngle
         if(Rotation * Rotation > float.Epsilon) {
@@ -151,7 +151,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
             // set origin to rect center
             point -= Position;
             // rotate
-            point  = new Point2(point.X * cos - point.Y * sin, point.X * sin + point.Y * cos);
+            point  = new Vector2(point.X * cos - point.Y * sin, point.X * sin + point.Y * cos);
             // put origin back
             point += Position;
         }

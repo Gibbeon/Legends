@@ -24,7 +24,7 @@ public class TextureRegion : Spatial, IInitalizable
     [JsonIgnore]
     public Texture2D Texture => TextureReference.Get();
 
-    public Size2 Slice { get; set; }
+    public SizeF Slice { get; set; }
     public int Frame { get; set; }
     public ResourceType ResourceType { get; set; }
     public Color Color { get; set; }
@@ -58,7 +58,7 @@ public class TextureRegion : Spatial, IInitalizable
         Services = services;
         TextureReference = texture;
         Position = new Vector2(x, y);
-        Size = new Size2(width, height);
+        Size = new SizeF(width, height);
     }
 
     public void SetFrame(int frame)
@@ -84,8 +84,8 @@ public class TextureRegion : Spatial, IInitalizable
             Texture.SetData<Color>(Enumerable.Repeat(Color, (int)(Size.Width * Size.Height)).ToArray());
         }
 
-        if(Size == Size2.Empty) Size = new Size2(Texture.Width, Texture.Height);        
-        if(Slice == Size2.Empty) Slice = Size;
+        if(Size == SizeF.Empty) Size = new SizeF(Texture.Width, Texture.Height);        
+        if(Slice == SizeF.Empty) Slice = Size;
 
         //OffsetPosition = new Vector2(
         //    (int)(Frame * Slice.Width) % (int)Size.Width, 

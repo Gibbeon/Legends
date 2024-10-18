@@ -2,15 +2,16 @@
 using System;
 using Newtonsoft.Json;
 using MonoGame.Extended;
+using MonoGame.Extended.Serialization;
 using System.Linq;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
-public class SizeJsonConverter : JsonConverter
+public class SizeFJsonConverter : JsonConverter
 {
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-        Size size = (Size)value;
+        SizeF size = (SizeF)value;
         writer.WriteValue($"{size.Width} {size.Height}");
     }
 
@@ -20,22 +21,22 @@ public class SizeJsonConverter : JsonConverter
 
         Console.WriteLine(src);
 
-        int[] array = 
+        float[] array = 
             src
             .Split(',', ' ','\n')
             .Select(n => n.Trim())
             .Where(n => !string.IsNullOrEmpty(n))
-            .Select(n => int.Parse(n))
+            .Select(n => float.Parse(n))
             .ToArray();
         
         if (array.Length == 2)
         {
-            return new Size(array[0], array[1]);
+            return new SizeF(array[0], array[1]);
         }
 
         if (array.Length == 1)
         {
-            return new Size(array[0], array[0]);
+            return new SizeF(array[0], array[0]);
         }
 
         throw new FormatException("Invalid Size property value");
@@ -43,6 +44,6 @@ public class SizeJsonConverter : JsonConverter
 
     public override bool CanConvert(Type objectType)
     {
-        return objectType == typeof(Size);
+        return objectType == typeof(SizeF);
     }
 }

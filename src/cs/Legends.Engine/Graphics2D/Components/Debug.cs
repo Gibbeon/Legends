@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using MonoGame.Extended.BitmapFonts;
 using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D.Components;
@@ -21,10 +20,10 @@ public class Debug : Component, ISpriteRenderable
     public int RenderLayerID => 8;
 
     [JsonProperty(nameof(Font))]
-    protected Ref<BitmapFont> FontReference { get; set; }
+    protected Ref<SpriteFont> FontReference { get; set; }
 
     [JsonIgnore]
-    public BitmapFont Font => FontReference.Get();
+    public SpriteFont Font => FontReference.Get();
 
     private int _frameRate = 0;
     private int _frameCounter = 0;
@@ -189,21 +188,21 @@ public class Debug : Component, ISpriteRenderable
 
         spriteBatch.DrawString(Font, stringDisplay, Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
         
-        _position.Y += Font.MeasureString(stringDisplay).Height;
+        _position.Y += Font.MeasureString(stringDisplay).Y;
 
         var camera_rect = Parent.Scene.Camera.LocalToWorld(this.Parent.Scene.Camera.AbsoluteBoundingRectangle);
 
         //DrawRectangle(this.Parent.Scene.Camera.AbsoluteBoundingRectangle, Matrix2.CreateTranslation(Parent.Scene.Camera.Origin), spriteBatch, Color.Green);
-        DrawRectangle(camera_rect, Matrix2.Identity, spriteBatch, Color.Green);
+        DrawRectangle(camera_rect, Matrix3x2.Identity, spriteBatch, Color.Green);
 
         StringBuilder sb = new ();
         if(_objects.Count > 0) {
             var rect = Parent.Scene.Camera.LocalToWorld(_objects[_objectIndex].AbsoluteBoundingRectangle);
 
-            var matrix =  (Matrix)Matrix2.CreateTranslation(-(Vector2)rect.Center)
-                                * Matrix2.CreateRotationZ(_objects[_objectIndex].AbsoluteRotation)
-                                * Matrix2.CreateScale(Vector2.One / _objects[_objectIndex].AbsoluteScale)
-                                * Matrix2.CreateTranslation((Vector2)rect.Center);
+            var matrix =  (Matrix)Matrix3x2.CreateTranslation(-(Vector2)rect.Center)
+                                * Matrix3x2.CreateRotationZ(_objects[_objectIndex].AbsoluteRotation)
+                                * Matrix3x2.CreateScale(Vector2.One / _objects[_objectIndex].AbsoluteScale)
+                                * Matrix3x2.CreateTranslation((Vector2)rect.Center);
 
             DrawRectangle(rect, Matrix.Identity, spriteBatch, Color.Red);
 
@@ -217,7 +216,7 @@ public class Debug : Component, ISpriteRenderable
                 sb.AppendLine(string.Format("{0} out of {1}", _objectIndex + 1, _objects.Count));  
                 stringDisplay = sb.ToString();
                 spriteBatch.DrawString(Font, stringDisplay, Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
-                _position.Y += Font.MeasureString(stringDisplay).Height;          
+                _position.Y += Font.MeasureString(stringDisplay).Y;          
             }
             else
             {
@@ -302,7 +301,7 @@ public class Debug : Component, ISpriteRenderable
 
         var stringDisplay = sb.ToString();
         spriteBatch.DrawString(Font, stringDisplay, Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
-        _position.Y += Font.MeasureString(stringDisplay).Height;
+        _position.Y += Font.MeasureString(stringDisplay).Y;
 
         if(region != null && region.Get() != null)
         {

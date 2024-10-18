@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using MonoGame.Extended.Input.InputListeners;
 
@@ -23,7 +24,7 @@ public class EventAction
         Args = args;
     }
 
-    public Point2 GetPosition()
+    public Point GetPosition()
     {
         if(Args is MouseEventArgs)
         {
@@ -32,10 +33,10 @@ public class EventAction
 
         if(Args is TouchEventArgs)
         {
-            return (Args as TouchEventArgs).RawTouchLocation.Position;
+            return (Args as TouchEventArgs).RawTouchLocation.Position.ToPoint();
         }    
 
-        return Point2.NaN;
+        throw new ArgumentException("Not supported on this event type.");
     }
 
     public float GetScrollValue()

@@ -8,7 +8,7 @@
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Debug, Legends.Engine",
-            "font":  "Fonts/Sensation"
+            "font":  "Fonts/Arial"
         }
     ],
     "children": [
@@ -33,7 +33,7 @@
                     "components": [
                         {
                             "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",
-                            "font":     "Fonts/Sensation",
+                            "font":     "Fonts/Arial",
                             "text":     "April 25, 2020",
                             "color":    "255, 255, 255, 255",
                             "halign":   "Center",
@@ -47,7 +47,7 @@
                     "components": [
                         {
                             "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",
-                            "font":     "Fonts/Sensation",
+                            "font":     "Fonts/Arial",
                             "text":     "00:00:00 AM/PM",
                             "color":    "255, 255, 255, 255",
                             "halign":   "Center",

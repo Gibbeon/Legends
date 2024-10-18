@@ -7,6 +7,7 @@ using Legends.Engine.Content;
 using MonoGame.Extended.Serialization;
 using Legends.Engine.Graphics2D;
 using Newtonsoft.Json.Converters;
+using MonoGame.Extended.Serialization.Json;
 
 namespace Legends.Content.Pipline;
 
@@ -24,8 +25,8 @@ public class ContentObjectImporter : ContentImporter<dynamic>
                 };
             
             settings.Converters.Add(new RefJsonConverter());
-            settings.Converters.Add(new Size2JsonConverter());
-            settings.Converters.Add(new SizeJsonConverter());  
+            settings.Converters.Add(new SizeFJsonConverter());
+            settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());    
                 
             var result = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
@@ -54,10 +55,11 @@ public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
                 };
+
                 
             settings.Converters.Add(new RefJsonConverter());  
-            settings.Converters.Add(new Size2JsonConverter());   
-            settings.Converters.Add(new SizeJsonConverter());   
+            settings.Converters.Add(new SizeFJsonConverter()); 
+            settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());  
                     
             return ContentObject.Wrap((object)input);

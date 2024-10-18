@@ -6,6 +6,7 @@ using Legends.Engine.Content;
 using System;
 using System.Collections;
 using System.Linq;
+using Microsoft.Xna.Framework;
 
 
 
@@ -13,15 +14,15 @@ namespace Legends.Engine.Content;
 
 public static class ContentPrimitivesExtensions
 {
-    public static void Write(this ContentWriter output, Size2 size2)
+    public static void Write(this ContentWriter output, Vector2 size2)
     {
-        output.Write(size2.Width);
-        output.Write(size2.Height);
+        output.Write(size2.X);
+        output.Write(size2.Y);
     }
 
-    public static Size2 ReadSize2(this ContentReader input)
+    public static Vector2 ReadVector2(this ContentReader input)
     {
-        return new Size2(input.ReadSingle(), input.ReadSingle());
+        return new Vector2(input.ReadSingle(), input.ReadSingle());
     }
 
     public static void Write(this ContentWriter output, IRef result)

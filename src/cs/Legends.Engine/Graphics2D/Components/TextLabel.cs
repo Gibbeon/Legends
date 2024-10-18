@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
 using System;
 using MonoGame.Extended;
 
@@ -28,7 +27,7 @@ public class TextLabel : Component, ISpriteRenderable
     private VerticalAlignment _valign;
     private float _verticalOffset;
     private float _horizontalOffset;
-    private Size2 _textSize;
+    private SizeF _textSize;
 
     [JsonIgnore]
     public int RenderLayerID => 1;
@@ -40,10 +39,10 @@ public class TextLabel : Component, ISpriteRenderable
     public string Text {get => _text;  set => SetText(value); }
 
     [JsonProperty(nameof(Font))]
-    public Ref<BitmapFont> FontReference { get; set; }
+    public Ref<SpriteFont> FontReference { get; set; }
 
     [JsonIgnore]
-    public BitmapFont Font => FontReference.Get();
+    public SpriteFont Font => FontReference.Get();
 
     public RenderState RenderState { get; set; }
     
@@ -158,7 +157,7 @@ public class TextLabel : Component, ISpriteRenderable
                 Parent.AbsoluteScale,
                 SpriteEffects,
                 0,
-                null);//fontDrawable.DestinationBounds);
+                false);//fontDrawable.DestinationBounds);
         }
         else
         {
@@ -166,8 +165,7 @@ public class TextLabel : Component, ISpriteRenderable
                 Font,
                 Text,
                 Position,
-                Color,
-                null); // DestinationBounds
+                Color); // DestinationBounds
         }
 
         if(target is not SpriteBatch)

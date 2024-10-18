@@ -2,10 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
-using MonoGame.Extended.BitmapFonts;
 using System;
-using MonoGame.Extended.Sprites;
-using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D;
 

@@ -13,7 +13,7 @@
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Debug, Legends.Engine",
-            "font":  "Fonts/Sensation"
+            "font":  "Fonts/Arial"
         }
     ],
     "children": [
@@ -25,7 +25,7 @@
                     "components": [
                         {
                             "$type":    "Legends.Engine.Graphics2D.Components.TextLabel, Legends.Engine",
-                            "font":     "Fonts/Sensation",
+                            "font":     "Fonts/Arial",
                             "text":     "Press ESC to Exit or ENTER to start",
                             "color":    "255, 255, 255, 255",
                             "halign":   "Center",

@@ -103,7 +103,7 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
 
     public virtual IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
     {
-        if(Contains(position.ToPoint()))
+        if(Contains(position))
         {
             yield return this;
 

@@ -11,4 +11,10 @@
     </Content>  
   </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MonoGame.Extended" Version="4.0.3" />
+      <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="4.0.3" />
+      <PackageReference Include="MonoGame.Framework.Content.Pipeline" Version="3.8.2.1105" />
+    </ItemGroup>
+
 </Project>

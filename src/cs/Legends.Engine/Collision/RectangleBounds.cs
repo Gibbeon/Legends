@@ -19,8 +19,8 @@ public class RectangleBounds : IBounds
 
     }
 
-    public RectangleBounds(Vector2 position, Size2 size): 
-        this(new BoundingRectangle((((Vector2)size - position)/ 2).ToPoint(), size / 2))
+    public RectangleBounds(Vector2 position, Vector2 size): 
+        this(new BoundingRectangle((((Vector2)size - position)/ 2), size / 2))
     {
 
     }

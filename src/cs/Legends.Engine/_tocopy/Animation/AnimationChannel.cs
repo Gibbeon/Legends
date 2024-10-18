@@ -63,3 +63,4 @@ public class AnimationChannel
         Current?.Update(new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime * Speed));
     }
 }
+ 
