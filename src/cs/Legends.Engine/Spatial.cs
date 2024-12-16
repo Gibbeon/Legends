@@ -38,19 +38,19 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     public Vector2 Position { get => _position;                set => SetPosition(value); }
     public Vector2 Scale    { get => _scale;                   set => SetScale(value); }
     public float   Rotation { get => _rotation;                set => SetRotation(value); }   
-    public SizeF   Size     { get => _size * Scale;            set => SetSize(value); }
+    public SizeF   Size     { get => _size;                     set => SetSize(value); }
     public Vector2? OriginFixed     { get => _originFixed;          set => SetOriginFixed(value); }
     public Vector2? OriginRelative  { get => _originNormalized;     set => SetOriginNormalized(value); }
 
     [JsonIgnore] public Vector2 Origin { get => OriginFixed ?? (OriginRelative ?? default_origin_normalized) * Size; }
     [JsonIgnore] public RectangleF BoundingRectangle        => new(TopLeft, Size);
     [JsonIgnore] public Vector2 TopLeft                     { get => Position - Origin; }
-    [JsonIgnore] public Vector2 BottomRight                 { get => TopLeft  + (Vector2)Size; }
-    [JsonIgnore] public Vector2 Center                      { get => Position + (Vector2)Size / 2; }
+    [JsonIgnore] public Vector2 BottomRight                 { get => TopLeft  + (Vector2)(Size * Scale); }
+    [JsonIgnore] public Vector2 Center                      { get => Position + (Vector2)(Size * Scale) / 2; }
     [JsonIgnore] public Vector2 AbsolutePosition            { get => Position   + _parent?.AbsolutePosition ?? Vector2.Zero; }
     [JsonIgnore] public Vector2 AbsoluteScale               { get => Scale      * _parent?.AbsoluteScale    ?? Vector2.One; }
     [JsonIgnore] public float   AbsoluteRotation            { get => Rotation   + _parent?.AbsoluteRotation ?? 0.0f; }
-    [JsonIgnore] public Vector2   AbsoluteSize                { get => Size       * AbsoluteScale; }
+    [JsonIgnore] public SizeF   AbsoluteSize                { get => Size * AbsoluteScale; } // DOUBLE REDUCING SIZE ON LOCAL SIZE
     [JsonIgnore] public Vector2 AbsoluteOrigin              { get => OriginFixed ?? (OriginRelative ?? default_origin_normalized) * AbsoluteSize; }
     [JsonIgnore] public Matrix  AbsoluteMatrix              { get => _parent?.AbsoluteMatrix ?? Matrix3x2.Identity * LocalMatrix; }
     [JsonIgnore] public Vector2 AbsoluteTopLeft             { get => AbsolutePosition - AbsoluteOrigin; }

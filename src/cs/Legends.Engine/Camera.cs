@@ -15,16 +15,12 @@ public class Camera : SceneObject, IViewState
     protected Matrix _view;
     protected Matrix _modelView;
     protected Matrix _invModelView; 
-    protected Vector2 _offset;  
 
     public BoundedValue<float> ZoomBounds { get => _zoomBounds; set => _zoomBounds = value; }
-
-    public Vector2 Offset { get => _offset; set => SetOffset(value); }
 
     [JsonIgnore] public Matrix View =>       _view;
     [JsonIgnore] public Matrix Projection => _projection;
     [JsonIgnore] public Matrix World =>      LocalMatrix;
-    [JsonIgnore] public Viewport Viewport => new Viewport((int)_offset.X, (int)_offset.Y, (int)Size.Width, (int)Size.Height);
 
     public Camera() : this(null, null)
     {
@@ -43,12 +39,6 @@ public class Camera : SceneObject, IViewState
 
         base.Initialize();
     }
-
-    public virtual void SetOffset(Vector2 offset)
-    {
-        _offset = offset;
-    }
-
     protected void SetViewportDefault()
     {
         if(SizeF.Empty == Size)

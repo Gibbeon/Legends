@@ -184,13 +184,32 @@ public class Debug : Component, ISpriteRenderable
         _position = _positionStart;
 
         _frameCounter++;
-        var stringDisplay = string.Format("fps: {0} cur: {1} cur w_2_l: {2} cam: {3}", _frameRate, Mouse.GetState().Position, Parent.Scene.Camera.WorldToLocal(Mouse.GetState().Position.ToVector2()), Parent.Scene.Camera.Position);
+        var stringDisplay = string.Format("fps: {0} cur: {1} cur w_2_l: {2} cam: {3}", 
+            _frameRate, 
+            Mouse.GetState().Position, 
+            Parent.Scene.Camera.WorldToLocal(Mouse.GetState().Position.ToVector2()), 
+            Parent.Scene.Camera.Position);
 
         spriteBatch.DrawString(Font, stringDisplay, Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
         
         _position.Y += Font.MeasureString(stringDisplay).Y;
 
-        var camera_rect = Parent.Scene.Camera.LocalToWorld(this.Parent.Scene.Camera.AbsoluteBoundingRectangle);
+
+        var camera_rect = Parent.Scene.Camera.LocalToWorld(this.Parent.Scene.Camera.BoundingRectangle);
+
+        stringDisplay = string.Format("scale: {0} abs:{1} localtoworld:{2}", 
+            Parent.Scene.Camera.Scale.ToString(),
+            this.Parent.Scene.Camera.AbsoluteBoundingRectangle,
+
+            camera_rect);
+
+
+        spriteBatch.DrawString(Font, stringDisplay, Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
+        
+        _position.Y += Font.MeasureString(stringDisplay).Y;
+
+
+        
 
         //DrawRectangle(this.Parent.Scene.Camera.AbsoluteBoundingRectangle, Matrix2.CreateTranslation(Parent.Scene.Camera.Origin), spriteBatch, Color.Green);
         DrawRectangle(camera_rect, Matrix3x2.Identity, spriteBatch, Color.Green);
