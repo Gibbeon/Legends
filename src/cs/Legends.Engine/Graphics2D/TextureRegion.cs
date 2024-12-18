@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Autofac;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -13,7 +14,7 @@ public enum ResourceType
     Dynamic
 }
 
-public class TextureRegion : Spatial, IInitalizable
+public class TextureRegion : Box2D, IInitalizable
 {
     [JsonIgnore]
     public IServiceProvider Services { get; protected set; }
@@ -28,6 +29,8 @@ public class TextureRegion : Spatial, IInitalizable
     public int Frame { get; set; }
     public ResourceType ResourceType { get; set; }
     public Color Color { get; set; }
+
+    public Vector2 Position { get; set; }
 
     [JsonIgnore]
     public Size TileCount => new ((int)Size.Width / (int)Slice.Width,((int)Size.Height / (int)Slice.Height));

@@ -7,7 +7,7 @@ using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public abstract class Shape : Component, ISpriteRenderable
+public abstract class Shape : Component2D, ISpriteRenderable
 {
     [JsonIgnore]
     public int RenderLayerID => 1;
@@ -84,7 +84,7 @@ public class Rectangle : Shape
     public override void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {
         var spriteBatch = this.GetSpriteBatch(target);
-        spriteBatch.DrawRectangle(Parent.BoundingRectangle, this.Color, Thickness);
+        spriteBatch.DrawRectangle(BoundingRectangle, this.Color, Thickness);
         if(target is not SpriteBatch)
             spriteBatch?.End();
     }

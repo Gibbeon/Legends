@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace Legends.Engine.Collision;
 
-public class RigidBody : Component
+public class RigidBody : Component2D
 {
     public bool Dynamic { get; set; }
     private IBounds _bounds;
@@ -42,7 +42,7 @@ public class RigidBody : Component
     public override void Initialize()
     {
         _previousPosition = this.Parent.Position;
-        _bounds ??= new RectangleBounds(Vector2.Zero, Parent.Size);
+        _bounds ??= new RectangleBounds(Vector2.Zero, Size);
         Services.Get<ICollisionService>().Add(this);
     }
 

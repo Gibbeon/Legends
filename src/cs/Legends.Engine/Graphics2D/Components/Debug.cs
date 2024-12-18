@@ -71,7 +71,7 @@ public class Debug : Component, ISpriteRenderable
     {
         _camera = new Camera(Services, null);
         _camera.Initialize();        
-        _camera.OriginRelative = Vector2.Zero;
+        //_camera.OriginRelative = Vector2.Zero;
         _commands = new InputCommandSet(Services);
 
         _commands.Add("SELECT", EventType.MouseClicked, MonoGame.Extended.Input.MouseButton.Left, Microsoft.Xna.Framework.Input.Keys.LeftShift);
@@ -103,7 +103,7 @@ public class Debug : Component, ISpriteRenderable
         {
             switch(command.Name)
             {
-                case "SELECT":          SetFocus(Parent.Scene.GetObjectsAt(Parent.Scene.Camera.WorldToLocal(command.MouseEventArgs.Position.ToVector2())).ToList()); break;
+                case "SELECT":          break;//SetFocus(Parent.Scene.GetObjectsAt(Parent.Scene.Camera.WorldToLocal(command.MouseEventArgs.Position.ToVector2())).ToList()); break;
                 case "DESELECT":        ClearFocus(); break;
                 case "SELECT_NEXT":     SetObjectFocus(Math.Min(_objects.Count - 1, _objectIndex + 1)); break;
                 case "SELECT_PREV":     SetObjectFocus( Math.Max(0, _objectIndex - 1)); break;
@@ -195,6 +195,7 @@ public class Debug : Component, ISpriteRenderable
         _position.Y += Font.MeasureString(stringDisplay).Y;
 
 
+        /*
         var camera_rect = Parent.Scene.Camera.LocalToWorld(this.Parent.Scene.Camera.BoundingRectangle);
 
         stringDisplay = string.Format("scale: {0} abs:{1} localtoworld:{2}", 
@@ -207,11 +208,13 @@ public class Debug : Component, ISpriteRenderable
         spriteBatch.DrawString(Font, stringDisplay, Position, Color, 0, Vector2.Zero, .8f, SpriteEffects.None, 0);
         
         _position.Y += Font.MeasureString(stringDisplay).Y;
+        */
 
 
         
 
         //DrawRectangle(this.Parent.Scene.Camera.AbsoluteBoundingRectangle, Matrix2.CreateTranslation(Parent.Scene.Camera.Origin), spriteBatch, Color.Green);
+        /*
         DrawRectangle(camera_rect, Matrix3x2.Identity, spriteBatch, Color.Green);
 
         StringBuilder sb = new ();
@@ -242,6 +245,7 @@ public class Debug : Component, ISpriteRenderable
                 DrawObject<IComponent>(spriteBatch, _components[_componentIndex - 1]);
             }
         }
+        */
 
         if(target is not SpriteBatch)
             spriteBatch?.End();

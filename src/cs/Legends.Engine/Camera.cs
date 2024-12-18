@@ -4,7 +4,6 @@ using MonoGame.Extended;
 using System;
 using Legends.Engine.Graphics2D;
 using Legends.Engine.Resolvers;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Legends.Engine;
 
@@ -30,31 +29,17 @@ public class Camera : SceneObject, IViewState
     public Camera(IServiceProvider services, Scene scene) : base(services, scene)
     {
         _zoomBounds = new(float.Epsilon, float.MaxValue);
-    }
-
-    public override void Initialize()
-    {
-        SetViewportDefault();
-        //OriginNormalized = new Vector2(.5f, .5f);
-
-        base.Initialize();
-    }
-    protected void SetViewportDefault()
-    {
-        if(SizeF.Empty == Size)
-        {
-            SetSize(new SizeF() { Width = Services.GetGraphicsDevice().Viewport.Width, Height = Services.GetGraphicsDevice().Viewport.Height });
-        } 
-
-        _projection     = Matrix.CreateOrthographicOffCenter(0f, Size.Width, Size.Height, 0f, -1f, 0f);
+        
         
     }
 
     protected override void UpdateMatricies()
     {
+        _projection = Matrix.CreateOrthographicOffCenter(0f, Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height, 0f, -1f, 0f);
+        
         if(IsDirty) {
             base.UpdateMatricies();
-            _view           = Matrix3x2.CreateTranslation(Origin); // why double scaling
+            _view           = Matrix3x2.Identity; //CreateTranslation(Origin); // why double scaling
             _modelView      = _view * World;
             _invModelView   = Matrix.Invert(_modelView);
         }
@@ -76,13 +61,13 @@ public class Camera : SceneObject, IViewState
         bool bounded = false;
         if(bounded)
         {
-            var ofs_x = Position.X % Size.Width;
-            var ofs_y = Position.Y % Size.Height;
+            //var ofs_x = Position.X % Size.Width;
+            //var ofs_y = Position.Y % Size.Height;
 
-            if(ofs_x < 0) ofs_x += Size.Width;
-            if(ofs_y < 0) ofs_y += Size.Height;
+            //if(ofs_x < 0) ofs_x += Size.Width;
+            //if(ofs_y < 0) ofs_y += Size.Height;
 
-            SetPosition( ofs_x, ofs_y);
+            //SetPosition( ofs_x, ofs_y);
         }
     }
 

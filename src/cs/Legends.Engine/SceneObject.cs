@@ -8,6 +8,7 @@ using MonoGame.Extended;
 
 namespace Legends.Engine;
 
+
 public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObject, IInitalizable
 {   
     private IList<string>           _tags;    
@@ -17,11 +18,9 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
     private Scene _scene;
     private bool _enabled = true;
     private bool _visible = true;
-
     private string _name;
 
     [DefaultValue("")] public string Name { get => _name; set => _name = value; }
-
     [DefaultValue(true)] public bool Enabled { get => _enabled; set => _enabled = value; }
     [DefaultValue(true)] public bool Visible { get => _visible; set => _visible = value; }
 
@@ -101,7 +100,7 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         return Components.OfType<TType>().SingleOrDefault();
     } 
 
-    public virtual IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
+    /*public virtual IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
     {
         if(Contains(position))
         {
@@ -112,7 +111,7 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
                 yield return child;
             }
         }
-    }
+    }*/
 
     public IEnumerable<SceneObject> GetObjectByName(string name)
     {
@@ -205,16 +204,16 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         return  $"{Name} Pos:{Position} S:{Scale} Rot:{Rotation} E:{Enabled} Vis:{Visible}";
     }
 
-    protected override void UpdateMatricies()
-    {
-        foreach(var child in Children) {
-            EnsureBounds(child);
-        }
+    //protected override void UpdateMatricies()
+    //{
+    //    //foreach(var child in Children) {
+        //    EnsureBounds(child);
+        //}
 
-        base.UpdateMatricies();
-    }
+    //    base.UpdateMatricies();
+    //}
 
-    protected void EnsureBounds(Spatial child)
+    /*protected void EnsureBounds(Spatial child)
     {
         if(!IsDirty) return;
 
@@ -225,4 +224,5 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         Position                = AbsoluteOrigin + absTopLeft / AbsoluteScale - (Parent?.AbsolutePosition ?? Vector2.Zero);
         //Origin                  = origin - (absTopLeft / AbsoluteScale); // adjustd the size, reset the origin back to the origional value
     }
+    */
 }  

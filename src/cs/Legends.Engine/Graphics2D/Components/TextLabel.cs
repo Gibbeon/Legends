@@ -20,7 +20,7 @@ public enum VerticalAlignment
     Bottom
 }
 
-public class TextLabel : Component, ISpriteRenderable
+public class TextLabel : Component2D, ISpriteRenderable
 {
     private string _text;
     private HorizontalAlignment _halign;
@@ -56,13 +56,13 @@ public class TextLabel : Component, ISpriteRenderable
     public bool Visible => Parent.Visible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent.AbsolutePosition - Parent.AbsoluteOrigin;
+    public Vector2 Position => Parent.AbsolutePosition - Origin * Parent.Scale;
 
     [JsonIgnore]
     public IViewState ViewState => Parent.Scene.Camera;
     
     [JsonIgnore]
-    public Microsoft.Xna.Framework.Rectangle DestinationBounds => (Microsoft.Xna.Framework.Rectangle)Parent.BoundingRectangle;
+    public Microsoft.Xna.Framework.Rectangle DestinationBounds => (Microsoft.Xna.Framework.Rectangle)new RectangleF(Parent.Position, Size * Parent.Scale);
 
     [JsonIgnore]
     protected bool IsDirty { get; set; }
@@ -98,7 +98,7 @@ public class TextLabel : Component, ISpriteRenderable
             _horizontalOffset   = GetVerticalOffset();
             _verticalOffset     = GetHorizontalOffset();
 
-            Parent.SetSize(_textSize);
+            SetSize(_textSize);
             //Parent.Position = new Vector2(-_verticalOffset, -_horizontalOffset);
             IsDirty = false;
         }

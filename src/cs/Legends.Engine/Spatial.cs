@@ -21,43 +21,24 @@ public class Spatial<TParent>: Spatial
     }
 }
 
-public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRectangularF
+public abstract class Spatial : IMovable, IRotatable, IScalable
 {
-    static Vector2 default_origin_normalized = new (.5f, .5f);
+    protected Spatial   _parent;
+    protected float     _rotation;        
+    protected Vector2   _position;        
+    protected Vector2   _scale = Vector2.One;
+    protected Matrix    _localMatrix;
+    protected Matrix    _invLocalMatrix;
 
-    protected Spatial _parent;
-    private float     _rotation;        
-    private Vector2   _position;        
-    private Vector2   _scale = Vector2.One;
-    private SizeF     _size;
-    private Matrix    _localMatrix;
-    private Matrix    _invLocalMatrix;
-    private Vector2?  _originFixed;
-    private Vector2?  _originNormalized;
+    public Vector2 Position { get => _position;             set => SetPosition(value); }
+    public Vector2 Scale    { get => _scale;                set => SetScale(value); }
+    public float   Rotation { get => _rotation;             set => SetRotation(value); }
 
-    public Vector2 Position { get => _position;                set => SetPosition(value); }
-    public Vector2 Scale    { get => _scale;                   set => SetScale(value); }
-    public float   Rotation { get => _rotation;                set => SetRotation(value); }   
-    public SizeF   Size     { get => _size;                     set => SetSize(value); }
-    public Vector2? OriginFixed     { get => _originFixed;          set => SetOriginFixed(value); }
-    public Vector2? OriginRelative  { get => _originNormalized;     set => SetOriginNormalized(value); }
-
-    [JsonIgnore] public Vector2 Origin { get => OriginFixed ?? (OriginRelative ?? default_origin_normalized) * Size; }
-    [JsonIgnore] public RectangleF BoundingRectangle        => new(TopLeft, Size);
-    [JsonIgnore] public Vector2 TopLeft                     { get => Position - Origin; }
-    [JsonIgnore] public Vector2 BottomRight                 { get => TopLeft  + (Vector2)(Size * Scale); }
-    [JsonIgnore] public Vector2 Center                      { get => Position + (Vector2)(Size * Scale) / 2; }
+    [JsonIgnore] public Matrix  LocalMatrix                 => GetLocalMatrix(); 
     [JsonIgnore] public Vector2 AbsolutePosition            { get => Position   + _parent?.AbsolutePosition ?? Vector2.Zero; }
     [JsonIgnore] public Vector2 AbsoluteScale               { get => Scale      * _parent?.AbsoluteScale    ?? Vector2.One; }
     [JsonIgnore] public float   AbsoluteRotation            { get => Rotation   + _parent?.AbsoluteRotation ?? 0.0f; }
-    [JsonIgnore] public SizeF   AbsoluteSize                { get => Size * AbsoluteScale; } // DOUBLE REDUCING SIZE ON LOCAL SIZE
-    [JsonIgnore] public Vector2 AbsoluteOrigin              { get => OriginFixed ?? (OriginRelative ?? default_origin_normalized) * AbsoluteSize; }
-    [JsonIgnore] public Matrix  AbsoluteMatrix              { get => _parent?.AbsoluteMatrix ?? Matrix3x2.Identity * LocalMatrix; }
-    [JsonIgnore] public Vector2 AbsoluteTopLeft             { get => AbsolutePosition - AbsoluteOrigin; }
-    [JsonIgnore] public Vector2 AbsoluteBottomRight         { get => AbsoluteTopLeft + (Vector2)AbsoluteSize; }
-    [JsonIgnore] public Vector2 AbsoluteCenter              { get => AbsolutePosition + (Vector2)AbsoluteSize / 2; }
-    [JsonIgnore] public RectangleF AbsoluteBoundingRectangle=> new(AbsoluteTopLeft, AbsoluteSize);
-    [JsonIgnore] public Matrix  LocalMatrix                 => GetLocalMatrix();
+    [JsonIgnore] public Matrix  GlobalMatrix                { get => (_parent?.GlobalMatrix ?? Matrix3x2.Identity) * LocalMatrix; }
     [JsonIgnore] public bool IsDirty                        { get; protected set; }
     
     public Spatial() : this(null)
@@ -93,10 +74,7 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     public void Rotate(float deltaRadians) => Rotation += deltaRadians;
     public void SetPosition(float x, float y) => SetPosition(new Vector2(x, y));
     public void SetScale(float scale) => SetScale(new Vector2(scale, scale));
-    public void SetSize(float width, float height) =>  SetSize(new Vector2(width, height));
-    public void SetOriginFixed(Vector2? origin) { _originFixed = origin; IsDirty = true; }
-    public void SetOriginNormalized(Vector2? origin) { _originNormalized = origin; IsDirty = true; }
-    
+     
     public virtual void SetPosition(Vector2 position)
     {
         _position = position;
@@ -114,19 +92,13 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
         _rotation = radians;
         IsDirty = true;
     }
-    public virtual void SetSize(SizeF size)
-    {
-        _size = size / Scale;
-        IsDirty = true;
-    }
 
     protected virtual void UpdateMatricies()
     {
         if (IsDirty) {
             _localMatrix = 
-                    Matrix3x2.CreateTranslation(-(Position + Origin / Scale))
+                    Matrix3x2.CreateTranslation(-Position)
                 *   Matrix3x2.CreateRotationZ(Rotation)
-                *   Matrix3x2.CreateTranslation(Origin / Scale)
                 *   Matrix3x2.CreateScale(Scale);
 
             _invLocalMatrix = Matrix.Invert(_localMatrix);
@@ -139,29 +111,6 @@ public abstract class Spatial : IMovable, IRotatable, IScalable, ISizable, IRect
     {
         UpdateMatricies();
         return _localMatrix;
-    }
-
-    public bool Contains(Vector2 point)
-    {
-        // rotate around rectangle center by -rectAngle
-        if(Rotation * Rotation > float.Epsilon) {
-            var sin = MathF.Sin(-_rotation);
-            var cos = MathF.Cos(-_rotation);
-
-            // set origin to rect center
-            point -= Position;
-            // rotate
-            point  = new Vector2(point.X * cos - point.Y * sin, point.X * sin + point.Y * cos);
-            // put origin back
-            point += Position;
-        }
-
-        var rect = new RectangleF(Position - ((Vector2)Origin) * Scale, (Vector2)Size);
-
-        return  point.X     >= rect.Left
-                && point.X  <= rect.Right 
-                && point.Y  >= rect.Top 
-                && point.Y  <= rect.Bottom;
     }
 
     public virtual void WorldToLocal(ref Vector2 point)

@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public class Map : Component, IRenderable
+public class Map : Component2D, IRenderable
 {
     [JsonIgnore]
     public int RenderLayerID => 0;
@@ -73,8 +73,11 @@ public class Map : Component, IRenderable
         const int num_verticies_per_tile    = 4;
         const int num_camera_tile_buffer    = 2;
 
-        int viewport_tile_width     = (int)(camera.AbsoluteBoundingRectangle.Width    / TileSet.TileSize.Width)     + num_camera_tile_buffer;
-        int viewport_tile_height    = (int)(camera.AbsoluteBoundingRectangle.Height   / TileSet.TileSize.Height)    + num_camera_tile_buffer;
+        //int viewport_tile_width     = (int)(camera.AbsoluteBoundingRectangle.Width    / TileSet.TileSize.Width)     + num_camera_tile_buffer;
+        //int viewport_tile_height    = (int)(camera.AbsoluteBoundingRectangle.Height   / TileSet.TileSize.Height)    + num_camera_tile_buffer;
+
+        int viewport_tile_width     = (int)(2048   / TileSet.TileSize.Width)     + num_camera_tile_buffer;
+        int viewport_tile_height    = (int)(2048   / TileSet.TileSize.Height)    + num_camera_tile_buffer;
 
        // int max_vertex_count        = (int)(viewport_tile_width * viewport_tile_height) * num_verticies_per_tile;
         //int max_index_count         = (int)(viewport_tile_width * viewport_tile_height) * num_indicies_per_tile;
@@ -98,14 +101,15 @@ public class Map : Component, IRenderable
 
         if(false) // fill camera
         {
-            BuildBuffers(_vertices, _indicies, camera.AbsoluteTopLeft, viewport_tile_width, viewport_tile_height);
+            //BuildBuffers(_vertices, _indicies, camera.AbsoluteTopLeft, viewport_tile_width, viewport_tile_height);
         }
         else
         {
             //int tile_offset_x           = (int)((Parent.Position.X - camera.AbsoluteTopLeft.X) / TileSet.TileSize.Width);
             //int tile_offset_y           = (int)((Parent.Position.Y - camera.AbsoluteTopLeft.Y) / TileSet.TileSize.Height);
 
-            BuildBuffers(_vertices, _indicies, Parent.AbsoluteTopLeft, TileCount.Width, TileCount.Height);
+            // (this used to work before Box2D) BuildBuffers(_vertices, _indicies, Parent.AbsoluteTopLeft, TileCount.Width, TileCount.Height);
+            BuildBuffers(_vertices, _indicies, Parent.Position, TileCount.Width, TileCount.Height);
         }
         
         if(_vertices.Length > 0 && _vertexBuffer != null) _vertexBuffer.SetData(_vertices, 0, _vertices.Length);
@@ -193,7 +197,7 @@ public class Map : Component, IRenderable
     {   
         TileSet.Initialize();
 
-        Parent.Size = new SizeF(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
+        Size = new SizeF(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
         //Parent.OriginNormalized = new Vector2(.5f, .5f);
 
         ushort[] tiles = new ushort[(int)TileCount.Width * (int)TileCount.Height]; 

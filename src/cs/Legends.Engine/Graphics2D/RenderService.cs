@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using MonoGame.Extended.ViewportAdapters;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -14,6 +16,41 @@ public interface IRenderService : IInitalizable
     void DrawBatched(IRenderable drawable);
 }
 
+public interface IRenderPass : IInitalizable
+{
+    ViewportAdapter ViewportAdapter { get; } 
+
+    void Apply();
+}
+
+public class RenderPass : IRenderPass
+{
+    public ViewportAdapter ViewportAdapter { get; set; }
+    public RenderPass(RenderService renderService)
+    {
+        ViewportAdapter = new WindowViewportAdapter(renderService.Services.Get<IGameManagementService>().Game.Window, renderService.Services.GetGraphicsDevice());
+    }
+
+    public void Apply()
+    {
+        ViewportAdapter.GraphicsDevice.Viewport = ViewportAdapter.Viewport;
+    }
+
+    public void Initialize()
+    {
+        
+    }
+
+    public void Reset()
+    {
+        
+    }
+
+    public void Dispose()
+    {
+        
+    }
+}
 
 public class RenderService : IRenderService
 {
@@ -22,13 +59,16 @@ public class RenderService : IRenderService
     public Texture2D DefaultTexture { get; private set; }
     public GraphicsDevice GraphicsDevice => Services.GetGraphicsDevice();
     private readonly List<IRenderLayer> _layers;
+    private readonly List<IRenderPass> _passes;
 
     public RenderService(IServiceProvider services)
     {
         Services = services;
         Services.Add<IRenderService>(this);
         DefaultRenderState = new RenderState();
+
         _layers = new List<IRenderLayer>();
+        _passes = new List<IRenderPass>();
     }
 
     public void Initialize()
@@ -47,6 +87,9 @@ public class RenderService : IRenderService
 
         _layers.Add(new RenderLayer(this) { ClearColor = Color.Black });
         _layers[0].Initialize();
+
+        _passes.Add(new RenderPass(this));
+        _passes[0].Initialize();
     }
 
     public IRenderLayer GetLayer(int layerId)
@@ -65,11 +108,16 @@ public class RenderService : IRenderService
 
     public void Draw(GameTime gameTime)
     {
-        foreach(var layer in _layers)
+        foreach(var pass in _passes)
         {
-            layer.BeginDraw();
-            layer.DrawImmediate(gameTime);
-            layer.EndDraw();
+            pass.Apply();
+
+            foreach(var layer in _layers)
+            {
+                layer.BeginDraw();
+                layer.DrawImmediate(gameTime);
+                layer.EndDraw();
+            }
         }
     }
 

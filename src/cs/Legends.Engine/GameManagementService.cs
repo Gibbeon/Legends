@@ -9,6 +9,7 @@ namespace Legends.Engine;
 
 public interface IGameManagementService
 {
+    public Game Game { get; }
     ContentManager Content { get; }
     ScreenManager ScreenManager { get; }
 }
@@ -16,6 +17,7 @@ public interface IGameManagementService
 public class GameManagementService : IGameManagementService
 {
     public Game Game { get; protected set; }
+
     public ScreenManager ScreenManager { get; protected set; }
     
     public ContentManager Content => Game.Content;
