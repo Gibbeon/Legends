@@ -41,11 +41,10 @@ public class Camera : SceneObject, IViewState
     {
         base.Initialize();
 
-        Viewport = Services.GetGraphicsDevice().Viewport;
-        
-        //_projection = Matrix.CreateOrthographicOffCenter(0f, Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height, 0f, -1f, 1f); // TOP LEFT IS ZERO
-        //_projection = Matrix.CreateOrthographic(Services.GetGraphicsDevice().Viewport.Width, -Services.GetGraphicsDevice().Viewport.Height, -1f, 1f); // CENTER CAMERA TO VIEWPORT
- 
+        if(Viewport.Bounds == Rectangle.Empty)
+        {
+            Viewport = Services.GetGraphicsDevice().Viewport; 
+        }
     }
 
     protected override void UpdateMatricies()
