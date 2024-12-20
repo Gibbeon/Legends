@@ -26,6 +26,7 @@ public class SceneImporter : ContentImporter<Scene.SceneDesc>
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 //TypeNameAssemblyFormatHandling = Newtonsoft.Json.TypeNameAssemblyFormatHandling.Simple,
+                    SerializationBinder = new KnownTypesBinder("Legends.Engine"),
                 TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto
             };
 

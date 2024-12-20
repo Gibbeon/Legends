@@ -1,9 +1,6 @@
 {
     "$type":"Legends.Engine.Scene, Legends.Engine",
     "name": "WorldMap",
-    "camera": {
-        "scale": "1, 1"
-    },
     "children": [
         {
             "$asset": "Maps/World/map2.json"

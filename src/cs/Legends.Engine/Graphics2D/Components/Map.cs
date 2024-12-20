@@ -237,7 +237,7 @@ public class Map : Component2D, IRenderable
 
         (_currentEffect as IEffectMatrices).View        = ViewState.View;
         (_currentEffect as IEffectMatrices).Projection  = ViewState.Projection;
-        (_currentEffect as IEffectMatrices).World       = ViewState.World;// * Parent.LocalMatrix;//* Matrix2.CreateTranslation(-Parent.Origin * Parent.Scale);
+        (_currentEffect as IEffectMatrices).World       = ViewState.World * Matrix3x2.CreateTranslation(-Origin) * Parent.GlobalMatrix;
         
         if (_currentEffect is BasicEffect textureEffect)
         {
