@@ -4,6 +4,8 @@ using MonoGame.Extended;
 using System;
 using Legends.Engine.Graphics2D;
 using Legends.Engine.Resolvers;
+using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace Legends.Engine;
 
@@ -14,8 +16,12 @@ public class Camera : SceneObject, IViewState
     protected Matrix _view;
     protected Matrix _modelView;
     protected Matrix _invModelView; 
+    protected Vector2 _lookAtRelative = new Vector2(.5f, .5f);
+    protected Viewport _viewport;
 
     public BoundedValue<float> ZoomBounds { get => _zoomBounds; set => _zoomBounds = value; }
+    public Viewport Viewport { get => _viewport; set { _viewport = value; IsDirty = true; } }
+    public Vector2 LookAtRelative  { get => _lookAtRelative; set { _lookAtRelative = value; IsDirty = true; } }
 
     [JsonIgnore] public Matrix View =>       _view;
     [JsonIgnore] public Matrix Projection => _projection;
@@ -28,17 +34,25 @@ public class Camera : SceneObject, IViewState
 
     public Camera(IServiceProvider services, Scene scene) : base(services, scene)
     {
-        _zoomBounds = new(float.Epsilon, float.MaxValue);
+        _zoomBounds = new(float.Epsilon, float.MaxValue);        
+    }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+
+        Viewport = Services.GetGraphicsDevice().Viewport;
         
-        
+        //_projection = Matrix.CreateOrthographicOffCenter(0f, Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height, 0f, -1f, 1f); // TOP LEFT IS ZERO
+        //_projection = Matrix.CreateOrthographic(Services.GetGraphicsDevice().Viewport.Width, -Services.GetGraphicsDevice().Viewport.Height, -1f, 1f); // CENTER CAMERA TO VIEWPORT
+ 
     }
 
     protected override void UpdateMatricies()
-    {
-        _projection = Matrix.CreateOrthographicOffCenter(0f, Services.GetGraphicsDevice().Viewport.Width, Services.GetGraphicsDevice().Viewport.Height, 0f, -1f, 0f);
-        
+    { 
         if(IsDirty) {
             base.UpdateMatricies();
+            _projection = Matrix.CreateOrthographicOffCenter(-Viewport.Width*LookAtRelative.X, Viewport.Width*(1 - LookAtRelative.X), Viewport.Height*(1 - LookAtRelative.Y), -Viewport.Height*LookAtRelative.Y, Viewport.MinDepth, Viewport.MaxDepth); // this is the same as create orthographic
             _view           = Matrix3x2.Identity; //CreateTranslation(Origin); // why double scaling
             _modelView      = _view * World;
             _invModelView   = Matrix.Invert(_modelView);

@@ -8,7 +8,6 @@ namespace Legends.Engine.Graphics2D;
 
 public interface IRenderLayer : IInitalizable
 {    
-    Viewport Viewport { get; }
     Color? ClearColor { get; set; }
     IEnumerable<IRenderable> Drawables { get; }
     void Enqueue(IRenderable renderable);
@@ -29,8 +28,6 @@ public class RenderLayer : IRenderLayer
     public Color? ClearColor { get; set; }
     public bool Visible { get; set; }
     
-    public Viewport Viewport => _renderService.GraphicsDevice.Viewport;
-
     public RenderLayer(IRenderService renderService)
     {
         _renderState = new RenderState();
@@ -82,7 +79,7 @@ public class RenderLayer : IRenderLayer
                 _renderState.CopyFrom(drawable.RenderState ?? _renderService.DefaultRenderState);
                 _viewState.CopyFrom(drawable.ViewState);
                 
-                _renderService.GraphicsDevice.Viewport = Viewport;
+                _renderService.GraphicsDevice.Viewport = _viewState.Viewport;
 
                 if (_renderState.Effect is IEffectMatrices mtxEffect)
                 {

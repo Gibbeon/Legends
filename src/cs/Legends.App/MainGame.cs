@@ -34,9 +34,13 @@ public class MainGame : Microsoft.Xna.Framework.Game
         //_graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
         //_gameManagementService.Game.IsFixedTimeStep = false;
 
+
+        // default screen resolution
         _graphicsDeviceManager.PreferredBackBufferWidth = 1280;
         _graphicsDeviceManager.PreferredBackBufferHeight = 1024;
         
+        
+
         //ContentLogger.Enabled = true;
         Content.RootDirectory = "Content";
         Content.EnableAssetWatching();
@@ -63,7 +67,8 @@ public class MainGame : Microsoft.Xna.Framework.Game
         Content.DoReloads();
         _inputService.Update(gameTime);
         base.Update(gameTime);
-        _collisionService.Update(gameTime);      
+        _collisionService.Update(gameTime);   
+        //_spriteRenderService.Update(gameTime);   
     }
 
     protected override void Draw(GameTime gameTime)
