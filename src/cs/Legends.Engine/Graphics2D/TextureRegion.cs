@@ -29,11 +29,18 @@ public class TextureRegion : Box2D, IInitalizable
     public int Frame { get; set; }
     public ResourceType ResourceType { get; set; }
     public Color Color { get; set; }
-
     public Vector2 Position { get; set; }
+    [JsonIgnore] public RectangleF FrameBoundingRectangle        => new RectangleF(new Vector2(Position.X + (Frame % Stride) * Slice.Width, Position.Y + (Frame / Stride) * Slice.Height), Slice);
 
     [JsonIgnore]
     public Size TileCount => new ((int)Size.Width / (int)Slice.Width,((int)Size.Height / (int)Slice.Height));
+
+    
+    [JsonIgnore]
+    public int FrameCount => Stride * (int)Size.Height / (int)Slice.Height;
+
+    [JsonIgnore]
+    public int Stride => (int)Size.Width / (int)Slice.Width;
 
     public TextureRegion()
         :this (null)
@@ -61,7 +68,8 @@ public class TextureRegion : Box2D, IInitalizable
         Services = services;
         TextureReference = texture;
         Position = new Vector2(x, y);
-        Size = new SizeF(width, height);
+        Size = Slice = new SizeF(width, height);
+        OriginRelative = Vector2.Zero;
     }
 
     public void SetFrame(int frame)

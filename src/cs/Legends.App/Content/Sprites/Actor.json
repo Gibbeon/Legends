@@ -1,7 +1,6 @@
 {
     "$type": "Legends.Engine.SceneObject, Legends.Engine",
     "name": "MainActor",
-    "size": "24, 32",
     "behaviors": [
         {
             "$compile": "Sprites/ActorControlBehavior.cs",

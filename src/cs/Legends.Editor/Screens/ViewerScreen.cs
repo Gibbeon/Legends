@@ -28,7 +28,6 @@ public class ViewerScreen : Screen
 
         var so = _services.GetContentManager().GetRef<SceneObject>("Sprites/Actor");
         (~_scene).AttachChild(so);
-        (~so).Zoom(5.0f);
 
         ScrollSpeed = 1;
         ZoomFactor = 2;

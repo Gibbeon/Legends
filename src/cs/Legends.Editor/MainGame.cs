@@ -38,7 +38,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _graphicsDeviceManager.PreferredBackBufferHeight = 1024;
         
         //ContentLogger.Enabled = true;
-        Content.RootDirectory = "/Users/riwoods/dev/Legends/src/cs/Legends.App/bin/Debug/net8.0/Content";
+        Content.RootDirectory = "/dev/Legends/src/cs/Legends.App/bin/Debug/net8.0/Content";
         Content.EnableAssetWatching();
         IsMouseVisible = true;
     }
