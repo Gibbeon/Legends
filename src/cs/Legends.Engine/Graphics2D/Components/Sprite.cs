@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
-using System.ComponentModel;
 using System;
-using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D.Components;
 
@@ -64,12 +62,12 @@ public class Sprite : Component2D, ISpriteRenderable
 
         spriteBatch.Draw(
             TextureRegion.Texture,
-            Parent.Position - Origin,
+            Parent.Position - Origin * Parent.Scale,
             (Microsoft.Xna.Framework.Rectangle)TextureRegion.FrameBoundingRectangle,
             Color,
             Parent.Rotation,
-            Origin,
-            Parent.Scale,
+            Vector2.Zero,//Origin,
+            Vector2.One,//Parent.Scale,
             SpriteEffect,
             0);
 

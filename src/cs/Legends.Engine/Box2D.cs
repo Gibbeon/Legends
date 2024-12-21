@@ -2,6 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Legends.Engine;
 

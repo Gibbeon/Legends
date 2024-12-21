@@ -20,6 +20,12 @@
                 "slice": "24, 36",
                 "position": "0, 144",
                 "size": "72, 144"
+            },
+            "renderState": {
+                "samplerState": 
+                {
+                    "filter": "Point"
+                }
             }
         },
         {

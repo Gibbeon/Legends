@@ -81,6 +81,10 @@ public class RenderLayer : IRenderLayer
                 
                 _renderService.GraphicsDevice.Viewport = _viewState.Viewport;
 
+                if(_renderState.Effect == null) {
+                    _renderState.Effect = _renderService.DefaultRenderState.Effect;
+                }
+
                 if (_renderState.Effect is IEffectMatrices mtxEffect)
                 {
                     mtxEffect.View = _viewState.View;
@@ -90,7 +94,7 @@ public class RenderLayer : IRenderLayer
 
                 _spriteBatch.Begin(
                     _renderState.SpriteSortMode,
-                    _renderState.BlendState,
+                    _renderState.BlendState,                    
                     _renderState.SamplerState,
                     _renderState.DepthStencilState,
                     _renderState.RasterizerState,
