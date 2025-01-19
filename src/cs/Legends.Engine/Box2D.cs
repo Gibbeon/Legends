@@ -6,8 +6,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Legends.Engine;
 
+public interface IBounds
+{
+    bool Contains(Vector2 point);
+}
 
-public class Box2D : ISizable, IRectangularF
+public class Box2D : IBounds, ISizable, IRectangularF
 {
     private SizeF     _size;
     private Vector2?  _originFixed;

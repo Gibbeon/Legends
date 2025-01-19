@@ -11,35 +11,43 @@ public class KnownTypesBinder : ISerializationBinder
 {
     public IList<Type> KnownTypes { get; set; }
 
-    public string NamespacePrefix { get; set; }
+    public IList<string> AssemblyNames { get; set; }
 
     private DefaultSerializationBinder _defaultBinder = new();
 
     public KnownTypesBinder()
     {
         KnownTypes = new List<Type>();
-        NamespacePrefix = "";
+        AssemblyNames = new List<string>();
     }
 
-    public KnownTypesBinder(string nsPrefix) : this()
+    public KnownTypesBinder(params string[] assemblyNames) : this(AppDomain.CurrentDomain.GetAssemblies().Where(n => assemblyNames.Contains(n.GetName().Name)).ToArray())
     {
-        NamespacePrefix = nsPrefix;
 
-        foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
+    }
+    public KnownTypesBinder(params Assembly[] assemblies) : this()
+    {
+        foreach(var assembly in assemblies)
+        {                        
+            Console.WriteLine("KnownTypesBinder: {0}", assembly.GetName().Name);
+            AssemblyNames.Add(assembly.GetName().Name);
+
             foreach(var type in assembly.GetTypes())
             {
-                if(!string.IsNullOrEmpty(type.Namespace) && type.Namespace.StartsWith(NamespacePrefix))
-                {
-                    KnownTypes.Add(type);                    
-                }
+                KnownTypes.Add(type);                    
             }
         }
     }
 
     public Type BindToType(string assemblyName, string typeName)
     {
-        return KnownTypes.SingleOrDefault(t => t.Name == typeName || t.Name == NamespacePrefix + typeName) ?? _defaultBinder.BindToType(assemblyName, typeName);
+        Console.WriteLine("BindToType: {0}, {1}", assemblyName, typeName);
+        if(AssemblyNames.Contains(assemblyName) || string.IsNullOrEmpty(assemblyName))
+        {
+            return KnownTypes.SingleOrDefault(t => t.FullName == typeName) ?? _defaultBinder.BindToType(assemblyName, typeName);
+        }
+
+        return _defaultBinder.BindToType(assemblyName, typeName);
     }
 
     public void BindToName(Type serializedType, out string assemblyName, out string typeName)

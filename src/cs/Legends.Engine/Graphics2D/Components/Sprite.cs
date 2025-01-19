@@ -49,6 +49,7 @@ public class Sprite : Component2D, ISpriteRenderable
     public override void Initialize()
     {
         SetSize(TextureRegion.Slice);
+        if(Parent.Bounds == null) Parent.Bounds = this;
     }
 
     public override void Reset()

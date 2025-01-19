@@ -1,5 +1,5 @@
 {
-    "$type": "SceneObject",
+    "$type": "Legends.Engine.SceneObject",
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Map, Legends.Engine",
