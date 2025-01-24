@@ -1,0 +1,173 @@
+{
+    "$type": "SceneObject",
+    "name": "MainActor",
+    "behaviors": [
+        {
+            "$ref": "Sprites/ActorControlBehavior.cs",
+            "moveSpeed": 1
+        }
+    ],
+    "components": [ 
+        {
+            "$type": "Collisions.RigidBody",
+            "dynamic": true
+        },
+        {
+            "$type": "Graphics2D.Sprite",
+            "colorMap": {
+                "$texture": "Sprites/npc1.png",
+                "offset": "0, 144",
+                "size": "72, 144"
+            },
+            "bounds": {
+                "origin": "12, 18",
+                "size": "24, 36"
+            },
+            "border": {
+                "color": "Black",
+                "width": 1,
+                "pen": "Line"
+            },
+            "visible": "true",
+            "frameIndex": 0,
+            "effects": "FlipHorizontally",
+            "renderState": {
+                "samplerState": 
+                {
+                    "filter": "Point"
+                },
+                "effect": 
+                {
+                    "$ref": "basicEffect.hlsl",
+                    "property": "value"
+                }
+            }
+        },
+        {
+            "$type": "Animation.AnimationController",
+            "animations": {
+                "colorize": {
+                    "$type": "Animation.SpriteColorAnimation",
+                    "to": "255, 0, 0, 0",
+                    "duration": 0.5,
+                    "loopType": "Reverse",
+                    "enabled": true
+                },
+                "idle_down": {
+                    "$type": "Animation.SpriteKeyframeAnimation",
+                    "loopType": "Loop",
+                    "keyframes": [
+                        {
+                            "frameIndex": 1,
+                            "duration": 0.2,
+                            "effects": "FlipHorizontally"
+                        }
+                    ]
+                },
+                "idle_left": {
+                    "$type": "Animation.SpriteKeyframeAnimation",
+                    "loopType": "Loop",
+                    "keyframes": [
+                        {
+                            "frameIndex": 4,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "idle_right": {
+                    "$type": "Animation.SpriteKeyframeAnimation",
+                    "loopType": "Loop",
+                    "keyframes": [
+                        {
+                            "frameIndex": 7,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "idle_up": {
+                    "$type": "Animation.SpriteKeyframeAnimation",
+                    "loopType": "Loop",
+                    "keyframes": [
+                        {
+                            "frameIndex": 10,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_down": {
+                    "$type": "Animation.SpriteKeyframeAnimation",
+                    "loopType": "Reverse",
+                    "keyframes": [
+                        {
+                            "frameIndex": 0,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 1,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 2,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_left": {
+                    "$type": "Animation.SpriteKeyframeAnimation",
+                    "loopType": "Reverse",
+                    "keyframes": [
+                        {
+                            "frameIndex": 3,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 4,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 5,
+                            "duration": 0.2
+                        }
+                    ],
+                    "enabled": true
+                },
+                "walk_right": {
+                    "$type": "Animation.SpriteKeyframeAnimation",
+                    "loopType": "Reverse",
+                    "keyframes": [
+                        {
+                            "frameIndex": 6,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 7,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 8,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_up": {
+                    "$type": "Animation.SpriteKeyframeAnimation",
+                    "loopType": "Reverse",
+                    "keyframes": [
+                        {
+                            "frameIndex": 9,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 10,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 11,
+                            "duration": 0.2
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
