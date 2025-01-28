@@ -1,11 +1,11 @@
 {
-    "$merge": "Sprites/ActorBase",
+    "$soure": "Sprites/ActorBase",
     "name": "MainActor2",
     "components": [
         {
             "$type": "Graphics2D.Sprite",
             "colorMap": {
-                "$texture": "Sprites/npc2.png"
+                "texture": "Sprites/npc2.png"
             },
             "frameIndex": 1
         }

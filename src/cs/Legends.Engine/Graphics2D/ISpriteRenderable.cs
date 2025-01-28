@@ -6,5 +6,5 @@ namespace Legends.Engine.Graphics2D;
 public interface ISpriteRenderable: IRenderable
 {
     Vector2 Position { get; }
-    Color Color { get; }
+    Color Color { get; set; }
 }

@@ -14,16 +14,16 @@ namespace Legends.Engine.Graphics2D;
 public class TileSet : IUpdate
 {
     [JsonIgnore]
-    public SizeF            TileSize => TextureRegion.FrameSize;
+    public SizeF            TileSize => SizeF.Empty;
 
     [JsonIgnore]
-    public Size             TileCount => TextureRegion.TileCount;
+    public Size             TileCount => Size.Empty;
 
     [JsonIgnore]
-    public TextureRegion    TextureRegion => TextureRegionReference.Get();
+    public Texture2DRegion    TextureRegion => TextureRegionReference.Get();
  
     [JsonProperty(nameof(TextureRegion))]
-    protected Ref<TextureRegion> TextureRegionReference { get; set; }
+    protected Ref<Texture2DRegion> TextureRegionReference { get; set; }
  
     public Dictionary<string, ushort[]> Tags { get; set; }
 
@@ -50,7 +50,7 @@ public class TileSet : IUpdate
 
     public void Initialize()
     {
-        TextureRegion.Initialize();
+        /*TextureRegion.Initialize();
         
         _stride     = (uint)(TextureRegion.Texture.Width / TileSize.Width);
         _uvwidth    = TileSize.Width /  TextureRegion.Texture.Width;
@@ -78,6 +78,7 @@ public class TileSet : IUpdate
                 _tagIndex[index] = array;
             }            
         }
+        */
     }
 
     public IEnumerable<string> GetTags(ushort tileIndex)

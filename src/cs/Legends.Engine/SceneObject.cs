@@ -8,12 +8,12 @@ using Microsoft.Xna.Framework;
 namespace Legends.Engine;
 
 
-public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObject, IInitalizable
+public class SceneObject : Spatial<SceneObject>, IAsset<SceneObject>, IDisposable, IUpdate, INamedObject, IInitalizable
 {   
-    private IList<string>           _tags;    
-    private IList<Ref<IBehavior>>   _behaviors;
-    private IList<Ref<SceneObject>> _children;
-    private IList<Ref<IComponent>>  _components;
+    private IList<string>      _tags;    
+    private IList<IBehavior>   _behaviors;
+    private IList<SceneObject> _children;
+    private IList<IComponent>  _components;
     private Scene _scene;
     private bool _enabled = true;
     private bool _visible = true;
@@ -25,37 +25,35 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
 
     [JsonIgnore] public IServiceProvider Services { get; protected set; }
     [JsonIgnore] public Scene Scene => _scene ??= GetParentScene();
-    [JsonIgnore] public IEnumerable<SceneObject> Children  => ChildrenReferences.Select(n => n.Get());
-    [JsonIgnore] public IEnumerable<IBehavior> Behaviors   => BehaviorReferences.Select(n => n.Get());
-    [JsonIgnore] public IEnumerable<IComponent> Components => ComponentReferences.Select(n => n.Get());
 
     public IBounds Bounds { get; set; }
     
-    [JsonProperty(nameof(Children))]
-    protected IList<Ref<SceneObject>>  ChildrenReferences
+    public IReadOnlyList<SceneObject> Children
     {
-        get => _children;
-        set => _children = value;
+        get => _children.AsReadOnly();
+        protected set => _children = value.ToList();
     }
-
-    [JsonProperty(nameof(Behaviors))]
-    protected IList<Ref<IBehavior>>  BehaviorReferences
+    public IReadOnlyList<IBehavior> Behaviors
     {
-        get => _behaviors;
-        set => _behaviors = value;
+        get => _behaviors.AsReadOnly();
+        protected set => _behaviors = value.ToList();
     }
-
-    [JsonProperty(nameof(Components))]
-    protected IList<Ref<IComponent>>  ComponentReferences
+    public IReadOnlyList<IComponent>  Components
     {
-        get => _components;
-        set => _components = value;
+        get => _components.AsReadOnly();
+        protected set => _components = value.ToList();
     } 
 
     public IList<string> Tags { 
         get => _tags; 
         protected set => _tags = value; 
     }
+
+    public SceneObject Instance => this;
+
+    public string AssetName { get; protected set; }
+
+    public AssetType AssetType { get; protected set; }
 
     public SceneObject() : this(null, null)
     {
@@ -66,9 +64,9 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
     {
         Services    = systems;
         
-        _children   = new List<Ref<SceneObject>>();
-        _behaviors  = new List<Ref<IBehavior>>();
-        _components = new List<Ref<IComponent>>();
+        _children   = new List<SceneObject>();
+        _behaviors  = new List<IBehavior>();
+        _components = new List<IComponent>();
         _tags       = new List<string>();
     }
 
@@ -101,6 +99,12 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
         return Components.OfType<TType>().SingleOrDefault();
     } 
 
+    public void AttachChild(SceneObject child)
+    {
+        _children.Add(child);
+        child.SetParent(this);
+    }
+
     /*public virtual IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
     {
         if(Contains(position))
@@ -128,12 +132,6 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
     {
         return (this is Scene scene) ? scene : Parent?.GetParentScene();
     } 
-
-    public void AttachChild(Ref<SceneObject> child)
-    {
-        ChildrenReferences.Add(child);
-        (~child).SetParent(this);
-    }
 
     public virtual void Update(GameTime gameTime)
     {

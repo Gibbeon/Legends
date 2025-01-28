@@ -55,7 +55,7 @@ public class TextLabel : Component, ISpriteRenderable
     public bool Visible => Parent.Visible;
 
     [JsonIgnore] public SizeF Size => (Parent.Bounds as ISizable).Size;
-    [JsonIgnore] public Vector2 Origin => (Parent.Bounds as Region2D).Origin;
+    [JsonIgnore] public Vector2 Origin => Vector2.Zero;
 
     [JsonIgnore]
     public Vector2 Position => Parent.AbsolutePosition - Origin * Parent.Scale;

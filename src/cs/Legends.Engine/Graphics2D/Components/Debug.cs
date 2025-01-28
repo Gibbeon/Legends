@@ -82,7 +82,7 @@ public class Debug : Component, ISpriteRenderable
         _commands.Add("SELECT_DOWN", EventType.KeyReleased, Microsoft.Xna.Framework.Input.Keys.Down, Microsoft.Xna.Framework.Input.Keys.LeftShift);
         _commands.Enabled = true;
 
-        _drawOverrides.Add(typeof(TextureRegion), DrawTextureRegion);
+        //_drawOverrides.Add(typeof(TextureRegion), DrawTextureRegion);
     }
 
 
@@ -276,6 +276,7 @@ public class Debug : Component, ISpriteRenderable
 
     public void DrawObject<TType>(SpriteBatch spriteBatch, object instance)
     {
+        /*
         StringBuilder sb = new ();
         var derivedType = instance?.GetType() ?? typeof(TType);
         sb.AppendLine($"Type: {derivedType.Name}");
@@ -330,8 +331,10 @@ public class Debug : Component, ISpriteRenderable
         {
             DrawTextureRegion(spriteBatch, region.Get());
         }
+        */
     }
 
+    /*
     protected void DrawTextureRegion(SpriteBatch spriteBatch, object instance)
     {
         TextureRegion textureRegion = instance as TextureRegion;
@@ -340,7 +343,7 @@ public class Debug : Component, ISpriteRenderable
         spriteBatch.Draw(
             textureRegion.Texture,
             Position,
-            new Microsoft.Xna.Framework.Rectangle(textureRegion.Position.ToPoint(), (Size)textureRegion.Size),
+            new Microsoft.Xna.Framework.Rectangle(textureRegion, (Size)textureRegion.Size),
             Color.White,
             0,
             Vector2.Zero,
@@ -372,4 +375,5 @@ public class Debug : Component, ISpriteRenderable
 
         _position.Y += textureRegion.Size.Height * scale;
     }
+    */
 }

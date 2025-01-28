@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -22,21 +23,22 @@ public interface IAsset
 
 public interface IAsset<TType> : IAsset
 {    
-    [JsonIgnore] TType  Instance { get; }
 }
 
-public abstract class BaseAsset<TType> : IAsset<TType>
+public abstract class Asset : IAsset
 {
-    protected class BaseAsset_ : BaseAsset<TType> {}
-    public string       AssetName { get; protected set; }
-    public TType        Instance { get; protected set;  }
-    public AssetType    AssetType { get; protected set; }
+    public string    AssetName { get; protected set; }
+    public AssetType AssetType { get; protected set; }
+}
 
-    protected static BaseAsset<TType> Wrap(TType instance) 
+public class AssetWrapper<TType> : Asset
+{
+    protected TType  Instance { get; set; }
+    protected static AssetWrapper<TType> Wrap(TType instance) 
     {
-        return new BaseAsset_() { Instance = instance };
+        return new AssetWrapper<TType>() { Instance = instance, AssetType = AssetType.Dynamic };
     }
-    
-    public static implicit operator TType(BaseAsset<TType> resource) => resource.Instance;
-    public static implicit operator BaseAsset<TType>(TType resource) => Wrap(resource);
+
+    public static implicit operator TType(AssetWrapper<TType> resource) => resource.Instance;
+    public static implicit operator AssetWrapper<TType>(TType resource) => Wrap(resource);
 }

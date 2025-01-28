@@ -24,7 +24,7 @@ public class SetSpriteFrameBehavior : Behavior
 
     public override void Initialize()
     {
-        Parent.GetComponent<Sprite>().TextureRegion.SetFrame(Frame);
+        Parent.GetComponent<Sprite>().FrameIndex = Frame;
     }
 
     public override void Reset()

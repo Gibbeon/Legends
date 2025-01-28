@@ -87,6 +87,7 @@ public static class ContentManagerExtensions
 
     public static string GetExecutingDirectoryName()
     {
+        //System.AppDomain.CurrentDomain.BaseDirectory 
         var location = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase);
         return new FileInfo(location.AbsolutePath).Directory.FullName;
     }

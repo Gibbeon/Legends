@@ -30,7 +30,7 @@ public abstract class Shape : Component, ISpriteRenderable
     public IViewState ViewState => Parent.Scene.Camera;
 
     [JsonIgnore]
-    public BoundingRectangle BoundingRectangle => (Parent.Bounds as Region2D).BoundingRectangle;
+    public BoundingRectangle BoundingRectangle => BoundingRectangle.Empty;
 
     public Shape(): this (null, null)
     {

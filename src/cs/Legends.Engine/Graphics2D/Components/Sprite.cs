@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using System;
+using Legends.Engine.Graphics2D;
 
 namespace Legends.Engine.Graphics2D.Components;
 
@@ -11,7 +12,7 @@ public class Sprite: Component, ISpriteRenderable
     [JsonIgnore] public Vector2         Position => Parent.Position;
     [JsonIgnore] public bool            Visible => Parent.Visible;
     [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
-    public TextureRegion                Texture { get; protected set; }
+    public Texture2DRegion              TextureRegion { get; protected set; }
     public OffsetRectangleF             Bounds { get; protected set; }
     public int                          FrameIndex { get; set;}
     public bool                         FlipHorizontally { get; set; }

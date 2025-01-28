@@ -16,7 +16,6 @@ public class SpriteKeyframeAnimationData : KeyframeAnimationData<SpriteKeyframe>
             .Controller
             .Parent
             .GetComponent<Sprite>()
-            .TextureRegion
-            .SetFrame(current.Frame);
+            .FrameIndex = current.Frame;
     }
 }

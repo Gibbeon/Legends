@@ -8,23 +8,21 @@ using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Legends.Engine.Graphics2D;
 
-public class Texture2D : BaseAsset<XnaGraphics.Texture2D> 
+public class Texture2D : AssetWrapper<XnaGraphics.Texture2D> 
 {    
     public XnaGraphics.SurfaceFormat Format => Instance.Format;
     public int LevelCount => Instance.LevelCount;
 
-     public Rectangle Bounds => Instance.Bounds;
+    public Rectangle Bounds => Instance.Bounds;
 
     public int Width => Instance.Width;
 
     public int Height => Instance.Height;
 
- 
     public Texture2D(XnaGraphics.GraphicsDevice graphicsDevice, int width, int height)
     {
         Instance = new XnaGraphics.Texture2D(graphicsDevice, width, height);
     }
-
 
     public Texture2D(XnaGraphics.GraphicsDevice graphicsDevice, int width, int height, bool mipmap, XnaGraphics.SurfaceFormat format)
     {
@@ -64,22 +62,20 @@ public class Texture2D : BaseAsset<XnaGraphics.Texture2D>
         => Instance.GetData<T>(data);
 
     
-    /*
-    public static Texture2D FromFile(GraphicsDevice graphicsDevice, string path, Action<byte[]> colorProcessor)
-        => Instance.FromFile<T>(data);
+    public static Texture2D FromFile(XnaGraphics.GraphicsDevice graphicsDevice, string path, Action<byte[]> colorProcessor)
+        => (Texture2D)XnaGraphics.Texture2D.FromFile(graphicsDevice, path, colorProcessor);
 
     
-    public static Texture2D FromFile(GraphicsDevice graphicsDevice, string path)
-        => Instance.FromFile<T>(data);
+    public static Texture2D FromFile(XnaGraphics.GraphicsDevice graphicsDevice, string path)
+        => (Texture2D)XnaGraphics.Texture2D.FromFile(graphicsDevice, path);
 
     
-    public static Texture2D FromStream(GraphicsDevice graphicsDevice, Stream stream, Action<byte[]> colorProcessor)
-        => Instance.FromFile<T>(data);
+    public static Texture2D FromStream(XnaGraphics.GraphicsDevice graphicsDevice, Stream stream, Action<byte[]> colorProcessor)
+        => (Texture2D)XnaGraphics.Texture2D.FromStream(graphicsDevice, stream, colorProcessor);
 
     
-    public static Texture2D FromStream(GraphicsDevice graphicsDevice, Stream stream)
-        => Instance.FromFile<T>(data);
-    */
+    public static Texture2D FromStream(XnaGraphics.GraphicsDevice graphicsDevice, Stream stream)
+        => (Texture2D)XnaGraphics.Texture2D.FromStream(graphicsDevice, stream);
 
     
     public void SaveAsJpeg(Stream stream, int width, int height)

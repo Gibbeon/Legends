@@ -5,14 +5,14 @@ using MonoGame.Extended;
 
 namespace Legends.Engine;
 
-public interface IComponent: IUpdate, IInitalizable
+public interface IComponent: IAsset<IComponent>, IUpdate, IInitalizable
 {
     [JsonIgnore]
     SceneObject Parent { get; }
     void Draw(GameTime gameTime);
 }
 
-public abstract class Component : IComponent
+public abstract class Component : Asset, IComponent
 {    
     [JsonIgnore]
     public IServiceProvider Services { get; private set; }
