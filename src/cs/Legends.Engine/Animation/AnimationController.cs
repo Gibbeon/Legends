@@ -10,18 +10,16 @@ public class AnimationController : Component
 {
     protected IList<AnimationChannel> _channels;
     
-    [JsonProperty(nameof(Animations))]
-    protected Ref<AnimationCollection> _data;
+    protected AnimationCollection _animations;
 
-    [JsonIgnore]
-    public AnimationCollection Animations => _data.Get();
+    public AnimationCollection Animations => _animations;
 
     [JsonIgnore]
     public IList<AnimationChannel> Channels => _channels;
 
     public AnimationController(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
-        _data = new Ref<AnimationCollection>(new AnimationCollection());
+        _animations = new AnimationCollection();
     }
 
     protected IList<AnimationChannel> GenerateChannels()
@@ -53,7 +51,7 @@ public class AnimationController : Component
 
     public override void Reset()
     {
-        _data.Get().Clear();
+        _animations.Clear();
         Initialize();
     }
 }

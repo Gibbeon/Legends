@@ -3,8 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using MonoGame.Extended.ViewportAdapters;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -39,7 +37,7 @@ public class RenderService : IRenderService
         if (DefaultTexture == null || DefaultRenderState.Effect == null)
         {
             DefaultTexture = new Texture2D(GraphicsDevice, 1, 1);
-            DefaultTexture.SetData(new Color[] { Color.Green });
+            DefaultTexture.SetData([Color.Green]);
 
             DefaultRenderState.Effect = new BasicEffect(GraphicsDevice)
             {
@@ -78,9 +76,9 @@ public class RenderService : IRenderService
     }
 
 
-    public void DrawBatched(IRenderable drawable)
+    public void DrawBatched(IRenderable renderable)
     {
-        GetLayer(drawable.RenderLayerID).Enqueue(drawable);
+        GetLayer(renderable.RenderLayerID).Enqueue(renderable);
     }
 
     public void Reset()

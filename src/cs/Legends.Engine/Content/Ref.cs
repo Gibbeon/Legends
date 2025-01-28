@@ -5,7 +5,7 @@ using Legends.Engine.Serialization;
 using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Engine;
-
+/*
 public interface INamedObject
 {
     string Name { get; }
@@ -106,3 +106,4 @@ public class Ref<TType> : IRef, IComparable<Ref<TType>>, IEquatable<Ref<TType>>
         return _value != null ? _value.GetHashCode() : base.GetHashCode();
     }
 }
+*/

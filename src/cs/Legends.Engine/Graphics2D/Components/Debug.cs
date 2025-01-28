@@ -18,12 +18,8 @@ public class Debug : Component, ISpriteRenderable
 {        
     [JsonIgnore]
     public int RenderLayerID => 8;
-
-    [JsonProperty(nameof(Font))]
-    protected Ref<SpriteFont> FontReference { get; set; }
-
-    [JsonIgnore]
-    public SpriteFont Font => FontReference.Get();
+    private SpriteFont _spriteFont;
+    public SpriteFont Font => _spriteFont;
 
     private int _frameRate = 0;
     private int _frameCounter = 0;

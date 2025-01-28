@@ -16,7 +16,7 @@ public class ViewerScreen : Screen
     public float RotateFactor { get; set; }
 
     private readonly IServiceProvider _services;
-    private readonly Ref<Scene> _scene;
+    private readonly Scene _scene;
     private readonly InputManager _input;
     private InputCommandSet _commands;
     public ViewerScreen(IServiceProvider services)
@@ -24,10 +24,10 @@ public class ViewerScreen : Screen
         _services = services;
         _input = new InputManager(services);
         _scene = new Scene(_services);
-        (~_scene).Initialize();
+        _scene.Initialize();
 
-        var so = _services.GetContentManager().GetRef<SceneObject>("Sprites/Actor");
-        (~_scene).AttachChild(so);
+        var so = _services.GetContentManager().Load<SceneObject>("Sprites/Actor");
+        _scene.AttachChild(so);
 
         ScrollSpeed = 1;
         ZoomFactor = 2;
@@ -36,7 +36,7 @@ public class ViewerScreen : Screen
 
     public override void Initialize()
     {
-        (~_scene).Initialize();
+        _scene.Initialize();
 
         _commands = new InputCommandSet(_services, _input);
 
@@ -54,7 +54,7 @@ public class ViewerScreen : Screen
 
     public override void Draw(GameTime gameTime)
     { 
-        (~_scene).Draw(gameTime);       
+        _scene.Draw(gameTime);       
     }
 
     public override void Update(GameTime gameTime)
@@ -63,26 +63,26 @@ public class ViewerScreen : Screen
         {
             switch(command.Name)
             {
-                case "MOVE_LEFT":   (~_scene).Camera.Move(-ScrollSpeed, 0); break;
-                case "MOVE_RIGHT":  (~_scene).Camera.Move( ScrollSpeed, 0); break;
-                case "MOVE_UP":     (~_scene).Camera.Move( 0,-ScrollSpeed); break;
-                case "MOVE_DOWN":   (~_scene).Camera.Move( 0, ScrollSpeed); break;
-                case "ZOOM_IN":     (~_scene).Camera.Zoom(1 / ZoomFactor); break;
-                case "ZOOM_OUT":    (~_scene).Camera.Zoom(    ZoomFactor); break;
-                case "ROTATE":      (~_scene).Camera.RotateByDegrees(RotateFactor); break;
+                case "MOVE_LEFT":   _scene.Camera.Move(-ScrollSpeed, 0); break;
+                case "MOVE_RIGHT":  _scene.Camera.Move( ScrollSpeed, 0); break;
+                case "MOVE_UP":     _scene.Camera.Move( 0,-ScrollSpeed); break;
+                case "MOVE_DOWN":   _scene.Camera.Move( 0, ScrollSpeed); break;
+                case "ZOOM_IN":     _scene.Camera.Zoom(1 / ZoomFactor); break;
+                case "ZOOM_OUT":    _scene.Camera.Zoom(    ZoomFactor); break;
+                case "ROTATE":      _scene.Camera.RotateByDegrees(RotateFactor); break;
                 default:
                     Console.WriteLine("Unknown Command: {0}", command.Name); break;             
             }
         }  
 
-        (~_scene).Update(gameTime);
+        _scene.Update(gameTime);
     }
 
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
 
-        (~_scene).Dispose();
+        _scene.Dispose();
 
         base.Dispose();
     }

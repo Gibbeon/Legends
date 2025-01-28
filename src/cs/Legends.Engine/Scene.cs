@@ -8,20 +8,13 @@ namespace Legends.Engine;
 
 public class Scene : SceneObject
 {
-    private Ref<Camera> _camera;
+    private Camera _camera;
 
     [JsonIgnore]
     public Camera Camera 
     {
-        get => CameraReference.Get();
+        get => _camera;
         set => SetCamera(value);
-    }
-
-    [JsonProperty("camera")]
-    protected Ref<Camera> CameraReference
-    { 
-        get => _camera; 
-        set { _camera = value; SetCamera(value); }
     }
 
     protected Scene() : this(null, null)
@@ -41,11 +34,11 @@ public class Scene : SceneObject
         Camera.Initialize();
     }
 
-    public virtual void SetCamera(Ref<Camera> camera)
+    public virtual void SetCamera(Camera camera)
     {
         if(_camera != null && _camera != camera) 
         {
-            (~_camera).Dispose(); 
+            _camera.Dispose(); 
         }
                           
         _camera = camera;

@@ -18,12 +18,8 @@ public class TileSet : IUpdate
 
     [JsonIgnore]
     public Size             TileCount => Size.Empty;
-
-    [JsonIgnore]
-    public Texture2DRegion    TextureRegion => TextureRegionReference.Get();
  
-    [JsonProperty(nameof(TextureRegion))]
-    protected Ref<Texture2DRegion> TextureRegionReference { get; set; }
+    public Texture2DRegion TextureRegion { get; set; }
  
     public Dictionary<string, ushort[]> Tags { get; set; }
 

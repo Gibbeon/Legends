@@ -25,6 +25,7 @@ public static class ContentPrimitivesExtensions
         return new Vector2(input.ReadSingle(), input.ReadSingle());
     }
 
+/*
     public static void Write(this ContentWriter output, IRef result)
     {
         output.Write7BitEncodedInt(result == null ? 0 : 1);
@@ -39,6 +40,7 @@ public static class ContentPrimitivesExtensions
             output.WriteObject(result.Get(), result.RefType);
         } 
     }
+
 
     public static IRef ReadRef(this ContentReader input)
     {
@@ -65,4 +67,5 @@ public static class ContentPrimitivesExtensions
         
         return result;
     }
+*/
 }

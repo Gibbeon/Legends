@@ -21,11 +21,7 @@ public class Map : Component, IRenderable
 
     public Color Color { get; set; } = Color.White;
 
-    [JsonIgnore]
-    public TileSet      TileSet => TileSetReference.Get();
-
-    [JsonProperty(nameof(TileSet))]
-    protected Ref<TileSet> TileSetReference { get; set; }
+    public TileSet TileSet { get; set; }
     public ushort[]     Tiles { get; set; }
     
     [JsonIgnore]

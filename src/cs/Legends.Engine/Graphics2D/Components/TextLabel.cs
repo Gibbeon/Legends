@@ -36,12 +36,10 @@ public class TextLabel : Component, ISpriteRenderable
     public SpriteEffects SpriteEffects  { get; set; }
 
     public string Text {get => _text;  set => SetText(value); }
-
-    [JsonProperty(nameof(Font))]
-    public Ref<SpriteFont> FontReference { get; set; }
+    private SpriteFont _spriteFont;
 
     [JsonIgnore]
-    public SpriteFont Font => FontReference.Get();
+    public SpriteFont Font => _spriteFont;
 
     public RenderState RenderState { get; set; }
     
@@ -198,7 +196,7 @@ public class TextLabel : Component, ISpriteRenderable
     public override string ToString()
     {
         return  $"Component: {GetType().Name}\n" + 
-        $"\tColor: {Color} Font: {FontReference}\n" + 
+        $"\tColor: {Color} Font: {Font}\n" + 
         $"\tHAlign: {HorizontalAlignment} VAlign: {VerticalAlignment}\n" + 
         $"\tSpriteEffects: {SpriteEffects} RenderState: {RenderState}";
     }

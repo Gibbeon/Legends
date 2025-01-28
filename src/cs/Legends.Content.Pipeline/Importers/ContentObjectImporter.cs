@@ -25,7 +25,7 @@ public class ContentObjectImporter : ContentImporter<dynamic>
                     SerializationBinder = new KnownTypesBinder("Legends.Engine")
                 };
             
-            settings.Converters.Add(new RefJsonConverter());
+            settings.Converters.Add(new AssetJsonConverter());
             settings.Converters.Add(new SizeFJsonConverter());
             settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());    
@@ -59,7 +59,7 @@ public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
                 };
 
                 
-            settings.Converters.Add(new RefJsonConverter());  
+            settings.Converters.Add(new AssetJsonConverter());  
             settings.Converters.Add(new SizeFJsonConverter()); 
             settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());  

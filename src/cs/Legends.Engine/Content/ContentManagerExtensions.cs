@@ -18,6 +18,7 @@ public static class ContentManagerExtensions
     private static readonly HashSet<string> _events = new();
     private static readonly object _lock = new();
 
+    /*
     public static Ref<TType> GetRef<TType>(this ContentManager contentManager, string name) 
         where TType : class
     {
@@ -25,6 +26,7 @@ public static class ContentManagerExtensions
         if(instance is ContentObject co) return new Ref<TType>(name, (TType)co.Instance);
         return new Ref<TType>(name, (TType)instance);
     }
+    */
 
     public static void DoReloads(this ContentManager contentManager)
     {

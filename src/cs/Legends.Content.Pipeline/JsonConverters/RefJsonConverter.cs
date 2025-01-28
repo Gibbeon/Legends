@@ -11,6 +11,7 @@ using MonoGame.Extended.Serialization;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
+/*
 public class RefJsonConverter : JsonConverter
 {
     private static string WildCardToRegular(string value) {
@@ -148,3 +149,5 @@ public class RefJsonConverter : JsonConverter
         }
     }
 }
+
+*/

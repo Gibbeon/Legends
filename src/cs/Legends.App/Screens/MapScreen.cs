@@ -92,7 +92,7 @@ public class GameDateTime
 
 public class MapScreen : Screen
 {
-    private Ref<Scene>[] _scenes;
+    private Scene[] _scenes;
     private IServiceProvider _services;
     private InputManager _input;
 
@@ -104,12 +104,12 @@ public class MapScreen : Screen
     public MapScreen(IServiceProvider services)
     {
         _services = services;
-        _scenes = new Ref<Scene>[2];
-        _scenes[0] = _services.GetContentManager().GetRef<Scene>("Maps/WorldMap");
-        _scenes[1] = _services.GetContentManager().GetRef<Scene>("Scenes/HUD/HudScene");
+        _scenes = new Scene[2];
+        _scenes[0] = _services.GetContentManager().Load<Scene>("Maps/WorldMap");
+        _scenes[1] = _services.GetContentManager().Load<Scene>("Scenes/HUD/HudScene");
 
-        _soTime = (~_scenes[1]).GetObjectByName("time").Single();
-        _soDate = (~_scenes[1]).GetObjectByName("date").Single();
+        _soTime = _scenes[1].GetObjectByName("time").Single();
+        _soDate = _scenes[1].GetObjectByName("date").Single();
     }
 
     public override void Initialize()
@@ -123,16 +123,16 @@ public class MapScreen : Screen
             RepeatPress = true
         });
 
-        (~_scenes[0]).Initialize();
-        (~_scenes[1]).Initialize();
+        _scenes[0].Initialize();
+        _scenes[1].Initialize();
 
         _gameDateTime.Initialize();
     }
 
     public override void Draw(GameTime gameTime)
     {        
-        (~_scenes[0]).Draw(gameTime);
-        (~_scenes[1]).Draw(gameTime);
+        _scenes[0].Draw(gameTime);
+        _scenes[1].Draw(gameTime);
     }
 
     public override void Update(GameTime gameTime)
@@ -142,7 +142,7 @@ public class MapScreen : Screen
         _soTime.GetComponent<TextLabel>().Text = _gameDateTime.ToTimeString();
         _soDate.GetComponent<TextLabel>().Text = _gameDateTime.ToDateString();
 
-        (~_scenes[0]).Update(gameTime);
-        (~_scenes[1]).Update(gameTime);
+        _scenes[0].Update(gameTime);
+        _scenes[1].Update(gameTime);
     }
 }
