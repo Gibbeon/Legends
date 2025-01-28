@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended;
 
 namespace Legends.Engine;
 
@@ -30,7 +29,7 @@ public class SceneObject : Spatial<SceneObject>, IDisposable, IUpdate, INamedObj
     [JsonIgnore] public IEnumerable<IBehavior> Behaviors   => BehaviorReferences.Select(n => n.Get());
     [JsonIgnore] public IEnumerable<IComponent> Components => ComponentReferences.Select(n => n.Get());
 
-    public IBounds Bounds { get; set;}
+    public IBounds Bounds { get; set; }
     
     [JsonProperty(nameof(Children))]
     protected IList<Ref<SceneObject>>  ChildrenReferences

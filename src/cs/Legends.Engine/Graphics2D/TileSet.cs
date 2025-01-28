@@ -14,7 +14,7 @@ namespace Legends.Engine.Graphics2D;
 public class TileSet : IUpdate
 {
     [JsonIgnore]
-    public SizeF            TileSize => TextureRegion.Slice;
+    public SizeF            TileSize => TextureRegion.FrameSize;
 
     [JsonIgnore]
     public Size             TileCount => TextureRegion.TileCount;

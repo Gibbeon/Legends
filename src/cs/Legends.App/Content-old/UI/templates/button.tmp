@@ -1,0 +1,21 @@
+{   
+    "$type": "UIComponent", 
+    "children": [
+        {
+            "$type": "Rectangle",
+            "name": "BORDER",
+            "color": "Red"
+        },
+        {
+            "$type": "Text",
+            "name": "LABEL",
+            "font": "font/name",
+            "text": "Hi!"
+        },
+        {
+            "$type": "Sprite",
+            "name": "BG_IMAGE",
+            "texture": "texture/name"
+        }
+    ]
+}

@@ -45,9 +45,9 @@ public class ViewerScreen : Screen
         _commands.Add("MOVE_UP",      EventType.KeyPressed,    Keys.Up);             
         _commands.Add("MOVE_DOWN",    EventType.KeyPressed,    Keys.Down);
         
-        _commands.Add("ZOOM_IN",      EventType.KeyPressed,     Keys.T);           
+        _commands.Add("ZOOM_IN",      EventType.KeyPressed,    Keys.T);           
         _commands.Add("ZOOM_OUT",     EventType.KeyPressed,    Keys.Y);             
-        _commands.Add("ROTATE",       EventType.KeyPressed,        Keys.R);
+        _commands.Add("ROTATE",       EventType.KeyPressed,    Keys.R);
         
         _commands.Enabled = true;
     }

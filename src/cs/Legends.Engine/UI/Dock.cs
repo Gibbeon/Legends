@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.Design;
+using System.Text.Json.Serialization;
 using Legends.Engine.Graphics2D.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
@@ -18,12 +19,23 @@ public enum Anchor
     Center = 16,
 }
 
-public class UIComponent2D : Component2D
+public static class RectangleFExtensions2
+{
+    public static RectangleF Transform(this RectangleF rect, Vector2 offset)
+    {
+        rect.Offset(offset);
+        return rect;
+    }
+}
+
+public class UIComponent2D : SceneObject
 {
     public Vector2 Margin { get; set; }
     public Vector2 Padding { get; set; }
     public VerticalAlignment VerticalAlignment { get; set;}
     public HorizontalAlignment HorizontalAlignment { get; set;}
+    [JsonIgnore] SizeF Size => new SizeF(0, 0); //Parent.Bounds.GetBoundingRectangle().Size;
+
     public UIComponent2D(IServiceContainer services, SceneObject sceneObject) 
         : base(services, sceneObject)
     {
@@ -64,11 +76,6 @@ public class UIComponent2D : Component2D
     }
 
     public override void Initialize()
-    {
-
-    }
-
-    public override void Reset()
     {
 
     }

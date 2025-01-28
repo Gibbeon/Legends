@@ -5,24 +5,81 @@ using System;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public class Sprite : Component2D, ISpriteRenderable
+public class Sprite: Component, ISpriteRenderable
+{
+    [JsonIgnore] public int             RenderLayerID => 1;
+    [JsonIgnore] public Vector2         Position => Parent.Position;
+    [JsonIgnore] public bool            Visible => Parent.Visible;
+    [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
+    public TextureRegion                Texture { get; protected set; }
+    public OffsetRectangleF             Bounds { get; protected set; }
+    public int                          FrameIndex { get; set;}
+    public bool                         FlipHorizontally { get; set; }
+    public bool                         FlipVertically { get; set;}
+    public Color                        Color { get; set; }
+    public RenderState                  RenderState { get; protected set; }
+
+    public Sprite(IServiceProvider services, SceneObject parent) : base(services, parent)
+    {
+    }
+
+    public override void Initialize()
+    {
+ 
+    }
+
+    public override void Reset()
+    {
+
+    }  
+
+    public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    {
+        var spriteBatch = this.GetSpriteBatch(target);
+
+        /*
+        spriteBatch.Draw(
+            ColorMap.Texture,
+            Parent.Position - Origin * Parent.Scale,
+            (Microsoft.Xna.Framework.Rectangle)TextureRegion.CurrentRegion.BoundingRectangle,
+            Color,
+            Parent.Rotation,
+            Vector2.Zero,//Origin,
+            Vector2.One,//Parent.Scale,
+            SpriteEffect,
+            0);
+        */
+        
+        if(target is not SpriteBatch)
+            spriteBatch?.End();
+    }
+  
+    
+    public override void Dispose()
+    {
+
+    }
+}
+
+
+/******************************************************************************
+
+public class Sprite : Component, ISpriteRenderable
 {
     [JsonIgnore]
     public int RenderLayerID => 1;
 
     [JsonProperty(nameof(TextureRegion))]
     protected Ref<TextureRegion> TextureRegionReference { get; set; }
-
     public Color Color { get; set; }
-
     public RenderState RenderState { get; set; }
-
     public SpriteEffects SpriteEffect  { get; set; }
 
     [JsonIgnore] public bool            Visible  => Parent.Visible;
     [JsonIgnore] public Vector2         Position => Parent.Position;
     [JsonIgnore] public TextureRegion   TextureRegion => TextureRegionReference.Get();
     [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
+    [JsonIgnore] public Region2D        BoundingRegion => TextureRegion.CurrentRegion;
 
     public Sprite(): this (null, null)
     {
@@ -48,8 +105,10 @@ public class Sprite : Component2D, ISpriteRenderable
 
     public override void Initialize()
     {
-        SetSize(TextureRegion.Slice);
-        if(Parent.Bounds == null) Parent.Bounds = this;
+        if(Parent.Bounds == null) 
+        {
+            Parent.Bounds = new SpriteBounds(this);
+        }
     }
 
     public override void Reset()
@@ -64,7 +123,7 @@ public class Sprite : Component2D, ISpriteRenderable
         spriteBatch.Draw(
             TextureRegion.Texture,
             Parent.Position - Origin * Parent.Scale,
-            (Microsoft.Xna.Framework.Rectangle)TextureRegion.FrameBoundingRectangle,
+            (Microsoft.Xna.Framework.Rectangle)TextureRegion.CurrentRegion.BoundingRectangle,
             Color,
             Parent.Rotation,
             Vector2.Zero,//Origin,
@@ -76,3 +135,4 @@ public class Sprite : Component2D, ISpriteRenderable
             spriteBatch?.End();
     }
 }
+*/

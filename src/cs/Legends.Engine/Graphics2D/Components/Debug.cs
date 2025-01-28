@@ -356,11 +356,11 @@ public class Debug : Component, ISpriteRenderable
                 var color = textureRegion.Frame == (row * textureRegion.TileCount.Width + col) ? Color.Blue : Color.Red;
 
                 var pos = Position + 
-                    new Vector2(textureRegion.Slice.Width  * col * scale, 
-                                textureRegion.Slice.Height   * row * scale);
+                    new Vector2(textureRegion.FrameSize.Width  * col * scale, 
+                                textureRegion.FrameSize.Height   * row * scale);
                 
                 spriteBatch.DrawRectangle(
-                    new RectangleF(pos, textureRegion.Slice * scale),
+                    new RectangleF(pos, textureRegion.FrameSize * scale),
                     color
                 );
 

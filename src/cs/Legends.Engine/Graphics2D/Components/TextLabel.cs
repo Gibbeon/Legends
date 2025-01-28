@@ -20,7 +20,7 @@ public enum VerticalAlignment
     Bottom
 }
 
-public class TextLabel : Component2D, ISpriteRenderable
+public class TextLabel : Component, ISpriteRenderable
 {
     private string _text;
     private HorizontalAlignment _halign;
@@ -29,8 +29,7 @@ public class TextLabel : Component2D, ISpriteRenderable
     private float _horizontalOffset;
     private SizeF _textSize;
 
-    [JsonIgnore]
-    public int RenderLayerID => 1;
+    [JsonIgnore] public int RenderLayerID => 1;
 
     public Color Color { get; set; }
 
@@ -54,6 +53,9 @@ public class TextLabel : Component2D, ISpriteRenderable
     
     [JsonIgnore]
     public bool Visible => Parent.Visible;
+
+    [JsonIgnore] public SizeF Size => (Parent.Bounds as ISizable).Size;
+    [JsonIgnore] public Vector2 Origin => (Parent.Bounds as Region2D).Origin;
 
     [JsonIgnore]
     public Vector2 Position => Parent.AbsolutePosition - Origin * Parent.Scale;
@@ -98,7 +100,7 @@ public class TextLabel : Component2D, ISpriteRenderable
             _horizontalOffset   = GetVerticalOffset();
             _verticalOffset     = GetHorizontalOffset();
 
-            SetSize(_textSize);
+            //SetSize(_textSize);
             //Parent.Position = new Vector2(-_verticalOffset, -_horizontalOffset);
             IsDirty = false;
         }

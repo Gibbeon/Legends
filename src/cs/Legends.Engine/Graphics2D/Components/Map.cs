@@ -9,8 +9,11 @@ using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public class Map : Component2D, IRenderable
+public class Map : Component, IRenderable
 {
+    private SizeF _size;
+    private Vector2 _origin = Vector2.Zero;
+
     [JsonIgnore]
     public int RenderLayerID => 0;
 
@@ -197,7 +200,7 @@ public class Map : Component2D, IRenderable
     {   
         TileSet.Initialize();
 
-        Size = new SizeF(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
+        _size = new SizeF(TileCount.Width * TileSet.TileSize.Width, TileCount.Height * TileSet.TileSize.Height);
         //Parent.OriginNormalized = new Vector2(.5f, .5f);
 
         ushort[] tiles = new ushort[(int)TileCount.Width * (int)TileCount.Height]; 
@@ -237,7 +240,7 @@ public class Map : Component2D, IRenderable
 
         (_currentEffect as IEffectMatrices).View        = ViewState.View;
         (_currentEffect as IEffectMatrices).Projection  = ViewState.Projection;
-        (_currentEffect as IEffectMatrices).World       = ViewState.World * Matrix3x2.CreateTranslation(-Origin) * Parent.GlobalMatrix;
+        (_currentEffect as IEffectMatrices).World       = ViewState.World * Matrix3x2.CreateTranslation(-_origin) * Parent.GlobalMatrix;
         
         if (_currentEffect is BasicEffect textureEffect)
         {

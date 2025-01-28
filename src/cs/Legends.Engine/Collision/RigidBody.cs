@@ -1,11 +1,12 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using Microsoft.Xna.Framework;
 
 namespace Legends.Engine.Collision;
 
-public class RigidBody : Component2D
+public class RigidBody : Component
 {
     public bool Dynamic { get; set; }
     private IBounds _bounds;
@@ -15,6 +16,7 @@ public class RigidBody : Component2D
         get => _bounds;
         set => _bounds = value;
     }
+
     public RigidBody(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
 
@@ -42,7 +44,7 @@ public class RigidBody : Component2D
     public override void Initialize()
     {
         _previousPosition = this.Parent.Position;
-        _bounds ??= new RectangleBounds(Vector2.Zero, Size);
+        _bounds ??= new RectangleBounds();
         Services.Get<ICollisionService>().Add(this);
     }
 

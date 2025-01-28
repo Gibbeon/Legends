@@ -7,7 +7,7 @@ using MonoGame.Extended;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public abstract class Shape : Component2D, ISpriteRenderable
+public abstract class Shape : Component, ISpriteRenderable
 {
     [JsonIgnore]
     public int RenderLayerID => 1;
@@ -28,6 +28,9 @@ public abstract class Shape : Component2D, ISpriteRenderable
     
     [JsonIgnore]
     public IViewState ViewState => Parent.Scene.Camera;
+
+    [JsonIgnore]
+    public BoundingRectangle BoundingRectangle => (Parent.Bounds as Region2D).BoundingRectangle;
 
     public Shape(): this (null, null)
     {

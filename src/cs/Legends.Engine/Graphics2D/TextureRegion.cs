@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Autofac;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -8,39 +7,27 @@ using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D;
 
-public enum ResourceType
+
+public class TextureRegion : IInitalizable
 {
-    Static,
-    Dynamic
-}
+    [JsonIgnore] public IServiceProvider Services { get; protected set; }
 
-public class TextureRegion : Box2D, IInitalizable
-{
-    [JsonIgnore]
-    public IServiceProvider Services { get; protected set; }
+    //[JsonProperty(nameof(Texture))] protected Ref<Texture2D> TextureReference { get; set; }
+    //[JsonIgnore] public Texture2D Texture => TextureReference.Get();
 
-    [JsonProperty(nameof(Texture))]
-    protected Ref<Texture2D> TextureReference { get; set; }
+    public Texture2DResource Texture { get; }
 
-    [JsonIgnore]
-    public Texture2D Texture => TextureReference.Get();
-
-    public SizeF Slice { get; set; }
-    public int Frame { get; set; }
-    public ResourceType ResourceType { get; set; }
     public Color Color { get; set; }
-    public Vector2 Position { get; set; }
-    [JsonIgnore] public RectangleF FrameBoundingRectangle        => new RectangleF(new Vector2(Position.X + (Frame % Stride) * Slice.Width, Position.Y + (Frame / Stride) * Slice.Height), Slice);
 
-    [JsonIgnore]
-    public Size TileCount => new ((int)Size.Width / (int)Slice.Width,((int)Size.Height / (int)Slice.Height));
+    [JsonIgnore] public Region2D CurrentRegion => GetSubRegion(Frame, FrameSize);
 
+    [JsonIgnore] public Size TileCount => new ((int)Size.Width / (int)FrameSize.Width,((int)Size.Height / (int)FrameSize.Height));
     
     [JsonIgnore]
-    public int FrameCount => Stride * (int)Size.Height / (int)Slice.Height;
+    public int FrameCount => Stride * (int)Size.Height / (int)FrameSize.Height;
 
     [JsonIgnore]
-    public int Stride => (int)Size.Width / (int)Slice.Width;
+    public int Stride => (int)Size.Width / (int)FrameSize.Width;
 
     public TextureRegion()
         :this (null)
@@ -63,23 +50,18 @@ public class TextureRegion : Box2D, IInitalizable
     {
     }
 
-    public TextureRegion(IServiceProvider services, Texture2D texture, int x, int y, int width, int height) : base()
+    public TextureRegion(IServiceProvider services, Texture2D texture, int x, int y, int width, int height)
     {
         Services = services;
         TextureReference = texture;
         Position = new Vector2(x, y);
-        Size = Slice = new SizeF(width, height);
-        OriginRelative = Vector2.Zero;
+        Size = FrameSize = new SizeF(width, height);
+        OriginRelative   = Vector2.Zero;
     }
 
     public void SetFrame(int frame)
     {        
         Frame = frame;
-
-        //OffsetPosition = new Vector2(
-        //    (int)(Frame * Slice.Width) % (int)Size.Width, 
-        //    (int)(Frame * Slice.Width / (int)Size.Width) * Slice.Height
-        //);
     }
 
     public override string ToString()
@@ -96,12 +78,7 @@ public class TextureRegion : Box2D, IInitalizable
         }
 
         if(Size == SizeF.Empty) Size = new SizeF(Texture.Width, Texture.Height);        
-        if(Slice == SizeF.Empty) Slice = Size;
-
-        //OffsetPosition = new Vector2(
-        //    (int)(Frame * Slice.Width) % (int)Size.Width, 
-        //    (int)(Frame * Slice.Width / (int)Size.Width) * Slice.Height
-        //);
+        if(FrameSize == SizeF.Empty) FrameSize = Size;
     }
 
     public void Reset()

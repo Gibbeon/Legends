@@ -3,7 +3,7 @@
     "name": "MainActor",
     "behaviors": [
         {
-            "$ref": "Sprites/ActorControlBehavior.cs",
+            "$source": "Sprites/ActorControlBehavior.cs",
             "moveSpeed": 1
         }
     ],

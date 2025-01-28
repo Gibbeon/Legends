@@ -1,0 +1,52 @@
+{
+    "commands": {
+        "MOVE_LEFT": [
+            {
+                "$type": "KeyboardTrigger",
+                "type": "KeyPresssed",
+                "key": "Left"            
+            },
+            {
+                "$type": "KeyboardTrigger",
+                "type": "KeyPresssed",
+                "key": "A"            
+            }
+        ],
+        "MOVE_RIGHT": [
+            {
+                "$type": "KeyboardTrigger",
+                "type": "KeyPresssed",
+                "key": "Right"            
+            },
+            {
+                "$type": "KeyboardTrigger",
+                "type": "KeyPresssed",
+                "key": "A"            
+            }
+        ],
+        "MOVE_UP": [
+            {
+                "$type": "KeyboardTrigger",
+                "type": "KeyPresssed",
+                "key": "Up"            
+            },
+            {
+                "$type": "KeyboardTrigger",
+                "type": "KeyPresssed",
+                "key": "W"            
+            }
+        ],
+        "MOVE_DOWN": [
+            {
+                "$type": "KeyboardTrigger",
+                "type": "KeyPresssed",
+                "key": "S"            
+            },
+            {
+                "$type": "KeyboardTrigger",
+                "type": "KeyPresssed",
+                "key": "D"            
+            }
+        ]
+    }
+}

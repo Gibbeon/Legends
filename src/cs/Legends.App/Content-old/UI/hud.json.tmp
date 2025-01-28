@@ -1,0 +1,22 @@
+{
+    "$type": "UIComponent",
+    "$import": "ui\templates\button",
+    "children": [
+        {
+            "$type": "Shape.Box",
+            "name": "BORDER",
+            "color": "Green"
+        },
+        {
+            "$type": "Text",
+            "name": "LABEL",
+            "font": "font/name",
+            "text": "Hi!"
+        },
+        {
+            "$type": "Sprite",
+            "name": "BG_IMAGE",
+            "texture": "texture/name"
+        }
+    ]
+}
