@@ -22,7 +22,8 @@ public class ContentObjectImporter : ContentImporter<dynamic>
             var settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
-                    SerializationBinder = new KnownTypesBinder("Legends.Engine")
+                    SerializationBinder = new KnownTypesBinder("Legends.Engine"),
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
                 };
             
             settings.Converters.Add(new AssetJsonConverter());
@@ -61,7 +62,8 @@ public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
             var settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
-                    SerializationBinder = new KnownTypesBinder("Legends.Engine")
+                    SerializationBinder = new KnownTypesBinder("Legends.Engine"),
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
                 };
 
                 
