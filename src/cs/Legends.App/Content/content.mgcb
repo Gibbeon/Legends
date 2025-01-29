@@ -1,0 +1,44 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:./../bin/Debug/net8.0/Content
+/intermediateDir:./../obj/Debug/net8.0/Content
+/platform:DesktopGL
+/config:
+/profile:Reach
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+/reference:./../../Legends.Content.Pipeline/bin/Debug/net8.0/Legends.Content.Pipeline.dll
+/reference:./../../Legends.App/bin/Debug/net8.0/Legends.App.dll
+#---------------------------------- Content ---------------------------------#
+
+
+
+
+#begin Sprites\ActorControlBehavior.cs
+/importer:DynamicAssemblyImporter
+/processor:DynamicAssemblyProcessor
+/build:Sprites\ActorControlBehavior.cs
+
+
+#begin Sprites\ActorInstance.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Sprites\ActorInstance.json
+
+
+#begin Sprites\npc1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites\npc1.png
+
+

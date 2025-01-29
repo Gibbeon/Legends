@@ -30,11 +30,17 @@ public class ContentObjectImporter : ContentImporter<dynamic>
             settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());    
                 
-            var result = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
-            string jsonOutput = JsonConvert.ToString(JsonConvert.SerializeObject(result, settings));
+            context.Logger.LogMessage("File Json:\n{0}", File.ReadAllText(filename));
+            var result          = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
+            context.Logger.LogMessage("result.GetType().IsAssignableTo(typeof(IAsset)) = {0}", result.GetType().IsAssignableTo(typeof(Engine.IAsset)));
 
-            context.Logger.LogMessage("{0}", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\""));
-            return result;
+            
+            var result2          = JsonConvert.DeserializeObject(File.ReadAllText(filename), result.GetType(), settings);
+
+            string jsonOutput   = JsonConvert.ToString(JsonConvert.SerializeObject(result, settings));
+            context.Logger.LogMessage("Import Json:\n{0}", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\""));
+
+            return result2;
         }
         catch(Exception error)
         {
@@ -63,6 +69,8 @@ public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
             settings.Converters.Add(new SizeFJsonConverter()); 
             settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());  
+
+            context.Logger.LogMessage("Process");
                     
             return ContentObject.Wrap((object)input);
         }

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 namespace Legends.Engine;
 
 
-public class SceneObject : Spatial<SceneObject>, IAsset<SceneObject>, IDisposable, IUpdate, IInitalizable
+public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, IInitalizable
 {   
     private IList<string>      _tags;    
     private IList<IBehavior>   _behaviors;
@@ -48,8 +48,6 @@ public class SceneObject : Spatial<SceneObject>, IAsset<SceneObject>, IDisposabl
         get => _tags; 
         protected set => _tags = value; 
     }
-
-    public SceneObject Instance => this;
 
     public string AssetName { get; protected set; }
 

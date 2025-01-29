@@ -1,5 +1,5 @@
 {
-    "$merge": "Sprites/ActorBase",
+    "$source": "Sprites/ActorBase.json",
     "name": "MainActor2",
     "components": [
         {

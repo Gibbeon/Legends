@@ -1,9 +1,10 @@
 {
-    "$soure": "Sprites/ActorBase",
+    "$type": "Legends.Engine.SceneObject",
+    "$source": "Sprites/ActorBase.jsonx",    
     "name": "MainActor2",
     "components": [
         {
-            "$type": "Graphics2D.Sprite",
+            "$type": "Legends.Engine.Graphics2D.Sprite",
             "colorMap": {
                 "texture": "Sprites/npc2.png"
             },

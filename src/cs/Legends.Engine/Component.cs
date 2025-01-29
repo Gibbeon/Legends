@@ -5,7 +5,7 @@ using MonoGame.Extended;
 
 namespace Legends.Engine;
 
-public interface IComponent: IAsset<IComponent>, IUpdate, IInitalizable
+public interface IComponent: IAsset, IUpdate, IInitalizable
 {
     [JsonIgnore]
     SceneObject Parent { get; }

@@ -9,26 +9,25 @@ using System.Text.RegularExpressions;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
+//PropertyRenameAndIgnoreSerializerContractResolver 
 
 public class AssetJsonConverter : JsonConverter
 {
     private static string WildCardToRegular(string value) {
         return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$"; 
     }
-
-    public bool Enabled { get; set; }
-
     public override bool CanConvert(Type objectType)
     {
+        Console.WriteLine("CanConvert: {0} = {1}", objectType.Name, objectType.IsAssignableTo(typeof(IAsset)));
         return objectType.IsAssignableTo(typeof(IAsset));
     }
 
-    public override bool CanWrite => false;
-
     public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
     {   
+        Console.WriteLine("ReadJson: (objectType: {0},  value: {1})", objectType.Name, value);
+
         try
-        {                        
+        {      
             if(reader.TokenType == JsonToken.StartObject) 
             {
                 var jsonObject = JObject.Load(reader);
@@ -40,6 +39,8 @@ public class AssetJsonConverter : JsonConverter
                 
                 if(jsonSource != null)
                 {       
+                    //throw new Exception(string.Format("ReadJson\n{0}", jsonObject.ToString()));
+
                     var assetName = Path.ChangeExtension(jsonSource.Value.ToString(), null);
 
                     switch(Path.GetExtension(jsonSource.Value.ToString()).ToLower())
@@ -57,6 +58,7 @@ public class AssetJsonConverter : JsonConverter
                             break;
                             
                         case ".json":
+                        case ".jsonx":
                             var jsonImportSource = JObject.Parse(File.ReadAllText(jsonSource.Value.ToString()));
             
                             jsonObject.Remove("$source");
@@ -67,18 +69,22 @@ public class AssetJsonConverter : JsonConverter
                                 }
                             );
 
-                            jsonObject = jsonImportSource;
+                            jsonObject = jsonImportSource;                    
+                            
                             break;
+                         default:
+                            throw new InvalidDataException(string.Format("$source attribute defined but no handler for extension: {0}", Path.GetExtension(jsonSource.Value.ToString()).ToLower()));
                     }
                     
-                    if(objectType.IsAssignableTo(typeof(IAsset)))
-                    {
                         // IAsset Constuctor                        
-                        var instanceObject = serializer.Deserialize(new StringReader(jsonObject.ToString()), instanceType);
-                        return Activator.CreateInstance(objectType, assetName, instanceObject, true, true); 
-                    }
+                    //var instanceObject = serializer.Deserialize(new StringReader(jsonObject.ToString()), instanceType);
+                    //return Activator.CreateInstance(objectType, assetName, instanceObject, true, true); 
 
+                    //throw new InvalidDataException();
                     // how to I make sure for this same object it's disabled
+
+                    throw new Exception(jsonObject.ToString());
+
                     return serializer.Deserialize(new StringReader(jsonObject.ToString()), objectType);
                 }
             }
@@ -94,9 +100,11 @@ public class AssetJsonConverter : JsonConverter
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {       
+        Console.WriteLine("WriteJson: (value: {0})", value);
         try
         {
-            serializer.Serialize(writer, value);    
+            //base.WriteJson(writer, value, serializer);
+            //serializer.Serialize(writer, value);    
         }
         catch(Exception error)
         {

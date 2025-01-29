@@ -21,10 +21,6 @@ public interface IAsset
     
 }
 
-public interface IAsset<TType> : IAsset
-{    
-}
-
 public abstract class Asset : IAsset
 {
     public string    AssetName { get; protected set; }
