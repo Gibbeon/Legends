@@ -25,14 +25,24 @@ public abstract class Asset : IAsset
 {
     public string    AssetName { get; protected set; }
     public AssetType AssetType { get; protected set; }
+
+    public Asset(): this (AssetType.Dynamic, "") {}
+    protected Asset(AssetType assetType, string assetName)
+    {
+        AssetName = assetName;
+        AssetType = assetType;
+    }
 }
 
 public class AssetWrapper<TType> : Asset
 {
     protected TType  Instance { get; set; }
+    public AssetWrapper(): this (AssetType.Dynamic, "") {}
+    protected AssetWrapper(AssetType assetType, string assetName): base(assetType, assetName) {}
+
     protected static AssetWrapper<TType> Wrap(TType instance) 
     {
-        return new AssetWrapper<TType>() { Instance = instance, AssetType = AssetType.Dynamic };
+        return new AssetWrapper<TType>() { Instance = instance };
     }
 
     public static implicit operator TType(AssetWrapper<TType> resource) => resource.Instance;

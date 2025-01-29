@@ -19,6 +19,11 @@ public class Texture2D : AssetWrapper<XnaGraphics.Texture2D>
 
     public int Height => Instance.Height;
 
+    protected Texture2D(AssetType assetType, string assetName): base(assetType, assetName)
+    {
+        
+    }
+
     public Texture2D(XnaGraphics.GraphicsDevice graphicsDevice, int width, int height)
     {
         Instance = new XnaGraphics.Texture2D(graphicsDevice, width, height);

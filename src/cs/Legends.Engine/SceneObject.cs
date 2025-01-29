@@ -58,6 +58,12 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
 
     }
 
+    protected SceneObject(AssetType assetType, string assetName)
+    {
+        AssetName = assetName;
+        AssetType = assetType;
+    }
+
     public SceneObject(IServiceProvider systems, SceneObject parent = default) : base(parent)
     {
         Services    = systems;
@@ -66,6 +72,9 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
         _behaviors  = new List<IBehavior>();
         _components = new List<IComponent>();
         _tags       = new List<string>();
+
+        AssetName = "";
+        AssetType = AssetType.Dynamic;
     }
 
     public virtual void Initialize()

@@ -20,10 +20,16 @@ public abstract class Component : Asset, IComponent
     [JsonIgnore]
     public SceneObject Parent { get; private set; }
 
-    public Component(IServiceProvider services, SceneObject parent)
+    public Component(IServiceProvider services, SceneObject parent) : this(AssetType.Dynamic, "")
     {
         Services = services;
         Parent = parent;
+    }
+
+    protected Component(AssetType assetType, string assetName)
+    {
+        AssetName = assetName;
+        AssetType = assetType;
     }
     
     public virtual void Update(GameTime gameTime) {}
