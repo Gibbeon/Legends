@@ -20,6 +20,7 @@ public class Sprite: Component, ISpriteRenderable
     public Color                        Color { get; set; }
     public RenderState                  RenderState { get; protected set; }
 
+    public Sprite() : base(AssetType.Static, "") {}
     public Sprite(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
     }

@@ -4,7 +4,7 @@
     "name": "MainActor2",
     "components": [
         {
-            "$type": "Legends.Engine.Graphics2D.Sprite",
+            "$type": "Legends.Engine.Graphics2D.Components.Sprite",
             "colorMap": {
                 "texture": "Sprites/npc2.png"
             },

@@ -13,7 +13,7 @@
             "dynamic": true
         },
         {
-            "$type": "Legends.Engine.Graphics2D.Sprite",
+            "$type": "Legends.Engine.Graphics2D.Components.Sprite",
             "colorMap": {
                 "$texture": "Sprites/npc1.png",
                 "offset": "0, 144",

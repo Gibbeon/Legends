@@ -42,58 +42,58 @@ public class AssetJsonConverter : JsonConverter
                 return objectType.Create(AssetType.Static,  reader.ReadAsString()) as IAsset;
             }
 
-            //if(reader.TokenType == JsonToken.StartObject) 
-            //{
-                var jsonObject = JObject.Load(reader);
+            var jsonObject = JObject.Load(reader);
 
-                var jsonSource = jsonObject.Property("$source");
-                var jsonType   = jsonObject.Property("$type");
-                
-                if(jsonSource != null)
-                {       
-                    var assetName = Path.ChangeExtension(jsonSource.Value.ToString(), null);
-
-                    switch(Path.GetExtension(jsonSource.Value.ToString()).ToLower())
-                    {
-                        case ".cs":
-                            var dynamicAssembly = DynamicClassLoader.Compile(jsonSource.Value.ToString(), File.ReadAllText(jsonSource.Value.ToString()));
-
-                            objectType = (jsonType != null) ? 
-                                dynamicAssembly.Assembly.GetType(jsonType.Value.ToString()) : 
-                                dynamicAssembly.Assembly.GetTypes().Single(n => Regex.IsMatch(n.FullName, WildCardToRegular("*." + Path.GetFileNameWithoutExtension(jsonSource.Value.ToString()))));
-                                 
-                            jsonObject.Remove("$source");
-                            jsonObject.Remove("$type");
-                            break;
-                            
-                        case ".json":
-                        case ".jsonx":
-                            var jsonImportSource = JObject.Parse(File.ReadAllText(jsonSource.Value.ToString()));
+            var jsonSource = jsonObject.Property("$source");
+            var jsonType   = jsonObject.Property("$type");
             
-                            jsonObject.Remove("$source");
-                            
-                            jsonImportSource.Merge(jsonObject,
-                                new JsonMergeSettings() {
-                                    MergeArrayHandling = MergeArrayHandling.Merge                            
-                                }
-                            );
+            if(jsonSource != null)
+            {       
+                var assetName = Path.ChangeExtension(jsonSource.Value.ToString(), null);
 
-                            jsonObject = jsonImportSource;                    
-                            
-                            break;
-                         default:
-                            throw new InvalidDataException(string.Format("$source attribute defined but no handler for extension: {0}", Path.GetExtension(jsonSource.Value.ToString()).ToLower()));
-                    }
-                //}
+                switch(Path.GetExtension(jsonSource.Value.ToString()).ToLower())
+                {
+                    case ".cs":
+                        var dynamicAssembly = DynamicClassLoader.Compile(jsonSource.Value.ToString(), File.ReadAllText(jsonSource.Value.ToString()));
 
-                var objectInstance = objectType.Create() as IAsset;
-                serializer.Populate(new StringReader(jsonObject.ToString()), objectInstance);
-                    
-                return objectInstance;
-                
+                        objectType = (jsonType != null) ? 
+                            dynamicAssembly.Assembly.GetType(jsonType.Value.ToString()) : 
+                            dynamicAssembly.Assembly.GetTypes().Single(n => Regex.IsMatch(n.FullName, WildCardToRegular("*." + Path.GetFileNameWithoutExtension(jsonSource.Value.ToString()))));
+                                
+                        jsonObject.Remove("$source");
+                        jsonObject.Remove("$type");
+                        break;
+                        
+                    case ".json":
+                    case ".jsonx":
+                        var jsonImportSource = JObject.Parse(File.ReadAllText(jsonSource.Value.ToString()));
+        
+                        jsonObject.Remove("$source");
+                        
+                        jsonImportSource.Merge(jsonObject,
+                            new JsonMergeSettings() {
+                                MergeArrayHandling = MergeArrayHandling.Merge                            
+                            }
+                        );
+
+                        jsonObject = jsonImportSource;                    
+                        
+                        break;
+                        default:
+                        throw new InvalidDataException(string.Format("$source attribute defined but no handler for extension: {0}", Path.GetExtension(jsonSource.Value.ToString()).ToLower()));
+                }
             }
 
-            throw new InvalidDataException("Json value must be either a string or an object type\n" + jsonObject.ToString());
+            objectType = serializer.SerializationBinder.BindToType(null, jsonType.Value.ToString()) ?? objectType;
+
+            //Console.WriteLine("Trying to create {0} and token was {1}.", objectType, jsonType.Value.ToString());
+
+            var objectInstance = objectType.Create() as IAsset;
+            serializer.Populate(new StringReader(jsonObject.ToString()), objectInstance);
+                
+            return objectInstance;
+
+            throw new InvalidDataException("Json value must be either a string or an object type\n" + jsonType.Value.ToString());
         }
         catch(Exception error)
         {
