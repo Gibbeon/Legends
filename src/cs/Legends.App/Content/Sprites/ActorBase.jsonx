@@ -3,7 +3,7 @@
     "name": "MainActor",
     "behaviors": [
         {
-            "$ref": "Sprites/ActorControlBehavior.cs",
+            "$source": "Sprites/ActorControlBehavior.cs",
             "moveSpeed": 1
         }
     ],
@@ -40,14 +40,14 @@
             "$type": "Legends.Engine.Animation.AnimationController",
             "animations": {
                 "colorize": {
-                    "$type": "Legends.Engine.Animation.SpriteColorAnimation",
+                    "$type": "Legends.Engine.Animation.SpriteColorAnimationData",
                     "to": "255, 0, 0, 0",
                     "duration": 0.5,
                     "loopType": "Reverse",
                     "enabled": true
                 },
                 "idle_down": {
-                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimation",
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
                     "loopType": "Loop",
                     "keyframes": [
                         {
@@ -58,7 +58,7 @@
                     ]
                 },
                 "idle_left": {
-                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimation",
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
                     "loopType": "Loop",
                     "keyframes": [
                         {
@@ -68,7 +68,7 @@
                     ]
                 },
                 "idle_right": {
-                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimation",
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
                     "loopType": "Loop",
                     "keyframes": [
                         {
@@ -78,7 +78,7 @@
                     ]
                 },
                 "idle_up": {
-                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimation",
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
                     "loopType": "Loop",
                     "keyframes": [
                         {
@@ -88,7 +88,7 @@
                     ]
                 },
                 "walk_down": {
-                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimation",
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
                     "loopType": "Reverse",
                     "keyframes": [
                         {
@@ -106,7 +106,7 @@
                     ]
                 },
                 "walk_left": {
-                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimation",
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
                     "loopType": "Reverse",
                     "keyframes": [
                         {
@@ -125,7 +125,7 @@
                     "enabled": true
                 },
                 "walk_right": {
-                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimation",
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
                     "loopType": "Reverse",
                     "keyframes": [
                         {
@@ -143,7 +143,7 @@
                     ]
                 },
                 "walk_up": {
-                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimation",
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
                     "loopType": "Reverse",
                     "keyframes": [
                         {

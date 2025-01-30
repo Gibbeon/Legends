@@ -17,7 +17,7 @@ public class AnimationController : Component
     [JsonIgnore]
     public IList<AnimationChannel> Channels => _channels;
 
-    public AnimationController(IServiceProvider services, SceneObject parent) : base(services, parent)
+    public AnimationController(IServiceProvider services = null, SceneObject parent = null) : base(services, parent)
     {
         _animations = new AnimationCollection();
     }

@@ -22,7 +22,7 @@ public class AssetJsonConverter : JsonConverter
     public override bool CanConvert(Type objectType)
     {
        try {
-            Console.WriteLine("CanConvert {0} is IAsset, _skip = {1}", objectType, _skip);
+            //Console.WriteLine("CanConvert {0} is IAsset, _skip = {1}", objectType, _skip);
             return !_skip && objectType.IsAssignableTo(typeof(IAsset));
        }
        finally {
@@ -32,7 +32,7 @@ public class AssetJsonConverter : JsonConverter
 
     public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
     {   _skip = false;
-        Console.WriteLine("ReadJson: (objectType: {0},  value: {1})", objectType.Name, value);
+        //Console.WriteLine("ReadJson: (objectType: {0},  value: {1})", objectType.Name, value);
 
         try
         {   
@@ -46,6 +46,12 @@ public class AssetJsonConverter : JsonConverter
 
             var jsonSource = jsonObject.Property("$source");
             var jsonType   = jsonObject.Property("$type");
+
+            if(jsonType != null) 
+            {
+                objectType = serializer.SerializationBinder.BindToType(null, jsonType.Value.ToString());
+                if(objectType == null) throw new InvalidDataException(string.Format("{0} was not found.", jsonType));
+            }
             
             if(jsonSource != null)
             {       
@@ -76,7 +82,8 @@ public class AssetJsonConverter : JsonConverter
                             }
                         );
 
-                        jsonObject = jsonImportSource;                    
+                        jsonObject = jsonImportSource;  
+                        //objectType = serializer.SerializationBinder.BindToType(null, jsonType.Value.ToString()) ?? objectType;                  
                         
                         break;
                         default:
@@ -84,7 +91,7 @@ public class AssetJsonConverter : JsonConverter
                 }
             }
 
-            objectType = serializer.SerializationBinder.BindToType(null, jsonType.Value.ToString()) ?? objectType;
+            
 
             //Console.WriteLine("Trying to create {0} and token was {1}.", objectType, jsonType.Value.ToString());
 
