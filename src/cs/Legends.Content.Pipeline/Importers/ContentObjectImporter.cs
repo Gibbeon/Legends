@@ -8,6 +8,7 @@ using MonoGame.Extended.Serialization;
 using Legends.Engine.Graphics2D;
 using Newtonsoft.Json.Converters;
 using MonoGame.Extended.Serialization.Json;
+using Legends.Engine;
 
 namespace Legends.Content.Pipline;
 
@@ -31,21 +32,27 @@ public class ContentObjectImporter : ContentImporter<dynamic>
             settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());    
                 
-            context.Logger.LogMessage("File Json:\n{0}", File.ReadAllText(filename));
-            var result          = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
-            context.Logger.LogMessage("result.GetType().IsAssignableTo(typeof(IAsset)) = {0}", result.GetType().IsAssignableTo(typeof(Engine.IAsset)));
+            context.Logger.LogMessage("File Json:\n{0}\n", File.ReadAllText(filename));
+            var result          = (dynamic)JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
+            //context.Logger.LogMessage("result.GetType().IsAssignableTo(typeof(IAsset)) = {0}", result.GetType().IsAssignableTo(typeof(Engine.IAsset)));
+
+            string jsonOutput2   = JsonConvert.ToString(JsonConvert.SerializeObject(result, settings));
+
+            context.Logger.LogMessage("Pass 1 Json:\n{0}\n", jsonOutput2.Substring(1, jsonOutput2.Length - 2).Replace("\\\"", "\""));
 
             
-            var result2          = JsonConvert.DeserializeObject(File.ReadAllText(filename), result.GetType(), settings);
+            var result2         = JsonConvert.DeserializeObject(File.ReadAllText(filename), result.GetType(), settings);
+            string jsonOutput   = JsonConvert.ToString(JsonConvert.SerializeObject(result2, settings));
 
-            string jsonOutput   = JsonConvert.ToString(JsonConvert.SerializeObject(result, settings));
-            context.Logger.LogMessage("Import Json:\n{0}", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\""));
+            context.Logger.LogMessage("Pass 2 Json:\n{0}\n", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\""));
+
+            throw new Exception();
 
             return result2;
         }
         catch(Exception error)
         {
-            Console.WriteLine("Import Error: {0}\n{1}", error.Message, error.StackTrace);
+            //Console.WriteLine("Import Error: {0}\n{1}", error.Message, error.StackTrace);
             throw;
         }
     }
@@ -72,7 +79,7 @@ public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
             settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());  
 
-            context.Logger.LogMessage("Process");
+            //context.Logger.LogMessage("Process");
                     
             return ContentObject.Wrap((object)input);
         }

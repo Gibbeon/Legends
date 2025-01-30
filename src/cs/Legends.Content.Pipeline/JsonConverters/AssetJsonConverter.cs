@@ -21,14 +21,17 @@ public class AssetJsonConverter : JsonConverter
     }
     public override bool CanConvert(Type objectType)
     {
-        Console.WriteLine("CanConvert: {0} = {1}", objectType.Name, objectType.IsAssignableTo(typeof(IAsset)));
-        bool result = !_skip && objectType.IsAssignableTo(typeof(IAsset));
-        _skip = false;
-        return result;
+       try {
+            Console.WriteLine("CanConvert {0} is IAsset, _skip = {1}", objectType, _skip);
+            return !_skip && objectType.IsAssignableTo(typeof(IAsset));
+       }
+       finally {
+            _skip = false;
+       }
     }
 
     public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
-    {   
+    {   _skip = false;
         Console.WriteLine("ReadJson: (objectType: {0},  value: {1})", objectType.Name, value);
 
         try
@@ -36,11 +39,11 @@ public class AssetJsonConverter : JsonConverter
             if(reader.TokenType == JsonToken.String)
             {
                 // IAsset where the token is a string
-                return objectType.Create(AssetType.Static, value.ToString()) as IAsset;
+                return objectType.Create(AssetType.Static,  reader.ReadAsString()) as IAsset;
             }
 
-            if(reader.TokenType == JsonToken.StartObject) 
-            {
+            //if(reader.TokenType == JsonToken.StartObject) 
+            //{
                 var jsonObject = JObject.Load(reader);
 
                 var jsonSource = jsonObject.Property("$source");
@@ -81,14 +84,16 @@ public class AssetJsonConverter : JsonConverter
                          default:
                             throw new InvalidDataException(string.Format("$source attribute defined but no handler for extension: {0}", Path.GetExtension(jsonSource.Value.ToString()).ToLower()));
                     }
+                //}
 
-                    var objectInstance = objectType.Create() as IAsset;
-                    serializer.Populate(new StringReader(jsonObject.ToString()), objectInstance);
-                    return objectInstance;
-                }
+                var objectInstance = objectType.Create() as IAsset;
+                serializer.Populate(new StringReader(jsonObject.ToString()), objectInstance);
+                    
+                return objectInstance;
+                
             }
 
-            throw new InvalidDataException("Json value must be either a string or an object type");
+            throw new InvalidDataException("Json value must be either a string or an object type\n" + jsonObject.ToString());
         }
         catch(Exception error)
         {
@@ -119,7 +124,8 @@ public class AssetJsonConverter : JsonConverter
                 // for each property do I need to serilaize it?
                 // 
                     _skip = true; // HACK
-                    serializer.Serialize(writer, assetValue, value.GetType()); 
+                    serializer.Serialize(writer, assetValue, value.GetType());
+                    _skip = false;
                     break;
                 default:
                     throw new InvalidOperationException("AssetType is invalid.");

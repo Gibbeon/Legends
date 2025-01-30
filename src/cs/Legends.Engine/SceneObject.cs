@@ -28,20 +28,20 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
 
     public IBounds Bounds { get; set; }
     
-    public IReadOnlyList<SceneObject> Children
+    public IList<SceneObject> Children
     {
-        get => _children.AsReadOnly();
-        protected set => _children = value.ToList();
+        get => _children;
+        protected set => _children = value;
     }
-    public IReadOnlyList<IBehavior> Behaviors
+    public IList<IBehavior> Behaviors
     {
-        get => _behaviors.AsReadOnly();
-        protected set => _behaviors = value.ToList();
+        get => _behaviors;
+        protected set => _behaviors = value;
     }
-    public IReadOnlyList<IComponent>  Components
+    public IList<IComponent>  Components
     {
-        get => _components.AsReadOnly();
-        protected set => _components = value.ToList();
+        get => _components;
+        protected set => _components = value;
     } 
 
     public IList<string> Tags { 
