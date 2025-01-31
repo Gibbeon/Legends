@@ -15,6 +15,7 @@ namespace Legends.Content.Pipline;
 [ContentImporter(".json", DisplayName = "Legends ContentObject Importer", DefaultProcessor = "ContentObjectProcessor")]
 public class ContentObjectImporter : ContentImporter<dynamic>
 {
+
     public override dynamic Import(string filename, ContentImporterContext context)
     {
         try
@@ -46,7 +47,8 @@ public class ContentObjectImporter : ContentImporter<dynamic>
 
             //context.Logger.LogMessage("Pass 2 Json:\n{0}\n", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\""));
 
-            return result2;
+            return result2 as IAsset;
+
         }
         catch(Exception error)
         {
@@ -57,9 +59,9 @@ public class ContentObjectImporter : ContentImporter<dynamic>
 }
 
 [ContentProcessor(DisplayName = "Legends ContentObject Processor")]
-public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
+public class ContentObjectProcessor : ContentProcessor<IAsset, ContentObject>
 {
-    public override ContentObject Process(dynamic input, ContentProcessorContext context)
+    public override ContentObject Process(IAsset input, ContentProcessorContext context)
     {      
         try
         {  
@@ -78,7 +80,8 @@ public class ContentObjectProcessor : ContentProcessor<dynamic, ContentObject>
             settings.Converters.Add(new StringEnumConverter());  
 
             //context.Logger.LogMessage("Process");
-                    
+
+            //return input;      
             return ContentObject.Wrap((object)input);
         }
         catch(Exception error)

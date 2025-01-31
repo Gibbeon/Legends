@@ -17,16 +17,16 @@
 
 
 
+#begin Sprites\Actor.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Sprites\Actor.json
+
+
 #begin Sprites\ActorControlBehavior.cs
 /importer:DynamicAssemblyImporter
 /processor:DynamicAssemblyProcessor
 /build:Sprites\ActorControlBehavior.cs
-
-
-#begin Sprites\ActorInstance.json
-/importer:ContentObjectImporter
-/processor:ContentObjectProcessor
-/build:Sprites\ActorInstance.json
 
 
 #begin Sprites\npc1.png

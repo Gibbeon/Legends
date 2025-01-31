@@ -10,7 +10,7 @@ public class ContentObjectWriter : ContentTypeWriter<ContentObject>
 {
     public override string GetRuntimeReader(TargetPlatform targetPlatform)
     {
-        return typeof(ContentObjectReader).AssemblyQualifiedName;
+        return typeof(IAssetObjectReader).AssemblyQualifiedName;
     }
 
     protected override void Write(ContentWriter output, ContentObject value)
@@ -27,5 +27,15 @@ public class ContentObjectReader : ContentTypeReader<ContentObject>
         var result = input.ReadComplexObject(instance, typeof(object));
 
         return ContentObject.Wrap(result);       
+    }
+}
+
+public class IAssetObjectReader : ContentTypeReader<IAsset>
+{
+    protected override IAsset Read(ContentReader input, IAsset existingInstance)
+    {
+        var result = input.ReadComplexObject(existingInstance, typeof(IAsset));
+
+        return result as IAsset;//ContentObject.Wrap(result);       
     }
 }
