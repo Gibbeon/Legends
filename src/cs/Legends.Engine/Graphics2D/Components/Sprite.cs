@@ -12,15 +12,15 @@ public class Sprite: Component, ISpriteRenderable
     [JsonIgnore] public Vector2         Position => Parent.Position;
     [JsonIgnore] public bool            Visible => Parent.Visible;
     [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
-    public Texture2DRegion              TextureRegion { get; protected set; }
-    public OffsetRectangleF             Bounds { get; protected set; }
+    public Texture2DRegion              TextureRegion2 { get; set; }
+    public OffsetRectangleF             Bounds { get; set; }
     public int                          FrameIndex { get; set;}
     public bool                         FlipHorizontally { get; set; }
     public bool                         FlipVertically { get; set;}
     public Color                        Color { get; set; }
-    public RenderState                  RenderState { get; protected set; }
+    public RenderState                  RenderState { get; set; }
 
-    public Sprite() : base(AssetType.Static, "") {}
+    public Sprite() : base(AssetType.Dynamic, "") {}
     public Sprite(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
     }
@@ -33,7 +33,12 @@ public class Sprite: Component, ISpriteRenderable
     public override void Reset()
     {
 
-    }  
+    }
+
+    public override void Draw(GameTime gameTime)
+    { 
+        Services.Get<IRenderService>().DrawBatched(this);
+    }
 
     public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
     {

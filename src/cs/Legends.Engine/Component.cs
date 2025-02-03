@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using MonoGame.Extended;
+using Legends.Engine.Graphics2D;
 
 namespace Legends.Engine;
 
@@ -33,7 +34,7 @@ public abstract class Component : Asset, IComponent
     }
     
     public virtual void Update(GameTime gameTime) {}
-    public virtual void Draw(GameTime gameTime) {}    
+    public virtual void Draw(GameTime gameTime) {} 
     public abstract void Dispose();
     public abstract void Initialize();
     public abstract void Reset();

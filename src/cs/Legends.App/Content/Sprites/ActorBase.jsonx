@@ -9,14 +9,11 @@
     ],
     "components": [ 
         {
-            "$type": "Legends.Engine.Collisions.RigidBody",
-            "dynamic": true
-        },
-        {
             "$type": "Legends.Engine.Graphics2D.Components.Sprite",
-            "colorMap": {
-                "$texture": "Sprites/npc1.png",
-                "offset": "0, 144",
+            "TextureRegion": {
+                "texture": "Sprites/npc1.png",
+                "x": 0,
+                "y": 144,
                 "size": "72, 144"
             },
             "bounds": {
@@ -28,11 +25,6 @@
                 "samplerState": 
                 {
                     "filter": "Point"
-                },
-                "effect": 
-                {
-                    "$ref": "basicEffect.hlsl",
-                    "property": "value"
                 }
             }
         },

@@ -22,7 +22,7 @@ public class AssetJsonConverter : JsonConverter
     public override bool CanConvert(Type objectType)
     {
        try {
-            //Console.WriteLine("CanConvert {0} is IAsset, _skip = {1}", objectType, _skip);
+            Console.WriteLine("CanConvert {0} is IAsset, _skip = {1}", objectType, _skip);
             return !_skip && objectType.IsAssignableTo(typeof(IAsset));
        }
        finally {
@@ -32,14 +32,16 @@ public class AssetJsonConverter : JsonConverter
 
     public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
     {   _skip = false;
-        //Console.WriteLine("ReadJson: (objectType: {0},  value: {1})", objectType.Name, value);
+        Console.WriteLine("ReadJson: (objectType: {0},  value: {1}) with token {2}", objectType.Name, value, reader.TokenType);
 
         try
         {   
             if(reader.TokenType == JsonToken.String)
             {
-                // IAsset where the token is a string
-                return objectType.Create(AssetType.Static,  reader.ReadAsString()) as IAsset;
+                var readValue = reader.Value.ToString();
+                Console.WriteLine("reading static reference to {0}", readValue);
+                // IAsset where the token is a string;
+                return objectType.Create(AssetType.Static,  readValue) as IAsset;
             }
 
             var jsonObject = JObject.Load(reader);
@@ -111,15 +113,15 @@ public class AssetJsonConverter : JsonConverter
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {       
-        Console.WriteLine("WriteJson: (value: {0})", value);
+        Console.WriteLine("WriteJson: (value: {0}) writestate: {1}", value, writer.WriteState);
         try
         {
             var assetValue = value as IAsset;
-            writer.WriteValue(assetValue.AssetType);
-
+                       
             switch(assetValue.AssetType)
             {
                 case AssetType.Static:
+                    Console.WriteLine("writing reference {0} of type {1}", assetValue.AssetName, value.GetType());
                     writer.WriteValue(assetValue.AssetName);
                     break;
                 case AssetType.Dynamic:
@@ -130,6 +132,7 @@ public class AssetJsonConverter : JsonConverter
 
                 // for each property do I need to serilaize it?
                 // 
+                    Console.WriteLine("writing {0} of type {1}", assetValue, value.GetType());
                     _skip = true; // HACK
                     serializer.Serialize(writer, assetValue, value.GetType());
                     _skip = false;

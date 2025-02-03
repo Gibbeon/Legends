@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using SharpDX;
 
 
 
@@ -14,6 +15,12 @@ namespace Legends.Engine.Content;
 
 public static class ContentPrimitivesExtensions
 {
+    private enum AssetStatus
+    {
+        Null = 0,
+        Reference = 1,
+        Instance = 2
+    }
     public static void Write(this ContentWriter output, Vector2 size2)
     {
         output.Write(size2.X);
@@ -23,6 +30,45 @@ public static class ContentPrimitivesExtensions
     public static Vector2 ReadVector2(this ContentReader input)
     {
         return new Vector2(input.ReadSingle(), input.ReadSingle());
+    }
+
+    public static IAsset ReadAsset(this ContentReader input)
+    {
+        switch((AssetStatus)input.Read7BitEncodedInt() )
+        {
+            case AssetStatus.Null: 
+                Console.WriteLine("ReadAsset AssetStatus.Null");
+                return null;
+            case AssetStatus.Reference: 
+                Console.WriteLine("ReadAsset AssetStatus.Reference");
+                return input.ContentManager.Load<IAsset>(input.ReadString());
+            case AssetStatus.Instance: 
+            default:
+                Console.WriteLine("ReadAsset AssetStatus.Instance");
+                return input.ReadObject<IAsset>();
+        }
+    }
+
+    public static void Write(this ContentWriter output, IAsset result)
+    {        
+        if(result == null) {
+            Console.WriteLine("Write AssetStatus.Null");
+            output.Write7BitEncodedInt((int)AssetStatus.Null);
+            return;
+        }
+        
+        if(string.IsNullOrEmpty(result.AssetName))
+        {
+            Console.WriteLine("Write AssetStatus.Instance {0}, {1} @ {2}", result, result.GetType(), output.BaseStream.Position);
+            output.Write7BitEncodedInt((int)AssetStatus.Instance);
+            output.WriteObject(result, result.GetType());
+        }
+        else
+        {
+            Console.WriteLine("Write AssetStatus.Reference");
+            output.Write7BitEncodedInt((int)AssetStatus.Reference);
+            output.Write(result.AssetName);
+        }        
     }
 
 /*

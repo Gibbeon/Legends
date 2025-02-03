@@ -1,14 +1,26 @@
 {
-    "$type": "Legends.Engine.SceneObject",
-    "$source": "Sprites/ActorBase.jsonx",    
+    "$type": "Legends.Engine.SceneObject", 
     "name": "MainActor2",
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Sprite",
-            "colorMap": {
-                "texture": "Sprites/npc2.png"
+            "TextureRegion2": {
+                "texture": "Sprites/npc1.png",
+                "x": "0",
+                "y": "144",
+                "size": "72, 144"
             },
-            "frameIndex": 1
+            "bounds": {
+                "origin": "12, 18",
+                "size": "24, 36"
+            },
+            "frameIndex": 0,
+            "renderState": {
+                "samplerState": 
+                {
+                    "filter": "Point"
+                }
+            }
         }
     ]
 }
