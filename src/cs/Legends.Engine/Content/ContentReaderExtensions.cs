@@ -125,7 +125,8 @@ public static class ContentReaderExtensions
         if(native != null)
         {
             ContentLogger.LogAppend("(invoke) {0}", native.GetSignature()); 
-            var value = native.InvokeAny(reader);               
+            var value = native.InvokeAny(reader);  
+            if(value is IAsset) return value;   // this is a hack maybe?          
             result = Convert.ChangeType(value, derivedType); 
             if(result is IAsset) return result;
             

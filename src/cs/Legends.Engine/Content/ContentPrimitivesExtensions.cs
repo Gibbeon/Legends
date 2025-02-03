@@ -8,6 +8,8 @@ using System.Collections;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using SharpDX;
+using System.Reflection.Metadata;
+using Microsoft.Xna.Framework.Graphics;
 
 
 
@@ -41,11 +43,16 @@ public static class ContentPrimitivesExtensions
                 return null;
             case AssetStatus.Reference: 
                 Console.WriteLine("ReadAsset AssetStatus.Reference");
-                return input.ContentManager.Load<IAsset>(input.ReadString());
+                var typeName = input.ReadString();
+                var instanceName = input.ReadString();
+
+                return Activator.CreateInstance(TypeCache.GetType(typeName), input.ContentManager.Load<object>(instanceName)) as IAsset;
+
+                //return input.ContentManager.Load<object>(input.ReadString()) as IAsset;
             case AssetStatus.Instance: 
             default:
                 Console.WriteLine("ReadAsset AssetStatus.Instance");
-                return input.ReadObject<IAsset>();
+                return input.ReadComplexObject(null, typeof(IAsset)) as IAsset;
         }
     }
 
@@ -67,6 +74,7 @@ public static class ContentPrimitivesExtensions
         {
             Console.WriteLine("Write AssetStatus.Reference");
             output.Write7BitEncodedInt((int)AssetStatus.Reference);
+            output.Write(result.GetType().AssemblyQualifiedName);
             output.Write(result.AssetName);
         }        
     }

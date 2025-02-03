@@ -34,7 +34,7 @@ public class IAssetObjectReader : ContentTypeReader<IAsset>
 {
     protected override IAsset Read(ContentReader input, IAsset existingInstance)
     {
-        var result = input.ReadObject(existingInstance);
+        var result = input.ReadComplexObject(existingInstance, typeof(IAsset));
 
         return result as IAsset;//ContentObject.Wrap(result);       
     }

@@ -5,7 +5,7 @@
         {
             "$type": "Legends.Engine.Graphics2D.Components.Sprite",
             "TextureRegion2": {
-                "texture": "Sprites/npc1.png",
+                "texture": "Sprites/npc1",
                 "x": "0",
                 "y": "144",
                 "size": "72, 144"
