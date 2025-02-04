@@ -44,7 +44,6 @@ public class Sprite: Component, ISpriteRenderable
     {
         var spriteBatch = this.GetSpriteBatch(target);
 
-        /*
         spriteBatch.Draw(
             ColorMap.Texture,
             Parent.Position - Origin * Parent.Scale,
@@ -55,7 +54,6 @@ public class Sprite: Component, ISpriteRenderable
             Vector2.One,//Parent.Scale,
             SpriteEffect,
             0);
-        */
         
         if(target is not SpriteBatch)
             spriteBatch?.End();

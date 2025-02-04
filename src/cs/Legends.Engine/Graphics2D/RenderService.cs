@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -11,10 +13,51 @@ public interface IRenderService : IInitalizable
     GraphicsDevice  GraphicsDevice { get; }
     RenderState     DefaultRenderState { get; }
     Texture2D       DefaultTexture { get; }
-    void DrawBatched(IRenderable drawable);
+    Viewport        DefaultViewport { get; }
+    RenderTarget2D  RenderTarget { get; }
+    Color?          ClearColor { get; }
+    void DrawRenderable(IRenderable drawable);
+    void Update(GameTime gameTime);
+    void Draw(GameTime gameTime);
+    void SwapBuffers();
+}
+
+public class DefaultRenderService: IRenderService
+{
+    GraphicsDevice  GraphicsDevice { get; }
+    RenderState     DefaultRenderState { get; }
+    Texture2D       DefaultTexture { get; }
+    ViewportAdapter ViewportAdapter { get; }
+    RenderTarget2D  RenderTarget { get; }
+    ClearOptions    ClearOptions { get; }
+    Color           ClearColor { get; }
+    int             ClearDepth { get; }
+    int             StencilDepth { get; }
+
+    public void Begin()
+    {
+        GraphicsDevice.SetRenderTarget(RenderTarget);
+        GraphicsDevice.Viewport = ViewportAdapter.Viewport;
+        GraphicsDevice.Clear(ClearOptions, ClearColor, ClearDepth, StencilDepth);
+        GraphicsDevice.ApplyState(DefaultRenderState);
+    }
+}
+
+public static class GraphicDeviceExtensions
+{
+    public static void ApplyState(this GraphicsDevice device, RenderState renderState)
+    {
+        if(renderState == null) return;
+
+        device.BlendState           = renderState.BlendState;
+        device.SamplerStates[0]     = renderState.SamplerState;
+        device.DepthStencilState    = renderState.DepthStencilState;
+        device.RasterizerState      = renderState.RasterizerState;
+    }
 }
 
 
+/*
 public class RenderService : IRenderService
 {
     public IServiceProvider Services { get; private set; }
@@ -91,3 +134,4 @@ public class RenderService : IRenderService
         
     }
 }
+*/

@@ -29,18 +29,22 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _collisionService       = new CollisionService(Services);
 
         ContentLogger.Enabled = true;
-
         
         //_graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
         //_gameManagementService.Game.IsFixedTimeStep = false;
 
         _graphicsDeviceManager.PreferredBackBufferWidth = 1280;
         _graphicsDeviceManager.PreferredBackBufferHeight = 1024;
+
+        #if OS_WINDOWS
+            Content.RootDirectory = "/dev/Legends/src/cs/Legends.App/bin/Debug/net8.0/Content";
+            Content.EnableAssetWatching();
+        #elif OS_MAC
+            Content.RootDirectory = "/Users/riwoods/dev/Legends/src/cs/Legends.App/bin/Debug/net8.0/Content";
+        #else
+            #error "Missing or invalid platform definition."
+        #endif
         
-        ContentLogger.Enabled = true;
-        Content.RootDirectory = "/dev/Legends/src/cs/Legends.App/bin/Debug/net8.0/Content";
-        //Content.EnableAssetWatching();
-        //Content.RootDirectory = "/Users/riwoods/dev/Legends/src/cs/Legends.App/bin/Debug/net8.0/Content";
         IsMouseVisible = true;
     }
 

@@ -1,0 +1,27 @@
+
+render layer
+ -- add to the queue of drawables
+ -- each drawable has a camera
+ -- a camera has a viewport it targets
+ -- order by
+ -- for 2d - want to order by lowest to highest bottom of the sprite (sort), regardless of render state or anything else
+
+
+render service per viewport? layers per viewport?
+
+renderservice.begin()
+renderservice.clear() render target = [color, depth, etc.]
+-- for each viewport, for each camera, for each layer
+apply viewport frusturm
+apply camera projection & view matricies
+layer2d.drawables.sort() (top Y sporting)
+for each drawable
+set world matrix
+check frusturm of drawable (camera + viewport + world)
+set effect & texture, set geo
+draw
+renderservice.swap()
+
+
+
+

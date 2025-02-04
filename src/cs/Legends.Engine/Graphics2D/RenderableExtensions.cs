@@ -14,9 +14,9 @@ public static class RenderableExtensions
             
             if (renderable.RenderState?.Effect is IEffectMatrices mtxEffect)
             {
-                mtxEffect.View = renderable.ViewState.View;
+                mtxEffect.View       = renderable.ViewState.View;
                 mtxEffect.Projection = renderable.ViewState.Projection;
-                mtxEffect.World = renderable.ViewState.World;
+                mtxEffect.World      = renderable.ViewState.World;
             }
 
             spriteBatch.Begin(
