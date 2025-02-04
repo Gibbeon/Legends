@@ -3,56 +3,188 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoGame.Extended.ViewportAdapters;
+using MonoGame.Extended;
+using System.Text.Json.Serialization;
+using SharpFont.PostScript;
 
 namespace Legends.Engine.Graphics2D;
 
-public interface IRenderService : IInitalizable
+public interface IRenderer : IInitalizable
 {
+    IServiceProvider Services { get; }
     GraphicsDevice  GraphicsDevice { get; }
-    RenderState     DefaultRenderState { get; }
-    Texture2D       DefaultTexture { get; }
-    Viewport        DefaultViewport { get; }
-    RenderTarget2D  RenderTarget { get; }
-    Color?          ClearColor { get; }
-    void DrawRenderable(IRenderable drawable);
-    void Update(GameTime gameTime);
-    void Draw(GameTime gameTime);
-    void SwapBuffers();
+    void DrawItem(IRenderable drawable);
 }
 
-public class DefaultRenderService: IRenderService
+public interface IRenderService : IRenderer
 {
-    GraphicsDevice  GraphicsDevice { get; }
-    RenderState     DefaultRenderState { get; }
-    Texture2D       DefaultTexture { get; }
-    ViewportAdapter ViewportAdapter { get; }
-    RenderTarget2D  RenderTarget { get; }
-    ClearOptions    ClearOptions { get; }
-    Color           ClearColor { get; }
-    int             ClearDepth { get; }
-    int             StencilDepth { get; }
+    void Draw(GameTime gameTime);
+}
+
+public class DefaultRenderService : IRenderService
+{
+    public IServiceProvider Services    { get; private set; }
+    public GraphicsDevice GraphicsDevice => Services.GetGraphicsDevice();
+    public RenderSurface RenderSurface  { get; set; }
+
+    public DefaultRenderService(IServiceProvider services)
+    {
+        Services = services;
+        Services.Add<IRenderService>(this);
+    }
+    public void Dispose()
+    {
+    
+    }
+
+    public void Initialize()
+    {
+        Reset();
+    }    
+
+    public void Reset()
+    {
+        RenderSurface = new RenderSurface(Services);
+        RenderSurface.Initialize();
+    }
+    public void Draw(GameTime gameTime)
+    {
+        RenderSurface.Begin();
+        RenderSurface.Draw(gameTime);
+        RenderSurface.End();
+
+        GraphicsDevice.Present();
+    }
+    public void DrawItem(IRenderable drawable)
+    {
+        RenderSurface.Drawables.Add(drawable);
+    }
+}
+
+public struct ClearState
+{
+    public ClearOptions     Options;
+    public Color            Color;
+    public int              Depth;
+    public int              StencilDepth;
+}
+
+public class RenderSurface
+{    
+    private IComparer<IRenderable> _drawableComparer;
+    [JsonIgnore] public IServiceProvider Services   { get; protected set; }
+    [JsonIgnore] public GraphicsDevice GraphicsDevice => Services.GetGraphicsDevice();     
+    [JsonIgnore] public IList<IRenderable> Drawables{ get; set; }
+    [JsonIgnore] public SpriteBatch SpriteBatch     { get; protected set; }
+
+    public ClearState       ClearState              { get; }
+    public ViewportAdapter  ViewportAdapter         { get; set; }
+    public RenderState      RenderState             { get; private set; }
+    public RenderTarget2D   RenderTarget            { get; set; }
+    public Effect           DefaultEffect           { get; set; }       
+    public IComparer<IRenderable> DrawableComparer  { get =>_drawableComparer ?? Comparer<IRenderable>.Default; set => _drawableComparer = value; }
+
+    public RenderSurface(IServiceProvider services)
+    {
+        Services = services;
+    }
+
+    public void Initialize()
+    {
+        Drawables             = new List<IRenderable>();
+        RenderState         ??= new RenderState();
+        ViewportAdapter     ??= new DefaultViewportAdapter(GraphicsDevice);
+        SpriteBatch           = new SpriteBatch(GraphicsDevice);
+        RenderState.Effect    = DefaultEffect ?? new BasicEffect(GraphicsDevice)
+        {
+            VertexColorEnabled = true,
+            TextureEnabled = true
+        };
+    }
 
     public void Begin()
     {
         GraphicsDevice.SetRenderTarget(RenderTarget);
         GraphicsDevice.Viewport = ViewportAdapter.Viewport;
-        GraphicsDevice.Clear(ClearOptions, ClearColor, ClearDepth, StencilDepth);
-        GraphicsDevice.ApplyState(DefaultRenderState);
+        GraphicsDevice.Clear(ClearState.Options, ClearState.Color, ClearState.Depth, ClearState.StencilDepth);
+    }
+
+    public void Draw(GameTime gameTime) 
+    {
+        var currentState = GraphicsDevice.ApplyState(RenderState);
+        var batchStarted = false;
+
+        foreach(var drawable in Drawables
+            .Where  (n => IsVisible(n))
+            .OrderBy(n => n.RenderLayerID)
+            .OrderBy(n => DrawableComparer))
+        {
+            
+            var currentEffect = drawable.RenderState?.Effect ?? DefaultEffect;
+
+            if(!batchStarted || currentState != drawable.RenderState)
+            {
+                if(batchStarted) 
+                {
+                    SpriteBatch.End();
+                    batchStarted = false;
+                }
+
+                currentState = GraphicsDevice.ApplyState(drawable.RenderState ?? RenderState);
+
+                SpriteBatch.Begin(
+                    currentState.SpriteSortMode,
+                    currentState.BlendState,                    
+                    currentState.SamplerState,
+                    currentState.DepthStencilState,
+                    currentState.RasterizerState,
+                    currentEffect,
+                    null
+                );
+                batchStarted = true;
+            }
+
+            if (currentEffect is IEffectMatrices mtxEffect)
+            {
+                mtxEffect.View          = drawable.ViewState.View;
+                mtxEffect.Projection    = drawable.ViewState.Projection;
+                mtxEffect.World         = drawable.ViewState.World;
+            }
+
+            drawable.DrawImmediate(gameTime, this);            
+        }
+
+        if(batchStarted) 
+        {
+            SpriteBatch.End();
+            batchStarted = false;
+        }
+    }
+
+    public bool IsVisible(IRenderable renderable)
+    {
+        return renderable.Visible;
+    }
+
+    public void End() 
+    {
+        Drawables.Clear();
     }
 }
 
 public static class GraphicDeviceExtensions
 {
-    public static void ApplyState(this GraphicsDevice device, RenderState renderState)
+    public static RenderState ApplyState(this GraphicsDevice device, RenderState renderState)
     {
-        if(renderState == null) return;
+        if(renderState == null) return default(RenderState);
 
-        device.BlendState           = renderState.BlendState;
-        device.SamplerStates[0]     = renderState.SamplerState;
-        device.DepthStencilState    = renderState.DepthStencilState;
-        device.RasterizerState      = renderState.RasterizerState;
+        device.BlendState           = renderState.BlendState        ?? BlendState.Opaque;
+        device.SamplerStates[0]     = renderState.SamplerState      ?? SamplerState.LinearWrap;
+        device.DepthStencilState    = renderState.DepthStencilState ?? DepthStencilState.Default;
+        device.RasterizerState      = renderState.RasterizerState   ?? RasterizerState.CullCounterClockwise;
+
+        return renderState;
     }
 }
 

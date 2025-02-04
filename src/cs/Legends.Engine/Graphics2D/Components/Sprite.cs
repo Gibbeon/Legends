@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using System;
 using Legends.Engine.Graphics2D;
+using MonoGame.Extended.ECS;
 
 namespace Legends.Engine.Graphics2D.Components;
 
@@ -12,7 +13,7 @@ public class Sprite: Component, ISpriteRenderable
     [JsonIgnore] public Vector2         Position => Parent.Position;
     [JsonIgnore] public bool            Visible => Parent.Visible;
     [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
-    public Texture2DRegion              TextureRegion2 { get; set; }
+    public Texture2DRegion              TextureRegion { get; set; }
     public OffsetRectangleF             Bounds { get; set; }
     public int                          FrameIndex { get; set;}
     public bool                         FlipHorizontally { get; set; }
@@ -37,26 +38,24 @@ public class Sprite: Component, ISpriteRenderable
 
     public override void Draw(GameTime gameTime)
     { 
-        Services.Get<IRenderService>().DrawBatched(this);
+        Services.Get<IRenderService>().DrawItem(this);
     }
 
-    public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    public void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        var spriteBatch = this.GetSpriteBatch(target);
+        var spriteBounds = Parent.LocalToWorld(Bounds);
 
-        spriteBatch.Draw(
-            ColorMap.Texture,
-            Parent.Position - Origin * Parent.Scale,
-            (Microsoft.Xna.Framework.Rectangle)TextureRegion.CurrentRegion.BoundingRectangle,
+        target.SpriteBatch.Draw(
+            TextureRegion.Texture,
+            spriteBounds.Position,// - Origin * Parent.Scale,
+            TextureRegion.Bounds,
             Color,
             Parent.Rotation,
             Vector2.Zero,//Origin,
             Vector2.One,//Parent.Scale,
-            SpriteEffect,
+            (FlipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None) | 
+            (FlipVertically   ? SpriteEffects.FlipVertically   : SpriteEffects.None),
             0);
-        
-        if(target is not SpriteBatch)
-            spriteBatch?.End();
     }
   
     

@@ -227,10 +227,10 @@ public class Map : Component, IRenderable
     {
         base.Draw(gameTime);
         BuildMap(Parent.Scene.Camera); 
-        Services.Get<IRenderService>().DrawBatched(this);
+        Services.Get<IRenderService>().DrawItem(this);
     }
 
-    public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    public void DrawImmediate(GameTime gameTime, RenderSurface target = null)
     {
         var graphicsDevice = target != null ? target.GraphicsDevice : Services.GetGraphicsDevice();
 

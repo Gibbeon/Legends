@@ -132,18 +132,18 @@ public class TextLabel : Component, ISpriteRenderable
 
         if(Visible && Parent != null)
         {
-            Services.Get<IRenderService>().DrawBatched(this);  
+            Services.Get<IRenderService>().DrawItem(this);  
         }      
     }
 
-    public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    public void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
         if (string.IsNullOrEmpty(Text))
         {
             return;
         }
 
-        var spriteBatch = this.GetSpriteBatch(target);
+        var spriteBatch = target.SpriteBatch;
 
         if (Parent.AbsoluteRotation > 0 || Parent.AbsoluteScale != Vector2.One)
         {
@@ -167,9 +167,6 @@ public class TextLabel : Component, ISpriteRenderable
                 Position,
                 Color); // DestinationBounds
         }
-
-        if(target is not SpriteBatch)
-            spriteBatch?.End();
     }
 
     public override void Dispose()

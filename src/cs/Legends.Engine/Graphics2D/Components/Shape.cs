@@ -45,7 +45,7 @@ public abstract class Shape : Component, ISpriteRenderable
     {
         if(Visible)
         {
-            Services.Get<IRenderService>().DrawBatched(this);
+            Services.Get<IRenderService>().DrawItem(this);
         }
     }
 
@@ -64,19 +64,17 @@ public abstract class Shape : Component, ISpriteRenderable
         
     }
 
-    public abstract void DrawImmediate(GameTime gameTime, GraphicsResource target = null);
+    public abstract void DrawImmediate(GameTime gameTime, RenderSurface target);
 }
 
 public class Point : Shape
 {
     public Point(IServiceProvider services, SceneObject parent) : base(services, parent) { }
 
-    public override void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    public override void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        var spriteBatch = this.GetSpriteBatch(target);
+        var spriteBatch = target.SpriteBatch;
         spriteBatch.DrawPoint(Position, this.Color, Thickness);
-        if(target is not SpriteBatch)
-            spriteBatch?.End();
     }
 }
 
@@ -84,12 +82,10 @@ public class Rectangle : Shape
 {
     public Rectangle(IServiceProvider services, SceneObject parent) : base(services, parent) { }
 
-    public override void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    public override void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        var spriteBatch = this.GetSpriteBatch(target);
+        var spriteBatch = target.SpriteBatch;
         spriteBatch.DrawRectangle(BoundingRectangle, this.Color, Thickness);
-        if(target is not SpriteBatch)
-            spriteBatch?.End();
     }
 }
 
@@ -99,12 +95,10 @@ public class Polygon : Shape
     
     public Polygon(IServiceProvider services, SceneObject parent) : base(services, parent) { }
 
-    public override void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    public override void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        var spriteBatch = this.GetSpriteBatch(target);
+        var spriteBatch = target.SpriteBatch;
         spriteBatch.DrawPolygon(this.Position, Vertices, this.Color, Thickness);
-        if(target is not SpriteBatch)
-            spriteBatch?.End();
     }
 }
 
@@ -115,12 +109,10 @@ public class Circle : Shape
     
     public Circle(IServiceProvider services, SceneObject parent) : base(services, parent) { }
 
-    public override void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    public override void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        var spriteBatch = this.GetSpriteBatch(target);
+        var spriteBatch = target.SpriteBatch;
         spriteBatch.DrawCircle(this.Position, Radius, Sides, this.Color, Thickness);
-        if(target is not SpriteBatch)
-            spriteBatch?.End();
     }
 }
 
@@ -130,12 +122,9 @@ public class Line : Shape
     public float Angle { get; set; }
     
     public Line(IServiceProvider services, SceneObject parent) : base(services, parent) { }
-
-    public override void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    public override void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        var spriteBatch = this.GetSpriteBatch(target);
+        var spriteBatch = target.SpriteBatch;
         spriteBatch.DrawLine(this.Position, Length, Angle, this.Color, Thickness);
-        if(target is not SpriteBatch)
-            spriteBatch?.End();
     }
 }

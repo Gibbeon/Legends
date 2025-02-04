@@ -6,6 +6,7 @@ using System;
 
 namespace Legends.Engine.Graphics2D;
 
+/*
 public interface IRenderLayer : IInitalizable
 {    
     Color? ClearColor { get; set; }
@@ -87,9 +88,9 @@ public class RenderLayer : IRenderLayer
 
                 if (_renderState.Effect is IEffectMatrices mtxEffect)
                 {
-                    mtxEffect.View = _viewState.View;
-                    mtxEffect.Projection = _viewState.Projection;
-                    mtxEffect.World = _viewState.World;
+                    mtxEffect.View          = _viewState.View;
+                    mtxEffect.Projection    = _viewState.Projection;
+                    mtxEffect.World         = _viewState.World;
                 }
 
                 _spriteBatch.Begin(
@@ -138,3 +139,4 @@ public class RenderLayer : IRenderLayer
         GC.SuppressFinalize(this);
     }
 }
+*/

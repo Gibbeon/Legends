@@ -11,7 +11,7 @@ namespace Legends.App;
 public class MainGame : Microsoft.Xna.Framework.Game
 {
     private readonly GraphicsDeviceManager   _graphicsDeviceManager;
-    private readonly RenderService           _spriteRenderService;
+    private readonly IRenderService          _spriteRenderService;
     private readonly GameManagementService   _gameManagementService;
     private readonly CollisionService _collisionService;
     private readonly InputHandlerService _inputService;
@@ -24,7 +24,7 @@ public class MainGame : Microsoft.Xna.Framework.Game
 
         _gameManagementService  = new GameManagementService(this, _screenManager);
         _graphicsDeviceManager  = new GraphicsDeviceManager(this);        
-        _spriteRenderService    = new RenderService(Services);
+        _spriteRenderService    = new DefaultRenderService(Services);
         _inputService           = new InputHandlerService(Services);
         _collisionService       = new CollisionService(Services);
 

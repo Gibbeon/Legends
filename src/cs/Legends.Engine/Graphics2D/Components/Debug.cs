@@ -141,7 +141,7 @@ public class Debug : Component, ISpriteRenderable
     {
         if(Visible)
         {
-            Services.Get<IRenderService>().DrawBatched(this);
+            Services.Get<IRenderService>().DrawItem(this);
         }
     }
 
@@ -172,11 +172,11 @@ public class Debug : Component, ISpriteRenderable
         spriteBatch.DrawLine(points[2], points[3], color);
     }
 
-    public void DrawImmediate(GameTime gameTime, GraphicsResource target = null)
+    public void DrawImmediate(GameTime gameTime, RenderSurface target = null)
     {
         _camera.Draw(gameTime);
 
-        var spriteBatch = this.GetSpriteBatch(target);
+        var spriteBatch = target.SpriteBatch;
         _position = _positionStart;
 
         _frameCounter++;
@@ -242,9 +242,6 @@ public class Debug : Component, ISpriteRenderable
             }
         }
         */
-
-        if(target is not SpriteBatch)
-            spriteBatch?.End();
     }
 
     protected static string MemberToString(string name, object value)

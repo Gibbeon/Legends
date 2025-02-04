@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Legends.Engine.Graphics2D;
 
+/*
 public static class RenderableExtensions
 {
     public static SpriteBatch GetSpriteBatch(this IRenderable renderable, GraphicsResource target = null)
@@ -33,3 +34,4 @@ public static class RenderableExtensions
         return spriteBatch;
     }
 }
+*/

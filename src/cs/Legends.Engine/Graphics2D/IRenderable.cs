@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -11,5 +10,5 @@ public interface IRenderable
     RenderState RenderState { get; }
     IViewState ViewState { get; }
     int RenderLayerID { get; }
-    void DrawImmediate(GameTime gameTime, GraphicsResource target = null);
+    void DrawImmediate(GameTime gameTime, RenderSurface target);
 }
