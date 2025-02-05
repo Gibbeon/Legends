@@ -33,6 +33,8 @@ public static class ContentReaderExtensions
 {
     private static readonly Stack<object> _parents = new();
 
+    public static Stack<object> GetParents(this ContentReader reader) => _parents;
+
     public static object ReadArray(this ContentReader reader, ICollection instance)
     {
         var typeName        = reader.ReadString();
@@ -193,9 +195,9 @@ public static class ContentReaderExtensions
         }
         ContentLogger.LogEnd("");
 
-        var isDynamic = reader.Read7BitEncodedInt() == 1;
-        var typeName = reader.ReadString();
-        var assetName = isDynamic ? Path.ChangeExtension(reader.ReadString(), null) : string.Empty;
+        var isDynamic   = reader.Read7BitEncodedInt() == 1;
+        var typeName    = reader.ReadString();
+        var assetName   = isDynamic ? Path.ChangeExtension(reader.ReadString(), null) : string.Empty;
 
         if(!_typeCache.TryGetValue(typeName, out Type derivedType))
         {
@@ -220,9 +222,11 @@ public static class ContentReaderExtensions
             }
             else
             {
-                instance ??=  derivedType.Create(_parents.Count == 0  
-                    ? new[] { reader.ContentManager.ServiceProvider }
-                    : new[] { reader.ContentManager.ServiceProvider, _parents.Peek() });
+                // create an instance with services or parent structure, or create just a standard object instance with no parent structure
+                instance ??=  derivedType.CreateOrDefault(_parents.Count == 0  
+                                ? new[] { reader.ContentManager.ServiceProvider }
+                                : new[] { reader.ContentManager.ServiceProvider, _parents.Peek() })
+                            ?? derivedType.Create();
 
                 _parents.Push(instance);
 

@@ -147,7 +147,7 @@ public class Debug : Component, ISpriteRenderable
 
     public override void Dispose()
     {
-        GC.SuppressFinalize(this);
+        
     }
 
     public override void Reset()

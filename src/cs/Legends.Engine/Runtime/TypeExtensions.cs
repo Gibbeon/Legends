@@ -6,17 +6,22 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using SharpDX;
+using System.IO;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Autofac.Core.Activators.Reflection;
 
 namespace Legends.Engine.Runtime;
 
 public static class TypeExtensions
 {    
-        public static string GetSignature(this MethodInfo method, bool callable = false)
+        public static string GetSignature(this MethodBase method, bool callable = false)
         {
             if(method == null) return "(no method found)";
             
             var firstParam = true;
             var sigBuilder = new StringBuilder();
+
             if (callable == false)
             {
                 if (method.IsPublic)
@@ -29,9 +34,12 @@ public static class TypeExtensions
                     sigBuilder.Append("protected ");
                 if (method.IsStatic)
                     sigBuilder.Append("static ");
-                sigBuilder.Append(TypeName(method.ReturnType));
+                if (method is MethodInfo mi)
+                    sigBuilder.Append(TypeName(mi.ReturnType));
+
                 sigBuilder.Append(' ');
             }
+
             sigBuilder.Append(method.Name);
 
             // Add method generics
@@ -304,16 +312,51 @@ public static class TypeExtensions
 
     public static IEnumerable<ConstructorInfo> MatchConstructorSignature(this IEnumerable<ConstructorInfo> methods, params Type[] parameterTypes)
     {
-        return methods.Where(n =>   n.GetParameters().Length > 0
+        /*return methods.Where(n =>   n.GetParameters().Length > 0
                                 &&  n.GetParameters().All( m => 
                                         parameterTypes.Any(x => 
                                                 x != null 
                                             &&  x.IsAssignableTo(m.ParameterType))
-                                            ||  m.Attributes.HasFlag(ParameterAttributes.Optional)));
+                                        ||  m.Attributes.HasFlag(ParameterAttributes.Optional)));
+        */
 
+        foreach(var ctor in methods.Where(n => 
+            /*min*/ n.GetParameters().Count(m => !m.Attributes.HasFlag(ParameterAttributes.Optional)) <= parameterTypes.Length &&
+            /*max*/ n.GetParameters().Length >= parameterTypes.Length))
+        {
+            var matches = 0;
+
+            //Console.WriteLine(ctor.GetSignature());
+
+            for(; matches < parameterTypes.Length; matches++)
+            {
+                // all the required parameters match
+                if(parameterTypes[matches] != typeof(void) && !parameterTypes[matches].IsAssignableTo(ctor.GetParameters()[matches].ParameterType))
+                {
+                    //Console.WriteLine("{0}.IsAssignableTo({1}) = false", parameterTypes[matches], ctor.GetParameters()[matches].ParameterType);
+                    break;
+                }
+                
+                //Console.WriteLine("{0}.IsAssignableTo({1}) = true", parameterTypes[matches], ctor.GetParameters()[matches].ParameterType);
+            }
+
+            // if you skip the matches do all the rest have the optional flag
+            if(!ctor.GetParameters().Skip(matches).All(m => m.Attributes.HasFlag(ParameterAttributes.Optional)))
+                break;
+
+            yield return ctor;
+        }
     }
 
     public static object Create(this Type type, params object[] parameters)
+    {
+        var result = CreateOrDefault(type, parameters);
+        if(result == null) throw new NoConstructorsFoundException(type);
+        return result;
+        //return Activator.CreateInstance(type);
+    }
+
+    public static object CreateOrDefault(this Type type, params object[] parameters)
     {
         if(type.GetConstructors()
             .MatchConstructorSignature(parameters.Select(n => n == null ? typeof(void) : n.GetType()).ToArray())
@@ -324,8 +367,8 @@ public static class TypeExtensions
                     ctor.GetParameters().Skip(parameters.Length).Select(n => Type.Missing)
                     ).Take(ctor.GetParameters().Length).ToArray());
         }
-            
-        return Activator.CreateInstance(type);
+
+        return null;
     }
 }
 

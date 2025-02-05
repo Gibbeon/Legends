@@ -4,22 +4,13 @@
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Sprite",
-            "TextureRegion2": {
+            "textureRegion": {
                 "texture": "Sprites/npc1",
-                "x": "0",
-                "y": "144",
-                "size": "72, 144"
+                "bounds": "0, 144, 72, 144"
             },
             "bounds": {
-                "origin": "12, 18",
+                "origin": "0, 0",
                 "size": "24, 36"
-            },
-            "frameIndex": 0,
-            "renderState": {
-                "samplerState": 
-                {
-                    "filter": "Point"
-                }
             }
         }
     ]

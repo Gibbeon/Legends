@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework;
 using SharpDX;
 using System.Reflection.Metadata;
 using Microsoft.Xna.Framework.Graphics;
+using Legends.Engine.Runtime;
+using Autofac;
 
 
 
@@ -34,6 +36,56 @@ public static class ContentPrimitivesExtensions
         return new Vector2(input.ReadSingle(), input.ReadSingle());
     }
 
+    public static void Write(this ContentWriter output, SizeF size2)
+    {
+        output.Write(size2.Width);
+        output.Write(size2.Height);
+    }
+
+    public static SizeF ReadSizeF(this ContentReader input)
+    {
+        return new SizeF(input.ReadSingle(), input.ReadSingle());
+    }
+
+    public static void Write(this ContentWriter output, Size size2)
+    {
+        output.Write(size2.Width);
+        output.Write(size2.Height);
+    }
+
+    public static Size ReadSize(this ContentReader input)
+    {
+        return new Size(input.ReadInt32(), input.ReadInt32());
+    }
+
+    public static void Write(this ContentWriter output, Rectangle rectangle)
+    {
+        output.Write(rectangle.X);
+        output.Write(rectangle.Y);
+        output.Write(rectangle.Width);
+        output.Write(rectangle.Height);
+    }
+
+    public static Rectangle ReadRectangle(this ContentReader input)
+    {
+        return new Rectangle(input.ReadInt32(), input.ReadInt32(), input.ReadInt32(), input.ReadInt32());
+    }
+
+
+    public static void Write(this ContentWriter output, RectangleF rectangle)
+    {
+        output.Write(rectangle.X);
+        output.Write(rectangle.Y);
+        output.Write(rectangle.Width);
+        output.Write(rectangle.Height);
+    }
+
+    public static RectangleF ReadRectangleF(this ContentReader input)
+    {
+        return new RectangleF(input.ReadSingle(), input.ReadSingle(), input.ReadSingle(), input.ReadSingle());
+    }
+
+
     public static IAsset ReadAsset(this ContentReader input)
     {
         switch((AssetStatus)input.Read7BitEncodedInt() )
@@ -43,12 +95,15 @@ public static class ContentPrimitivesExtensions
                 return null;
             case AssetStatus.Reference: 
                 Console.WriteLine("ReadAsset AssetStatus.Reference");
-                var typeName = input.ReadString();
-                var instanceName = input.ReadString();
+                var typeName        = input.ReadString(); 
+                var instanceName    = input.ReadString();
 
-                return Activator.CreateInstance(TypeCache.GetType(typeName), input.ContentManager.Load<object>(instanceName)) as IAsset;
+                var type = TypeCache.GetType(typeName);
+                
+                return (type.CreateOrDefault(input.ContentManager.ServiceProvider, input.GetParents().Peek(), instanceName) ?? 
+                        type.CreateOrDefault(input.ContentManager.ServiceProvider, instanceName)) as IAsset;
 
-                //return input.ContentManager.Load<object>(input.ReadString()) as IAsset;
+                //return Activator.CreateInstance(TypeCache.GetType(typeName), input.ContentManager.ServiceProvider, input.GetParents().Peek(), instanceName) as IAsset;
             case AssetStatus.Instance: 
             default:
                 Console.WriteLine("ReadAsset AssetStatus.Instance");
@@ -64,7 +119,7 @@ public static class ContentPrimitivesExtensions
             return;
         }
         
-        if(string.IsNullOrEmpty(result.AssetName))
+        if(string.IsNullOrEmpty(result.Name))
         {
             Console.WriteLine("Write AssetStatus.Instance {0}, {1} @ {2}", result, result.GetType(), output.BaseStream.Position);
             output.Write7BitEncodedInt((int)AssetStatus.Instance);
@@ -75,7 +130,7 @@ public static class ContentPrimitivesExtensions
             Console.WriteLine("Write AssetStatus.Reference");
             output.Write7BitEncodedInt((int)AssetStatus.Reference);
             output.Write(result.GetType().AssemblyQualifiedName);
-            output.Write(result.AssetName);
+            output.Write(result.Name);
         }        
     }
 

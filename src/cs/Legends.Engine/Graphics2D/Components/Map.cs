@@ -48,8 +48,8 @@ public class Map : Component, IRenderable
 
     public void CreateMapFromTexture()
     {
-        var x_count = TileSet.TextureRegion.Size.Width /    TileSet.TileSize.Width;        
-        var y_count = TileSet.TextureRegion.Size.Height /   TileSet.TileSize.Height;
+        var x_count = TileSet.TextureRegion.Bounds.Width /    TileSet.TileSize.Width;        
+        var y_count = TileSet.TextureRegion.Bounds.Height /   TileSet.TileSize.Height;
 
         TileCount = new Size((int)x_count, (int)y_count);
 

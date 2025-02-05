@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
 using System;
-using Legends.Engine.Graphics2D;
-using MonoGame.Extended.ECS;
 
 namespace Legends.Engine.Graphics2D.Components;
 
@@ -21,19 +19,25 @@ public class Sprite: Component, ISpriteRenderable
     public Color                        Color { get; set; }
     public RenderState                  RenderState { get; set; }
 
-    public Sprite() : base(AssetType.Dynamic, "") {}
-    public Sprite(IServiceProvider services, SceneObject parent) : base(services, parent)
+    public Sprite()
     {
+        
+    }
+
+    public Sprite(IServiceProvider services, SceneObject parent, string assetName = null) : base(services, parent, assetName)
+    {
+
     }
 
     public override void Initialize()
     {
- 
+        Reset();        
     }
 
     public override void Reset()
     {
-
+        Color = Color.White; 
+        TextureRegion.Texture.Reset();
     }
 
     public override void Draw(GameTime gameTime)
@@ -43,19 +47,27 @@ public class Sprite: Component, ISpriteRenderable
 
     public void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        var spriteBounds = Parent.LocalToWorld(Bounds);
+        var spriteBounds = (Microsoft.Xna.Framework.Rectangle)Parent.LocalToWorld(Bounds);
 
+//Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth
         target.SpriteBatch.Draw(
             TextureRegion.Texture,
-            spriteBounds.Position,// - Origin * Parent.Scale,
+            spriteBounds,
             TextureRegion.Bounds,
-            Color,
-            Parent.Rotation,
-            Vector2.Zero,//Origin,
-            Vector2.One,//Parent.Scale,
-            (FlipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None) | 
-            (FlipVertically   ? SpriteEffects.FlipVertically   : SpriteEffects.None),
-            0);
+            Color.White
+        );
+
+            
+            //TextureRegion.Texture,
+            //spriteBounds,// - Origin * Parent.Scale,
+            //TextureRegion.Bounds,
+            //Color,
+            //Parent.Rotation,
+            //Vector2.Zero,//Origin,
+            //Vector2.One,//Parent.Scale,
+            //(FlipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None) | 
+            //(FlipVertically   ? SpriteEffects.FlipVertically   : SpriteEffects.None),
+            //0);
     }
   
     

@@ -12,10 +12,6 @@ namespace Legends.Scripts;
 
 public class GenerateWorldBehavior : Behavior
 {
-    public GenerateWorldBehavior(): base(null, null)
-    {
-
-    }
     public GenerateWorldBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
     {
         

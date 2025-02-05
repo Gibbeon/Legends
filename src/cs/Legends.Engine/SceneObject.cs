@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Engine;
 
@@ -22,9 +23,9 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
     [DefaultValue("")] public string Name { get => _name; set => _name = value; }
     [DefaultValue(true)] public bool Enabled { get => _enabled; set => _enabled = value; }
     [DefaultValue(true)] public bool Visible { get => _visible; set => _visible = value; }
-
     [JsonIgnore] public IServiceProvider Services { get; protected set; }
     [JsonIgnore] public Scene Scene => _scene ??= GetParentScene();
+    [JsonIgnore] public ContentManager ContentManager => Services.GetContentManager();
 
     public IBounds Bounds { get; set; }
     
@@ -49,19 +50,14 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
         protected set => _tags = value; 
     }
 
-    public string AssetName { get; protected set; }
-
-    public AssetType AssetType { get; protected set; }
-
     public SceneObject() : this(null, null)
     {
 
     }
 
-    protected SceneObject(AssetType assetType, string assetName)
+    protected SceneObject(string assetName)
     {
-        AssetName = assetName;
-        AssetType = assetType;
+        Name = assetName;
     }
 
     public SceneObject(IServiceProvider systems, SceneObject parent = default) : base(parent)
@@ -72,9 +68,6 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
         _behaviors  = new List<IBehavior>();
         _components = new List<IComponent>();
         _tags       = new List<string>();
-
-        AssetName = "";
-        AssetType = AssetType.Dynamic;
     }
 
     public virtual void Initialize()

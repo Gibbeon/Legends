@@ -30,7 +30,10 @@ public class ContentObjectImporter : ContentImporter<dynamic>
             
             settings.Converters.Add(new AssetJsonConverter());
             settings.Converters.Add(new SizeFJsonConverter());
+            settings.Converters.Add(new PointJsonConverter());
             settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
+            settings.Converters.Add(new JsonConverters.RectangleFJsonConverter()); 
+            settings.Converters.Add(new JsonConverters.RectangleJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());    
                 
             context.Logger.LogMessage("File Json:\n{0}\n", File.ReadAllText(filename));
@@ -76,7 +79,10 @@ public class ContentObjectProcessor : ContentProcessor<IAsset, ContentObject>
                 
             settings.Converters.Add(new AssetJsonConverter());  
             settings.Converters.Add(new SizeFJsonConverter()); 
+            settings.Converters.Add(new PointJsonConverter());            
             settings.Converters.Add(new JsonConverters.SizeJsonConverter()); 
+            settings.Converters.Add(new JsonConverters.RectangleFJsonConverter()); 
+            settings.Converters.Add(new JsonConverters.RectangleJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());  
 
             //context.Logger.LogMessage("Process");

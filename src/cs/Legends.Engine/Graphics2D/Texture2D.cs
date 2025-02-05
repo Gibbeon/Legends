@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended;
-using Newtonsoft.Json;
 using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Legends.Engine.Graphics2D;
@@ -11,42 +8,35 @@ namespace Legends.Engine.Graphics2D;
 public class Texture2D : AssetWrapper<XnaGraphics.Texture2D> 
 {    
     public XnaGraphics.SurfaceFormat Format => Instance.Format;
-    public int LevelCount => Instance.LevelCount;
-
+    public int      LevelCount => Instance.LevelCount;
     public Rectangle Bounds => Instance.Bounds;
+    public int      Width => Instance.Width;
 
-    public int Width => Instance.Width;
-
-    public int Height => Instance.Height;
-
-    public Texture2D(): base()
+    public int      Height => Instance.Height;
+    
+    public Texture2D(IServiceProvider services, string assetName): base(services, assetName)
     {
         
     }
 
-    public Texture2D(XnaGraphics.Texture2D instance)
+    public Texture2D(IServiceProvider services, XnaGraphics.Texture2D instance): base(services, instance.Name)
     {
-        Instance = instance;
+        Instance = instance;        
     }
 
-    public Texture2D(AssetType assetType, string assetName): base(assetType, assetName)
+    public Texture2D(IServiceProvider services, int width, int height): this(services, new XnaGraphics.Texture2D(services.GetGraphicsDevice(), width, height))
+    {
+
+    }
+
+    public Texture2D(IServiceProvider services, int width, int height, bool mipmap, XnaGraphics.SurfaceFormat format): this(services, new XnaGraphics.Texture2D(services.GetGraphicsDevice(), width, height, mipmap, format))
+    {
+
+    }
+
+    public Texture2D(IServiceProvider services, int width, int height, bool mipmap,XnaGraphics.SurfaceFormat format, int arraySize): this(services, new XnaGraphics.Texture2D(services.GetGraphicsDevice(), width, height, mipmap, format, arraySize))
     {
         
-    }
-
-    public Texture2D(XnaGraphics.GraphicsDevice graphicsDevice, int width, int height)
-    {
-        Instance = new XnaGraphics.Texture2D(graphicsDevice, width, height);
-    }
-
-    public Texture2D(XnaGraphics.GraphicsDevice graphicsDevice, int width, int height, bool mipmap, XnaGraphics.SurfaceFormat format)
-    {
-        Instance = new XnaGraphics.Texture2D(graphicsDevice, width, height, mipmap, format);
-    }
-
-    public Texture2D(XnaGraphics.GraphicsDevice graphicsDevice, int width, int height, bool mipmap,XnaGraphics.SurfaceFormat format, int arraySize)
-    {
-        Instance = new XnaGraphics.Texture2D(graphicsDevice, width, height, mipmap, format, arraySize);
     }
 
     public void SetData<T>(int level, int arraySlice, Rectangle? rect, T[] data, int startIndex, int elementCount) where T : struct 
@@ -77,20 +67,20 @@ public class Texture2D : AssetWrapper<XnaGraphics.Texture2D>
         => Instance.GetData<T>(data);
 
     
-    public static Texture2D FromFile(XnaGraphics.GraphicsDevice graphicsDevice, string path, Action<byte[]> colorProcessor)
-        => (Texture2D)XnaGraphics.Texture2D.FromFile(graphicsDevice, path, colorProcessor);
+    public static Texture2D FromFile(IServiceProvider services, string path, Action<byte[]> colorProcessor)
+        => new(services, XnaGraphics.Texture2D.FromFile(services.GetGraphicsDevice(), path, colorProcessor));
 
     
-    public static Texture2D FromFile(XnaGraphics.GraphicsDevice graphicsDevice, string path)
-        => (Texture2D)XnaGraphics.Texture2D.FromFile(graphicsDevice, path);
+    public static Texture2D FromFile(IServiceProvider services, string path)
+        => new(services, XnaGraphics.Texture2D.FromFile(services.GetGraphicsDevice(), path));
 
     
-    public static Texture2D FromStream(XnaGraphics.GraphicsDevice graphicsDevice, Stream stream, Action<byte[]> colorProcessor)
-        => (Texture2D)XnaGraphics.Texture2D.FromStream(graphicsDevice, stream, colorProcessor);
+    public static Texture2D FromStream(IServiceProvider services, Stream stream, Action<byte[]> colorProcessor)
+        => new(services, XnaGraphics.Texture2D.FromStream(services.GetGraphicsDevice(), stream, colorProcessor));
 
     
-    public static Texture2D FromStream(XnaGraphics.GraphicsDevice graphicsDevice, Stream stream)
-        => (Texture2D)XnaGraphics.Texture2D.FromStream(graphicsDevice, stream);
+    public static Texture2D FromStream(IServiceProvider services, Stream stream)
+        => new(services, XnaGraphics.Texture2D.FromStream(services.GetGraphicsDevice(), stream));
 
     
     public void SaveAsJpeg(Stream stream, int width, int height)
@@ -111,15 +101,9 @@ public class Texture2D : AssetWrapper<XnaGraphics.Texture2D>
     public bool IsDisposed 
         => Instance.IsDisposed;
 
-
-    public string Name { get => Instance.Name; set => Instance.Name = value; }
-
-
     public object Tag { get => Instance.Tag; set => Instance.Tag = value; }
 
-
     public event EventHandler<EventArgs> Disposing { add => Instance.Disposing += value; remove => Instance.Disposing -= value; }
-
 
     public void Dispose()
         => Instance?.Dispose();

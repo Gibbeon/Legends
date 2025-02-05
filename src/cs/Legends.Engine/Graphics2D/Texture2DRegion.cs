@@ -2,6 +2,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D;
 
@@ -10,86 +11,18 @@ namespace Legends.Engine.Graphics2D;
 //     Represents a region of a texture.
 public class Texture2DRegion
 {
-    //
-    // Summary:
-    //     Gets the name assigned to this texture region when it was created.
-    public string Name { get; set; }
+    public string   Name { get; protected set; }
+    public Texture2D Texture { get; set; }
+    public Rectangle Bounds { get; set; }
 
-    //
-    // Summary:
-    //     Gets the texture associated with this texture region.
-    public Texture2D Texture { get; set;  }
+    [JsonIgnore] public float TopUV     => (float)Bounds.Top / (float)Texture.Height;
 
-    //
-    // Summary:
-    //     Gets the top-left x-coordinate of the texture region within the texture.
-    public int X { get;  set; }
+    [JsonIgnore] public float RightUV   => (float)Bounds.Right / (float)Texture.Width;
 
-    //
-    // Summary:
-    //     Gets the top-left y-coordinate of the texture region within the texture.
-    public int Y { get; set;  }
+    [JsonIgnore] public float BottomUV  => (float)Bounds.Bottom / (float)Texture.Height;
 
-    //
-    // Summary:
-    //     Gets the width, in pixels, of the texture region.
-    public int Width { get; set;  }
+    [JsonIgnore] public float LeftUV    => (float)Bounds.Left / (float)Texture.Width;
 
-    //
-    // Summary:
-    //     Gets the height, in pixels, of the texture region.
-    public int Height { get;  set; }
-
-    //
-    // Summary:
-    //     Gets the size of the texture region.
-    public Size Size { get;  set; }
-
-    //
-    // Summary:
-    //     Gets or sets the user-defined data associated with this texture region.
-    public object Tag { get; set; }
-
-    //
-    // Summary:
-    //     Gets the bounds of the texture region within the texture.
-    public Rectangle Bounds { get;  set; }
-
-    //
-    // Summary:
-    //     Gets the top UV coordinate of the texture region.
-    public float TopUV { get;  set; }
-
-    //
-    // Summary:
-    //     Gets the right UV coordinate of the texture region.
-    public float RightUV { get;  set; }
-
-    //
-    // Summary:
-    //     Gets the bottom UV coordinate of the texture region.
-    public float BottomUV { get;  set; }
-
-    //
-    // Summary:
-    //     Gets the left UV coordinate of the texture region.
-    public float LeftUV { get;  set; }
-
-    //
-    // Summary:
-    //     Initializes a new instance of the MonoGame.Extended.Graphics.Texture2DRegion
-    //     class representing the entire texture.
-    //
-    // Parameters:
-    //   texture:
-    //     The texture to create the region from.
-    //
-    // Exceptions:
-    //   T:System.ArgumentNullException:
-    //     Thrown if texture is null.
-    //
-    //   T:System.ObjectDisposedException:
-    //     Thrown if texture has been disposed prior.
 
     public Texture2DRegion()
         : this(null, 0, 0, 0, 0)
@@ -106,56 +39,11 @@ public class Texture2DRegion
     {
     }
 
-    //
-    // Summary:
-    //     Initializes a new instance of the MonoGame.Extended.Graphics.Texture2DRegion
-    //     class with the specified region of the texture and name.
-    //
-    // Parameters:
-    //   texture:
-    //     The texture to create the region from.
-    //
-    //   x:
-    //     The top-left x-coordinate of the region within the texture.
-    //
-    //   y:
-    //     The top-left y-coordinate of the region within the texture.
-    //
-    //   width:
-    //     The width, in pixels, of the region.
-    //
-    //   height:
-    //     The height, in pixels, of the region.
-    //
-    //   name:
-    //     The name of the texture region.
-    //
-    // Exceptions:
-    //   T:System.ArgumentNullException:
-    //     Thrown if texture is null.
-    //
-    //   T:System.ObjectDisposedException:
-    //     Thrown if texture has been disposed prior.
+    
     public Texture2DRegion(Texture2D texture, int x, int y, int width, int height)
     {
-        //ArgumentNullException.ThrowIfNull(texture, "texture");
-        //if (texture.IsDisposed)
-        //{
-        //    throw new ObjectDisposedException("texture");
-        //}
-
-
         Texture = texture;
-        X = x;
-        Y = y;
-        //Width = width;
-        //Height = height;
         Bounds = new Rectangle(x, y, width, height);
-        Size = new Size(width, height);
-        //TopUV = (float)Bounds.Top / (float)texture.Height;
-        //RightUV = (float)Bounds.Right / (float)texture.Width;
-        //BottomUV = (float)Bounds.Bottom / (float)texture.Height;
-        //LeftUV = (float)Bounds.Left / (float)texture.Width;
     }
 
     public override string ToString()

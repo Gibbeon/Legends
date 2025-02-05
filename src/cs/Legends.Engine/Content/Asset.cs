@@ -1,50 +1,61 @@
 ﻿using System;
-using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
+using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
 
 namespace Legends.Engine;
 
-public enum AssetType
-{
-    Static,
-    Dynamic
-}
 
-public interface IAsset
+public interface IAsset : IInitalizable
 {    
-    [JsonIgnore] string     AssetName { get; }
-    [JsonIgnore] AssetType  AssetType { get; }
-    
+    [JsonIgnore] IServiceProvider   Services { get; }
+    [JsonIgnore] string             Name { get; }    
 }
 
 public abstract class Asset : IAsset
 {
-    public string    AssetName { get; protected set; }
-    public AssetType AssetType { get; protected set; }
+    public IServiceProvider Services { get; protected set; }
+    public string Name { get; protected set; }
 
-    public Asset(): this (AssetType.Dynamic, "") {}
-    protected Asset(AssetType assetType, string assetName)
+    public Asset() {}
+    public Asset(IServiceProvider services, string assetName)
     {
-        AssetName = assetName;
-        AssetType = assetType;
+        Services        = services;
+        Name            = assetName;
     }
+
+    public abstract void Initialize();
+    public abstract void Reset();
+    public abstract void Dispose();
 }
 
 public class AssetWrapper<TType> : Asset
+    where TType : class
 {
     protected TType  Instance { get; set; }
-    public AssetWrapper(): this (AssetType.Dynamic, "") {}
-    protected AssetWrapper(AssetType assetType, string assetName): base(assetType, assetName) {}
-
-    protected static AssetWrapper<TType> Wrap(TType instance) 
+    public AssetWrapper(IServiceProvider services, string assetName): base(services, assetName) {}
+    
+    public override void Initialize()
     {
-        return new AssetWrapper<TType>() { Instance = instance };
+        Reset();
+    }
+
+    public override void Reset()
+    {
+        if(Instance != null && Instance is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+
+        Instance = Services.GetContentManager().Load<TType>(Name);
+    }
+    public override void Dispose()
+    {
+        if(Instance != null && Instance is IDisposable disposable)
+        {
+            disposable.Dispose();
+            Instance = default;
+        }
     }
 
     public static implicit operator TType(AssetWrapper<TType> resource) => resource.Instance;
-    public static implicit operator AssetWrapper<TType>(TType resource) => Wrap(resource);
 }

@@ -41,7 +41,7 @@ public class AssetJsonConverter : JsonConverter
                 var readValue = reader.Value.ToString();
                 Console.WriteLine("reading static reference to {0}", readValue);
                 // IAsset where the token is a string;
-                return objectType.Create(AssetType.Static,  readValue) as IAsset;
+                return objectType.Create(null, readValue) as IAsset;
             }
 
             var jsonObject = JObject.Load(reader);
@@ -92,21 +92,16 @@ public class AssetJsonConverter : JsonConverter
                         throw new InvalidDataException(string.Format("$source attribute defined but no handler for extension: {0}", Path.GetExtension(jsonSource.Value.ToString()).ToLower()));
                 }
             }
-
-            
-
             //Console.WriteLine("Trying to create {0} and token was {1}.", objectType, jsonType.Value.ToString());
 
             var objectInstance = objectType.Create() as IAsset;
             serializer.Populate(new StringReader(jsonObject.ToString()), objectInstance);
                 
             return objectInstance;
-
-            throw new InvalidDataException("Json value must be either a string or an object type\n" + jsonType.Value.ToString());
         }
         catch(Exception error)
         {
-            Console.WriteLine("ObjectJsonConverter.ReadJson Error:" + error.Message);
+            Console.WriteLine("AssetJsonConverter.ReadJson Error:" + error.Message);
             throw;
         }
     }
@@ -118,27 +113,17 @@ public class AssetJsonConverter : JsonConverter
         {
             var assetValue = value as IAsset;
                        
-            switch(assetValue.AssetType)
+            if(!string.IsNullOrEmpty(assetValue.Name))
             {
-                case AssetType.Static:
-                    Console.WriteLine("writing reference {0} of type {1}", assetValue.AssetName, value.GetType());
-                    writer.WriteValue(assetValue.AssetName);
-                    break;
-                case AssetType.Dynamic:
-                // this gets the converter for the object & calls write json
-                // and the converter can write
-                // and then it calls it again
-                // etc.
-
-                // for each property do I need to serilaize it?
-                // 
-                    Console.WriteLine("writing {0} of type {1}", assetValue, value.GetType());
-                    _skip = true; // HACK
-                    serializer.Serialize(writer, assetValue, value.GetType());
-                    _skip = false;
-                    break;
-                default:
-                    throw new InvalidOperationException("AssetType is invalid.");
+                Console.WriteLine("writing reference {0} of type {1}", assetValue.Name, value.GetType());
+                writer.WriteValue(assetValue.Name);
+            }
+            else
+            {
+                Console.WriteLine("writing inline {0} of type {1}", assetValue, value.GetType());
+                _skip = true; // HACK
+                serializer.Serialize(writer, assetValue, value.GetType());
+                _skip = false;
             }
         }
         catch(Exception error)

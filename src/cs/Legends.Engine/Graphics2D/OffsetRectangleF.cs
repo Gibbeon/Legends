@@ -26,7 +26,8 @@ public struct OffsetRectangleF : IBounds, ISizable, IRectangularF
     public static implicit operator Rectangle(OffsetRectangleF rect)    => (Rectangle)rect.BoundingRectangle;
     public static implicit operator OffsetRectangleF(RectangleF rect)   => new OffsetRectangleF(rect);
     public static implicit operator OffsetRectangleF(Rectangle rect)    => new OffsetRectangleF(rect);
-    
+
+    public OffsetRectangleF() {}    
     public OffsetRectangleF(RectangleF rect): this(rect.Left, rect.Top, rect.Width, rect.Height)
     {     
         
@@ -38,7 +39,7 @@ public struct OffsetRectangleF : IBounds, ISizable, IRectangularF
         Size = new SizeF(width, height);
     }
    
-    public void Resize(float width, float height) =>    Resize(new Vector2(width, height));    
+    public void Resize(float width, float height) =>    Resize(new SizeF(width, height));    
     public void SetOrigin(float width, float height) =>  SetOrigin(new Vector2(width, height));
     public void Resize(SizeF size)
     {
@@ -52,7 +53,7 @@ public struct OffsetRectangleF : IBounds, ISizable, IRectangularF
 
     public void SetOrigin(Vector2 origin)         
     { 
-        _origin = origin;
+        //_origin = origin;
     }   
 
     public bool Contains(Vector2 point) => BoundingRectangle.Contains(point);
