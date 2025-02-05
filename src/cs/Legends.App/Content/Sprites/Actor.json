@@ -1,15 +1,17 @@
 {
     "$type": "Legends.Engine.SceneObject", 
     "name": "MainActor2",
+    "position": "12, 18",
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.Sprite",
             "textureRegion": {
                 "texture": "Sprites/npc1",
-                "bounds": "0, 144, 72, 144"
+                "bounds": "0, 144, 72, 144",
+                "tilesize": "24, 36"
             },
             "bounds": {
-                "origin": "0, 0",
+                "origin": "12, 18",
                 "size": "24, 36"
             }
         }

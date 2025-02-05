@@ -43,7 +43,7 @@ public struct OffsetRectangleF : IBounds, ISizable, IRectangularF
     public void SetOrigin(float width, float height) =>  SetOrigin(new Vector2(width, height));
     public void Resize(SizeF size)
     {
-        if(!size.IsEmpty) 
+        if(!Size.IsEmpty) 
         {
             SetOrigin(Origin.X / Width * size.Width, Origin.Y / Height * size.Height);
         }
@@ -53,7 +53,7 @@ public struct OffsetRectangleF : IBounds, ISizable, IRectangularF
 
     public void SetOrigin(Vector2 origin)         
     { 
-        //_origin = origin;
+        _origin = origin;
     }   
 
     public bool Contains(Vector2 point) => BoundingRectangle.Contains(point);

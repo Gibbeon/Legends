@@ -11,9 +11,26 @@ namespace Legends.Engine.Graphics2D;
 //     Represents a region of a texture.
 public class Texture2DRegion
 {
-    public string   Name { get; protected set; }
-    public Texture2D Texture { get; set; }
-    public Rectangle Bounds { get; set; }
+    public string       Name { get; protected set; }
+    public Texture2D    Texture { get; set; }
+    public Rectangle    Bounds { get; set; }
+    private Size        _tileSize;
+    public Size         TileSize { get => _tileSize.IsEmpty ? Bounds.Size : _tileSize; set => _tileSize = value; }
+
+    [JsonIgnore]
+    public int Rows => (int)Bounds.Height / (int)TileSize.Height;
+
+    [JsonIgnore]
+    public int Columns => (int)Bounds.Width / (int)TileSize.Width;
+
+    [JsonIgnore]
+    public int FrameCount => Rows * Columns;
+
+    [JsonIgnore] 
+    public Rectangle    this[int index] 
+    {
+        get { return new Rectangle(Bounds.Location.X + TileSize.Width * (index % Rows), Bounds.Location.Y + TileSize.Height * (index % Columns), TileSize.Width, TileSize.Height); }
+    }
 
     [JsonIgnore] public float TopUV     => (float)Bounds.Top / (float)Texture.Height;
 
@@ -42,8 +59,9 @@ public class Texture2DRegion
     
     public Texture2DRegion(Texture2D texture, int x, int y, int width, int height)
     {
-        Texture = texture;
-        Bounds = new Rectangle(x, y, width, height);
+        Texture     = texture;
+        Bounds      = new Rectangle(x, y, width, height);
+        TileSize    = new Size(width, height);
     }
 
     public override string ToString()

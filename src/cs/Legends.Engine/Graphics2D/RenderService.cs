@@ -54,7 +54,7 @@ public class DefaultRenderService : IRenderService
         RenderSurface.Draw(gameTime);
         RenderSurface.End();
 
-        GraphicsDevice.Present();
+        //GraphicsDevice.Present();
     }
     public void DrawItem(IRenderable drawable)
     {
@@ -62,13 +62,14 @@ public class DefaultRenderService : IRenderService
     }
 }
 
-public struct ClearState
+public class ClearState
 {
-    public ClearOptions     Options;
+    public ClearOptions     Options = ClearOptions.Target;
     public Color            Color;
     public int              Depth;
     public int              StencilDepth;
 }
+
 
 public class RenderSurface
 {    
@@ -78,9 +79,9 @@ public class RenderSurface
     [JsonIgnore] public IList<IRenderable> Drawables{ get; set; }
     [JsonIgnore] public SpriteBatch SpriteBatch     { get; protected set; }
 
-    public ClearState       ClearState              { get; }
+    public ClearState       ClearState              { get; set; }
     public ViewportAdapter  ViewportAdapter         { get; set; }
-    public RenderState      RenderState             { get; private set; }
+    public RenderState      RenderState             { get; set; }
     public RenderTarget2D   RenderTarget            { get; set; }
     public Effect           DefaultEffect           { get; set; }       
     public IComparer<IRenderable> DrawableComparer  { get =>_drawableComparer ?? Comparer<IRenderable>.Default; set => _drawableComparer = value; }
@@ -93,10 +94,11 @@ public class RenderSurface
     public void Initialize()
     {
         Drawables             = new List<IRenderable>();
-        RenderState         ??= new RenderState();
+        RenderState         ??= new ();
         ViewportAdapter     ??= new DefaultViewportAdapter(GraphicsDevice);
-        SpriteBatch           = new SpriteBatch(GraphicsDevice);
-        RenderState.Effect    = DefaultEffect ?? new BasicEffect(GraphicsDevice)
+        SpriteBatch         ??= new SpriteBatch(GraphicsDevice);
+        ClearState          ??= new();
+        RenderState.Effect  ??= DefaultEffect ??= new BasicEffect(GraphicsDevice)
         {
             VertexColorEnabled = true,
             TextureEnabled = true
@@ -123,6 +125,13 @@ public class RenderSurface
             
             var currentEffect = drawable.RenderState?.Effect ?? DefaultEffect;
 
+            if (currentEffect is IEffectMatrices mtxEffect)
+            {
+                mtxEffect.View          = drawable.ViewState.View;
+                mtxEffect.Projection    = drawable.ViewState.Projection;
+                mtxEffect.World    = drawable.ViewState.World;
+            }
+
             if(!batchStarted || currentState != drawable.RenderState)
             {
                 if(batchStarted) 
@@ -145,13 +154,7 @@ public class RenderSurface
                 batchStarted = true;
             }
 
-            if (currentEffect is IEffectMatrices mtxEffect)
-            {
-                mtxEffect.View          = drawable.ViewState.View;
-                mtxEffect.Projection    = drawable.ViewState.Projection;
-                mtxEffect.World         = drawable.ViewState.World;
-            }
-
+           
             drawable.DrawImmediate(gameTime, this);            
         }
 

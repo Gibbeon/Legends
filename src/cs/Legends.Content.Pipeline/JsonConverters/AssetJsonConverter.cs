@@ -22,7 +22,7 @@ public class AssetJsonConverter : JsonConverter
     public override bool CanConvert(Type objectType)
     {
        try {
-            Console.WriteLine("CanConvert {0} is IAsset, _skip = {1}", objectType, _skip);
+            //Console.WriteLine("CanConvert {0} is IAsset, _skip = {1}", objectType, _skip);
             return !_skip && objectType.IsAssignableTo(typeof(IAsset));
        }
        finally {
@@ -121,7 +121,7 @@ public class AssetJsonConverter : JsonConverter
             else
             {
                 Console.WriteLine("writing inline {0} of type {1}", assetValue, value.GetType());
-                _skip = true; // HACK
+                _skip = true; // HACK see:https://stackoverflow.com/questions/26129448/json-net-how-to-customize-serialization-to-insert-a-json-property
                 serializer.Serialize(writer, assetValue, value.GetType());
                 _skip = false;
             }

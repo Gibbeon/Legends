@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using MonoGame.Extended;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json.Linq;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
@@ -40,9 +41,31 @@ public class RectangleJsonConverter : JsonConverter
         else
         {
             var result = new Rectangle();
-            serializer.Populate(reader, result);
+            var jsonObject = JObject.Load(reader);
+
+            var xVal   = jsonObject.Property("x");
+            var yVal   = jsonObject.Property("y");
+            var wVal   = jsonObject.Property("width");
+            var hVal   = jsonObject.Property("height");
+            var oVal   = jsonObject.Property("origin");
+            var posVal = jsonObject.Property("position");
+            var szVal  = jsonObject.Property("size");
+
+            if(xVal != null) result.X           = xVal.Value.ToObject<int>();
+            if(yVal != null) result.Y           = yVal.Value.ToObject<int>();
+            if(wVal != null) result.Width       = wVal.Value.ToObject<int>();
+            if(hVal != null) result.Height      = hVal.Value.ToObject<int>();
+            if(posVal != null) result.Location  = posVal.Value.ToObject<Point>(serializer);
+            if(szVal != null) result.Size       = szVal.Value.ToObject<Size>(serializer);
+            if(oVal != null) result.Location    = Invert(oVal.Value.ToObject<Point>(serializer));
+            
             return result;
         }
+    }
+
+    private static Point Invert(Point point)
+    {
+        return new Point(-point.X, -point.Y);
     }
 
     public override bool CanConvert(Type objectType)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using Newtonsoft.Json;
 using System;
 
@@ -12,7 +13,7 @@ public class Sprite: Component, ISpriteRenderable
     [JsonIgnore] public bool            Visible => Parent.Visible;
     [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
     public Texture2DRegion              TextureRegion { get; set; }
-    public OffsetRectangleF             Bounds { get; set; }
+    public RectangleF                   Bounds { get; set; }
     public int                          FrameIndex { get; set;}
     public bool                         FlipHorizontally { get; set; }
     public bool                         FlipVertically { get; set;}
@@ -53,10 +54,14 @@ public class Sprite: Component, ISpriteRenderable
         target.SpriteBatch.Draw(
             TextureRegion.Texture,
             spriteBounds,
-            TextureRegion.Bounds,
-            Color.White
+            TextureRegion[FrameIndex],
+            Color,
+            Parent.Rotation,
+            Vector2.Zero,
+            (FlipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None) | 
+            (FlipVertically   ? SpriteEffects.FlipVertically   : SpriteEffects.None),
+            0
         );
-
             
             //TextureRegion.Texture,
             //spriteBounds,// - Origin * Parent.Scale,
