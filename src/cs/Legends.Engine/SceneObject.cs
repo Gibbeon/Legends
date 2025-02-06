@@ -20,7 +20,7 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
     private bool _visible = true;
     private string _name;
 
-    [DefaultValue("")] public string Name { get => _name; set => _name = value; }
+    [DefaultValue("")] public string Name { get => _name; protected set => _name = value; }
     [DefaultValue(true)] public bool Enabled { get => _enabled; set => _enabled = value; }
     [DefaultValue(true)] public bool Visible { get => _visible; set => _visible = value; }
     [JsonIgnore] public IServiceProvider Services { get; protected set; }
@@ -60,9 +60,10 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
         Name = assetName;
     }
 
-    public SceneObject(IServiceProvider systems, SceneObject parent = default) : base(parent)
+    public SceneObject(IServiceProvider systems, SceneObject parent = default, string assetName = default) : base(parent)
     {
         Services    = systems;
+        Name        = assetName;
         
         _children   = new List<SceneObject>();
         _behaviors  = new List<IBehavior>();

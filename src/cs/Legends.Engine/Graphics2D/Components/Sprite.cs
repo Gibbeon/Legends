@@ -31,7 +31,10 @@ public class Sprite: Component, ISpriteRenderable
     }
 
     public override void Initialize()
-    {
+    {        
+        if(Bounds.Size.IsEmpty) 
+            Bounds = new RectangleF(Bounds.Position, new SizeF(TextureRegion.TileSize.Width, TextureRegion.TileSize.Height));
+
         Reset();        
     }
 

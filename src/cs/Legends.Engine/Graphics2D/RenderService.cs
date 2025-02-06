@@ -129,7 +129,7 @@ public class RenderSurface
             {
                 mtxEffect.View          = drawable.ViewState.View;
                 mtxEffect.Projection    = drawable.ViewState.Projection;
-                mtxEffect.World    = drawable.ViewState.World;
+                mtxEffect.World         = drawable.ViewState.World;
             }
 
             if(!batchStarted || currentState != drawable.RenderState)
