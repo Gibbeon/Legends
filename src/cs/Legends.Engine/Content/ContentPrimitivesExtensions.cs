@@ -12,6 +12,7 @@ using System.Reflection.Metadata;
 using Microsoft.Xna.Framework.Graphics;
 using Legends.Engine.Runtime;
 using Autofac;
+using System.IO;
 
 
 
@@ -113,6 +114,10 @@ public static class ContentPrimitivesExtensions
 
     public static void Write(this ContentWriter output, IAsset result)
     {        
+        //ContentLogger.TraceEnabled = true;
+        ContentLogger.Trace(output.Seek(0, SeekOrigin.Current), 
+            "Write(this ContentWriter output, IAsset result[{0}])", result);
+
         if(result == null) {
             Console.WriteLine("Write AssetStatus.Null");
             output.Write7BitEncodedInt((int)AssetStatus.Null);
@@ -121,9 +126,17 @@ public static class ContentPrimitivesExtensions
         
         if(string.IsNullOrEmpty(result.Name))
         {
-            Console.WriteLine("Write AssetStatus.Instance {0}, {1} @ {2}", result, result.GetType(), output.BaseStream.Position);
+            
+        ContentLogger.Trace(output.Seek(0, SeekOrigin.Current), 
+            "Write AssetStatus.Instance {0}, {1}", result, result.GetType());
             output.Write7BitEncodedInt((int)AssetStatus.Instance);
+            
+        ContentLogger.Trace(output.Seek(0, SeekOrigin.Current),
+            "BEGIN output.WriteObject(result [{0}], result.GetType() [{1}]);", result, result.GetType()); 
             output.WriteObject(result, result.GetType());
+         ContentLogger.Trace(output.Seek(0, SeekOrigin.Current),
+            "END output.WriteObject(result [{0}], result.GetType() [{1}]);", result, result.GetType()); 
+      
         }
         else
         {

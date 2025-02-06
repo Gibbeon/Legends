@@ -12,7 +12,7 @@ public class AnimationController : Component
     
     protected AnimationCollection _animations;
 
-    public AnimationCollection Animations => _animations;
+    public AnimationCollection Animations { get => _animations; set => _animations = value; }
 
     [JsonIgnore]
     public IList<AnimationChannel> Channels => _channels;

@@ -12,6 +12,18 @@
             "bounds": {
                 "origin": "12, 18"
             }
+        },
+        {
+            "$type": "Legends.Engine.Animation.AnimationController",
+            "animations": {
+                "colorize": {
+                    "$type": "Legends.Engine.Animation.SpriteColorAnimationData",
+                    "to": "255, 0, 0, 0",
+                    "duration": 0.5,
+                    "loopType": "Reverse",
+                    "enabled": true
+                }
+            }
         }
     ]
 }

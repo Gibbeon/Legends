@@ -23,9 +23,10 @@ public class ContentObjectImporter : ContentImporter<dynamic>
             ContentLogger.Enabled = true;
             var settings = new JsonSerializerSettings
                 {
-                    TypeNameHandling = TypeNameHandling.Auto,
+                    TypeNameHandling = TypeNameHandling.All,
                     SerializationBinder = new KnownTypesBinder("Legends.Engine"),
-                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+                    Formatting = Formatting.Indented
                 };
             
             settings.Converters.Add(new AssetJsonConverter());
@@ -35,27 +36,29 @@ public class ContentObjectImporter : ContentImporter<dynamic>
             settings.Converters.Add(new JsonConverters.RectangleFJsonConverter()); 
             settings.Converters.Add(new JsonConverters.RectangleJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());    
+
+            var jsonFileContents = File.ReadAllText(filename);
                 
-            context.Logger.LogMessage("File Json:\n{0}\n", File.ReadAllText(filename));
-            var result          = (dynamic)JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(filename), settings);
+            //context.Logger.LogMessage("File Json:\n{0}\n", jsonFileContents);
+            var result          = (dynamic)JsonConvert.DeserializeObject<dynamic>(jsonFileContents, settings);
             //context.Logger.LogMessage("result.GetType().IsAssignableTo(typeof(IAsset)) = {0}", result.GetType().IsAssignableTo(typeof(Engine.IAsset)));
 
-            string jsonOutput2   = JsonConvert.ToString(JsonConvert.SerializeObject(result, settings));
+            //string jsonOutput2   = JsonConvert.ToString(JsonConvert.SerializeObject(result, settings));
 
-            context.Logger.LogMessage("Pass 1 Json:\n{0}\n", jsonOutput2.Substring(1, jsonOutput2.Length - 2).Replace("\\\"", "\""));
+            //context.Logger.LogMessage("Pass 1 Json:\n{0}\n", jsonOutput2.Substring(1, jsonOutput2.Length - 2).Replace("\\\"", "\"").Replace("\\n", "\n"));
 
             
-            var result2         = JsonConvert.DeserializeObject(File.ReadAllText(filename), result.GetType(), settings);
+            var result2         = JsonConvert.DeserializeObject(jsonFileContents, result.GetType(), settings);
             string jsonOutput   = JsonConvert.ToString(JsonConvert.SerializeObject(result2, settings));
 
-            context.Logger.LogMessage("Pass 2 Json:\n{0}\n", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\""));
+            context.Logger.LogMessage("Processed Json:\n{0}\n", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\"").Replace("\\n", "\n"));
 
             return result2 as IAsset;
 
         }
         catch(Exception error)
         {
-            //Console.WriteLine("Import Error: {0}\n{1}", error.Message, error.StackTrace);
+            Console.WriteLine("Import Error: {0}\n{1}", error.Message, error.StackTrace);
             throw;
         }
     }

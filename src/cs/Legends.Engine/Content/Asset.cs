@@ -12,8 +12,11 @@ public interface IAsset : IInitalizable
 }
 
 public abstract class Asset : IAsset
-{
+{   
+    [JsonIgnore]
     public IServiceProvider Services { get; protected set; }
+    
+    [JsonIgnore]
     public string Name { get; protected set; }
 
     public Asset() {}

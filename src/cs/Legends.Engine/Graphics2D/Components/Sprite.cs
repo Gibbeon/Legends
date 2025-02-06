@@ -17,7 +17,8 @@ public class Sprite: Component, ISpriteRenderable
     public int                          FrameIndex { get; set;}
     public bool                         FlipHorizontally { get; set; }
     public bool                         FlipVertically { get; set;}
-    public Color                        Color { get; set; }
+    private Color                       _color = Color.White;
+    public Color                        Color { get => _color; set => _color = value; }
     public RenderState                  RenderState { get; set; }
 
     public Sprite()
@@ -40,7 +41,6 @@ public class Sprite: Component, ISpriteRenderable
 
     public override void Reset()
     {
-        Color = Color.White; 
         TextureRegion.Texture.Reset();
     }
 
@@ -53,7 +53,6 @@ public class Sprite: Component, ISpriteRenderable
     {
         var spriteBounds = (Microsoft.Xna.Framework.Rectangle)Parent.LocalToWorld(Bounds);
 
-//Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth
         target.SpriteBatch.Draw(
             TextureRegion.Texture,
             spriteBounds,
@@ -65,17 +64,6 @@ public class Sprite: Component, ISpriteRenderable
             (FlipVertically   ? SpriteEffects.FlipVertically   : SpriteEffects.None),
             0
         );
-            
-            //TextureRegion.Texture,
-            //spriteBounds,// - Origin * Parent.Scale,
-            //TextureRegion.Bounds,
-            //Color,
-            //Parent.Rotation,
-            //Vector2.Zero,//Origin,
-            //Vector2.One,//Parent.Scale,
-            //(FlipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None) | 
-            //(FlipVertically   ? SpriteEffects.FlipVertically   : SpriteEffects.None),
-            //0);
     }
   
     
