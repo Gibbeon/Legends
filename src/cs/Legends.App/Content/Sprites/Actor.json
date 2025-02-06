@@ -11,6 +11,12 @@
             },
             "bounds": {
                 "origin": "12, 18"
+            },
+            "renderState": {
+                "samplerState": 
+                {
+                    "filter": "Point"
+                }
             }
         },
         {
@@ -22,6 +28,120 @@
                     "duration": 0.5,
                     "loopType": "Reverse",
                     "enabled": true
+                },
+                "idle_down": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
+                    "loopType": "Loop",
+                    "frames": [
+                        {
+                            "frameIndex": 1,
+                            "duration": 0.2,
+                            "FlipHorizontally": true
+                        }
+                    ]
+                },
+                "idle_left": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
+                    "loopType": "Loop",
+                    "frames": [
+                        {
+                            "frameIndex": 4,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "idle_right": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
+                    "loopType": "Loop",
+                    "frames": [
+                        {
+                            "frameIndex": 7,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "idle_up": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
+                    "loopType": "Loop",
+                    "frames": [
+                        {
+                            "frameIndex": 10,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_down": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
+                    "loopType": "Reverse",
+                    "frames": [
+                        {
+                            "frameIndex": 0,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 1,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 2,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_left": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
+                    "loopType": "Reverse",
+                    "frames": [
+                        {
+                            "frameIndex": 3,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 4,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 5,
+                            "duration": 0.2
+                        }
+                    ],
+                    "enabled": true
+                },
+                "walk_right": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
+                    "loopType": "Reverse",
+                    "frames": [
+                        {
+                            "frameIndex": 6,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 7,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 8,
+                            "duration": 0.2
+                        }
+                    ]
+                },
+                "walk_up": {
+                    "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
+                    "loopType": "Reverse",
+                    "frames": [
+                        {
+                            "frameIndex": 9,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 10,
+                            "duration": 0.2
+                        },
+                        {
+                            "frameIndex": 11,
+                            "duration": 0.2
+                        }
+                    ]
                 }
             }
         }

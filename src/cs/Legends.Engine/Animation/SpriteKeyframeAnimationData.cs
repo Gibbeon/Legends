@@ -4,8 +4,10 @@ namespace Legends.Engine.Animation;
 
 public struct SpriteKeyframe : IKeyframe
 {
-    public int      Frame       { get; set; }
-    public float    Duration    { get; set; }
+    public int      FrameIndex          { get; set; }
+    public float    Duration            { get; set; }
+    public bool     FlipHorizontally    { get; set; }
+    public bool     FlipVertically      { get; set; }
 }
 
 public class SpriteKeyframeAnimationData : KeyframeAnimationData<SpriteKeyframe>
@@ -16,6 +18,6 @@ public class SpriteKeyframeAnimationData : KeyframeAnimationData<SpriteKeyframe>
             .Controller
             .Parent
             .GetComponent<Sprite>()
-            .FrameIndex = current.Frame;
+            .FrameIndex = current.FrameIndex;
     }
 }

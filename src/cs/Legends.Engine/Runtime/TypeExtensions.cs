@@ -358,6 +358,8 @@ public static class TypeExtensions
 
     public static object CreateOrDefault(this Type type, params object[] parameters)
     {
+        if(type.GetConstructors().Length == 0 && parameters.Length == 0) return Activator.CreateInstance(type);
+
         if(type.GetConstructors()
             .MatchConstructorSignature(parameters.Select(n => n == null ? typeof(void) : n.GetType()).ToArray())
             .SingleOrDefault() is ConstructorInfo ctor)
