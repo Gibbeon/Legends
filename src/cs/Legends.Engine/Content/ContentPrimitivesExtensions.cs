@@ -114,7 +114,6 @@ public static class ContentPrimitivesExtensions
 
     public static void Write(this ContentWriter output, IAsset result)
     {        
-        //ContentLogger.TraceEnabled = true;
         ContentLogger.Trace(output.Seek(0, SeekOrigin.Current), 
             "Write(this ContentWriter output, IAsset result[{0}])", result);
 

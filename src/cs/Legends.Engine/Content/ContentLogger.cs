@@ -34,7 +34,7 @@ public static class ContentLogger
     public static void Trace(long filePos, string message, params object[] args)
     {
         bool orig = _needsEol;
-        if(_needsEol) Console.WriteLine();
+        if(TraceEnabled && _needsEol) Console.WriteLine();
         if(TraceEnabled) Console.Write("{0:D8} ", filePos);
         if(TraceEnabled) Console.WriteLine(message, args);
         _needsEol = orig;

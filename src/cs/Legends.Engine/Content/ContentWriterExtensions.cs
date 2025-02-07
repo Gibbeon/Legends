@@ -103,7 +103,6 @@ public static class ContentWriterExtensions
                 {
                     using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), "[{0}] of element={1} ", logCounter++, element))
                     {
-                        ContentLogger.TraceEnabled = true;
                         if(element == null) throw new NullReferenceException();
                         writer.WriteField(element, element.GetType()); 
                     } 
