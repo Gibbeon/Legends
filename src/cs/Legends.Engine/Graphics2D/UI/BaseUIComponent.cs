@@ -1,10 +1,9 @@
 using System;
 using System.ComponentModel.Design;
-using System.Text.Json.Serialization;
 using Legends.Engine.Graphics2D.Components;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using MonoGame.Extended;
+using Newtonsoft.Json;
 
 namespace Legends.Engine.UI;
 
@@ -19,33 +18,31 @@ public enum Anchor
     Center = 16,
 }
 
-public static class RectangleFExtensions2
+public abstract class BaseUIComponent : Component, IRectangularF, ISizable, IMovable, IBounds
 {
-    public static RectangleF Transform(this RectangleF rect, Vector2 offset)
-    {
-        rect.Offset(offset);
-        return rect;
-    }
-}
+    [JsonIgnore] public Vector2     Position { get => Parent.Position; set => Parent.Position = value; }
+    [JsonIgnore] public RectangleF  BoundingRectangle => new(Position - Vector2.Zero * Parent.Scale, Size * Parent.Scale);
+    public Vector2                  Margin              { get; set; }
+    public Vector2                  Padding             { get; set; }
+    public VerticalAlignment        VerticalAlignment   { get; set;}
+    public HorizontalAlignment      HorizontalAlignment { get; set;}
+    public SizeF                    Size                { get; set; }
 
-public class UIComponent2D : SceneObject
-{
-    public Vector2 Margin { get; set; }
-    public Vector2 Padding { get; set; }
-    public VerticalAlignment VerticalAlignment { get; set;}
-    public HorizontalAlignment HorizontalAlignment { get; set;}
-    [JsonIgnore] SizeF Size => new SizeF(0, 0); //Parent.Bounds.GetBoundingRectangle().Size;
-
-    public UIComponent2D(IServiceContainer services, SceneObject sceneObject) 
+    public BaseUIComponent(IServiceContainer services, SceneObject sceneObject) 
         : base(services, sceneObject)
     {
 
     }
 
+    public virtual RectangleF Arrange(Rectangle bounds)
+    {
+        return new RectangleF(Padding.X + GetHorizontalOffset(bounds), Padding.Y + GetVerticalOffset(bounds), Size.Width, Size.Height);
+    }
+
     public override void Update(GameTime gameTime)
     {
+        Arrange((Parent.Bounds as IRectangular).BoundingRectangle);
         base.Update(gameTime);
-
     }
 
     public float GetVerticalOffset(RectangleF bounds)
@@ -78,5 +75,10 @@ public class UIComponent2D : SceneObject
     public override void Initialize()
     {
 
+    }
+
+    public bool Contains(Vector2 point)
+    {
+        throw new NotImplementedException();
     }
 }

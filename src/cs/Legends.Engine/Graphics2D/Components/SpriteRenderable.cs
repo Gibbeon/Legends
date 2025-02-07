@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Autofac;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using Newtonsoft.Json;
@@ -6,35 +7,75 @@ using System;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public class Sprite: Component, ISpriteRenderable
+public class Sprite : Asset
 {
-    [JsonIgnore] public int             RenderLayerID => 1;
-    [JsonIgnore] public Vector2         Position => Parent.Position;
-    [JsonIgnore] public bool            Visible => Parent.Visible;
-    [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
     public Texture2DRegion              TextureRegion { get; set; }
-    public RectangleF                   Bounds { get; set; }
     public int                          FrameIndex { get; set;}
     public bool                         FlipHorizontally { get; set; }
     public bool                         FlipVertically { get; set;}
     private Color                       _color = Color.White;
     public Color                        Color { get => _color; set => _color = value; }
     public RenderState                  RenderState { get; set; }
+    public SizeF                        Size { get; set; }
+    public Vector2                      Origin { get; set; }
 
-    public Sprite()
+    public Sprite(IServiceProvider services, string assetName): base(services, assetName)
     {
-        
+
     }
 
-    public Sprite(IServiceProvider services, SceneObject parent, string assetName = null) : base(services, parent, assetName)
+    public void DrawTo(RenderSurface target, Rectangle drawAt, float rotation = 0.0f)
+    {
+        target.SpriteBatch.Draw(
+            TextureRegion.Texture,
+            drawAt,
+            TextureRegion[FrameIndex],
+            Color,
+            rotation,
+            Vector2.Zero,
+            (FlipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None) | 
+            (FlipVertically   ? SpriteEffects.FlipVertically   : SpriteEffects.None),
+            0
+        );
+    }
+
+    public override void Initialize()
+    {
+    }
+
+    public override void Reset()
+    {
+    }
+
+    public override void Dispose()
+    {
+    }
+}
+public class SpriteRenderable: Sprite, IComponent, ISpriteRenderable, IRectangularF, ISizable, IBounds
+{
+    [JsonIgnore] public int             RenderLayerID => 1;
+    [JsonIgnore] public Vector2         Position { get => Parent.Position; set => Parent.Position = value; }
+    [JsonIgnore] public bool            Visible => Parent.Visible;
+    [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
+    [JsonIgnore] public RectangleF      BoundingRectangle => new(Position - Origin * Parent.Scale, Size * Parent.Scale);
+    [JsonIgnore] public SceneObject     Parent { get; private set; }
+
+    public SpriteRenderable(): base(null, null) // don't do this, should use the better constructor model
     {
 
+    }
+
+    public SpriteRenderable(IServiceProvider services, SceneObject parent, string assetName = null) : base(services, assetName)
+    {
+        Parent = parent;
     }
 
     public override void Initialize()
     {        
-        if(Bounds.Size.IsEmpty) 
-            Bounds = new RectangleF(Bounds.Position, new SizeF(TextureRegion.TileSize.Width, TextureRegion.TileSize.Height));
+        if(Size.IsEmpty) 
+        {
+            Size = new SizeF(TextureRegion.TileSize.Width, TextureRegion.TileSize.Height);
+        }
 
         Reset();        
     }
@@ -44,32 +85,30 @@ public class Sprite: Component, ISpriteRenderable
         TextureRegion.Texture.Reset();
     }
 
-    public override void Draw(GameTime gameTime)
+    public void Draw(GameTime gameTime)
     { 
         Services.Get<IRenderService>().DrawItem(this);
     }
 
     public void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        var spriteBounds = (Microsoft.Xna.Framework.Rectangle)Parent.LocalToWorld(Bounds);
-
-        target.SpriteBatch.Draw(
-            TextureRegion.Texture,
-            spriteBounds,
-            TextureRegion[FrameIndex],
-            Color,
-            Parent.Rotation,
-            Vector2.Zero,
-            (FlipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None) | 
-            (FlipVertically   ? SpriteEffects.FlipVertically   : SpriteEffects.None),
-            0
-        );
+        DrawTo(target, (Rectangle)BoundingRectangle, Parent.Rotation);
     }
   
     
     public override void Dispose()
     {
 
+    }
+
+    public bool Contains(Vector2 point)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Update(GameTime gameTime)
+    {
+        
     }
 }
 

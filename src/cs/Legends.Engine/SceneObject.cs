@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using MonoGame.Extended;
 
 namespace Legends.Engine;
 
@@ -84,6 +85,8 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
         foreach(var child in Children) {
             child.Initialize();
         }
+
+        Bounds ??= Components.FirstOrDefault(n => n.GetType().IsAssignableTo(typeof(IBounds))) as IBounds;
 
         UpdateMatricies();
     }

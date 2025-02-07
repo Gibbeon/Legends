@@ -3,15 +3,13 @@
     "position": "12, 18",
     "components": [
         {
-            "$type": "Legends.Engine.Graphics2D.Components.Sprite",
+            "$type": "Legends.Engine.Graphics2D.Components.SpriteRenderable",
             "textureRegion": {
                 "texture": "Sprites/npc1",
                 "bounds": "0, 144, 72, 144",
                 "tilesize": "24, 36"
             },
-            "bounds": {
-                "origin": "12, 18"
-            },
+            "origin": "12, 18",
             "renderState": {
                 "samplerState": 
                 {

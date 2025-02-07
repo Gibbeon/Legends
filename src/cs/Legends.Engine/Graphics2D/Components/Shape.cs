@@ -24,7 +24,7 @@ public abstract class Shape : Component, ISpriteRenderable
     public bool Visible   => Parent.Visible;
 
     [JsonIgnore]
-    public Vector2 Position => Parent.Position;
+    public Vector2 Position { get => Parent.Position; set => Parent.Position = value; }
     
     [JsonIgnore]
     public IViewState ViewState => Parent.Scene.Camera;
@@ -78,9 +78,9 @@ public class Point : Shape
     }
 }
 
-public class Rectangle : Shape
+public class RectangleShape : Shape
 {
-    public Rectangle(IServiceProvider services, SceneObject parent) : base(services, parent) { }
+    public RectangleShape(IServiceProvider services, SceneObject parent) : base(services, parent) { }
 
     public override void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
@@ -88,17 +88,17 @@ public class Rectangle : Shape
         spriteBatch.DrawRectangle(BoundingRectangle, this.Color, Thickness);
     }
 
-    public static explicit operator Rectangle(RectangleF v)
+    public static explicit operator RectangleShape(RectangleF v)
     {
         throw new NotImplementedException();
     }
 }
 
-public class Polygon : Shape
+public class PolygonShape : Shape
 {
     public Vector2[] Vertices { get; set; }
     
-    public Polygon(IServiceProvider services, SceneObject parent) : base(services, parent) { }
+    public PolygonShape(IServiceProvider services, SceneObject parent) : base(services, parent) { }
 
     public override void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
@@ -107,12 +107,12 @@ public class Polygon : Shape
     }
 }
 
-public class Circle : Shape
+public class CircleShape : Shape
 {
     public float Radius { get; set; } = 1.0f;
     public int Sides { get; set; }  = 1;
     
-    public Circle(IServiceProvider services, SceneObject parent) : base(services, parent) { }
+    public CircleShape(IServiceProvider services, SceneObject parent) : base(services, parent) { }
 
     public override void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
@@ -121,12 +121,12 @@ public class Circle : Shape
     }
 }
 
-public class Line : Shape
+public class LineShape : Shape
 {
     public float Length { get; set; } = 1.0f;
     public float Angle { get; set; }
     
-    public Line(IServiceProvider services, SceneObject parent) : base(services, parent) { }
+    public LineShape(IServiceProvider services, SceneObject parent) : base(services, parent) { }
     public override void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
         var spriteBatch = target.SpriteBatch;
