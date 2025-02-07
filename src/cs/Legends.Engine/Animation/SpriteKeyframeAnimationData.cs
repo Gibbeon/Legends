@@ -14,10 +14,13 @@ public class SpriteKeyframeAnimationData : KeyframeAnimationData<SpriteKeyframe>
 {
     protected override void UpdateFrame(AnimationChannel channel, SpriteKeyframe current)
     {
-        channel
+        var sprite = channel
             .Controller
             .Parent
-            .GetComponent<Sprite>()
-            .FrameIndex = current.FrameIndex;
+            .GetComponent<Sprite>();
+
+        sprite.FrameIndex       = current.FrameIndex;
+        sprite.FlipHorizontally = current.FlipHorizontally;
+        sprite.FlipVertically   = current.FlipVertically;
     }
 }

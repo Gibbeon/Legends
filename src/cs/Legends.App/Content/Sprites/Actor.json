@@ -26,8 +26,7 @@
                     "$type": "Legends.Engine.Animation.SpriteColorAnimationData",
                     "to": "255, 0, 0, 0",
                     "duration": 0.5,
-                    "loopType": "Reverse",
-                    "enabled": true
+                    "loopType": "Reverse"
                 },
                 "idle_down": {
                     "$type": "Legends.Engine.Animation.SpriteKeyframeAnimationData",
