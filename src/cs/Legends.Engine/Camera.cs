@@ -17,12 +17,12 @@ public class Camera : SceneObject, IViewState
     protected Matrix _modelView;
     protected Matrix _invModelView; 
     protected Vector2 _lookAtRelative = new Vector2(.5f, .5f);
-    protected Viewport _viewport;
-
+    
+    public ViewportAdapter  ViewportAdapter         { get; set; }
     public BoundedValue<float> ZoomBounds { get => _zoomBounds; set => _zoomBounds = value; }
-    public Viewport Viewport { get => _viewport; set { _viewport = value; IsDirty = true; } }
     public Vector2 LookAtRelative  { get => _lookAtRelative; set { _lookAtRelative = value; IsDirty = true; } }
 
+    [JsonIgnore] public Viewport Viewport => ViewportAdapter.Viewport;
     [JsonIgnore] public Matrix View =>       _view;
     [JsonIgnore] public Matrix Projection => _projection;
     [JsonIgnore] public Matrix World =>      LocalMatrix;
@@ -38,13 +38,10 @@ public class Camera : SceneObject, IViewState
     }
 
     public override void Initialize()
-    {
-        base.Initialize();
+    {        
+        ViewportAdapter     ??= new DefaultViewportAdapter(Services.GetGraphicsDevice());
 
-        if(Viewport.Bounds == Rectangle.Empty)
-        {
-            Viewport = Services.GetGraphicsDevice().Viewport; 
-        }
+        base.Initialize();
     }
 
     protected override void UpdateMatricies()

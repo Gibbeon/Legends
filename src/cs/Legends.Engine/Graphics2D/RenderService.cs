@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using MonoGame.Extended.ViewportAdapters;
 using MonoGame.Extended;
 using System.Text.Json.Serialization;
 using SharpFont.PostScript;
@@ -80,7 +79,6 @@ public class RenderSurface
     [JsonIgnore] public SpriteBatch SpriteBatch     { get; protected set; }
 
     public ClearState       ClearState              { get; set; }
-    public ViewportAdapter  ViewportAdapter         { get; set; }
     public RenderState      RenderState             { get; set; }
     public RenderTarget2D   RenderTarget            { get; set; }
     public Effect           DefaultEffect           { get; set; }       
@@ -95,7 +93,6 @@ public class RenderSurface
     {
         Drawables             = new List<IRenderable>();
         RenderState         ??= new ();
-        ViewportAdapter     ??= new DefaultViewportAdapter(GraphicsDevice);
         SpriteBatch         ??= new SpriteBatch(GraphicsDevice);
         ClearState          ??= new();
         RenderState.Effect  ??= DefaultEffect ??= new BasicEffect(GraphicsDevice)
@@ -108,7 +105,6 @@ public class RenderSurface
     public void Begin()
     {
         GraphicsDevice.SetRenderTarget(RenderTarget);
-        GraphicsDevice.Viewport = ViewportAdapter.Viewport;
         GraphicsDevice.Clear(ClearState.Options, ClearState.Color, ClearState.Depth, ClearState.StencilDepth);
     }
 
@@ -123,7 +119,8 @@ public class RenderSurface
             .OrderBy(n => DrawableComparer))
         {
             
-            var currentEffect = drawable.RenderState?.Effect ?? DefaultEffect;
+            var currentEffect       = drawable.RenderState?.Effect ?? DefaultEffect;
+            GraphicsDevice.Viewport = drawable.ViewState.Viewport;
 
             if (currentEffect is IEffectMatrices mtxEffect)
             {

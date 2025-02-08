@@ -1,6 +1,11 @@
 {
     "$type": "Legends.Engine.SceneObject", 
-    "position": "12, 18",
+    "behaviors": [
+        {
+            "$source": "Sprites/ActorControlBehavior.cs",
+            "moveSpeed": 100
+        }
+    ],
     "components": [
         {
             "$type": "Legends.Engine.Graphics2D.Components.SpriteRenderable",

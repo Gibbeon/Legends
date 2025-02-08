@@ -10,14 +10,17 @@ public enum HorizontalAlignment
 {
     Left,
     Center,
-    Right
+    Right,
+    Justified, 
+    Fixed
 }
 
 public enum VerticalAlignment
 {
     Top,
     Middle,
-    Bottom
+    Bottom,
+    Fixed
 }
 
 public class TextLabel : Component, ISpriteRenderable
