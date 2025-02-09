@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 
 namespace Legends.Engine;
@@ -28,10 +29,12 @@ public class Scene : SceneObject
     }
 
     public override void Initialize()
-    {
-        base.Initialize();
+    {        
         _camera ??= new Camera(Services, this);
         Camera.Initialize();
+        Bounds = Camera.Bounds;        
+        
+        base.Initialize();
     }
 
     public virtual void SetCamera(Camera camera)

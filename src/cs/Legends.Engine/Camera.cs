@@ -9,6 +9,21 @@ using MonoGame.Extended.ViewportAdapters;
 
 namespace Legends.Engine;
 
+public class BoundsFunction : IBounds
+{
+    public Func<RectangleF> GetBounds { get; set; }
+    public RectangleF BoundingRectangle => GetBounds();
+
+    public BoundsFunction(Func<RectangleF> getBounds){
+        GetBounds = getBounds;
+    }
+
+    public bool Contains(Vector2 point)
+    {
+        throw new NotImplementedException();
+    }
+}
+
 public class Camera : SceneObject, IViewState
 {    
     protected BoundedValue<float> _zoomBounds;
@@ -40,6 +55,7 @@ public class Camera : SceneObject, IViewState
     public override void Initialize()
     {        
         ViewportAdapter     ??= new DefaultViewportAdapter(Services.GetGraphicsDevice());
+        Bounds              ??= new BoundsFunction(() => Viewport.Bounds);
 
         base.Initialize();
     }
