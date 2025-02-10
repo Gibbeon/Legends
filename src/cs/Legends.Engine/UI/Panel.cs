@@ -5,10 +5,8 @@ using MonoGame.Extended;
 
 namespace Legends.Engine.UI;
 
-public class Panel : SceneObject, IMovable
+public class Panel : UISceneObject
 {
-    public Vector2                  Margin              { get; set; }
-    public Vector2                  Padding             { get; set; }
     public VerticalAlignment        VerticalAlignment   { get; set;}
     public HorizontalAlignment      HorizontalAlignment { get; set;}
 
@@ -18,6 +16,23 @@ public class Panel : SceneObject, IMovable
     }
 
     public Panel(IServiceProvider services, SceneObject sceneObject) 
+        : base(services, sceneObject)
+    {
+
+    }
+}
+
+public class UISceneObject : SceneObject, IMovable
+{
+    public Vector2                  Margin              { get; set; }
+    public Vector2                  Padding             { get; set; }
+
+    public UISceneObject(): this (null, null)
+    {
+
+    }
+
+    public UISceneObject(IServiceProvider services, SceneObject sceneObject) 
         : base(services, sceneObject)
     {
 

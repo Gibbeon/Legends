@@ -19,21 +19,36 @@ public enum ButtonState
     Max
 }
 
-public class Button : Component, IRenderable
+public class Button: UISceneObject
 {
-    [JsonIgnore] public int         RenderLayerID => 1;
-    [JsonIgnore] public bool        Visible => Parent.Visible;
-    [JsonIgnore] public RenderState RenderState => Current.RenderState;
-    [JsonIgnore] public IViewState  ViewState => Parent.Scene.Camera;
-    [JsonIgnore] public Drawable    Current => States[ButtonState]; 
-    public ButtonState              ButtonState             { get; set; }
-    public Dictionary<ButtonState, Drawable>    States      { get; set; }
+    public Button(): this (null, null)
+    {
 
-    public Button() : this(null, null)
+    }
+
+    public Button(IServiceProvider services, SceneObject sceneObject) 
+        : base(services, sceneObject)
     {
         
     }
-    public Button(IServiceProvider services, SceneObject sceneObject) 
+}
+
+public class MultiStateComponent<TState> : Component, IRenderable
+    where TState: struct, Enum
+{
+    [JsonIgnore] public int         RenderLayerID => 1;
+    [JsonIgnore] public bool        Visible => Parent.Visible;
+    [JsonIgnore] public RenderState RenderState => CurrentDrawable.RenderState;
+    [JsonIgnore] public IViewState  ViewState => Parent.Scene.Camera;
+    [JsonIgnore] public Drawable    CurrentDrawable => States[CurrentState]; 
+    public TState                   CurrentState              { get; set; }
+    public Dictionary<TState, Drawable>    States      { get; set; }
+
+    public MultiStateComponent() : this(null, null)
+    {
+        
+    }
+    public MultiStateComponent(IServiceProvider services, SceneObject sceneObject) 
         : base(services, sceneObject)
     {
         States = new ();
@@ -41,16 +56,17 @@ public class Button : Component, IRenderable
 
     public RectangleF GetBoundingRectangle()
     {
-        return States[ButtonState].BoundingRectangle;
+        return CurrentDrawable.BoundingRectangle;
     }
 
     public override void Initialize()
     {
-        for(var i = 0; i < (int)ButtonState.Max - 1; i++)
+        for(var i = 0; i < (int)Enum.GetValues<TState>().Length - 1; i++)
         {
-            if(!States.ContainsKey((ButtonState)i))
+            var state = Enum.GetValues<TState>()[i];
+            if(!States.ContainsKey(state))
             {
-                States.Add((ButtonState)i, States[ButtonState.Default]);
+                States.Add(state, States[state]);
             }
         }
     }
@@ -67,7 +83,7 @@ public class Button : Component, IRenderable
 
     public void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        Current.DrawTo(target, Parent.Position, Parent.Rotation);
+        CurrentDrawable.DrawTo(target, Parent.Position, Parent.Rotation);
     }
 
     public override void Dispose()

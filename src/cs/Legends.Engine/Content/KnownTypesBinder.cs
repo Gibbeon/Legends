@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 
 using Newtonsoft.Json.Serialization;
+using SharpFont.MultipleMasters;
 
 namespace Legends.Engine.Content;
 
@@ -41,10 +42,48 @@ public class KnownTypesBinder : ISerializationBinder
 
     public Type BindToType(string assemblyName, string typeName)
     {
-        Console.WriteLine("BindToType: {0}, {1}", assemblyName, typeName);
         if(AssemblyNames.Contains(assemblyName) || string.IsNullOrEmpty(assemblyName))
         {
-            return KnownTypes.SingleOrDefault(t => t.FullName == typeName) ?? _defaultBinder.BindToType(assemblyName, typeName);
+            var stack = new Stack<string>();
+
+            var processTypeName = typeName;
+            //handle generic types
+            while(processTypeName.Contains("<"))
+            {
+                int start = processTypeName.IndexOf('<');
+                int end   = processTypeName.LastIndexOf('>');
+
+                var genericTypeName = processTypeName.Substring(0, start);
+                processTypeName  = processTypeName.Substring(start + 1, end - start - 1);
+
+                // only handles 1 type param for now
+                stack.Push(genericTypeName);
+            }
+
+            stack.Push(processTypeName);
+
+            var lastType = default(Type);
+
+            while(stack.Count > 0) {
+                var newTypeName = stack.Pop();
+
+                // hack to get generic param
+                var type = KnownTypes.SingleOrDefault(t => t.FullName.Split('`')[0] == newTypeName) ?? 
+                            _defaultBinder.BindToType(assemblyName, newTypeName);
+            
+                if(type == null) throw new KeyNotFoundException(string.Format("{0}", newTypeName));
+
+                if(lastType != null && type.IsGenericTypeDefinition)
+                {
+                    lastType = type.MakeGenericType(lastType);
+                }
+                else
+                {
+                    lastType = type;
+                }
+            }
+
+            return lastType;
         }
 
         return _defaultBinder.BindToType(assemblyName, typeName);

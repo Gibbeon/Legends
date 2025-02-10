@@ -1,16 +1,21 @@
 {
     "$type": "Legends.Engine.UI.Panel", 
-    "components": [
+    "children": [
         {
             "$type": "Legends.Engine.UI.Button",
-            "states": {
-                "0": {
-                    "$type": "Legends.Engine.Graphics2D.Primitives.RectangleDrawable",
-                    "size": "128, 64",
-                    "origin": "64, 32",
-                    "thickness": 3
+            "components": [
+                {
+                    "$type": "Legends.Engine.UI.MultiStateComponent<Legends.Engine.UI.ButtonState>",
+                    "states": {
+                        "0": {
+                            "$type": "Legends.Engine.Graphics2D.Primitives.RectangleDrawable",
+                            "size": "128, 64",
+                            "origin": "64, 32",
+                            "thickness": 3
+                        }
+                    }
                 }
-            }
+            ]
         }
     ]
 }
