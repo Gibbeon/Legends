@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.Design;
 using System.Linq;
 using Legends.Engine.Graphics2D.Components;
 using Microsoft.Xna.Framework;
@@ -19,7 +18,12 @@ public enum Anchor
 
 public class Dock : BaseUIComponent
 {
-    public Dock(IServiceContainer services, SceneObject sceneObject) 
+    public Dock(): base(null, null)
+    {
+
+    }
+
+    public Dock(IServiceProvider services, SceneObject sceneObject) 
         : base(services, sceneObject)
     {
 

@@ -90,7 +90,7 @@ public static class ContentWriterExtensions
                 var enumerator = dictionary.GetEnumerator();
                 while(enumerator.MoveNext())
                 {
-                    writer.WriteField(enumerator.Key, dictionaryType.GenericTypeArguments[0]);
+                    writer.WriteField(enumerator.Key, dictionaryType.GenericTypeArguments[0], null, false);
                     writer.WriteField(enumerator.Value, dictionaryType.GenericTypeArguments[1]);            
                 }
             }
@@ -111,7 +111,7 @@ public static class ContentWriterExtensions
         }
     }
 
-    public static void WriteField(this ContentWriter writer, object instance, Type type, DefaultValueAttribute defaultValueAttribute = null)
+    public static void WriteField(this ContentWriter writer, object instance, Type type, DefaultValueAttribute defaultValueAttribute = null, bool allowNullable = true)
     {
         // for nullable<T> types, when there's an underlying value GetType() does not return Nullable<T> but instead typeof(T)
         // when it is null, it returns Nullable<T>
@@ -136,7 +136,7 @@ public static class ContentWriterExtensions
         ContentLogger.Trace(writer.Seek(0, SeekOrigin.Current), 
             "if(!(derivedType.IsGenericType && derivedType.GetGenericTypeDefinition() == typeof(Nullable<>)) && Equals(instance, defaultValue))");
         // if it the underlying type is nullable don't test for equality, always write the value        
-        if(!(derivedType.IsGenericType && derivedType.GetGenericTypeDefinition() == typeof(Nullable<>)) && Equals(instance, defaultValue))
+        if(!(derivedType.IsGenericType && derivedType.GetGenericTypeDefinition() == typeof(Nullable<>)) && allowNullable && Equals(instance, defaultValue))
         {
             ContentLogger.LogEnd("value was default {0} of type {1}", defaultValue ?? "null", derivedType.Name);
             writer.Write7BitEncodedInt(0);

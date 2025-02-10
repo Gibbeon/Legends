@@ -1,7 +1,10 @@
-using System.ComponentModel.Design;
+using System;
+using System.Collections.Generic;
 using Legends.Engine.Graphics2D;
 using Legends.Engine.Graphics2D.Components;
+using Legends.Engine.Graphics2D.Primitives;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 using Newtonsoft.Json;
 
 
@@ -17,25 +20,37 @@ public enum ButtonState
 
 public class Button : BaseUIComponent, IRenderable
 {
-    [JsonIgnore] public int             RenderLayerID => 1;
-    [JsonIgnore] public bool            Visible => Parent.Visible;
-    [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
-    [JsonIgnore] public RenderState     RenderState     => Backgrounds[(int)ButtonState].RenderState;
+    [JsonIgnore] public int             RenderLayerID       => 1;
+    [JsonIgnore] public bool            Visible             => Parent.Visible;
+    [JsonIgnore] public IViewState      ViewState           => Parent.Scene.Camera;
+    [JsonIgnore] public RenderState     RenderState         => States[ButtonState].RenderState;
 
-    public ButtonState  ButtonState     { get; set; }
-    public Sprite[]     Backgrounds     { get; set; }
+    public ButtonState                          ButtonState     { get; set; }
+    public Dictionary<ButtonState, Drawable>    States     { get; set; }
 
-    public Button(IServiceContainer services, SceneObject sceneObject) 
+    public Button() : this(null, null)
+    {
+        
+    }
+    public Button(IServiceProvider services, SceneObject sceneObject) 
         : base(services, sceneObject)
     {
-        Backgrounds = new Sprite[(int)ButtonState.Max];
+        States = new ();
+    }
+
+    public override RectangleF GetBoundingRectangle()
+    {
+        return States[ButtonState].BoundingRectangle;
     }
 
     public override void Initialize()
     {
-        for(var i = 0; i < (int)ButtonState.Max; i++)
+        for(var i = 0; i < (int)ButtonState.Max - 1; i++)
         {
-            Backgrounds[i] ??= Backgrounds[(int)ButtonState.Default];
+            if(!States.ContainsKey((ButtonState)i))
+            {
+                States.Add((ButtonState)i, States[ButtonState.Default]);
+            }
         }
     }
 
@@ -51,6 +66,6 @@ public class Button : BaseUIComponent, IRenderable
 
     public void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        Backgrounds[(int)ButtonState].DrawTo(target, (Rectangle)BoundingRectangle, Parent.Rotation);
+        States[ButtonState].DrawTo(target, BoundingRectangle.TopLeft, Parent.Rotation);
     }
 }

@@ -17,7 +17,7 @@ public class SpriteKeyframeAnimationData : KeyframeAnimationData<SpriteKeyframe>
         var sprite = channel
             .Controller
             .Parent
-            .GetComponent<Sprite>();
+            .GetComponent<SpriteRenderable>();
 
         sprite.FrameIndex       = current.FrameIndex;
         sprite.FlipHorizontally = current.FlipHorizontally;

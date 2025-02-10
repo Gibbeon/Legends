@@ -8,7 +8,8 @@ using System;
 
 namespace Legends.Engine.Graphics2D.Components;
 
-public class SpriteRenderable: Sprite, IComponent, ISpriteRenderable, IRectangularF, ISizable, IBounds
+public class PrimitiveRenderable<TType>: Asset, IComponent, ISpriteRenderable, IRectangularF, ISizable, IBounds
+    where TType: Drawable
 {
     [JsonIgnore] public int             RenderLayerID => 1;
     [JsonIgnore] public Vector2         Position { get => Parent.Position; set => Parent.Position = value; }
@@ -16,30 +17,29 @@ public class SpriteRenderable: Sprite, IComponent, ISpriteRenderable, IRectangul
     [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
     [JsonIgnore] public RectangleF      BoundingRectangle => new(Position - Origin * Parent.Scale, Size * Parent.Scale);
     [JsonIgnore] public SceneObject     Parent { get; private set; }
-
-    public SpriteRenderable(): base(null, null) // don't do this, should use the better constructor model
+    [JsonIgnore] public RenderState     RenderState => Drawable.RenderState;
+    [JsonIgnore] public Color           Color { get => Drawable.Color; set => Drawable.Color = value; }
+    [JsonIgnore] public SizeF           Size  { get => Drawable.Size; set => Drawable.Size = value; }
+    [JsonIgnore] public Vector2         Origin => Drawable.Origin;    
+    public TType Drawable               { get; set; }
+    public PrimitiveRenderable(): base(null, null) // don't do this, should use the better constructor model
     {
 
     }
 
-    public SpriteRenderable(IServiceProvider services, SceneObject parent, string assetName = null) : base(services, assetName)
+    public PrimitiveRenderable(IServiceProvider services, SceneObject parent, string assetName = null) : base(services, assetName)
     {
         Parent = parent;
     }
 
     public override void Initialize()
-    {        
-        if(Size.IsEmpty) 
-        {
-            Size = new SizeF(TextureRegion.TileSize.Width, TextureRegion.TileSize.Height);
-        }
-
+    {     
         Reset();        
     }
 
     public override void Reset()
     {
-        TextureRegion.Texture.Reset();
+        
     }
 
     public void Draw(GameTime gameTime)
@@ -49,9 +49,9 @@ public class SpriteRenderable: Sprite, IComponent, ISpriteRenderable, IRectangul
 
     public void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        DrawTo(target, BoundingRectangle.TopLeft, Parent.Rotation);
+        Drawable.DrawTo(target, BoundingRectangle.TopLeft, Parent.Rotation);
     }
-    
+      
     public override void Dispose()
     {
 

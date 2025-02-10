@@ -42,3 +42,9 @@
 /build:Sprites\npc1.png
 
 
+#begin Sprites\UI.json
+/importer:ContentObjectImporter
+/processor:ContentObjectProcessor
+/build:Sprites\UI.json
+
+

@@ -26,7 +26,7 @@ public class ViewerScreen : Screen
         _scene = new Scene(_services);
         _scene.Initialize();
 
-        var so = _services.GetContentManager().Load<SceneObject>("Sprites/Actor") as SceneObject;
+        var so = _services.GetContentManager().Load<SceneObject>("Sprites/UI") as SceneObject;
         _scene.AttachChild(so);
 
         ScrollSpeed = 1;
