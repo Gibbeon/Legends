@@ -7,7 +7,7 @@
                 {
                     "$type": "Legends.Engine.UI.MultiStateComponent<Legends.Engine.UI.ButtonState>",
                     "states": {
-                        "0": {
+                        "Default": {
                             "$type": "Legends.Engine.Graphics2D.Primitives.RectangleDrawable",
                             "size": "128, 64",
                             "origin": "64, 32",
