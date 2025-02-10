@@ -1,11 +1,5 @@
 using System;
-using System.Collections;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using Legends.Engine.Runtime;
-using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using Newtonsoft.Json;
 
 namespace Legends.Engine.Content;
 

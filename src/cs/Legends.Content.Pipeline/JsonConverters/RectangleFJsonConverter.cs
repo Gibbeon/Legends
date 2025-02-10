@@ -5,8 +5,6 @@ using MonoGame.Extended;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
-using System.IO;
-using System.Xml.Schema;
 
 namespace Legends.Content.Pipline.JsonConverters;
 

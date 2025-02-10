@@ -1,12 +1,6 @@
 using Legends.Engine;
-using Legends.Engine.Graphics2D.Components;
-using Legends.Engine.Graphics2D.Noise;
 using System;
-using System.Text;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Legends.Engine.Input;
 
 namespace Legends.Scripts;
 

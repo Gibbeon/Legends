@@ -7,7 +7,6 @@ using Legends.Engine.Serialization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Legends.Engine.Runtime;
-using Legends.Engine.Resolvers;
 
 namespace Legends.Content.Pipline.JsonConverters;
 

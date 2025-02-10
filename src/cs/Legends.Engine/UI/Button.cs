@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections.Generic;
 using Legends.Engine.Graphics2D;
 using Legends.Engine.Graphics2D.Components;
@@ -18,13 +18,8 @@ public enum ButtonState
     Max
 }
 
-public class Button : BaseUIComponent, IRenderable
+public class Button : BaseUIComponent
 {
-    [JsonIgnore] public int             RenderLayerID       => 1;
-    [JsonIgnore] public bool            Visible             => Parent.Visible;
-    [JsonIgnore] public IViewState      ViewState           => Parent.Scene.Camera;
-    [JsonIgnore] public RenderState     RenderState         => States[ButtonState].RenderState;
-
     public ButtonState                          ButtonState     { get; set; }
     public Dictionary<ButtonState, Drawable>    States     { get; set; }
 
@@ -69,3 +64,4 @@ public class Button : BaseUIComponent, IRenderable
         States[ButtonState].DrawTo(target, BoundingRectangle.TopLeft, Parent.Rotation);
     }
 }
+*/

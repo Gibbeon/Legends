@@ -10,7 +10,7 @@ using MonoGame.Extended;
 namespace Legends.Engine;
 
 
-public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, IInitalizable
+public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, IInitalizable, IBounds
 {   
     private IList<string>      _tags;    
     private IList<IBehavior>   _behaviors;
@@ -21,15 +21,17 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
     private bool _visible = true;
     private string _name;
 
-    [DefaultValue("")] public string Name { get => _name; protected set => _name = value; }
-    [DefaultValue(true)] public bool Enabled { get => _enabled; set => _enabled = value; }
-    [DefaultValue(true)] public bool Visible { get => _visible; set => _visible = value; }
-    [JsonIgnore] public IServiceProvider Services { get; protected set; }
-    [JsonIgnore] public Scene Scene => _scene ??= GetParentScene();
-    [JsonIgnore] public ContentManager ContentManager => Services.GetContentManager();
+    [JsonIgnore] public IServiceProvider Services   { get; protected set; }
+    [JsonIgnore] public Scene           Scene =>            _scene ??= GetParentScene();
+    [JsonIgnore] public ContentManager  ContentManager      => Services.GetContentManager();
+    [JsonIgnore] public RectangleF      BoundingRectangle   => Bounds.BoundingRectangle;
 
-    public IBounds Bounds { get; set; }
+    [DefaultValue("")] public string Name           { get => _name; protected set => _name = value; }
+    [DefaultValue(true)] public bool Enabled        { get => _enabled; set => _enabled = value; }
+    [DefaultValue(true)] public bool Visible        { get => _visible; set => _visible = value; }
     
+    public IBounds Bounds { get; set; }
+
     public IList<SceneObject> Children
     {
         get => _children;
@@ -207,11 +209,16 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
         return  $"{Name} Pos:{Position} S:{Scale} Rot:{Rotation} E:{Enabled} Vis:{Visible}";
     }
 
+    public bool Contains(Vector2 point)
+    {
+        throw new NotImplementedException();
+    }
+
     //protected override void UpdateMatricies()
     //{
     //    //foreach(var child in Children) {
-        //    EnsureBounds(child);
-        //}
+    //    EnsureBounds(child);
+    //}
 
     //    base.UpdateMatricies();
     //}

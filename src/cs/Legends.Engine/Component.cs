@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using Microsoft.Xna.Framework.Content;
 
 namespace Legends.Engine;
 

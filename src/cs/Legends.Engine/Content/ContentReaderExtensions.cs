@@ -8,8 +8,6 @@ using System.Runtime.InteropServices;
 using Legends.Engine.Runtime;
 using Legends.Engine.Serialization;
 using Microsoft.Xna.Framework.Content;
-using Newtonsoft.Json;
-using SharpDX.D3DCompiler;
 
 namespace Legends.Engine.Content;
 

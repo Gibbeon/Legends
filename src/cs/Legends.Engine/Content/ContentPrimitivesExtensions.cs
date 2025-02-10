@@ -1,17 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using MonoGame.Extended;
 using Microsoft.Xna.Framework.Content;
-using Legends.Engine;
-using Legends.Engine.Content;
 using System;
-using System.Collections;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using SharpDX;
-using System.Reflection.Metadata;
-using Microsoft.Xna.Framework.Graphics;
 using Legends.Engine.Runtime;
-using Autofac;
 using System.IO;
 
 

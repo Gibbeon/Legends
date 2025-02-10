@@ -5,10 +5,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using SharpDX;
-using System.IO;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Autofac.Core.Activators.Reflection;
 
 namespace Legends.Engine.Runtime;

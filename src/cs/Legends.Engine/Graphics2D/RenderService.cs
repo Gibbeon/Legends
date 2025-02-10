@@ -3,9 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using MonoGame.Extended;
 using System.Text.Json.Serialization;
-using SharpFont.PostScript;
 
 namespace Legends.Engine.Graphics2D;
 

@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended;
 using MonoGame.Extended.Input.InputListeners;
 
 namespace Legends.Engine.Input;    

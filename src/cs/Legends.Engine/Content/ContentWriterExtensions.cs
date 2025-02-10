@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
 using Legends.Engine.Runtime;
 using Legends.Engine.Serialization;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 
 namespace Legends.Engine.Content;

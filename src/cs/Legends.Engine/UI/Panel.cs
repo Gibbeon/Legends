@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using Legends.Engine.Graphics2D.Components;
 using Microsoft.Xna.Framework;
 
 namespace Legends.Engine.UI;
@@ -16,14 +14,14 @@ public enum Anchor
     Center = 16,
 }
 
-public class Dock : BaseUIComponent
+public class Panel : BaseUIObject
 {
-    public Dock(): base(null, null)
+    public Panel(): base(null, null)
     {
 
     }
 
-    public Dock(IServiceProvider services, SceneObject sceneObject) 
+    public Panel(IServiceProvider services, SceneObject sceneObject) 
         : base(services, sceneObject)
     {
 
@@ -31,7 +29,7 @@ public class Dock : BaseUIComponent
 
     public override void Update(GameTime gameTime)
     {
-        var children = Parent.Children.Where(n=> n.GetComponent<BaseUIComponent>() != null && n.Visible);
+        /*var children = Parent.Children.Where(n=> n.GetComponent<BaseUIComponent>() != null && n.Visible);
    
         var width   = children.Sum(n => n.Bounds.BoundingRectangle.Width + n.GetComponent<BaseUIComponent>().Margin.X);
         var height  = children.Max(n => n.Bounds.BoundingRectangle.Height);
@@ -87,11 +85,6 @@ public class Dock : BaseUIComponent
                  case VerticalAlignment.Fixed:
                     break;
             }
-        }
-    }
-
-    public override void Reset()
-    {
-
+        }*/
     }
 }

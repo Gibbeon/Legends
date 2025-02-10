@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Legends.Engine.Serialization;
-using System;
 
 namespace Legends.Content.Pipline;
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
 
 namespace Legends.Engine;

@@ -1,9 +1,7 @@
 using System;
-using System.ComponentModel.Design;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using MonoGame.Extended.Screens;
 
 namespace Legends.Engine;
 

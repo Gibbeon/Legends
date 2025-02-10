@@ -1,10 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Legends.Engine;
 using System;
 using MonoGame.Extended;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Legends.Engine.Graphics2D.Components;

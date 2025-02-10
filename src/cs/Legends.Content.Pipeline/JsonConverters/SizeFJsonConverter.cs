@@ -2,7 +2,6 @@
 using System;
 using Newtonsoft.Json;
 using MonoGame.Extended;
-using MonoGame.Extended.Serialization;
 using System.Linq;
 
 namespace Legends.Content.Pipline.JsonConverters;

@@ -4,10 +4,7 @@ using Microsoft.Xna.Framework.Content.Pipeline;
 using Newtonsoft.Json;
 using Legends.Content.Pipline.JsonConverters;
 using Legends.Engine.Content;
-using MonoGame.Extended.Serialization;
-using Legends.Engine.Graphics2D;
 using Newtonsoft.Json.Converters;
-using MonoGame.Extended.Serialization.Json;
 using Legends.Engine;
 
 namespace Legends.Content.Pipline;

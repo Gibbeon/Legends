@@ -3,9 +3,7 @@ using MonoGame.Extended.Screens;
 using Legends.Engine.Input;
 using Legends.Engine;
 using System;
-using Legends.Engine.Content;
 using Microsoft.Xna.Framework.Input;
-using System.Xml.Linq;
 
 namespace Legends.Editor.Screens;
 

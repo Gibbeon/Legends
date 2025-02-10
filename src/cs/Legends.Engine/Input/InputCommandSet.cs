@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Input.InputListeners;
-using System.Reflection.Metadata;
 
 namespace Legends.Engine.Input;
 

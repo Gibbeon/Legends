@@ -1,14 +1,3 @@
-using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IO;
-using Legends.Engine;
-using Legends.Engine.Serialization;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Text;
-using MonoGame.Extended.Serialization;
-
 namespace Legends.Content.Pipline.JsonConverters;
 
 /*
