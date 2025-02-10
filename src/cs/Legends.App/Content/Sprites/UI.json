@@ -1,27 +1,16 @@
 {
-    "$type": "Legends.Engine.SceneObject", 
+    "$type": "Legends.Engine.UI.Panel", 
     "components": [
         {
-            "$type": "Legends.Engine.UI.Dock",
-            "horizontalAlignment": "Left"
-        }
-    ],
-    "children": [
-        {               
-            "$type": "Legends.Engine.SceneObject",
-            "components": [
-                {
-                    "$type": "Legends.Engine.UI.Button",
-                    "states": {
-                        "0": {
-                            "$type": "Legends.Engine.Graphics2D.Primitives.RectangleDrawable",
-                            "size": "128, 64",
-                            "origin": "64, 32",
-                            "thickness": 3
-                        }
-                    }
+            "$type": "Legends.Engine.UI.Button",
+            "states": {
+                "0": {
+                    "$type": "Legends.Engine.Graphics2D.Primitives.RectangleDrawable",
+                    "size": "128, 64",
+                    "origin": "64, 32",
+                    "thickness": 3
                 }
-            ]
+            }
         }
     ]
 }

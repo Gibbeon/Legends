@@ -1,5 +1,6 @@
-/*using System;
+using System;
 using System.Collections.Generic;
+using Autofac.Core.Lifetime;
 using Legends.Engine.Graphics2D;
 using Legends.Engine.Graphics2D.Components;
 using Legends.Engine.Graphics2D.Primitives;
@@ -18,10 +19,15 @@ public enum ButtonState
     Max
 }
 
-public class Button : BaseUIComponent
+public class Button : Component, IRenderable
 {
-    public ButtonState                          ButtonState     { get; set; }
-    public Dictionary<ButtonState, Drawable>    States     { get; set; }
+    [JsonIgnore] public int         RenderLayerID => 1;
+    [JsonIgnore] public bool        Visible => Parent.Visible;
+    [JsonIgnore] public RenderState RenderState => Current.RenderState;
+    [JsonIgnore] public IViewState  ViewState => Parent.Scene.Camera;
+    [JsonIgnore] public Drawable    Current => States[ButtonState]; 
+    public ButtonState              ButtonState             { get; set; }
+    public Dictionary<ButtonState, Drawable>    States      { get; set; }
 
     public Button() : this(null, null)
     {
@@ -33,7 +39,7 @@ public class Button : BaseUIComponent
         States = new ();
     }
 
-    public override RectangleF GetBoundingRectangle()
+    public RectangleF GetBoundingRectangle()
     {
         return States[ButtonState].BoundingRectangle;
     }
@@ -61,7 +67,11 @@ public class Button : BaseUIComponent
 
     public void DrawImmediate(GameTime gameTime, RenderSurface target)
     {
-        States[ButtonState].DrawTo(target, BoundingRectangle.TopLeft, Parent.Rotation);
+        Current.DrawTo(target, Parent.Position, Parent.Rotation);
+    }
+
+    public override void Dispose()
+    {
+        throw new NotImplementedException();
     }
 }
-*/
