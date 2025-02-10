@@ -50,7 +50,7 @@ public class ContentObjectImporter : ContentImporter<dynamic>
 
             context.Logger.LogMessage("Processed Json:\n{0}\n", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\"").Replace("\\n", "\n"));
 
-            return result2 as IAsset;
+            return AssetJsonConverter.UpdateName(result2 as IAsset, Path.GetFileNameWithoutExtension(filename));
 
         }
         catch(Exception error)

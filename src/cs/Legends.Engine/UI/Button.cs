@@ -21,12 +21,7 @@ public enum ButtonState
 
 public class Button: UISceneObject
 {
-    public Button(): this (null, null)
-    {
-
-    }
-
-    public Button(IServiceProvider services, SceneObject sceneObject) 
+    public Button(IServiceProvider services, SceneObject sceneObject = default) 
         : base(services, sceneObject)
     {
         
@@ -48,7 +43,7 @@ public class MultiStateComponent<TState> : Component, IRenderable
     {
         
     }
-    public MultiStateComponent(IServiceProvider services, SceneObject sceneObject) 
+    public MultiStateComponent(IServiceProvider services, SceneObject sceneObject = default) 
         : base(services, sceneObject)
     {
         States = new ();

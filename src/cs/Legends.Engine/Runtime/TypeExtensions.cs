@@ -346,12 +346,13 @@ public static class TypeExtensions
     }
 
     public static object Create(this Type type, params object[] parameters)
-    {
+    {        
         var result = CreateOrDefault(type, parameters);
         if(result == null) throw new NoConstructorsFoundException(type);
         return result;
-        //return Activator.CreateInstance(type);
     }
+
+    // ignore extra parameters
 
     public static object CreateOrDefault(this Type type, params object[] parameters)
     {

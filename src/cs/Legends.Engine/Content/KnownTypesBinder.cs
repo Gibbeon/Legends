@@ -30,7 +30,7 @@ public class KnownTypesBinder : ISerializationBinder
     {
         foreach(var assembly in assemblies)
         {                        
-            Console.WriteLine("KnownTypesBinder: {0}", assembly.GetName().Name);
+            //Console.WriteLine("KnownTypesBinder: {0}", assembly.GetName().Name);
             AssemblyNames.Add(assembly.GetName().Name);
 
             foreach(var type in assembly.GetTypes())

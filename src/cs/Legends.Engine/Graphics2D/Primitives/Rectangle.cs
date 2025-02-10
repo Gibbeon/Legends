@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace Legends.Engine.Graphics2D.Primitives;
 
-public class RectangleDrawable : Drawable
+public class Quad : Drawable
 {    
     [DefaultValue(1)]
     public int                          Thickness   { get; set;}
@@ -15,14 +15,7 @@ public class RectangleDrawable : Drawable
     
     [JsonIgnore] public override RectangleF  BoundingRectangle => new(Vector2.Zero - Origin, Size);
 
-    
-
-    public RectangleDrawable() : this(null, null)
-    {
-
-    }
-
-    public RectangleDrawable(IServiceProvider services, string assetName): base(services, assetName)
+    public Quad(IServiceProvider services): base(services)
     {
         Thickness = 1;
     }

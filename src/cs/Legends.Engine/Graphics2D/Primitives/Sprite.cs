@@ -15,7 +15,7 @@ public class Sprite : Drawable
     
     [JsonIgnore] public override RectangleF  BoundingRectangle => new(Vector2.Zero - Origin, Size);
 
-    public Sprite(IServiceProvider services, string assetName): base(services, assetName)
+    public Sprite(IServiceProvider services): base(services)
     {
 
     }

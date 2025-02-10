@@ -20,12 +20,8 @@ public class PrimitiveRenderable<TType>: Asset, IComponent, ISpriteRenderable, I
     [JsonIgnore] public SizeF           Size  { get => Drawable.Size; set => Drawable.Size = value; }
     [JsonIgnore] public Vector2         Origin => Drawable.Origin;    
     public TType Drawable               { get; set; }
-    public PrimitiveRenderable(): base(null, null) // don't do this, should use the better constructor model
-    {
 
-    }
-
-    public PrimitiveRenderable(IServiceProvider services, SceneObject parent, string assetName = null) : base(services, assetName)
+    public PrimitiveRenderable(IServiceProvider services, SceneObject parent) : base(services)
     {
         Parent = parent;
     }

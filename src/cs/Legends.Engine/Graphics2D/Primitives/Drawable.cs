@@ -14,7 +14,7 @@ public abstract class Drawable : Asset, IBounds
 
     public abstract RectangleF          BoundingRectangle { get; }
 
-    public Drawable(IServiceProvider services, string assetName): base(services, assetName)
+    public Drawable(IServiceProvider services): base(services)
     {
 
     }

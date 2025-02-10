@@ -53,20 +53,9 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
         protected set => _tags = value; 
     }
 
-    public SceneObject() : this(null, null)
-    {
-
-    }
-
-    protected SceneObject(string assetName)
-    {
-        Name = assetName;
-    }
-
-    public SceneObject(IServiceProvider systems, SceneObject parent = default, string assetName = default) : base(parent)
+    public SceneObject(IServiceProvider systems, SceneObject parent = default) : base(parent)
     {
         Services    = systems;
-        Name        = assetName;
         
         _children   = new List<SceneObject>();
         _behaviors  = new List<IBehavior>();

@@ -224,6 +224,7 @@ public static class ContentReaderExtensions
                 instance ??=  derivedType.CreateOrDefault(_parents.Count == 0  
                                 ? new[] { reader.ContentManager.ServiceProvider }
                                 : new[] { reader.ContentManager.ServiceProvider, _parents.Peek() })
+                            ?? derivedType.CreateOrDefault( new[] { reader.ContentManager.ServiceProvider } )
                             ?? derivedType.Create();
 
                 _parents.Push(instance);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Newtonsoft.Json;
 
 namespace Legends.Engine;
@@ -6,23 +7,19 @@ namespace Legends.Engine;
 
 public interface IAsset : IInitalizable
 {    
-    [JsonIgnore] IServiceProvider   Services { get; }
-    [JsonIgnore] string             Name { get; }    
+    [JsonIgnore] IServiceProvider   Services    { get; }
+    string                          Name        { get; }    
 }
 
 public abstract class Asset : IAsset
 {   
-    [JsonIgnore]
-    public IServiceProvider Services { get; protected set; }
+    [JsonIgnore] public IServiceProvider Services { get; protected set; }
     
-    [JsonIgnore]
     public string Name { get; protected set; }
 
-    public Asset() {}
-    public Asset(IServiceProvider services, string assetName)
+    public Asset(IServiceProvider services)
     {
         Services        = services;
-        Name            = assetName;
     }
 
     public abstract void Initialize();
@@ -34,7 +31,7 @@ public class AssetWrapper<TType> : Asset
     where TType : class
 {
     protected TType  Instance { get; set; }
-    public AssetWrapper(IServiceProvider services, string assetName): base(services, assetName) {}
+    public AssetWrapper(IServiceProvider services): base(services) {}
     
     public override void Initialize()
     {

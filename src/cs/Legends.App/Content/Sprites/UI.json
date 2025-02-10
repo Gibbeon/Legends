@@ -8,7 +8,7 @@
                     "$type": "Legends.Engine.UI.MultiStateComponent<Legends.Engine.UI.ButtonState>",
                     "states": {
                         "Default": {
-                            "$type": "Legends.Engine.Graphics2D.Primitives.RectangleDrawable",
+                            "$type": "Legends.Engine.Graphics2D.Primitives.Quad",
                             "size": "128, 64",
                             "origin": "64, 32",
                             "thickness": 3

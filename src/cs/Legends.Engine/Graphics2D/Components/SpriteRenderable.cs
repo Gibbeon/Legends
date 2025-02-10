@@ -12,15 +12,10 @@ public class SpriteRenderable: Sprite, IComponent, ISpriteRenderable, IRectangul
     [JsonIgnore] public Vector2         Position { get => Parent.Position; set => Parent.Position = value; }
     [JsonIgnore] public bool            Visible => Parent.Visible;
     [JsonIgnore] public IViewState      ViewState => Parent.Scene.Camera;
-    [JsonIgnore] public RectangleF      BoundingRectangle => new(Position - Origin * Parent.Scale, Size * Parent.Scale);
+    //[JsonIgnore] public RectangleF      BoundingRectangle => new(Position - Origin * Parent.Scale, Size * Parent.Scale);
     [JsonIgnore] public SceneObject     Parent { get; private set; }
 
-    public SpriteRenderable(): base(null, null) // don't do this, should use the better constructor model
-    {
-
-    }
-
-    public SpriteRenderable(IServiceProvider services, SceneObject parent, string assetName = null) : base(services, assetName)
+    public SpriteRenderable(IServiceProvider services, SceneObject parent = default) : base(services)
     {
         Parent = parent;
     }

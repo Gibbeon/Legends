@@ -11,12 +11,7 @@ public class ActorControlBehavior : Behavior
     public float MoveSpeed { get; set; }
     private InputCommandSet _commands;
 
-    public ActorControlBehavior(): this(null, null)
-    {
-
-    }
-    
-    public ActorControlBehavior(IServiceProvider services, SceneObject parent) : base(services, parent)
+    public ActorControlBehavior(IServiceProvider services, SceneObject parent = default) : base(services, parent)
     {
         MoveSpeed = 1;
     }

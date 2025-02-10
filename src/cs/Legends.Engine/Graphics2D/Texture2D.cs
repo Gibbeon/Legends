@@ -8,18 +8,17 @@ namespace Legends.Engine.Graphics2D;
 public class Texture2D : AssetWrapper<XnaGraphics.Texture2D> 
 {    
     public XnaGraphics.SurfaceFormat Format => Instance.Format;
-    public int      LevelCount => Instance.LevelCount;
-    public Rectangle Bounds => Instance.Bounds;
-    public int      Width => Instance.Width;
-
-    public int      Height => Instance.Height;
+    public int      LevelCount  => Instance.LevelCount;
+    public Rectangle Bounds     => Instance.Bounds;
+    public int      Width       => Instance.Width;
+    public int      Height      => Instance.Height;
     
-    public Texture2D(IServiceProvider services, string assetName): base(services, assetName)
+    public Texture2D(IServiceProvider services): base(services)
     {
         
     }
 
-    public Texture2D(IServiceProvider services, XnaGraphics.Texture2D instance): base(services, instance.Name)
+    public Texture2D(IServiceProvider services, XnaGraphics.Texture2D instance): base(services)
     {
         Instance = instance;        
     }

@@ -16,12 +16,7 @@ public abstract class Component : Asset, IComponent
     [JsonIgnore]
     public SceneObject Parent { get; private set; }
 
-    public Component()
-    {
-        
-    }
-
-    public Component(IServiceProvider services, SceneObject parent, string assetName = null) : base(services, assetName)
+    public Component(IServiceProvider services, SceneObject parent) : base(services)
     {
         Parent = parent;
     }

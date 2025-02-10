@@ -7,14 +7,20 @@ using Legends.Engine.Serialization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Legends.Engine.Runtime;
+using System.Reflection;
 
 namespace Legends.Content.Pipline.JsonConverters;
 
-
-
 public class AssetJsonConverter : JsonConverter
-{
+{    
     private bool _skip;
+
+    public static IAsset UpdateName(IAsset asset, string name)
+    {
+        asset.GetType().GetProperty("Name", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).SetValue(asset, name);
+        return asset;
+    }
+    
     private static string WildCardToRegular(string value) {
         return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$"; 
     }
@@ -30,17 +36,18 @@ public class AssetJsonConverter : JsonConverter
     }
 
     public override object ReadJson(JsonReader reader, Type objectType, object value, JsonSerializer serializer)
-    {   _skip = false;
-        Console.WriteLine("ReadJson: (objectType: {0},  value: {1}) with token {2}", objectType.Name, value, reader.TokenType);
+    {   
+        _skip = false;
+        //Console.WriteLine("ReadJson: (objectType: {0},  value: {1}) with token {2}", objectType.Name, value, reader.TokenType);
 
         try
         {   
             if(reader.TokenType == JsonToken.String)
             {
                 var readValue = reader.Value.ToString();
-                Console.WriteLine("reading static reference to {0}", readValue);
+                //Console.WriteLine("reading static reference to {0}", readValue);
                 // IAsset where the token is a string;
-                return objectType.Create(null, readValue) as IAsset;
+                return UpdateName(objectType.Create(new object[] { null }) as IAsset, readValue);
             }
 
             var jsonObject = JObject.Load(reader);
@@ -91,9 +98,10 @@ public class AssetJsonConverter : JsonConverter
                         throw new InvalidDataException(string.Format("$source attribute defined but no handler for extension: {0}", Path.GetExtension(jsonSource.Value.ToString()).ToLower()));
                 }
             }
-            //Console.WriteLine("Trying to create {0} and token was {1}.", objectType, jsonType.Value.ToString());
 
-            var objectInstance = objectType.Create() as IAsset;
+            Console.WriteLine("Trying to create {0} and token was {1}.", objectType, jsonType != null ? jsonType.Value.ToString() : "not present");
+
+            var objectInstance = objectType.Create(new object[] { null }) as IAsset;
             serializer.Populate(new StringReader(jsonObject.ToString()), objectInstance);
                 
             return objectInstance;
@@ -107,19 +115,19 @@ public class AssetJsonConverter : JsonConverter
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {       
-        Console.WriteLine("WriteJson: (value: {0}) writestate: {1}", value, writer.WriteState);
+        //Console.WriteLine("WriteJson: (value: {0}) writestate: {1}", value, writer.WriteState);
         try
         {
             var assetValue = value as IAsset;
                        
             if(!string.IsNullOrEmpty(assetValue.Name))
             {
-                Console.WriteLine("writing reference {0} of type {1}", assetValue.Name, value.GetType());
+                //Console.WriteLine("writing reference {0} of type {1}", assetValue.Name, value.GetType());
                 writer.WriteValue(assetValue.Name);
             }
             else
             {
-                Console.WriteLine("writing inline {0} of type {1}", assetValue, value.GetType());
+                //Console.WriteLine("writing inline {0} of type {1}", assetValue, value.GetType());
                 _skip = true; // HACK see:https://stackoverflow.com/questions/26129448/json-net-how-to-customize-serialization-to-insert-a-json-property
                 serializer.Serialize(writer, assetValue, value.GetType());
                 _skip = false;
