@@ -6,6 +6,7 @@ using Legends.Content.Pipline.JsonConverters;
 using Legends.Engine.Content;
 using Newtonsoft.Json.Converters;
 using Legends.Engine;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Legends.Content.Pipline;
 
@@ -50,7 +51,7 @@ public class ContentObjectImporter : ContentImporter<dynamic>
 
             context.Logger.LogMessage("Processed Json:\n{0}\n", jsonOutput.Substring(1, jsonOutput.Length - 2).Replace("\\\"", "\"").Replace("\\n", "\n"));
 
-            return AssetJsonConverter.UpdateName(result2 as IAsset, Path.GetFileNameWithoutExtension(filename));
+            return result2 as IAsset;
 
         }
         catch(Exception error)
@@ -85,11 +86,9 @@ public class ContentObjectProcessor : ContentProcessor<IAsset, ContentObject>
             settings.Converters.Add(new JsonConverters.RectangleJsonConverter()); 
             settings.Converters.Add(new StringEnumConverter());  
 
-            //context.Logger.LogMessage("Process");
+            var relativeFilename = Path.ChangeExtension(Path.GetRelativePath(context.OutputDirectory, context.OutputFilename), null);
 
-            //return input;      
-            //throw new Exception("");
-            return ContentObject.Wrap((object)input);
+            return ContentObject.Wrap(AssetJsonConverter.UpdateName(input as IAsset, relativeFilename));
         }
         catch(Exception error)
         {
