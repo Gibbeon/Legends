@@ -47,4 +47,11 @@
 /processor:ContentObjectProcessor
 /build:Sprites\UI.json
 
+#begin Fonts\Arial.spritefont
+/importer:FontDescriptionImporter
+/processor:LocalizedFontProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts\Arial.spritefont
+
 

@@ -1,9 +1,31 @@
 ﻿using System;
 using System.IO;
+using System.Text;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Legends.Engine.Graphics2D;
+
+public class SpriteFont : AssetWrapper<XnaGraphics.SpriteFont> 
+{ 
+    public int LineSpacing => Instance.LineSpacing;
+    public float Spacing  => Instance.Spacing;
+
+    public SpriteFont(IServiceProvider services): base(services)
+    {
+        
+    }    
+    
+    public SpriteFont(IServiceProvider services, XnaGraphics.SpriteFont instance): base(services)
+    {
+        Instance = instance;        
+    }
+
+    public Dictionary<char, XnaGraphics.SpriteFont.Glyph> GetGlyphs() => Instance.GetGlyphs();
+    public Vector2 MeasureString(string text) => Instance.MeasureString(text);
+    public Vector2 MeasureString(StringBuilder text) => Instance.MeasureString(text);
+}
 
 public class Texture2D : AssetWrapper<XnaGraphics.Texture2D> 
 {    

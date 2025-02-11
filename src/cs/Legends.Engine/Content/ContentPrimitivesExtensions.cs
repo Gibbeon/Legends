@@ -131,7 +131,7 @@ public static class ContentPrimitivesExtensions
         }
         else
         {
-            Console.WriteLine("Write AssetStatus.Reference");
+            Console.WriteLine("Write AssetStatus.Reference [{0}] of {1}", result.Name, result.GetType().FullName);
             output.Write7BitEncodedInt((int)AssetStatus.Reference);
             output.Write(result.GetType().AssemblyQualifiedName);
             output.Write(result.Name);

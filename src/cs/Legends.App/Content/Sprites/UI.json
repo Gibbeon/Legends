@@ -3,15 +3,40 @@
     "children": [
         {
             "$type": "Legends.Engine.UI.Button",
+            "padding": "4, 0",
             "components": [
                 {
                     "$type": "Legends.Engine.UI.MultiStateComponent<Legends.Engine.UI.ButtonState>",
                     "states": {
                         "Default": {
-                            "$type": "Legends.Engine.Graphics2D.Primitives.Quad",
-                            "size": "128, 64",
-                            "origin": "64, 32",
-                            "thickness": 3
+                            "$type": "Legends.Engine.Graphics2D.Primitives.MultiDrawable",
+                            "drawables": [
+                                {
+                                    "$type": "Legends.Engine.Graphics2D.Primitives.Quad",
+                                    "size": "64, 64",
+                                    "thickness": 1
+                                },
+                                {
+                                    "$type": "Legends.Engine.Graphics2D.Primitives.Quad",
+                                    "size": "64, 64",
+                                    "color": "64, 64, 64, 64",
+                                    "solid": true
+                                },
+                                {
+                                    "$type": "Legends.Engine.Graphics2D.Primitives.Sprite",
+                                    "size": "64, 64",
+                                    "textureRegion": {
+                                        "texture": "Sprites/npc1",
+                                        "bounds": "0, 144, 72, 144",
+                                        "tilesize": "24, 36"
+                                    }
+                                },
+                                {
+                                    "$type": "Legends.Engine.Graphics2D.Primitives.Label",
+                                    "text": "1",
+                                    "color": "255, 255, 255, 255"
+                                }
+                            ]
                         }
                     }
                 }
