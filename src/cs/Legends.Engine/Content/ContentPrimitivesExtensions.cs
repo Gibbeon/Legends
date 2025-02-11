@@ -5,6 +5,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Legends.Engine.Runtime;
 using System.IO;
+using MonoGame.Extended.Content;
 
 
 
@@ -93,8 +94,12 @@ public static class ContentPrimitivesExtensions
 
                 var type = TypeCache.GetType(typeName);
                 
-                return (type.CreateOrDefault(input.ContentManager.ServiceProvider, input.GetParents().Peek(), instanceName) ?? 
-                        type.CreateOrDefault(input.ContentManager.ServiceProvider, instanceName)) as IAsset;
+                //var asset = (type.CreateOrDefault(input.ContentManager.ServiceProvider, input.GetParents().Peek()) ?? 
+                //            type.CreateOrDefault(input.ContentManager.ServiceProvider)) as IAsset;
+                
+                var asset = input.ContentManager.Load<object>(instanceName);
+
+                return (asset is IAsset ? asset : Activator.CreateInstance(type, input.ContentManager.ServiceProvider, asset)) as IAsset;
 
                 //return Activator.CreateInstance(TypeCache.GetType(typeName), input.ContentManager.ServiceProvider, input.GetParents().Peek(), instanceName) as IAsset;
             case AssetStatus.Instance: 

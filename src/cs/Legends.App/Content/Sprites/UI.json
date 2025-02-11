@@ -33,6 +33,7 @@
                                 },
                                 {
                                     "$type": "Legends.Engine.Graphics2D.Primitives.Label",
+                                    "font": "Fonts/Arial",
                                     "text": "1",
                                     "color": "255, 255, 255, 255"
                                 }
