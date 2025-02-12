@@ -49,12 +49,7 @@ public class SpriteRenderable: Sprite, IComponent, ISpriteRenderable, IRectangul
     {
 
     }
-
-    public bool Contains(Vector2 point)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     public void Update(GameTime gameTime)
     {
         

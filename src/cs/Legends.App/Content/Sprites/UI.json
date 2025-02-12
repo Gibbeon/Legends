@@ -7,9 +7,11 @@
             "components": [
                 {
                     "$type": "Legends.Engine.UI.MultiStateComponent<Legends.Engine.UI.ButtonState>",
+                    "size": "64, 64",
                     "states": {
                         "Default": {
                             "$type": "Legends.Engine.Graphics2D.Primitives.MultiDrawable",
+                            "size": "64, 64",
                             "drawables": [
                                 {
                                     "$type": "Legends.Engine.Graphics2D.Primitives.Quad",
@@ -35,6 +37,50 @@
                                     "$type": "Legends.Engine.Graphics2D.Primitives.Label",
                                     "font": "Fonts/Arial",
                                     "text": "1",
+                                    "color": "255, 255, 255, 255"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }, 
+        {
+            "$type": "Legends.Engine.UI.Button",
+            "padding": "4, 0",
+            "components": [
+                {
+                    "$type": "Legends.Engine.UI.MultiStateComponent<Legends.Engine.UI.ButtonState>",
+                    "size": "64, 64",
+                    "states": {
+                        "Default": {
+                            "$type": "Legends.Engine.Graphics2D.Primitives.MultiDrawable",
+                            "size": "64, 64",
+                            "drawables": [
+                                {
+                                    "$type": "Legends.Engine.Graphics2D.Primitives.Quad",
+                                    "size": "64, 64",
+                                    "thickness": 1
+                                },
+                                {
+                                    "$type": "Legends.Engine.Graphics2D.Primitives.Quad",
+                                    "size": "64, 64",
+                                    "color": "64, 64, 64, 64",
+                                    "solid": true
+                                },
+                                {
+                                    "$type": "Legends.Engine.Graphics2D.Primitives.Sprite",
+                                    "size": "64, 64",
+                                    "textureRegion": {
+                                        "texture": "Sprites/npc1",
+                                        "bounds": "0, 144, 72, 144",
+                                        "tilesize": "24, 36"
+                                    }
+                                },
+                                {
+                                    "$type": "Legends.Engine.Graphics2D.Primitives.Label",
+                                    "font": "Fonts/Arial",
+                                    "text": "2",
                                     "color": "255, 255, 255, 255"
                                 }
                             ]

@@ -28,7 +28,7 @@ public class Button: UISceneObject
     }
 }
 
-public class MultiStateComponent<TState> : Component, IRenderable
+public class MultiStateComponent<TState> : Component, IRenderable, IBounds
     where TState: struct, Enum
 {
     [JsonIgnore] public int         RenderLayerID => 1;
@@ -38,6 +38,8 @@ public class MultiStateComponent<TState> : Component, IRenderable
     [JsonIgnore] public Drawable    CurrentDrawable => States[CurrentState]; 
     public TState                   CurrentState              { get; set; }
     public Dictionary<TState, Drawable>    States      { get; set; }
+
+    public RectangleF BoundingRectangle => CurrentDrawable.BoundingRectangle;
 
     public MultiStateComponent() : this(null, null)
     {
@@ -61,7 +63,7 @@ public class MultiStateComponent<TState> : Component, IRenderable
             var state = Enum.GetValues<TState>()[i];
             if(!States.ContainsKey(state))
             {
-                States.Add(state, States[state]);
+                States.Add(state, States[Enum.GetValues<TState>()[0]]);
             }
         }
     }
@@ -82,6 +84,11 @@ public class MultiStateComponent<TState> : Component, IRenderable
     }
 
     public override void Dispose()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool Contains(Vector2 point)
     {
         throw new NotImplementedException();
     }

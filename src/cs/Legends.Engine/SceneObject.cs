@@ -78,9 +78,16 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
         }
 
         Bounds ??= Components.FirstOrDefault(n => n.GetType().IsAssignableTo(typeof(IBounds))) as IBounds;
+        Bounds ??= Children.FirstOrDefault(n => n.GetType().IsAssignableTo(typeof(IBounds))) as IBounds;
 
         UpdateMatricies();
     }
+
+    public IEnumerable<TType> GetChildren<TType>()
+        where TType: SceneObject
+    {
+        return Children.OfType<TType>();
+    } 
 
     public TType GetBehavior<TType>()
         where TType: IBehavior

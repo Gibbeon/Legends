@@ -32,7 +32,7 @@ public class MultiDrawable : Drawable
 {   
     public List<Drawable> Drawables { get; set; }
 
-    [JsonIgnore] public override RectangleF BoundingRectangle => new RectangleF();
+    [JsonIgnore] public override RectangleF BoundingRectangle => new RectangleF(0, 0, Size.Width, Size.Height);
 
     public MultiDrawable(IServiceProvider services): base(services)
     {

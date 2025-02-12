@@ -17,6 +17,14 @@
 
 
 
+#begin Fonts\Arial.spritefont
+/importer:FontDescriptionImporter
+/processor:LocalizedFontProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts\Arial.spritefont
+
+
 #begin Sprites\Actor.json
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
@@ -46,12 +54,5 @@
 /importer:ContentObjectImporter
 /processor:ContentObjectProcessor
 /build:Sprites\UI.json
-
-#begin Fonts\Arial.spritefont
-/importer:FontDescriptionImporter
-/processor:LocalizedFontProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Fonts\Arial.spritefont
 
 
