@@ -6,12 +6,13 @@ using MonoGame.Extended.Input.InputListeners;
 
 namespace Legends.Engine.Input;
 
-public class InputManager
+public class InputManager : IDisposable
 {
     private readonly KeyboardListener         _keyboardListener;
     private readonly MouseListener            _mouseListener;
     private readonly KeyboardListenerSettings _keyboardListenerSettings;
     private readonly MouseListenerSettings    _mouseListenerSettings;
+    private bool                              _subscribed;
     public KeyboardListener KeyboardListener => _keyboardListener;
     public MouseListener MouseListener => _mouseListener;
     public IInputHandlerService InputHandlerService => Services.Get<IInputHandlerService>();
@@ -41,14 +42,22 @@ public class InputManager
 
     public void Activate()
     {
-        _keyboardListener.KeyPressed += (sender, args)      => ProcessEvent(EventType.KeyPressed, args);
-        _keyboardListener.KeyReleased += (sender, args)     => ProcessEvent(EventType.KeyReleased, args);
-        _keyboardListener.KeyTyped += (sender, args)        => ProcessEvent(EventType.KeyTyped, args);
+        // Subscribe exactly once for the lifetime of this manager. The listeners are owned by this
+        // instance, so there is nothing to unsubscribe from on the way out - gating on Enabled is
+        // enough, and it avoids the '-=' on a freshly allocated lambda that never matched anything.
+        if(!_subscribed)
+        {
+            _keyboardListener.KeyPressed += (sender, args)      => ProcessEvent(EventType.KeyPressed, args);
+            _keyboardListener.KeyReleased += (sender, args)     => ProcessEvent(EventType.KeyReleased, args);
+            _keyboardListener.KeyTyped += (sender, args)        => ProcessEvent(EventType.KeyTyped, args);
 
-        _mouseListener.MouseClicked += (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
-        _mouseListener.MouseDoubleClicked += (sender, args) => ProcessEvent(EventType.MouseClicked, args);
-        _mouseListener.MouseWheelMoved+= (sender, args)     => ProcessEvent(EventType.MouseScroll, args);
-        //_mouseListener.MouseMoved += (sender, args)         => ProcessEvent(EventType.MouseMove, args);
+            _mouseListener.MouseClicked += (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
+            _mouseListener.MouseDoubleClicked += (sender, args) => ProcessEvent(EventType.MouseClicked, args);
+            _mouseListener.MouseWheelMoved+= (sender, args)     => ProcessEvent(EventType.MouseScroll, args);
+            //_mouseListener.MouseMoved += (sender, args)         => ProcessEvent(EventType.MouseMove, args);
+
+            _subscribed = true;
+        }
 
         Enabled = true;
     }
@@ -60,15 +69,6 @@ public class InputManager
                 item.Handled = true;
 
         Enabled = false;
-
-        _keyboardListener.KeyPressed -= (sender, args)      => ProcessEvent(EventType.KeyPressed, args);
-        _keyboardListener.KeyReleased -= (sender, args)     => ProcessEvent(EventType.KeyReleased, args);
-        _keyboardListener.KeyTyped -= (sender, args)        => ProcessEvent(EventType.KeyTyped, args);
-
-        _mouseListener.MouseClicked -= (sender, args)       => ProcessEvent(EventType.MouseClicked, args);
-        _mouseListener.MouseDoubleClicked -= (sender, args) => ProcessEvent(EventType.MouseClicked, args);
-        _mouseListener.MouseWheelMoved -= (sender, args)    => ProcessEvent(EventType.MouseScroll, args);
-        //_mouseListener.MouseMoved -= (sender, args)         => ProcessEvent(EventType.MouseMove, args);
     }
 
     public void Update(GameTime gameTime)
@@ -84,6 +84,8 @@ public class InputManager
 
     protected void ProcessEvent(EventType type, EventArgs args)
     {
+        if(!Enabled) return;
+
         foreach(var listener in CommandSets.Where(n => n.Enabled).SelectMany(n => n.EventListeners))
         {
             if(listener.Eval(type, args))
@@ -95,6 +97,9 @@ public class InputManager
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
+
+        Enabled = false;
         Services.Get<IInputHandlerService>().Remove(this);
     }
 }

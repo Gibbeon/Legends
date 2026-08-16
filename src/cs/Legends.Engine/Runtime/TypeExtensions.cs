@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
-using Autofac.Core.Activators.Reflection;
 
 namespace Legends.Engine.Runtime;
 
@@ -348,7 +347,9 @@ public static class TypeExtensions
     public static object Create(this Type type, params object[] parameters)
     {        
         var result = CreateOrDefault(type, parameters);
-        if(result == null) throw new NoConstructorsFoundException(type);
+        // Was Autofac's NoConstructorsFoundException, which coupled the engine to a package it does
+        // not reference directly and only happened to resolve through a transitive dependency.
+        if(result == null) throw new MissingMethodException(string.Format("No constructor on type {0} matches the supplied arguments.", type.FullName));
         return result;
     }
 

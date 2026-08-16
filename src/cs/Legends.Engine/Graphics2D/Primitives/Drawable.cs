@@ -24,7 +24,9 @@ public abstract class Drawable : Asset, IBounds
 
     public bool Contains(Vector2 point)
     {
-        throw new NotImplementedException();
+        var bounds = BoundingRectangle;
+        return point.X >= bounds.Left && point.X <= bounds.Right
+            && point.Y >= bounds.Top  && point.Y <= bounds.Bottom;
     }
 }
 
@@ -43,7 +45,7 @@ public class MultiDrawable : Drawable
     {
         foreach(var drawable in Drawables)
         {
-            drawable.DrawTo(target, drawTo);
+            drawable.DrawTo(target, drawTo, rotation); // rotation was being dropped on the way down
         }
     }
 

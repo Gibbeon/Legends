@@ -20,7 +20,9 @@ public class BoundsFunction : IBounds
 
     public bool Contains(Vector2 point)
     {
-        throw new NotImplementedException();
+        var bounds = BoundingRectangle;
+        return point.X >= bounds.Left && point.X <= bounds.Right
+            && point.Y >= bounds.Top  && point.Y <= bounds.Bottom;
     }
 }
 
@@ -99,11 +101,13 @@ public class Camera : SceneObject, IViewState
 
     public override void WorldToLocal(ref Vector2 point)
     {
+        UpdateMatricies();
         Vector2.Transform(ref point, ref _invModelView, out point);
     }
 
     public override void LocalToWorld(ref Vector2 point)
     {
+        UpdateMatricies();
         Vector2.Transform(ref point, ref _modelView, out point);
     }
 

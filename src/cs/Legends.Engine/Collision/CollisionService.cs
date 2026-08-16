@@ -24,17 +24,23 @@ public class CollisionService : ICollisionService
 
     public void Update(GameTime gameTime)
     {
-        foreach(var lhs in _bodies)
+        // Index loops over the upper triangle: the nested foreach visited every pair twice (and
+        // every body against itself), and would throw if a resolver added or removed a body.
+        for(var i = 0; i < _bodies.Count; i++)
         {
-            foreach(var rhs in _bodies)
+            for(var j = i + 1; j < _bodies.Count; j++)
             {
+                var lhs = _bodies[i];
+                var rhs = _bodies[j];
+
                 if(Collide(lhs.Bounds, rhs.Bounds))
                 {
                     lhs.ResolveCollision(rhs);
+                    rhs.ResolveCollision(lhs);
                 }
             }
         }
-    }  
+    }
 
     private static Dictionary<Tuple<Type, Type>, MethodInfo> _cache = new();
     

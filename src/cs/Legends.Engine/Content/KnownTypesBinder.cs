@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 
 using Newtonsoft.Json.Serialization;
-using SharpFont.MultipleMasters;
 
 namespace Legends.Engine.Content;
 
@@ -68,7 +67,9 @@ public class KnownTypesBinder : ISerializationBinder
                 var newTypeName = stack.Pop();
 
                 // hack to get generic param
-                var type = KnownTypes.SingleOrDefault(t => t.FullName.Split('`')[0] == newTypeName) ?? 
+                // FirstOrDefault, not SingleOrDefault: two scanned types sharing a name prefix used
+                // to throw rather than resolve, and FullName is null for some reflected types.
+                var type = KnownTypes.FirstOrDefault(t => t.FullName != null && t.FullName.Split('`')[0] == newTypeName) ??
                             _defaultBinder.BindToType(assemblyName, newTypeName);
             
                 if(type == null) throw new KeyNotFoundException(string.Format("{0}", newTypeName));

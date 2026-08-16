@@ -184,7 +184,10 @@ public static class ContentWriterExtensions
             "if(instance is IEnumerable) [{0}]", instance is IEnumerable);
         if(instance is IEnumerable)
         {
-            ContentLogger.LogEnd("IEnumerable.Count: [{1}] of type {0}", instance.GetType().Name, ((Array)instance).Length);
+            // This branch is reached only when the value is neither an ICollection nor an array,
+            // so the old ((Array)instance).Length cast here threw InvalidCastException - and it
+            // threw whether or not logging was switched on, because it is an argument expression.
+            ContentLogger.LogEnd("IEnumerable of type {0}", instance.GetType().Name);
             writer.WriteArray(instance as IEnumerable, derivedType);
             return;
         }
@@ -260,13 +263,19 @@ public static class ContentWriterExtensions
                     {    
                         ContentLogger.Trace(writer.Seek(0, SeekOrigin.Current),
                             "if(member[{0}] is PropertyInfo property) [{1}]", member, member is PropertyInfo);
+                        // The value and the DefaultValueAttribute are read once and reused: they were
+                        // being resolved reflectively three times per member, twice of that purely to
+                        // build log arguments that are evaluated even when logging is switched off.
                         if(member is PropertyInfo property)
                         {
-                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property) [{2}]\t", property.Name, property.GetValue(instance), property.PropertyType))
+                            var propertyValue   = property.GetValue(instance);
+                            var propertyDefault = property.GetCustomAttribute<DefaultValueAttribute>();
+
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (property) [{2}]\t", property.Name, propertyValue, property.PropertyType))
                             {
                                 ContentLogger.Trace(writer.Seek(0, SeekOrigin.Current),
-                                    "writer.WriteField(property.GetValue(instance) [{0}], property.PropertyType [{1}], property.GetCustomAttribute<DefaultValueAttribute>() [{2}]);", property.GetValue(instance), property.PropertyType, property.GetCustomAttribute<DefaultValueAttribute>());
-                                writer.WriteField(property.GetValue(instance), property.PropertyType, property.GetCustomAttribute<DefaultValueAttribute>());
+                                    "writer.WriteField(property.GetValue(instance) [{0}], property.PropertyType [{1}], property.GetCustomAttribute<DefaultValueAttribute>() [{2}]);", propertyValue, property.PropertyType, propertyDefault);
+                                writer.WriteField(propertyValue, property.PropertyType, propertyDefault);
                             }
                         }
                         else if(member is FieldInfo field)
@@ -274,11 +283,14 @@ public static class ContentWriterExtensions
                             ContentLogger.Trace(writer.Seek(0, SeekOrigin.Current),
                                 "if(member[{0}] is FieldInfo field) [{1}]", member, member is FieldInfo);
 
-                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (field) [{2}]\t", field.Name, field.GetValue(instance), field.FieldType))
+                            var fieldValue   = field.GetValue(instance);
+                            var fieldDefault = field.GetCustomAttribute<DefaultValueAttribute>();
+
+                            using(ContentLogger.LogBegin(writer.Seek(0, SeekOrigin.Current), ".{0} = '{1}' (field) [{2}]\t", field.Name, fieldValue, field.FieldType))
                             {
                                 ContentLogger.Trace(writer.Seek(0, SeekOrigin.Current),
-                                    "writer.WriteField(field.GetValue(instance)[{0}], field.FieldType[{1}], field.GetCustomAttribute<DefaultValueAttribute>()[{2}]);", field.GetValue(instance), field.FieldType, field.GetCustomAttribute<DefaultValueAttribute>());
-                                writer.WriteField(field.GetValue(instance), field.FieldType, field.GetCustomAttribute<DefaultValueAttribute>());
+                                    "writer.WriteField(field.GetValue(instance)[{0}], field.FieldType[{1}], field.GetCustomAttribute<DefaultValueAttribute>()[{2}]);", fieldValue, field.FieldType, fieldDefault);
+                                writer.WriteField(fieldValue, field.FieldType, fieldDefault);
                             }
                         }
                         else

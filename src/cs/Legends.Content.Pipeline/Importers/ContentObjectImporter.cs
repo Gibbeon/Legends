@@ -6,7 +6,6 @@ using Legends.Content.Pipline.JsonConverters;
 using Legends.Engine.Content;
 using Newtonsoft.Json.Converters;
 using Legends.Engine;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Legends.Content.Pipline;
 
