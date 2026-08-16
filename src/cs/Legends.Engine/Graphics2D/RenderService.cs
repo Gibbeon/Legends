@@ -69,7 +69,15 @@ public class ClearState
 
 
 public class RenderSurface
-{    
+{
+    // Comparer<IRenderable>.Default throws when invoked, since IRenderable is not IComparable.
+    // This keeps "no comparer configured" meaning "leave the layer ordering alone".
+    private sealed class UnorderedComparer : IComparer<IRenderable>
+    {
+        public static readonly UnorderedComparer Instance = new();
+        public int Compare(IRenderable x, IRenderable y) => 0;
+    }
+
     private IComparer<IRenderable> _drawableComparer;
     [JsonIgnore] public IServiceProvider Services   { get; protected set; }
     [JsonIgnore] public GraphicsDevice GraphicsDevice => Services.GetGraphicsDevice();     
@@ -80,7 +88,7 @@ public class RenderSurface
     public RenderState      RenderState             { get; set; }
     public RenderTarget2D   RenderTarget            { get; set; }
     public Effect           DefaultEffect           { get; set; }       
-    public IComparer<IRenderable> DrawableComparer  { get =>_drawableComparer ?? Comparer<IRenderable>.Default; set => _drawableComparer = value; }
+    public IComparer<IRenderable> DrawableComparer  { get =>_drawableComparer ?? UnorderedComparer.Instance; set => _drawableComparer = value; }
 
     public RenderSurface(IServiceProvider services)
     {
@@ -106,40 +114,52 @@ public class RenderSurface
         GraphicsDevice.Clear(ClearState.Options, ClearState.Color, ClearState.Depth, ClearState.StencilDepth);
     }
 
-    public void Draw(GameTime gameTime) 
+    public void Draw(GameTime gameTime)
     {
-        var currentState = GraphicsDevice.ApplyState(RenderState);
+        RenderState currentState     = null;
+        Effect      currentEffect    = null;
+        IViewState  currentViewState = null;
         var batchStarted = false;
 
         foreach(var drawable in Drawables
             .Where  (n => IsVisible(n))
             .OrderBy(n => n.RenderLayerID)
-            .OrderBy(n => DrawableComparer))
+            .ThenBy (n => n, DrawableComparer))
         {
-            
-            var currentEffect       = drawable.RenderState?.Effect ?? DefaultEffect;
-            GraphicsDevice.Viewport = drawable.ViewState.Viewport;
+            var drawableState     = drawable.RenderState ?? RenderState;
+            var drawableEffect    = drawable.RenderState?.Effect ?? DefaultEffect;
+            var drawableViewState = drawable.ViewState;
 
-            if (currentEffect is IEffectMatrices mtxEffect)
+            // Only break the batch when something bound at SpriteBatch.Begin actually changes.
+            // Effect matrices are read when the batch is flushed rather than per draw call, so
+            // everything sharing a batch must share a view state - hence it is part of the test.
+            if(!batchStarted
+                || !ReferenceEquals(currentState,     drawableState)
+                || !ReferenceEquals(currentEffect,    drawableEffect)
+                || !ReferenceEquals(currentViewState, drawableViewState))
             {
-                mtxEffect.View          = drawable.ViewState.View;
-                mtxEffect.Projection    = drawable.ViewState.Projection;
-                mtxEffect.World         = drawable.ViewState.World;
-            }
-
-            if(!batchStarted || currentState != drawable.RenderState)
-            {
-                if(batchStarted) 
+                if(batchStarted)
                 {
                     SpriteBatch.End();
                     batchStarted = false;
                 }
 
-                currentState = GraphicsDevice.ApplyState(drawable.RenderState ?? RenderState);
+                GraphicsDevice.Viewport = drawableViewState.Viewport;
+
+                currentState     = GraphicsDevice.ApplyState(drawableState);
+                currentEffect    = drawableEffect;
+                currentViewState = drawableViewState;
+
+                if (currentEffect is IEffectMatrices mtxEffect)
+                {
+                    mtxEffect.View          = drawableViewState.View;
+                    mtxEffect.Projection    = drawableViewState.Projection;
+                    mtxEffect.World         = drawableViewState.World;
+                }
 
                 SpriteBatch.Begin(
                     currentState.SpriteSortMode,
-                    currentState.BlendState,                    
+                    currentState.BlendState,
                     currentState.SamplerState,
                     currentState.DepthStencilState,
                     currentState.RasterizerState,
@@ -149,14 +169,12 @@ public class RenderSurface
                 batchStarted = true;
             }
 
-           
-            drawable.DrawImmediate(gameTime, this);            
+            drawable.DrawImmediate(gameTime, this);
         }
 
-        if(batchStarted) 
+        if(batchStarted)
         {
             SpriteBatch.End();
-            batchStarted = false;
         }
     }
 

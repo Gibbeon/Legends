@@ -65,10 +65,17 @@ public class Scene : SceneObject
         //}
    // }
 
+    public override void Reset()
+    {
+        // The camera is not in Children, so like Update/Draw/Dispose it has to be handled here.
+        Camera?.Reset();
+        base.Reset();
+    }
+
     public override void Dispose()
     {
         GC.SuppressFinalize(this);
-        Camera?.Dispose();    
+        Camera?.Dispose();
         base.Dispose();
     }
 }

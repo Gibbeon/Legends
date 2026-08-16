@@ -53,7 +53,9 @@ public class PrimitiveRenderable<TType>: Asset, IComponent, ISpriteRenderable, I
 
     public bool Contains(Vector2 point)
     {
-        throw new NotImplementedException();
+        var bounds = BoundingRectangle;
+        return point.X >= bounds.Left && point.X <= bounds.Right
+            && point.Y >= bounds.Top  && point.Y <= bounds.Bottom;
     }
 
     public void Update(GameTime gameTime)

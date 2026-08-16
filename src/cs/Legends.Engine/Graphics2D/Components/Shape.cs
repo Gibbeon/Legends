@@ -86,11 +86,6 @@ public class RectangleShape : Shape
         var spriteBatch = target.SpriteBatch;
         spriteBatch.DrawRectangle(BoundingRectangle, this.Color, Thickness);
     }
-
-    public static explicit operator RectangleShape(RectangleF v)
-    {
-        throw new NotImplementedException();
-    }
 }
 
 public class PolygonShape : Shape

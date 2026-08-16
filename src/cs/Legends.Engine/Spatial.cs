@@ -35,9 +35,11 @@ public abstract class Spatial : IMovable, IRotatable, IScalable
     public float   Rotation { get => _rotation;             set => SetRotation(value); }
 
     [JsonIgnore] public Matrix  LocalMatrix                 => GetLocalMatrix(); 
-    [JsonIgnore] public Vector2 AbsolutePosition            { get => Position   + _parent?.AbsolutePosition ?? Vector2.Zero; }
-    [JsonIgnore] public Vector2 AbsoluteScale               { get => Scale      * _parent?.AbsoluteScale    ?? Vector2.One; }
-    [JsonIgnore] public float   AbsoluteRotation            { get => Rotation   + _parent?.AbsoluteRotation ?? 0.0f; }
+    // the parentheses are required: '+' binds tighter than '??', so without them a null parent
+    // makes the whole expression null and this object's own transform is discarded.
+    [JsonIgnore] public Vector2 AbsolutePosition            { get => Position   + (_parent?.AbsolutePosition ?? Vector2.Zero); }
+    [JsonIgnore] public Vector2 AbsoluteScale               { get => Scale      * (_parent?.AbsoluteScale    ?? Vector2.One); }
+    [JsonIgnore] public float   AbsoluteRotation            { get => Rotation   + (_parent?.AbsoluteRotation ?? 0.0f); }
     [JsonIgnore] public Matrix  GlobalMatrix                { get => (_parent?.GlobalMatrix ?? Matrix3x2.Identity) * LocalMatrix; }
     [JsonIgnore] public bool IsDirty                        { get; protected set; }
     
@@ -115,11 +117,13 @@ public abstract class Spatial : IMovable, IRotatable, IScalable
 
     public virtual void WorldToLocal(ref Vector2 point)
     {
+        UpdateMatricies(); // otherwise a dirty (or never-built) inverse maps every point to the origin
         Vector2.Transform(ref point, ref _invLocalMatrix, out point);
     }
 
     public virtual void LocalToWorld(ref Vector2 point)
     {
+        UpdateMatricies();
         Vector2.Transform(ref point, ref _localMatrix, out point);
     }
 }

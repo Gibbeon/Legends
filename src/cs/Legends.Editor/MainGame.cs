@@ -1,4 +1,6 @@
-﻿using Legends.Engine;
+﻿using System;
+using System.IO;
+using Legends.Engine;
 using Legends.Engine.Collision;
 using Legends.Engine.Content;
 using Legends.Engine.Graphics2D;
@@ -36,16 +38,30 @@ public class MainGame : Microsoft.Xna.Framework.Game
         _graphicsDeviceManager.PreferredBackBufferWidth = 1280;
         _graphicsDeviceManager.PreferredBackBufferHeight = 1024;
 
-        #if OS_WINDOWS
-            Content.RootDirectory = "/dev/Legends/src/cs/Legends.App/bin/Debug/net8.0/Content";
-            Content.EnableAssetWatching();
-        #elif OS_MAC
-            Content.RootDirectory = "/Users/riwoods/dev/Legends/src/cs/Legends.App/bin/Debug/net8.0/Content";
-        #else
-            #error "Missing or invalid platform definition."
-        #endif
-        
+        // The editor reads the game's compiled content. Resolve it relative to this assembly rather
+        // than from absolute paths, which were machine-specific and left Linux/FreeBSD on #error.
+        Content.RootDirectory = ResolveGameContentDirectory();
+        Content.EnableAssetWatching();
+
         IsMouseVisible = true;
+    }
+
+    // .../Legends.Editor/bin/<Config>/<Tfm>/  ->  .../Legends.App/bin/<Config>/<Tfm>/Content
+    // Swapping the project name keeps the configuration and target framework in step automatically.
+    private static string ResolveGameContentDirectory()
+    {
+        var editorDirectory = AppContext.BaseDirectory;
+        var separator       = Path.DirectorySeparatorChar;
+
+        var gameContent = Path.GetFullPath(Path.Combine(
+            editorDirectory.Replace(
+                string.Concat(separator, "Legends.Editor", separator),
+                string.Concat(separator, "Legends.App",    separator)),
+            "Content"));
+
+        return Directory.Exists(gameContent)
+            ? gameContent
+            : Path.GetFullPath(Path.Combine(editorDirectory, "Content"));
     }
 
     protected override void Initialize()

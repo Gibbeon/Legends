@@ -19,8 +19,21 @@ public class Panel : UISceneObject
 
     public override void Initialize()
     {
-        //Bounds              ??= new BoundsFunction(() => new Rectangle(Scene.Camera.Viewport.X - Scene.Camera.Viewport.Width / 2, Scene.Camera.Viewport.Y - Scene.Camera.Viewport.Height / 2, Scene.Camera.Viewport.Width, Scene.Camera.Viewport.Height));
-        Bounds              ??= new BoundsFunction(() => RectangleF.Empty);
+        // An empty rectangle here made every alignment calculation below resolve against a 0x0
+        // container. Default to the camera's visible region, evaluated lazily on each access.
+        Bounds ??= new BoundsFunction(() =>
+        {
+            var camera = Scene?.Camera;
+            if(camera == null) return RectangleF.Empty;
+
+            var viewport = camera.Viewport;
+            return new RectangleF(
+                viewport.X - viewport.Width  / 2f,
+                viewport.Y - viewport.Height / 2f,
+                viewport.Width,
+                viewport.Height);
+        });
+
         base.Initialize();
     }
 
@@ -33,21 +46,31 @@ public class Panel : UISceneObject
 
     public void AutoArrange()
     {
-        var children = GetChildren<UISceneObject>().Where( n => n.Visible );
-   
-        var width   = children.Sum(n => n.Bounds.BoundingRectangle.Width + n.Margin.X);
-        var height  = children.Max(n => n.Bounds.BoundingRectangle.Height);
+        // Materialised once: this used to be a lazy query re-evaluated five times per frame,
+        // and Max() on it threw as soon as the panel was empty or every child was hidden.
+        var children = GetChildren<UISceneObject>().Where(n => n.Visible).ToList();
 
-        float x = Padding.X;
-        float y = Padding.Y;
+        if(children.Count == 0) return;
+
+        var bounds  = BoundingRectangle;
+        var width   = children.Sum(n => n.Bounds.BoundingRectangle.Width + n.Margin.X);
+
+        float x;
 
         switch(HorizontalAlignment)
         {
             case HorizontalAlignment.Justified:
             case HorizontalAlignment.Center:
-            case HorizontalAlignment.Left:  
-                x = Padding.X + (HorizontalAlignment == HorizontalAlignment.Center      ? (BoundingRectangle.Width - width / 2) : BoundingRectangle.Left); 
-                var xPadding =   HorizontalAlignment == HorizontalAlignment.Justified   ? (BoundingRectangle.Width - width / children.Count()) : Padding.X;             
+            case HorizontalAlignment.Left:
+                // (Width - width) / 2 centres the run of children; 'Width - width / 2' did not.
+                x = HorizontalAlignment == HorizontalAlignment.Center
+                        ? bounds.Left + (bounds.Width - width) / 2
+                        : bounds.Left + Padding.X;
+
+                var xPadding = HorizontalAlignment == HorizontalAlignment.Justified && children.Count > 1
+                        ? (bounds.Width - width) / (children.Count - 1)
+                        : Padding.X;
+
                 foreach(var child in children)
                 {
                     child.Position = new (x, child.Position.Y);
@@ -56,15 +79,16 @@ public class Panel : UISceneObject
                       +  xPadding;
                 }
             break;
-            
-            case HorizontalAlignment.Right:   
-                x = width - Padding.X;             
+
+            case HorizontalAlignment.Right:
+                // Start far enough left that the run finishes flush against the right edge.
+                x = bounds.Right - Padding.X - (width + Padding.X * (children.Count - 1));
                 foreach(var child in children)
-                {                    
-                    child.Position = new (x - child.Bounds.BoundingRectangle.Width - child.Margin.X, child.Position.Y);
-                    x -= child.Bounds.BoundingRectangle.Width
-                      -  child.Margin.X
-                      -  Padding.X;
+                {
+                    child.Position = new (x, child.Position.Y);
+                    x += child.Bounds.BoundingRectangle.Width
+                      +  child.Margin.X
+                      +  Padding.X;
                 }
             break;
 
@@ -77,14 +101,13 @@ public class Panel : UISceneObject
             switch(VerticalAlignment)
             {
                 case VerticalAlignment.Top:
-                    child.Position = new (child.Position.X, y + child.Margin.Y);
+                    child.Position = new (child.Position.X, bounds.Top + Padding.Y + child.Margin.Y);
                     break;
                 case VerticalAlignment.Bottom:
-                    y = BoundingRectangle.Height - Padding.Y;
-                    child.Position = new (child.Position.X, y - child.Margin.Y - child.Bounds.BoundingRectangle.Height);
+                    child.Position = new (child.Position.X, bounds.Bottom - Padding.Y - child.Margin.Y - child.Bounds.BoundingRectangle.Height);
                     break;
                 case VerticalAlignment.Middle:
-                    child.Position = new (child.Position.X, (BoundingRectangle.Height - child.Bounds.BoundingRectangle.Height) / 2);
+                    child.Position = new (child.Position.X, bounds.Top + (bounds.Height - child.Bounds.BoundingRectangle.Height) / 2);
                     break;
                  case VerticalAlignment.Fixed:
                     break;
@@ -126,24 +149,20 @@ public class UISceneObject : SceneObject, IMovable
         {
             HorizontalAlignment.Left => 0,
             HorizontalAlignment.Right => component.Width - containerSize.Width,
-            HorizontalAlignment.Center =>  component.Center.Y - (containerSize.Width / 2),
+            HorizontalAlignment.Center =>  component.Center.X - (containerSize.Width / 2),
             _ => 0,
         };
     }
 
     public override void Dispose()
     {
-        
+        // Was empty, which severed teardown for every UI subtree. It is safe to chain again now
+        // that MultiStateComponent.Dispose() no longer throws.
+        base.Dispose();
     }
 
     public override void Initialize()
-    {       
-        base.Initialize();
-
-    }
-
-    public bool Contains(Vector2 point)
     {
-        throw new NotImplementedException();
+        base.Initialize();
     }
 }

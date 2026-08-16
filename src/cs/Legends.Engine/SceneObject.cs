@@ -77,10 +77,15 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
             child.Initialize();
         }
 
-        Bounds ??= Components.FirstOrDefault(n => n.GetType().IsAssignableTo(typeof(IBounds))) as IBounds;
-        Bounds ??= Children.FirstOrDefault(n => n.GetType().IsAssignableTo(typeof(IBounds))) as IBounds;
+        ResolveBounds();
 
         UpdateMatricies();
+    }
+
+    private void ResolveBounds()
+    {
+        Bounds ??= Components.FirstOrDefault(n => n.GetType().IsAssignableTo(typeof(IBounds))) as IBounds;
+        Bounds ??= Children.FirstOrDefault(n => n.GetType().IsAssignableTo(typeof(IBounds))) as IBounds;
     }
 
     public IEnumerable<TType> GetChildren<TType>()
@@ -103,8 +108,21 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
 
     public void AttachChild(SceneObject child)
     {
-        _children.Add(child);
+        // SetParent first so the child is removed from any previous parent's list before we add it here
         child.SetParent(this);
+
+        if(!_children.Contains(child))
+        {
+            _children.Add(child);
+        }
+    }
+
+    protected override void DetatchChild(Spatial child)
+    {
+        if(child is SceneObject sceneObject)
+        {
+            _children.Remove(sceneObject);
+        }
     }
 
     /*public virtual IEnumerable<SceneObject> GetObjectsAt(Vector2 position)
@@ -194,10 +212,29 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
         _components.Clear(); 
     }
 
-    public void Reset()
+    public virtual void Reset()
     {
-        Dispose();
-        Initialize();
+        // Do NOT route this through Dispose(): Dispose() empties the behavior/component/child
+        // lists, so the Initialize() that followed walked empty collections and rebuilt nothing.
+        //
+        // Each Reset() below re-initializes that node, so this must not also call the recursive
+        // Initialize() afterwards - that would initialize the whole subtree a second time, and
+        // behaviors such as ActorControlBehavior register fresh input command sets on every call.
+        foreach(var behavior in Behaviors) {
+            behavior.Reset();
+        }
+
+        foreach(var component in Components) {
+            component.Reset();
+        }
+
+        foreach(var child in Children) {
+            child.Reset();
+        }
+
+        ResolveBounds();
+
+        UpdateMatricies();
     }
 
     public override string ToString()
@@ -207,7 +244,11 @@ public class SceneObject : Spatial<SceneObject>, IAsset, IDisposable, IUpdate, I
 
     public bool Contains(Vector2 point)
     {
-        throw new NotImplementedException();
+        if(Bounds == null) return false;
+
+        var bounds = Bounds.BoundingRectangle;
+        return point.X >= bounds.Left && point.X <= bounds.Right
+            && point.Y >= bounds.Top  && point.Y <= bounds.Bottom;
     }
 
     //protected override void UpdateMatricies()
